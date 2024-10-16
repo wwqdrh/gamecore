@@ -30,8 +30,8 @@ private:
   Value *query_value(const std::string &field);
 
 public:
+  explicit GJson(const std::string &data) { raw_data.Parse(data.c_str()); }
   void parse_file(const std::string &filename);
-  void parse_data(const std::string &data);
   Value parse(const std::string &data);
   std::string query(const std::string &field); // 返回的是json字符串
   std::vector<std::string> keys(const std::string &field);

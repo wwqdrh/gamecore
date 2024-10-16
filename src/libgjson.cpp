@@ -6,7 +6,7 @@
 #include <numeric>
 #endif
 
-#include "core/libgjson.h"
+#include "libgjson.h"
 #include "rapidjson/document.h"
 #include "rapidjson/rapidjson.h"
 #include "rapidjson/stringbuffer.h"
@@ -161,10 +161,6 @@ void GJson::parse_file(const std::string &filename) {
   buffer << file.rdbuf();
   raw_data.Parse(buffer.str().c_str());
   file.close();
-}
-
-void GJson::parse_data(const std::string &data) {
-  raw_data.Parse(data.c_str());
 }
 
 Value GJson::parse(const std::string &data) {
