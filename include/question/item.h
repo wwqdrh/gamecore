@@ -2,15 +2,27 @@
 
 #include "dataclass.h"
 
+namespace libs {
+enum class TaskStatus { NotStarted, InProgress, Completed, Failed };
+
 class TaskItem : public DataClass<TaskItem> {
 public:
-  std::string name;
-  int age;
-  double height;
+  int id = 0;
+  std::string name = "";
+  std::string description = "";
+  std::string objective = "";
+  int progress = 0;
+  bool objective_completed = false;
 
   TaskItem() {
+    addMember("id", &TaskItem::id);
     addMember("name", &TaskItem::name);
-    addMember("age", &TaskItem::age);
-    addMember("height", &TaskItem::height);
+    addMember("description", &TaskItem::description);
+    addMember("objective", &TaskItem::objective);
+    addMember("progress", &TaskItem::progress);
+    addMember("objective_completed", &TaskItem::objective_completed);
   }
+
+  explicit TaskItem(const std::string &data) : TaskItem() { fromJson(data); }
 };
+} // namespace libs
