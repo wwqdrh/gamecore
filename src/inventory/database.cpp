@@ -1,6 +1,6 @@
 #include "inventory/database.h"
 
-using namespace libs;
+using namespace gamedb;
 
 bool Database::addItem(int good_id, Item data) {
   if (item_map.find(good_id) != item_map.end()) {

@@ -3,8 +3,10 @@
 
 #include "store.h"
 
+using namespace gamedb;
+
 TEST(STORETest, TestEncrypt) {
-    libs::FileManager file("test_store_encrypt.txt");
+    FileManager file("test_store_encrypt.txt");
     file.saveData("Hello, world!");
     std::string data = file.loadData();
     EXPECT_EQ(data, "Hello, world!");

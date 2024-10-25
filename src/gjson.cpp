@@ -6,15 +6,15 @@
 #include <numeric>
 #endif
 
-#include "libgjson.h"
+#include "gjson.h"
 #include "rapidjson/document.h"
 #include "rapidjson/rapidjson.h"
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
 
-using namespace libs;
 using namespace rapidjson;
 
+namespace gamedb {
 std::vector<std::string> GJson::split(const std::string &s,
                                       char delimiter) const {
   std::vector<std::string> tokens;
@@ -399,3 +399,4 @@ bool GJson::update(const std::string &field, const std::string &action,
 
   return true;
 }
+} // namespace gamedb

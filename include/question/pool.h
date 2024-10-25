@@ -3,7 +3,7 @@
 
 #include "question/item.h"
 
-namespace libs {
+namespace gamedb {
 class TaskPool {
 private:
   std::vector<TaskItem> tasks;

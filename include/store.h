@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace libs {
+namespace gamedb {
 class FileManager {
 
 private:

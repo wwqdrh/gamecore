@@ -13,6 +13,7 @@
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
 
+namespace gamedb {
 template <typename T> class DataClass {
 private:
   std::map<std::string, std::function<void(T &, const std::any &)>> setters;
@@ -166,3 +167,4 @@ public:
     return result;
   }
 };
+} // namespace gamedb

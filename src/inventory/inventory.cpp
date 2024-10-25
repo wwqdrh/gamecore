@@ -1,7 +1,7 @@
 #include "inventory/inventory.h"
 #include <iostream>
 
-using namespace libs;
+using namespace gamedb;
 
 void Inventory::init_data(std::vector<Item> data) {
   for (auto item : data) {
@@ -14,7 +14,8 @@ std::vector<const Slot *> Inventory::get_all_data() {
 }
 
 int Inventory::get_count(int good_id) {
-  return backpack.getItem(good_id).get_count();
+  return 0;
+  // return backpack.getItem(good_id).get_count();
 }
 
 void Inventory::set_size(int rows, int cols) { backpack.set_size(rows, cols); }
@@ -30,12 +31,12 @@ bool Inventory::addItem(int good_id, int num) {
 
 std::vector<std::map<std::string, std::string>> Inventory::marshal() {
   std::vector<std::map<std::string, std::string>> ids;
-  for (auto it : backpack.get_all_data()) {
-    ids.push_back({
-        {"id", std::to_string(it->get_goodid())},
-        {"count", std::to_string(it->get_count())},
-    });
-  }
+  // for (auto it : backpack.get_all_data()) {
+  //   ids.push_back({
+  //       {"id", std::to_string(it->get_goodid())},
+  //       {"count", std::to_string(it->get_count())},
+  //   });
+  // }
   return ids;
 }
 

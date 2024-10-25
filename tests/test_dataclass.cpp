@@ -2,7 +2,7 @@
 #include <iostream>
 
 #include "dataclass.h"
-
+using namespace gamedb;
 class Person : public DataClass<Person> {
 private:
   std::string name = "default";

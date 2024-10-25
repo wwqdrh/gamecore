@@ -5,7 +5,7 @@
 #include "inventory/database.h"
 #include "inventory/slot.h"
 
-namespace libs {
+namespace gamedb {
 class Bag {
 private:
   size_t rows{3};                       // 行数
@@ -26,11 +26,11 @@ public:
   }
 
   void clean() {
-    for (size_t i = 0; i < rows; ++i) {
-      for (size_t j = 0; j < cols; ++j) {
-        slots[i][j].clean();
-      }
-    }
+    // for (size_t i = 0; i < rows; ++i) {
+    //   for (size_t j = 0; j < cols; ++j) {
+    //     slots[i][j].clean();
+    //   }
+    // }
   }
   void set_size(size_t rows, size_t cols);
   void set_capacity(int cap) { capacity = cap; }

@@ -2,7 +2,7 @@
 
 #include <map>
 
-namespace libs {
+namespace gamedb {
 
 class Item {
 public:
@@ -86,8 +86,8 @@ public:
 } // namespace libs
 
 namespace std {
-template <> struct hash<libs::Item> {
-  size_t operator()(const libs::Item &item) const {
+template <> struct hash<gamedb::Item> {
+  size_t operator()(const gamedb::Item &item) const {
     return std::hash<int>()(item.id); // 假设用 id 作为哈希值
   }
 };

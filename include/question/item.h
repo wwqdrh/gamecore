@@ -2,7 +2,7 @@
 
 #include "dataclass.h"
 
-namespace libs {
+namespace gamedb {
 enum class TaskStatus { NotStarted, InProgress, Completed, Failed };
 
 class TaskItem : public DataClass<TaskItem> {

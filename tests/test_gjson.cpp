@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include "libgjson.h" // 假设 GJson 类的声明在这个头文件中
+#include "gjson.h" // 假设 GJson 类的声明在这个头文件中
 
-using namespace libs;
+using namespace gamedb;
 
 TEST(GJsonTest, ParseAndQuery) {
   // 创建一个 GJson 对象

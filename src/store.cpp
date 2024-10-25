@@ -3,8 +3,7 @@
 
 #include "store.h"
 
-using namespace libs;
-
+namespace gamedb {
 void FileManager::saveData(const std::string &data) {
   std::string encryptedData = encrypt(data);
   std::ofstream file(filename_);
@@ -41,3 +40,4 @@ std::string FileManager::decrypt(const std::string &data) {
   // 解密过程与加密相同（异或运算的特性）
   return encrypt(data);
 }
+} // namespace gamedb

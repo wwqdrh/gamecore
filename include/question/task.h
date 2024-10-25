@@ -3,7 +3,7 @@
 #include <map>
 #include <string>
 
-namespace libs {
+namespace gamedb {
 
 class Task {
 private:

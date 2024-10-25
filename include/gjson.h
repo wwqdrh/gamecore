@@ -12,7 +12,7 @@
 
 using namespace rapidjson;
 
-namespace libs {
+namespace gamedb {
 class GJson {
 private:
   Document raw_data;
