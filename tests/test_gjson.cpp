@@ -58,23 +58,23 @@ TEST(GJsonTest, TypeConvert) {
     }
 
     // 反序列化静态方法
-    static Person fromJson(rapidjson::Value *value) {
+    static Person fromJson(const rapidjson::Value &value) {
       Person person;
-      if (!value || !value->IsObject()) {
+      if (value.IsNull() || !value.IsObject()) {
         return person;
       }
 
-      if (value->HasMember("name")) {
-        person.name = GJson::convert<std::string>(&(*value)["name"]);
+      if (value.HasMember("name")) {
+        person.name = GJson::convert<std::string>(value["name"]);
       }
 
-      if (value->HasMember("age")) {
-        person.age = GJson::convert<int>(&(*value)["age"]);
+      if (value.HasMember("age")) {
+        person.age = GJson::convert<int>(value["age"]);
       }
 
-      if (value->HasMember("hobbies")) {
+      if (value.HasMember("hobbies")) {
         person.hobbies =
-            GJson::convert<std::vector<std::string>>(&(*value)["hobbies"]);
+            GJson::convert<std::vector<std::string>>(value["hobbies"]);
       }
 
       return person;
@@ -106,7 +106,7 @@ TEST(GJsonTest, TypeConvert) {
   // 自定义类型
   Person person{"John", 30, {"reading", "coding"}};
   auto personValue = GJson::toValue(person, allocator);
-  Person person2 = GJson::convert<Person>(&personValue);
+  Person person2 = GJson::convert<Person>(personValue);
   ASSERT_EQ(person2.name, "John");
   ASSERT_EQ(person2.age, 30);
   ASSERT_EQ(person2.hobbies.size(), 2);

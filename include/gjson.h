@@ -32,7 +32,10 @@ public:
   Value *query_value(const std::string &field);
   template <typename T> T queryv(const std::string &field) {
     Value *current = query_value(field);
-    return convert<T>(current);
+    if (current == nullptr) {
+      return T();
+    }
+    return convert<T>(*current);
   }
   std::vector<std::string> keys(const std::string &field);
   std::vector<std::string> values(const std::string &field);
@@ -109,14 +112,14 @@ public:
     }
   }
   // rapidjson::Value -> T
-  template <typename T> static T convert(Value *value) {
-    if (!value)
+  template <typename T> static T convert(const Value &value) {
+    if (value.IsNull())
       return T{};
     return convert_impl<T>(value);
   }
 
 private:
-  template <typename T> static T convert_impl(Value *value) {
+  template <typename T> static T convert_impl(const Value &value) {
     if constexpr (has_from_json<T>::value) {
       return T::fromJson(value);
     } else if constexpr (std::is_arithmetic_v<T>) {
@@ -135,57 +138,57 @@ private:
   // 处理算术类型
   template <typename T>
   static typename std::enable_if_t<std::is_arithmetic_v<T>, T>
-  convert_arithmetic(Value *value) {
-    if (value->IsInt())
-      return static_cast<T>(value->GetInt());
-    if (value->IsInt64())
-      return static_cast<T>(value->GetInt64());
-    if (value->IsDouble())
-      return static_cast<T>(value->GetDouble());
-    if (value->IsUint())
-      return static_cast<T>(value->GetUint());
-    if (value->IsUint64())
-      return static_cast<T>(value->GetUint64());
+  convert_arithmetic(const Value &value) {
+    if (value.IsInt())
+      return static_cast<T>(value.GetInt());
+    if (value.IsInt64())
+      return static_cast<T>(value.GetInt64());
+    if (value.IsDouble())
+      return static_cast<T>(value.GetDouble());
+    if (value.IsUint())
+      return static_cast<T>(value.GetUint());
+    if (value.IsUint64())
+      return static_cast<T>(value.GetUint64());
     return T{};
   }
 
   // 处理字符串
-  static std::string convert_string(Value *value) {
-    if (value->IsString())
-      return value->GetString();
+  static std::string convert_string(const Value &value) {
+    if (value.IsString())
+      return value.GetString();
 
     // 非字符串值转换为 JSON 字符串
     StringBuffer buffer;
     Writer<StringBuffer> writer(buffer);
-    value->Accept(writer);
+    value.Accept(writer);
     return buffer.GetString();
   }
 
   // 处理 vector
-  template <typename VecType> static VecType convert_vector(Value *value) {
+  template <typename VecType> static VecType convert_vector(const Value &value) {
     using T = typename VecType::value_type;
     VecType result;
 
-    if (!value->IsArray())
+    if (!value.IsArray())
       return result;
 
-    result.reserve(value->Size());
-    for (auto &item : value->GetArray()) {
-      result.push_back(convert_impl<T>(&item));
+    result.reserve(value.Size());
+    for (auto &item : value.GetArray()) {
+      result.push_back(convert_impl<T>(item));
     }
     return result;
   }
 
   // 处理 map
-  template <typename MapType> static MapType convert_map(Value *value) {
+  template <typename MapType> static MapType convert_map(const Value &value) {
     using ValueType = typename MapType::mapped_type;
     MapType result;
 
-    if (!value->IsObject())
+    if (!value.IsObject())
       return result;
 
-    for (auto &m : value->GetObject()) {
-      result[m.name.GetString()] = convert_impl<ValueType>(&m.value);
+    for (auto &m : value.GetObject()) {
+      result[m.name.GetString()] = convert_impl<ValueType>(m.value);
     }
     return result;
   }

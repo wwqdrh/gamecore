@@ -40,7 +40,7 @@ template <typename T, typename = void>
 struct has_from_json : std::false_type {};
 template <typename T>
 struct has_from_json<
-    T, std::void_t<decltype(T::fromJson(std::declval<rapidjson::Value *>()))>>
+    T, std::void_t<decltype(T::fromJson(std::declval<const rapidjson::Value &>()))>>
     : std::true_type {};
 
 

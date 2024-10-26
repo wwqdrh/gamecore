@@ -48,24 +48,24 @@ public:
     return obj;
   }
 
-  static Inventory fromJson(rapidjson::Value *value) {
+  static Inventory fromJson(const rapidjson::Value &value) {
     Inventory inventory;
-    if (!value || !value->IsObject()) {
+    if (value.IsNull() || !value.IsObject()) {
       return inventory;
     }
 
-    if (value->HasMember("max_slot")) {
-      inventory.max_slot_ = GJson::convert<size_t>(&(*value)["max_slot"]);
+    if (value.HasMember("max_slot")) {
+      inventory.max_slot_ = GJson::convert<size_t>(value["max_slot"]);
     }
-    if (value->HasMember("pagesize")) {
-      inventory.pagesize_slot_ = GJson::convert<size_t>(&(*value)["pagesize"]);
+    if (value.HasMember("pagesize")) {
+      inventory.pagesize_slot_ = GJson::convert<size_t>(value["pagesize"]);
     }
-    if (value->HasMember("ids")) {
+    if (value.HasMember("ids")) {
       inventory.ids_ =
-          GJson::convert<std::map<std::string, int>>(&(*value)["ids"]);
+          GJson::convert<std::map<std::string, int>>(value["ids"]);
     }
-    if (value->HasMember("max_ids")) {
-      inventory.max_ids_ = GJson::convert<int>(&(*value)["max_ids"]);
+    if (value.HasMember("max_ids")) {
+      inventory.max_ids_ = GJson::convert<int>(value["max_ids"]);
     }
     return inventory;
   }
@@ -95,7 +95,11 @@ public:
     if (gjson_ == nullptr) {
       return;
     }
-    Inventory other = Inventory::fromJson(gjson_->query_value(DB_PREFIX));
+    auto v = gjson_->query_value(DB_PREFIX);
+    if (v == nullptr) {
+      return;
+    }
+    Inventory other = Inventory::fromJson(*v);
     *this = std::move(other);
   }
   void store() {

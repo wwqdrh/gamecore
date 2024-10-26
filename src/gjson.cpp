@@ -267,6 +267,9 @@ std::string GJson::query(const std::string &field) {
 
 std::vector<std::string> GJson::keys(const std::string &field) {
   Value *current = query_value(field);
+  if (current == nullptr) {
+    return {};
+  }
   std::vector<std::string> result;
   if (current->IsArray()) {
     for (size_t i = 0; i < current->Size(); ++i) {
@@ -282,6 +285,9 @@ std::vector<std::string> GJson::keys(const std::string &field) {
 
 std::vector<std::string> GJson::values(const std::string &field) {
   Value *current = query_value(field);
+  if (current == nullptr) {
+    return {};
+  }
   std::vector<std::string> result;
   Value *val;
   if (current->IsArray()) {
