@@ -320,7 +320,11 @@ bool GJson::update(const std::string &field, const std::string &action,
     std::string prefix = "";
     for (size_t i = 0; i < parts.size(); ++i) {
       std::string part = parts[i];
-      prefix = prefix + ";" + part;
+      if (prefix != "") {
+        prefix = prefix + ";" + part;
+      } else {
+        prefix = part;
+      }
       cur_current = query_value(prefix);
       if (!cur_current) {
         if (!current) {

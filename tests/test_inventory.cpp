@@ -1,7 +1,9 @@
 #include <gtest/gtest.h>
+#include <iostream>
 #include <memory>
 #include <vector>
 
+#include "gjson.h"
 #include "inventory/inventory.h"
 
 using namespace gamedb;
@@ -65,4 +67,20 @@ TEST(InventoryTest, TestInventoryExtInfo) {
   }
   ASSERT_EQ(inv.filter("category", "种类1").size(), 1);
   ASSERT_EQ(inv.filter("category", "种类2").size(), 1);
+}
+
+TEST(InventoryTest, TestInventoryAutoStore) {
+  Inventory inv(10, 3);
+  auto json = std::make_shared<GJson>();
+  inv.set_store(json);
+  inv.load();
+  inv.add_item(
+      std::make_shared<GoodItem>(inv.get_create_id("商品1"), "商品1", 1));
+  inv.add_item(
+      std::make_shared<GoodItem>(inv.get_create_id("商品2"), "商品2", 1));
+  inv.add_item(
+      std::make_shared<GoodItem>(inv.get_create_id("商品3"), "商品3", 1));
+  inv.store();
+  ASSERT_EQ(json->queryv<size_t>(Inventory::DB_PREFIX + ";max_slot"), 10);
+  ASSERT_EQ(json->queryv<size_t>(Inventory::DB_PREFIX + ";pagesize"), 3);
 }
