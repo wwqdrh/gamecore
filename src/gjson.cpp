@@ -314,7 +314,7 @@ std::vector<std::string> GJson::values(const std::string &field) {
 // +: 将Val上的值加到current上
 // -: 将Val上的值减去current上
 // 空白：直接替换current
-bool GJson::update(const std::string &field, const std::string &action,
+bool GJson::update_(const std::string &field, const std::string &action,
                    Value &val) {
   Value *current = query_value(field);
   if (!current) {

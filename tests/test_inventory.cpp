@@ -13,16 +13,12 @@ TEST(InventoryTest, TestInventoryCRUD) {
   // 设置最大格数
   // 添加物品，根据id进行判断，如果id相同则加在一起，否则新建一个格子，如果格子不够了那么就不能继续添加了
   Inventory inv(3);
-  inv.add_item(
-      std::make_shared<GoodItem>(inv.get_create_id("商品1"), "商品1", 1));
+  inv.add_item(std::make_shared<GoodItem>("商品1", 1));
   ASSERT_EQ(inv.fill_slot_num(), 1);
-  inv.add_item(
-      std::make_shared<GoodItem>(inv.get_create_id("商品2"), "商品2", 1));
+  inv.add_item(std::make_shared<GoodItem>("商品2", 1));
   ASSERT_EQ(inv.fill_slot_num(), 2);
-  inv.add_item(
-      std::make_shared<GoodItem>(inv.get_create_id("商品3"), "商品3", 1));
-  inv.add_item(
-      std::make_shared<GoodItem>(inv.get_create_id("商品4"), "商品4", 1));
+  inv.add_item(std::make_shared<GoodItem>("商品3", 1));
+  inv.add_item(std::make_shared<GoodItem>("商品4", 1));
   ASSERT_EQ(inv.fill_slot_num(), 3);
   ASSERT_EQ(inv.has_item("商品1"), true);
   ASSERT_EQ(inv.has_item("商品4"), false);
@@ -36,17 +32,13 @@ TEST(InventoryTest, TestInventoryCRUD) {
 
   // 控制背包分页
   Inventory inv3(12, 3);
-  inv3.add_item(
-      std::make_shared<GoodItem>(inv3.get_create_id("商品1"), "商品1", 1));
+  inv3.add_item(std::make_shared<GoodItem>("商品1", 1));
   ASSERT_EQ(inv3.page_size(), 1);
-  inv3.add_item(
-      std::make_shared<GoodItem>(inv3.get_create_id("商品2"), "商品2", 1));
+  inv3.add_item(std::make_shared<GoodItem>("商品2", 1));
   ASSERT_EQ(inv3.page_size(), 1);
-  inv3.add_item(
-      std::make_shared<GoodItem>(inv3.get_create_id("商品3"), "商品3", 1));
+  inv3.add_item(std::make_shared<GoodItem>("商品3", 1));
   ASSERT_EQ(inv3.page_size(), 1);
-  inv3.add_item(
-      std::make_shared<GoodItem>(inv3.get_create_id("商品4"), "商品4", 1));
+  inv3.add_item(std::make_shared<GoodItem>("商品4", 1));
   ASSERT_EQ(inv3.page_size(), 2);
 }
 
@@ -55,13 +47,11 @@ TEST(InventoryTest, TestInventoryExtInfo) {
   // 并且支持调用filter进行筛选
   Inventory inv(3);
   std::vector<std::string> exts({"category"});
-  inv.add_item(
-      std::make_shared<GoodItem>(inv.get_create_id("商品1"), "商品1", 1, exts));
+  inv.add_item(std::make_shared<GoodItem>("商品1", 1, exts));
   if (auto v = inv.get_item("商品1")) {
     v->set_ext("category", "种类1");
   }
-  inv.add_item(
-      std::make_shared<GoodItem>(inv.get_create_id("商品2"), "商品2", 1, exts));
+  inv.add_item(std::make_shared<GoodItem>("商品2", 1, exts));
   if (auto v = inv.get_item("商品2")) {
     v->set_ext("category", "种类2");
   }
@@ -70,17 +60,27 @@ TEST(InventoryTest, TestInventoryExtInfo) {
 }
 
 TEST(InventoryTest, TestInventoryAutoStore) {
+  std::string test_file = "test_inventory_autostore.json";
+
+  auto json = std::make_shared<GJson>(std::make_shared<FileStore>(test_file));
+
   Inventory inv(10, 3);
-  auto json = std::make_shared<GJson>();
   inv.set_store(json);
-  inv.load();
-  inv.add_item(
-      std::make_shared<GoodItem>(inv.get_create_id("商品1"), "商品1", 1));
-  inv.add_item(
-      std::make_shared<GoodItem>(inv.get_create_id("商品2"), "商品2", 1));
-  inv.add_item(
-      std::make_shared<GoodItem>(inv.get_create_id("商品3"), "商品3", 1));
+  inv.add_item(std::make_shared<GoodItem>("商品1", 1));
+  inv.add_item(std::make_shared<GoodItem>("商品2", 1));
+  inv.add_item(std::make_shared<GoodItem>("商品3", 1));
   inv.store();
-  ASSERT_EQ(json->queryv<size_t>(Inventory::DB_PREFIX + ";max_slot"), 10);
-  ASSERT_EQ(json->queryv<size_t>(Inventory::DB_PREFIX + ";pagesize"), 3);
+  std::cout << json->query("") << std::endl;
+  ASSERT_EQ(json->queryT<int>(Inventory::DB_PREFIX + ";max_slot"), 10);
+  ASSERT_EQ(json->queryT<int>(Inventory::DB_PREFIX + ";pagesize"), 3);
+
+  // 测试是否自动保存了
+  // 从test_filesave.json中加载数据
+  Inventory inv2(
+      std::make_shared<GJson>(std::make_shared<FileStore>(test_file)));
+  ASSERT_EQ(inv2.has_item("商品1"), true);
+  ASSERT_EQ(inv2.has_item("商品2"), true);
+  ASSERT_EQ(inv2.has_item("商品4"), false);
+  // 删除test_filesave.json文件
+  std::remove(test_file.c_str());
 }

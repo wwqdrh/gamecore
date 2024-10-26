@@ -20,8 +20,8 @@ public:
   static inline std::string DB_PREFIX = "gamedb;inventory";
 
 private:
-  size_t max_slot_ = -1;
-  size_t pagesize_slot_ = -1;
+  int max_slot_ = -1;
+  int pagesize_slot_ = -1;
   std::map<std::string, int> ids_;
   int max_ids_ = -1;
 
@@ -30,10 +30,13 @@ private:
 
 public:
   Inventory() = default;
-  Inventory(size_t slot) : max_slot_(slot) {}
-  Inventory(size_t slot, size_t page_slot)
+  Inventory(std::shared_ptr<GJson> store) {
+    set_store(store);
+  }
+  Inventory(int slot) : max_slot_(slot) {}
+  Inventory(int slot, int page_slot)
       : max_slot_(slot), pagesize_slot_(page_slot) {}
-  Inventory(size_t slot, std::map<std::string, int> ids, int max_ids)
+  Inventory(int slot, std::map<std::string, int> ids, int max_ids)
       : max_slot_(slot), ids_(ids), max_ids_(max_ids) {}
 
 public:
@@ -55,14 +58,13 @@ public:
     }
 
     if (value.HasMember("max_slot")) {
-      inventory.max_slot_ = GJson::convert<size_t>(value["max_slot"]);
+      inventory.max_slot_ = GJson::convert<int>(value["max_slot"]);
     }
     if (value.HasMember("pagesize")) {
-      inventory.pagesize_slot_ = GJson::convert<size_t>(value["pagesize"]);
+      inventory.pagesize_slot_ = GJson::convert<int>(value["pagesize"]);
     }
     if (value.HasMember("ids")) {
-      inventory.ids_ =
-          GJson::convert<std::map<std::string, int>>(value["ids"]);
+      inventory.ids_ = GJson::convert<std::map<std::string, int>>(value["ids"]);
     }
     if (value.HasMember("max_ids")) {
       inventory.max_ids_ = GJson::convert<int>(value["max_ids"]);
@@ -74,7 +76,7 @@ public:
   // 移动赋值语义
   Inventory(Inventory &&other) noexcept = default;
   Inventory &operator=(Inventory &&other) noexcept {
-    if (this == &other) {
+    if (this != &other) {
       max_slot_ = other.max_slot_;
       pagesize_slot_ = other.pagesize_slot_;
       ids_ = std::move(other.ids_);
@@ -90,18 +92,11 @@ public:
   }
 
 public:
-  void set_store(std::shared_ptr<GJson> g) { gjson_ = g; }
-  void load() {
-    if (gjson_ == nullptr) {
-      return;
-    }
-    auto v = gjson_->query_value(DB_PREFIX);
-    if (v == nullptr) {
-      return;
-    }
-    Inventory other = Inventory::fromJson(*v);
-    *this = std::move(other);
+  void set_store(std::shared_ptr<GJson> g) {
+    gjson_ = g;
+    load();
   }
+
   void store() {
     if (gjson_ == nullptr) {
       return;
@@ -113,6 +108,11 @@ public:
   bool add_item(std::shared_ptr<GoodItem> good) {
     for (auto item : slots_) {
       if (item->addGood(good)) {
+        // 判断是否存在, 不存在则创建name与id的映射
+        // 可以快速查找一个商品是否存在
+        if (!has_item(good->name)) {
+          get_create_id(good->name);
+        }
         return true;
       }
     }
@@ -120,6 +120,9 @@ public:
     if (max_slot_ == -1 || slots_.size() < max_slot_) {
       slots_.push_back(std::make_shared<Slot>());
       slots_.back()->addGood(good);
+      if (!has_item(good->name)) {
+        get_create_id(good->name);
+      }
       return true;
     }
 
@@ -141,12 +144,8 @@ public:
     return it->second;
   }
   bool has_item(const std::string &name) const {
-    for (auto item : slots_) {
-      if (!item->isEmpty() && item->get_good_name() == name) {
-        return true;
-      }
-    }
-    return false;
+    auto it = ids_.find(name);
+    return it != ids_.end();
   }
   std::shared_ptr<GoodItem> get_item(const std::string &name) const {
     for (auto item : slots_) {
@@ -184,5 +183,19 @@ public:
       return (slot_num - 1) / pagesize_slot_ + 1;
     }
   }
+
+private:
+  void load() {
+    if (gjson_ == nullptr) {
+      return;
+    }
+    auto v = gjson_->query_value(DB_PREFIX);
+    if (v == nullptr) {
+      return;
+    }
+    Inventory other = Inventory::fromJson(*v);
+    *this = std::move(other);
+  }
 };
+
 } // namespace gamedb

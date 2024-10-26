@@ -3,13 +3,13 @@
 #include <string>
 
 namespace gamedb {
-class FileManager {
+class FileStore {
 
 private:
-  std::string filename_;
+  std::string filename_ = "store.json";
 
 public:
-  FileManager(const std::string &filename) : filename_(filename){};
+  FileStore(const std::string &filename) : filename_(filename){};
 
   void saveData(const std::string &data);
   std::string loadData();

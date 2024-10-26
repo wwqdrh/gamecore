@@ -6,7 +6,7 @@
 using namespace gamedb;
 
 TEST(STORETest, TestEncrypt) {
-    FileManager file("test_store_encrypt.txt");
+    FileStore file("test_store_encrypt.txt");
     file.saveData("Hello, world!");
     std::string data = file.loadData();
     EXPECT_EQ(data, "Hello, world!");

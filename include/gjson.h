@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <map>
+#include <memory>
 #include <random>
 #include <sstream>
 #include <stdexcept>
@@ -10,6 +11,7 @@
 #include "rapidjson/document.h"
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
+#include "store.h"
 #include "traits.h"
 
 using namespace rapidjson;
@@ -18,19 +20,35 @@ namespace gamedb {
 class GJson {
 private:
   Document raw_data;
+  std::shared_ptr<FileStore> store_;
 
 public:
   GJson() { raw_data.Parse("{}"); };
+  explicit GJson(std::shared_ptr<FileStore> store) : GJson() {
+    load_or_store(store);
+  }
   explicit GJson(const std::string &data) { raw_data.Parse(data.c_str()); }
   rapidjson::Document::AllocatorType get_alloctor() {
     return raw_data.GetAllocator();
+  }
+  void load_or_store(std::shared_ptr<FileStore> store) {
+    store_ = store;
+    if (store_ == nullptr) {
+      return;
+    }
+    std::string data = store_->loadData();
+    if (data.empty()) {
+      store_->saveData("{}");
+    } else {
+      raw_data.Parse(data.c_str());
+    }
   }
   void parse_file(const std::string &filename);
   Value parse(const std::string &data);
   std::string query(const std::string &field); // 返回的是json字符串
   // 查询指定字段的值并返回特定类型
   Value *query_value(const std::string &field);
-  template <typename T> T queryv(const std::string &field) {
+  template <typename T> T queryT(const std::string &field) {
     Value *current = query_value(field);
     if (current == nullptr) {
       return T();
@@ -39,9 +57,23 @@ public:
   }
   std::vector<std::string> keys(const std::string &field);
   std::vector<std::string> values(const std::string &field);
-  bool update(const std::string &field, const std::string &action, Value &val);
+
+  template <typename T>
+  bool updateT(const std::string &field, const std::string &action, T val) {
+    Document::AllocatorType allo = raw_data.GetAllocator();
+    Value v = toValue(val, allo);
+    return update(field, action, v);
+  }
+  bool update(const std::string &field, const std::string &action, Value &val) {
+    bool res = update_(field, action, val);
+    if (res && store_ != nullptr) {
+      store_->saveData(query(""));
+    }
+    return res;
+  }
 
 private:
+  bool update_(const std::string &field, const std::string &action, Value &val);
   std::vector<std::string> split(const std::string &s, char delimiter) const;
 
   Value *traverse(Value &current, const std::string &key);
@@ -165,7 +197,8 @@ private:
   }
 
   // 处理 vector
-  template <typename VecType> static VecType convert_vector(const Value &value) {
+  template <typename VecType>
+  static VecType convert_vector(const Value &value) {
     using T = typename VecType::value_type;
     VecType result;
 

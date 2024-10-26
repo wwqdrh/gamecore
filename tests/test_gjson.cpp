@@ -1,6 +1,9 @@
+#include <fstream>
 #include <gtest/gtest.h>
 
 #include "gjson.h" // 假设 GJson 类的声明在这个头文件中
+#include "rapidjson/document.h"
+#include "store.h"
 
 using namespace gamedb;
 
@@ -21,7 +24,7 @@ TEST(GJsonTest, ParseAndQuery) {
   // 使用 query 方法测试各种数据类型的获取
   EXPECT_EQ(json.query("name"), "\"John Doe\"");
   EXPECT_EQ(json.query("age"), "30");
-  EXPECT_EQ(json.queryv<int>("age"), 30);
+  EXPECT_EQ(json.queryT<int>("age"), 30);
   EXPECT_EQ(json.query("city"), "\"New York\"");
   EXPECT_EQ(json.query("is_student"), "false");
   EXPECT_EQ(json.query("grades;0"), "85");
@@ -117,4 +120,27 @@ TEST(GJsonTest, TypeConvert) {
                                                      {{"c", 3}, {"d", 4}}};
   auto complexValue = GJson::toValue(complex, allocator);
   ASSERT_TRUE(complexValue.IsArray() && complexValue.Size() == 2);
+}
+
+TEST(GJsonTest, AutoFileSave) {
+  std::string test_file = "test_filesave.json";
+
+  GJson json;
+  json.load_or_store(std::make_shared<FileStore>(test_file));
+  json.updateT<int>("field1", "", 1);
+  json.updateT<std::string>("field2", "", "name");
+
+  // 检查test_filesave.json
+  std::ifstream file(test_file);
+  ASSERT_TRUE(file.is_open());
+  file.close();
+
+  // 从test_filesave.json中加载数据
+  GJson json2;
+  json2.load_or_store(std::make_shared<FileStore>(test_file));
+  ASSERT_EQ(json2.queryT<int>("field1"), 1);
+  ASSERT_EQ(json2.queryT<std::string>("field2"), "name");
+
+  // 删除test_filesave.json文件
+  std::remove(test_file.c_str());
 }

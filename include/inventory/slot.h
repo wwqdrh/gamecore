@@ -30,13 +30,6 @@ public:
 public:
   bool isEmpty() const { return good == nullptr; }
   std::shared_ptr<GoodItem> get_good() const { return good; }
-  int get_good_id() const {
-    if (isEmpty()) {
-      return -1;
-    } else {
-      return good->id;
-    }
-  }
   std::string get_good_name() const {
     if (isEmpty()) {
       return "";
@@ -55,7 +48,7 @@ public:
     if (isEmpty()) {
       good = item;
       return true;
-    } else if (item->id == good->id) {
+    } else if (item->name == good->name) {
       good->count += item->count;
       return true;
     }

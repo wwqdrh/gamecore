@@ -9,21 +9,19 @@ class GoodItem {
 public:
   using variant = std::variant<int, std::string, bool>;
 
-private:
-  int id = 0;
+public:
   std::string name = "";
   int count = 0;
 
+private:
   std::map<std::string, variant> ext_info;
 
 public:
   friend class Slot;
   GoodItem() = default;
-  GoodItem(int id, const std::string &name, int count)
-      : id(id), name(name), count(count) {}
-  GoodItem(int id, const std::string &name, int count,
-           std::vector<std::string> exts)
-      : id(id), name(name), count(count) {
+  GoodItem(const std::string &name, int count) : name(name), count(count) {}
+  GoodItem(const std::string &name, int count, std::vector<std::string> exts)
+      : name(name), count(count) {
     for (auto item : exts) {
       add_ext(item);
     }

@@ -35,7 +35,7 @@ private:
       else if (value.type() == typeid(double))
         return static_cast<V>(std::any_cast<double>(value));
       else
-        throw std::bad_any_cast();
+        return std::any_cast<V>(value);
     } else {
       return std::any_cast<V>(value);
     }
