@@ -3,6 +3,7 @@
 #include <mutex>
 #include <shared_mutex>
 #include <sstream>
+#include <unordered_set>
 #if defined(_WIN32) || defined(_WIN64)
 #include <numeric>
 #endif
@@ -104,7 +105,6 @@ Value *GJson::query_value(const std::string &field) const {
 // 注意这里都是字符串
 std::string GJson::query(const std::string &field) const {
   auto write = rwlock.shared_lock();
-
 
   Value *current = query_value(field);
   if (current == nullptr) {
@@ -308,7 +308,6 @@ Value *GJson::getCompareElements(Value &current, const std::string &key,
 
 void GJson::parse_file(const std::string &filename) {
   auto l = rwlock.unique_lock();
-  
 
   std::ifstream file(filename);
   if (!file.is_open()) {
@@ -337,10 +336,11 @@ Value GJson::parse(const std::string &data) {
 // +: 将Val上的值加到current上
 // -: 将Val上的值减去current上
 // 空白：直接替换current
+// 如果有注册的通知函数，需要进行回调
 bool GJson::update_(const std::string &field, const std::string &action,
                     Value &val) {
   auto l = rwlock.unique_lock();
-                    
+
   Value *current = query_value(field);
   if (!current) {
     // 字段不存在，如果raw_data为object，那么设置key，value
@@ -434,4 +434,69 @@ bool GJson::update_(const std::string &field, const std::string &action,
 
   return true;
 }
+
+void GJson::trigger_callbacks(const std::string &field) {
+  std::vector<std::string> parts = split(field, ';');
+
+  // 构建完整路径并收集回调
+  TrieNode *current = callback_trie_.get();
+  std::string current_path;
+  for (size_t i = 0; i < parts.size(); ++i) {
+    if (!current_path.empty()) {
+      current_path += ";";
+    }
+    current_path += parts[i];
+
+    if (current->children.count(parts[i])) {
+      current = current->children[parts[i]].get();
+    } else {
+      break;
+    }
+  }
+  if (current_path != field) {
+    return;
+  }
+
+  std::vector<std::pair<std::string, CallbackFunc>> callbacks_to_trigger;
+  collect_affected_callbacks(current, current_path, callbacks_to_trigger);
+
+  // 执行收集到的回调
+  std::unordered_set<std::string> null_paths; // 避免重复调用
+  for (const auto &[callback_path, callback] : callbacks_to_trigger) {
+    if (null_paths.count(callback_path) > 0) {
+      continue;
+    }
+    // 获取回调路径对应的值
+    const rapidjson::Value *callback_value = query_value(callback_path);
+    if (callback_value == nullptr) {
+      null_paths.insert(callback_path);
+      continue;
+    }
+    callback(callback_path, callback_value);
+  }
+}
+
+// 递归寻找字典树，寻找给定路径下的所有子节点isend为true的，然后将其回调加入回调队列
+// 获取所有需要触发的回调
+void GJson::collect_affected_callbacks(
+    TrieNode *node, const std::string &base_path,
+    std::vector<std::pair<std::string, CallbackFunc>> &callbacks) {
+  // 如果当前节点是终点，添加回调
+  if (node->is_endpoint) {
+    for (const auto &callback : node->callbacks) {
+      callbacks.emplace_back(base_path, callback);
+    }
+  }
+
+  // 递归处理所有子节点
+  for (const auto &child : node->children) {
+    std::string new_path = base_path;
+    if (!new_path.empty()) {
+      new_path += ";";
+    }
+    new_path += child.first;
+    collect_affected_callbacks(child.second.get(), new_path, callbacks);
+  }
+}
+
 } // namespace gamedb

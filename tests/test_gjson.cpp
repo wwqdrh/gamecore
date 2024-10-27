@@ -1,6 +1,8 @@
 #include <atomic>
 #include <fstream>
 #include <functional>
+#include <map>
+#include <string>
 #include <thread>
 #include <vector>
 
@@ -218,4 +220,37 @@ TEST(GJsonTest, ConcurrentParseAndQuery) {
 
   // 验证所有操作都成功完成
   EXPECT_EQ(success_count.load(), NUM_THREADS * ITERATIONS_PER_THREAD);
+}
+
+TEST(GJsonTest, WatchBasicProperty) {
+  // 测试是否能够监听属性的变化
+  GJson json(R"({
+    "name": "John Doe",
+    "age": 30,
+    "ext": {
+      "address": "addressa"
+    }
+})");
+
+  int address_change = 0;
+  json.subscribe("ext;address",
+                 [&address_change](const std::string &path,
+                                   const rapidjson::Value *value) {
+                   if (path == "ext;address" && value->IsString() &&
+                       std::string(value->GetString()) == "addressb") {
+                     address_change++;
+                   }
+                 });
+
+  Document doc;
+  rapidjson::Document::AllocatorType &allo = doc.GetAllocator();
+  auto newAddress = GJson::toValue<std::string>("addressb", allo);
+  // ~符号: 不管存不存在这个属性都会进行更新
+  json.update("ext;address", "~", newAddress);
+  ASSERT_EQ(address_change, 1);
+
+  std::map<std::string, GJson::variant> newExt({{"address", "addressb"}});
+  auto newExtVal = GJson::toValue<std::map<std::string, GJson::variant>>(newExt, allo);
+  json.update("ext", "~", newExtVal);
+  ASSERT_EQ(address_change, 2);
 }

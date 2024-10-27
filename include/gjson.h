@@ -8,6 +8,7 @@
 #include <shared_mutex>
 #include <sstream>
 #include <stdexcept>
+#include <variant>
 #include <vector>
 
 #include "lock.h"
@@ -20,21 +21,43 @@
 using namespace rapidjson;
 
 namespace gamedb {
+
 class GJson {
+public:
+  using variant = std::variant<int, std::string, double>;
+
 private:
   Document raw_data;
   std::shared_ptr<FileStore> store_;
 
+private:
   // mutable std::recursive_mutex mutex_;
   // mutable std::shared_mutex rw_mtx;
   mutable ReentrantRWLock rwlock;
 
+  // 定义回调函数类型
+  using CallbackFunc = std::function<void(const std::string &path,
+                                          const rapidjson::Value *value)>;
+
+  // 前缀树节点
+  struct TrieNode {
+    std::unordered_map<std::string, std::unique_ptr<TrieNode>> children;
+    std::vector<CallbackFunc> callbacks;
+    bool is_endpoint = false;
+  };
+
+  std::unique_ptr<TrieNode> callback_trie_;
+
 public:
-  GJson() { raw_data.Parse("{}"); };
+  GJson() : callback_trie_(std::make_unique<TrieNode>()) {
+    raw_data.Parse("{}");
+  };
   explicit GJson(std::shared_ptr<FileStore> store) : GJson() {
     load_or_store(store);
   }
-  explicit GJson(const std::string &data) { raw_data.Parse(data.c_str()); }
+  explicit GJson(const std::string &data) : GJson() {
+    raw_data.Parse(data.c_str());
+  }
   rapidjson::Document::AllocatorType get_alloctor() {
     return raw_data.GetAllocator();
   }
@@ -51,6 +74,41 @@ public:
     } else {
       raw_data.Parse(data.c_str());
     }
+  }
+  // 注册通知
+  // 订阅路径变化
+  void subscribe(const std::string &path, CallbackFunc callback) {
+    std::unique_lock<ReentrantRWLock> lock(rwlock);
+
+    std::vector<std::string> parts = split(path, ';');
+    TrieNode *current = callback_trie_.get();
+
+    for (const auto &part : parts) {
+      if (current->children.count(part) == 0) {
+        current->children[part] = std::make_unique<TrieNode>();
+      }
+      current = current->children[part].get();
+    }
+
+    current->is_endpoint = true;
+    current->callbacks.push_back(callback);
+  }
+  // 取消订阅
+  void unsubscribe(const std::string &path) {
+    std::unique_lock<ReentrantRWLock> lock(rwlock);
+
+    std::vector<std::string> parts = split(path, ';');
+    TrieNode *current = callback_trie_.get();
+
+    for (const auto &part : parts) {
+      if (current->children.count(part) == 0) {
+        return;
+      }
+      current = current->children[part].get();
+    }
+
+    current->callbacks.clear();
+    current->is_endpoint = false;
   }
   void parse_file(const std::string &filename);
   Value parse(const std::string &data);
@@ -79,13 +137,23 @@ public:
     auto write = rwlock.unique_lock();
 
     bool res = update_(field, action, val);
-    if (res && store_ != nullptr) {
-      store_->saveData(query(""));
+    if (res) {
+      // 更新回调
+      trigger_callbacks(field);
+
+      if (store_ != nullptr) {
+        store_->saveData(query(""));
+      }
     }
     return res;
   }
 
 private:
+  void trigger_callbacks(const std::string &field);
+  // 获取所有需要触发的回调
+  void collect_affected_callbacks(
+      TrieNode *node, const std::string &base_path,
+      std::vector<std::pair<std::string, CallbackFunc>> &callbacks);
   bool update_(const std::string &field, const std::string &action, Value &val);
   std::vector<std::string> split(const std::string &s, char delimiter) const;
 
@@ -129,6 +197,13 @@ public:
       rapidjson::Value v;
       v.SetBool(data);
       return v;
+    }
+    // variant类型
+    // variant 类型的转换
+    else if constexpr (is_variant<T>::value) {
+      return std::visit(
+          [&allocator](const auto &value) { return toValue(value, allocator); },
+          data);
     }
     // vector 类型的转换
     else if constexpr (is_vector<T>::value) {

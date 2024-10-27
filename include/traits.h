@@ -7,6 +7,14 @@
 namespace gamedb {
 template <typename T> struct always_false : std::false_type {};
 
+// 判断variant类型
+// 添加 variant 类型检查的辅助模板
+template<typename T>
+struct is_variant : std::false_type {};
+
+template<typename... Args>
+struct is_variant<std::variant<Args...>> : std::true_type {};
+
 // 是否为vector类型
 template <typename T> struct is_vector : std::false_type {};
 template <typename T, typename A>
