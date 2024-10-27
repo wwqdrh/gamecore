@@ -10,6 +10,7 @@
 #include <stdexcept>
 #include <vector>
 
+#include "lock.h"
 #include "rapidjson/document.h"
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
@@ -24,8 +25,9 @@ private:
   Document raw_data;
   std::shared_ptr<FileStore> store_;
 
-  mutable std::recursive_mutex mutex_;
+  // mutable std::recursive_mutex mutex_;
   // mutable std::shared_mutex rw_mtx;
+  mutable ReentrantRWLock rwlock;
 
 public:
   GJson() { raw_data.Parse("{}"); };
@@ -37,7 +39,7 @@ public:
     return raw_data.GetAllocator();
   }
   void load_or_store(std::shared_ptr<FileStore> store) {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
+    auto write = rwlock.unique_lock();
     // std::unique_lock<std::shared_mutex> lock(rw_mtx);
     store_ = store;
     if (store_ == nullptr) {
@@ -74,8 +76,7 @@ public:
     return update(field, action, v);
   }
   bool update(const std::string &field, const std::string &action, Value &val) {
-    // std::unique_lock<std::shared_mutex> lock(rw_mtx);
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
+    auto write = rwlock.unique_lock();
 
     bool res = update_(field, action, val);
     if (res && store_ != nullptr) {

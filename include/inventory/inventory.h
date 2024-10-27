@@ -6,10 +6,12 @@
 #include <string>
 #include <vector>
 
+#include "rapidjson/document.h"
+
 #include "gjson.h"
 #include "inventory/item.h"
 #include "inventory/slot.h"
-#include "rapidjson/document.h"
+#include "lock.h"
 
 namespace gamedb {
 
@@ -27,7 +29,8 @@ private:
   std::vector<std::shared_ptr<Slot>> slots_;
   std::shared_ptr<GJson> gjson_;
 
-  mutable std::recursive_mutex rw_mtx;
+  // mutable std::recursive_mutex rw_mtx;
+  mutable ReentrantRWLock rwlock;
 
 public:
   Inventory() = default;
@@ -41,7 +44,8 @@ public:
 public:
   // 序列化与反序列化
   rapidjson::Value toJson(rapidjson::Document::AllocatorType &allocator) const {
-    std::lock_guard<std::recursive_mutex> lock(rw_mtx);
+    auto reader = rwlock.shared_lock();
+
     rapidjson::Value obj(rapidjson::kObjectType);
     obj.AddMember("max_slot", GJson::toValue(max_slot_, allocator), allocator);
     obj.AddMember("pagesize", GJson::toValue(pagesize_slot_, allocator),
@@ -80,7 +84,8 @@ public:
 
   // 移动赋值语义
   Inventory(Inventory &&other) noexcept {
-    std::lock_guard<std::recursive_mutex> lock(other.rw_mtx);
+    // std::lock_guard<std::recursive_mutex> lock(other.rw_mtx);
+    auto reader = other.rwlock.unique_lock();
 
     max_slot_ = other.max_slot_;
     pagesize_slot_ = other.pagesize_slot_;
@@ -96,8 +101,8 @@ public:
 
   Inventory &operator=(Inventory &&other) noexcept {
     if (this != &other) {
-      std::lock_guard<std::recursive_mutex> lock_this(rw_mtx);
-      std::lock_guard<std::recursive_mutex> lock_other(other.rw_mtx);
+      auto reader_this = rwlock.unique_lock();
+      auto reader_other = other.rwlock.unique_lock();
 
       max_slot_ = other.max_slot_;
       pagesize_slot_ = other.pagesize_slot_;
@@ -115,13 +120,15 @@ public:
 
 public:
   void set_store(std::shared_ptr<GJson> g) {
-    std::lock_guard<std::recursive_mutex> lock(rw_mtx);
+    auto writer = rwlock.unique_lock();
+
     gjson_ = g;
     load();
   }
 
   void store() {
-    std::lock_guard<std::recursive_mutex> lock(rw_mtx);
+    auto writer = rwlock.unique_lock();
+
     if (gjson_ == nullptr) {
       return;
     }
@@ -130,7 +137,8 @@ public:
     gjson_->update(DB_PREFIX, "~", val);
   }
   bool add_item(std::shared_ptr<GoodItem> good) {
-    std::lock_guard<std::recursive_mutex> lock(rw_mtx);
+    auto writer = rwlock.unique_lock();
+
     for (auto item : slots_) {
       if (item->addGood(good)) {
         // 判断是否存在, 不存在则创建name与id的映射
@@ -154,7 +162,8 @@ public:
     return false;
   }
   int get_create_id(const std::string &name) {
-    std::lock_guard<std::recursive_mutex> lock(rw_mtx);
+    auto writer = rwlock.unique_lock();
+
     auto it = ids_.find(name);
     if (it == ids_.end()) {
       int id = 0;
@@ -170,12 +179,14 @@ public:
     return it->second;
   }
   bool has_item(const std::string &name) const {
-    std::lock_guard<std::recursive_mutex> lock(rw_mtx);
+    auto read = rwlock.shared_lock();
+
     auto it = ids_.find(name);
     return it != ids_.end();
   }
   std::shared_ptr<GoodItem> get_item(const std::string &name) const {
-    std::lock_guard<std::recursive_mutex> lock(rw_mtx);
+    auto read = rwlock.shared_lock();
+
     for (auto item : slots_) {
       if (!item->isEmpty() && item->get_good_name() == name) {
         return item->get_good();
@@ -185,7 +196,8 @@ public:
   }
   std::vector<std::shared_ptr<GoodItem>> filter(const std::string &name,
                                                 GoodItem::variant val) const {
-    std::lock_guard<std::recursive_mutex> lock(rw_mtx);
+    auto read = rwlock.shared_lock();
+
     std::vector<std::shared_ptr<GoodItem>> res;
     for (auto item : slots_) {
       if (!item->isEmpty() && item->get_good()->check_ext(name, val)) {
@@ -195,7 +207,8 @@ public:
     return res;
   }
   int fill_slot_num() const {
-    std::lock_guard<std::recursive_mutex> lock(rw_mtx);
+    auto read = rwlock.shared_lock();
+
     int count = 0;
     for (auto item : slots_) {
       if (!item->isEmpty())
@@ -205,7 +218,8 @@ public:
   }
   // 控制背包内容分页的
   int page_size() const {
-    std::lock_guard<std::recursive_mutex> lock(rw_mtx);
+    auto read = rwlock.shared_lock();
+
     if (pagesize_slot_ == -1) {
       // 不分页
       return 1;

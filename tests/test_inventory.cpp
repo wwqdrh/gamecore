@@ -117,12 +117,13 @@ TEST(InventoryTest, TestConcurrentInventoryExtInfo) {
         }
 
         // 随机延时模拟真实场景
-        std::this_thread::sleep_for(std::chrono::milliseconds(rand() % 5));
+        // std::this_thread::sleep_for(std::chrono::milliseconds(rand() % 5));
+        std::this_thread::yield();
 
         // 执行过滤操作
         auto filtered_items = inv.filter("category", category);
 
-        // 验证结果（注意：由于并发，数量可能在增加）
+        // // 验证结果（注意：由于并发，数量可能在增加）
         if (filtered_items.size() < (i + 1)) {
           std::lock_guard<std::mutex> lock(assert_mutex);
           assert_results[thread_id] = false;

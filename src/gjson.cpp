@@ -21,8 +21,7 @@ namespace gamedb {
 // public
 // =============
 Value *GJson::query_value(const std::string &field) const {
-  // std::shared_lock<std::shared_mutex> lock(rw_mtx);
-  std::lock_guard<std::recursive_mutex> lock(mutex_);
+  auto write = rwlock.shared_lock();
 
   std::vector<std::string> parts = split(field, ';');
   // Value curr_data;
@@ -104,8 +103,8 @@ Value *GJson::query_value(const std::string &field) const {
 // 那么括号里面的就是一个解析参数，例如#(@=1)就是判断当前的object的key==1,
 // 注意这里都是字符串
 std::string GJson::query(const std::string &field) const {
-  // std::shared_lock<std::shared_mutex> lock(rw_mtx);
-  std::lock_guard<std::recursive_mutex> lock(mutex_);
+  auto write = rwlock.shared_lock();
+
 
   Value *current = query_value(field);
   if (current == nullptr) {
@@ -119,8 +118,7 @@ std::string GJson::query(const std::string &field) const {
 }
 
 std::vector<std::string> GJson::keys(const std::string &field) const {
-  // std::shared_lock<std::shared_mutex> lock(rw_mtx);
-  std::lock_guard<std::recursive_mutex> lock(mutex_);
+  auto write = rwlock.shared_lock();
 
   Value *current = query_value(field);
   if (current == nullptr) {
@@ -140,8 +138,7 @@ std::vector<std::string> GJson::keys(const std::string &field) const {
 }
 
 std::vector<std::string> GJson::values(const std::string &field) const {
-  // std::shared_lock<std::shared_mutex> lock(rw_mtx);
-  std::lock_guard<std::recursive_mutex> lock(mutex_);
+  auto write = rwlock.shared_lock();
 
   Value *current = query_value(field);
   if (current == nullptr) {
@@ -310,8 +307,8 @@ Value *GJson::getCompareElements(Value &current, const std::string &key,
 }
 
 void GJson::parse_file(const std::string &filename) {
-  // std::unique_lock<std::shared_mutex> lock(rw_mtx);
-  std::lock_guard<std::recursive_mutex> lock(mutex_);
+  auto l = rwlock.unique_lock();
+  
 
   std::ifstream file(filename);
   if (!file.is_open()) {
@@ -325,7 +322,7 @@ void GJson::parse_file(const std::string &filename) {
 }
 
 Value GJson::parse(const std::string &data) {
-  std::lock_guard<std::recursive_mutex> lock(mutex_);
+  auto l = rwlock.unique_lock();
 
   rapidjson::Document doc;
   doc.Parse(data.c_str());
@@ -342,7 +339,8 @@ Value GJson::parse(const std::string &data) {
 // 空白：直接替换current
 bool GJson::update_(const std::string &field, const std::string &action,
                     Value &val) {
-  std::lock_guard<std::recursive_mutex> lock(mutex_);
+  auto l = rwlock.unique_lock();
+                    
   Value *current = query_value(field);
   if (!current) {
     // 字段不存在，如果raw_data为object，那么设置key，value
