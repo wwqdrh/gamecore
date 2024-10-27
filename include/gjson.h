@@ -25,6 +25,9 @@ namespace gamedb {
 class GJson {
 public:
   using variant = std::variant<int, std::string, double>;
+  // 定义回调函数类型
+  using CallbackFunc = std::function<void(const std::string &path,
+                                          const rapidjson::Value *value)>;
 
 private:
   Document raw_data;
@@ -34,10 +37,6 @@ private:
   // mutable std::recursive_mutex mutex_;
   // mutable std::shared_mutex rw_mtx;
   mutable ReentrantRWLock rwlock;
-
-  // 定义回调函数类型
-  using CallbackFunc = std::function<void(const std::string &path,
-                                          const rapidjson::Value *value)>;
 
   // 前缀树节点
   struct TrieNode {
