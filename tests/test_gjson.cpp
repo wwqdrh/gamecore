@@ -1,8 +1,13 @@
+#include <atomic>
 #include <fstream>
+#include <functional>
+#include <thread>
+#include <vector>
+
+#include "rapidjson/document.h"
 #include <gtest/gtest.h>
 
 #include "gjson.h" // 假设 GJson 类的声明在这个头文件中
-#include "rapidjson/document.h"
 #include "store.h"
 
 using namespace gamedb;
@@ -143,4 +148,74 @@ TEST(GJsonTest, AutoFileSave) {
 
   // 删除test_filesave.json文件
   std::remove(test_file.c_str());
+}
+
+TEST(GJsonTest, ConcurrentParseAndQuery) {
+  const int NUM_THREADS = 10;
+  const int ITERATIONS_PER_THREAD = 1000;
+  std::atomic<int> success_count{0};
+
+  // 创建一个共享的 GJson 对象
+  GJson json(R"({
+        "name": "John Doe",
+        "age": 30,
+        "city": "New York",
+        "is_student": false,
+        "grades": [85, 90, 78],
+        "address": {
+            "street": "123 Main St",
+            "zip": "10001"
+        }
+    })");
+
+  // 定义测试函数
+  auto test_function = [&](int thread_id) {
+    for (int i = 0; i < ITERATIONS_PER_THREAD; ++i) {
+      try {
+        // 随机选择不同的查询操作
+        switch (i % 7) {
+        case 0:
+          EXPECT_EQ(json.query("name"), "\"John Doe\"");
+          break;
+        case 1:
+          EXPECT_EQ(json.query("age"), "30");
+          EXPECT_EQ(json.queryT<int>("age"), 30);
+          break;
+        case 2:
+          EXPECT_EQ(json.query("city"), "\"New York\"");
+          break;
+        case 3:
+          EXPECT_EQ(json.query("is_student"), "false");
+          break;
+        case 4:
+          EXPECT_EQ(json.query("grades;0"), "85");
+          break;
+        case 5:
+          EXPECT_EQ(json.query("address;street"), "\"123 Main St\"");
+          break;
+        case 6:
+          EXPECT_EQ(json.query("address;zip"), "\"10001\"");
+          break;
+        }
+        success_count++;
+      } catch (const std::exception &e) {
+        ADD_FAILURE() << "Thread " << thread_id
+                      << " failed with exception: " << e.what();
+      }
+    }
+  };
+
+  // 创建多个线程
+  std::vector<std::thread> threads;
+  for (int i = 0; i < NUM_THREADS; ++i) {
+    threads.emplace_back(test_function, i);
+  }
+
+  // 等待所有线程完成
+  for (auto &thread : threads) {
+    thread.join();
+  }
+
+  // 验证所有操作都成功完成
+  EXPECT_EQ(success_count.load(), NUM_THREADS * ITERATIONS_PER_THREAD);
 }

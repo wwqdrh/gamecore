@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <iostream>
 #include <memory>
+#include <thread>
 #include <vector>
 
 #include "gjson.h"
@@ -83,4 +84,78 @@ TEST(InventoryTest, TestInventoryAutoStore) {
   ASSERT_EQ(inv2.has_item("商品4"), false);
   // 删除test_filesave.json文件
   std::remove(test_file.c_str());
+}
+
+TEST(InventoryTest, TestConcurrentInventoryExtInfo) {
+  const int NUM_THREADS = 4;
+  const int ITEMS_PER_THREAD = 25;
+
+  Inventory inv(NUM_THREADS * ITEMS_PER_THREAD);
+  std::vector<std::string> exts({"category"});
+
+  // 用于同步所有线程的开始
+  std::vector<std::thread> threads;
+
+  // 用于收集每个线程的断言结果
+  std::vector<bool> assert_results(NUM_THREADS, true);
+  std::mutex assert_mutex;
+
+  auto thread_func = [&](int thread_id) {
+    try {
+      // 每个线程添加自己的一组商品
+      for (int i = 0; i < ITEMS_PER_THREAD; i++) {
+        std::string item_name =
+            "商品_" + std::to_string(thread_id) + "_" + std::to_string(i);
+        std::string category = "种类_" + std::to_string(thread_id);
+
+        // 添加商品
+        inv.add_item(std::make_shared<GoodItem>(item_name, 1, exts));
+
+        // 设置扩展信息
+        if (auto v = inv.get_item(item_name)) {
+          v->set_ext("category", category);
+        }
+
+        // 随机延时模拟真实场景
+        std::this_thread::sleep_for(std::chrono::milliseconds(rand() % 5));
+
+        // 执行过滤操作
+        auto filtered_items = inv.filter("category", category);
+
+        // 验证结果（注意：由于并发，数量可能在增加）
+        if (filtered_items.size() < (i + 1)) {
+          std::lock_guard<std::mutex> lock(assert_mutex);
+          assert_results[thread_id] = false;
+        }
+      }
+    } catch (const std::exception &e) {
+      std::lock_guard<std::mutex> lock(assert_mutex);
+      assert_results[thread_id] = false;
+    }
+  };
+
+  // 启动所有线程
+  for (int i = 0; i < NUM_THREADS; i++) {
+    threads.emplace_back(thread_func, i);
+  }
+
+  // 等待所有线程完成
+  for (auto &thread : threads) {
+    thread.join();
+  }
+
+  // 验证最终结果
+  for (int thread_id = 0; thread_id < NUM_THREADS; thread_id++) {
+    ASSERT_TRUE(assert_results[thread_id])
+        << "Thread " << thread_id << " failed its assertions";
+
+    std::string category = "种类_" + std::to_string(thread_id);
+    auto filtered_items = inv.filter("category", category);
+    ASSERT_EQ(filtered_items.size(), ITEMS_PER_THREAD)
+        << "Category " << category << " has wrong number of items";
+  }
+
+  // 验证总商品数
+  ASSERT_EQ(inv.fill_slot_num(), NUM_THREADS * ITEMS_PER_THREAD)
+      << "Total inventory size is incorrect";
 }

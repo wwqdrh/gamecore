@@ -2,7 +2,6 @@
 #include <cstddef>
 #include <memory>
 
-#include "inventory/database.h"
 #include "inventory/item.h"
 
 namespace gamedb {
@@ -54,13 +53,5 @@ public:
     }
     return false;
   }
-  // 添加物品到格子
-  bool addItem(const Item *new_item, int num);
-
-  // 消耗物品
-  bool consumeItem(int num);
-
-  // 判断是否可以叠加
-  bool canCombine(Slot *new_item) const;
 };
 } // namespace gamedb

@@ -3,7 +3,9 @@
 #include <algorithm>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <random>
+#include <shared_mutex>
 #include <sstream>
 #include <stdexcept>
 #include <vector>
@@ -22,6 +24,9 @@ private:
   Document raw_data;
   std::shared_ptr<FileStore> store_;
 
+  mutable std::recursive_mutex mutex_;
+  // mutable std::shared_mutex rw_mtx;
+
 public:
   GJson() { raw_data.Parse("{}"); };
   explicit GJson(std::shared_ptr<FileStore> store) : GJson() {
@@ -32,6 +37,8 @@ public:
     return raw_data.GetAllocator();
   }
   void load_or_store(std::shared_ptr<FileStore> store) {
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
+    // std::unique_lock<std::shared_mutex> lock(rw_mtx);
     store_ = store;
     if (store_ == nullptr) {
       return;
@@ -45,26 +52,31 @@ public:
   }
   void parse_file(const std::string &filename);
   Value parse(const std::string &data);
-  std::string query(const std::string &field); // 返回的是json字符串
+  std::string query(const std::string &field) const; // 返回的是json字符串
   // 查询指定字段的值并返回特定类型
-  Value *query_value(const std::string &field);
-  template <typename T> T queryT(const std::string &field) {
+  Value *query_value(const std::string &field) const;
+  template <typename T> T queryT(const std::string &field) const {
     Value *current = query_value(field);
     if (current == nullptr) {
       return T();
     }
     return convert<T>(*current);
   }
-  std::vector<std::string> keys(const std::string &field);
-  std::vector<std::string> values(const std::string &field);
+  std::vector<std::string> keys(const std::string &field) const;
+  std::vector<std::string> values(const std::string &field) const;
 
   template <typename T>
   bool updateT(const std::string &field, const std::string &action, T val) {
-    Document::AllocatorType allo = raw_data.GetAllocator();
+    Document doc;
+    Document::AllocatorType allo = doc.GetAllocator();
+
     Value v = toValue(val, allo);
     return update(field, action, v);
   }
   bool update(const std::string &field, const std::string &action, Value &val) {
+    // std::unique_lock<std::shared_mutex> lock(rw_mtx);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
+
     bool res = update_(field, action, val);
     if (res && store_ != nullptr) {
       store_->saveData(query(""));
@@ -76,12 +88,12 @@ private:
   bool update_(const std::string &field, const std::string &action, Value &val);
   std::vector<std::string> split(const std::string &s, char delimiter) const;
 
-  Value *traverse(Value &current, const std::string &key);
+  Value *traverse(Value &current, const std::string &key) const;
 
-  Value getRandomElements(Value &current, size_t count);
+  Value getRandomElements(Value &current, size_t count) const;
   Value *getCompareElements(Value &current, const std::string &key,
                             const std::string &op, const std::string &value,
-                            bool rindex = false);
+                            bool rindex = false) const;
 
 public:
   // 类型转换，任意类型转rapidjson::Value

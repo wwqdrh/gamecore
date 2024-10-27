@@ -2,12 +2,11 @@
 #include <cstddef>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <vector>
 
 #include "gjson.h"
-#include "inventory/bag.h"
-#include "inventory/database.h"
 #include "inventory/item.h"
 #include "inventory/slot.h"
 #include "rapidjson/document.h"
@@ -28,11 +27,11 @@ private:
   std::vector<std::shared_ptr<Slot>> slots_;
   std::shared_ptr<GJson> gjson_;
 
+  mutable std::recursive_mutex rw_mtx;
+
 public:
   Inventory() = default;
-  Inventory(std::shared_ptr<GJson> store) {
-    set_store(store);
-  }
+  Inventory(std::shared_ptr<GJson> store) { set_store(store); }
   Inventory(int slot) : max_slot_(slot) {}
   Inventory(int slot, int page_slot)
       : max_slot_(slot), pagesize_slot_(page_slot) {}
@@ -42,6 +41,7 @@ public:
 public:
   // 序列化与反序列化
   rapidjson::Value toJson(rapidjson::Document::AllocatorType &allocator) const {
+    std::lock_guard<std::recursive_mutex> lock(rw_mtx);
     rapidjson::Value obj(rapidjson::kObjectType);
     obj.AddMember("max_slot", GJson::toValue(max_slot_, allocator), allocator);
     obj.AddMember("pagesize", GJson::toValue(pagesize_slot_, allocator),
@@ -73,10 +73,32 @@ public:
   }
 
 public:
+  // mutex不能拷贝不能移动
+  // 禁用拷贝构造和拷贝赋值
+  Inventory(const Inventory &) = delete;
+  Inventory &operator=(const Inventory &) = delete;
+
   // 移动赋值语义
-  Inventory(Inventory &&other) noexcept = default;
+  Inventory(Inventory &&other) noexcept {
+    std::lock_guard<std::recursive_mutex> lock(other.rw_mtx);
+
+    max_slot_ = other.max_slot_;
+    pagesize_slot_ = other.pagesize_slot_;
+    ids_ = std::move(other.ids_);
+    max_ids_ = other.max_ids_;
+    if (other.slots_.size() > 0) {
+      slots_ = std::move(other.slots_);
+    }
+    if (other.gjson_) {
+      gjson_ = other.gjson_;
+    };
+  }
+
   Inventory &operator=(Inventory &&other) noexcept {
     if (this != &other) {
+      std::lock_guard<std::recursive_mutex> lock_this(rw_mtx);
+      std::lock_guard<std::recursive_mutex> lock_other(other.rw_mtx);
+
       max_slot_ = other.max_slot_;
       pagesize_slot_ = other.pagesize_slot_;
       ids_ = std::move(other.ids_);
@@ -93,11 +115,13 @@ public:
 
 public:
   void set_store(std::shared_ptr<GJson> g) {
+    std::lock_guard<std::recursive_mutex> lock(rw_mtx);
     gjson_ = g;
     load();
   }
 
   void store() {
+    std::lock_guard<std::recursive_mutex> lock(rw_mtx);
     if (gjson_ == nullptr) {
       return;
     }
@@ -106,6 +130,7 @@ public:
     gjson_->update(DB_PREFIX, "~", val);
   }
   bool add_item(std::shared_ptr<GoodItem> good) {
+    std::lock_guard<std::recursive_mutex> lock(rw_mtx);
     for (auto item : slots_) {
       if (item->addGood(good)) {
         // 判断是否存在, 不存在则创建name与id的映射
@@ -129,6 +154,7 @@ public:
     return false;
   }
   int get_create_id(const std::string &name) {
+    std::lock_guard<std::recursive_mutex> lock(rw_mtx);
     auto it = ids_.find(name);
     if (it == ids_.end()) {
       int id = 0;
@@ -144,10 +170,12 @@ public:
     return it->second;
   }
   bool has_item(const std::string &name) const {
+    std::lock_guard<std::recursive_mutex> lock(rw_mtx);
     auto it = ids_.find(name);
     return it != ids_.end();
   }
   std::shared_ptr<GoodItem> get_item(const std::string &name) const {
+    std::lock_guard<std::recursive_mutex> lock(rw_mtx);
     for (auto item : slots_) {
       if (!item->isEmpty() && item->get_good_name() == name) {
         return item->get_good();
@@ -156,7 +184,8 @@ public:
     return nullptr;
   }
   std::vector<std::shared_ptr<GoodItem>> filter(const std::string &name,
-                                                GoodItem::variant val) {
+                                                GoodItem::variant val) const {
+    std::lock_guard<std::recursive_mutex> lock(rw_mtx);
     std::vector<std::shared_ptr<GoodItem>> res;
     for (auto item : slots_) {
       if (!item->isEmpty() && item->get_good()->check_ext(name, val)) {
@@ -165,7 +194,8 @@ public:
     }
     return res;
   }
-  int fill_slot_num() {
+  int fill_slot_num() const {
+    std::lock_guard<std::recursive_mutex> lock(rw_mtx);
     int count = 0;
     for (auto item : slots_) {
       if (!item->isEmpty())
@@ -174,7 +204,8 @@ public:
     return count;
   }
   // 控制背包内容分页的
-  int page_size() {
+  int page_size() const {
+    std::lock_guard<std::recursive_mutex> lock(rw_mtx);
     if (pagesize_slot_ == -1) {
       // 不分页
       return 1;

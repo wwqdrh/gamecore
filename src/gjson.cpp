@@ -1,6 +1,7 @@
 #include <fstream>
 #include <iostream>
 #include <mutex>
+#include <shared_mutex>
 #include <sstream>
 #if defined(_WIN32) || defined(_WIN64)
 #include <numeric>
@@ -15,170 +16,19 @@
 using namespace rapidjson;
 
 namespace gamedb {
-std::vector<std::string> GJson::split(const std::string &s,
-                                      char delimiter) const {
-  std::vector<std::string> tokens;
-  std::string token;
-  std::istringstream tokenStream(s);
-  while (std::getline(tokenStream, token, delimiter)) {
-    tokens.push_back(token);
-  }
-  return tokens;
-}
 
-Value *GJson::traverse(Value &current, const std::string &key) {
-  if (current.IsObject()) {
-    if (current.HasMember(key.c_str())) {
-      return &current[key.c_str()];
-    }
-  } else if (current.IsArray()) {
-    size_t index = std::stoul(key);
-    if (index < current.Size()) {
-      return &current[index];
-    }
-  }
-  return nullptr;
-}
+// =============
+// public
+// =============
+Value *GJson::query_value(const std::string &field) const {
+  // std::shared_lock<std::shared_mutex> lock(rw_mtx);
+  std::lock_guard<std::recursive_mutex> lock(mutex_);
 
-Value GJson::getRandomElements(Value &current, size_t count) {
-  if (current.IsArray()) {
-    std::vector<size_t> indices(current.Size());
-    std::iota(indices.begin(), indices.end(), 0);
-    std::random_device rd;
-    std::mt19937 g(rd());
-    std::shuffle(indices.begin(), indices.end(), g);
-    size_t n = std::min(count, indices.size());
-
-    if (n == 1) {
-      Value curr;
-      curr.CopyFrom(current[indices[0]], raw_data.GetAllocator());
-      return curr;
-    } else {
-      Value result(kArrayType);
-      for (size_t i = 0; i < n; ++i) {
-        Value curr;
-        curr.CopyFrom(current[indices[i]], raw_data.GetAllocator());
-        result.PushBack(curr, raw_data.GetAllocator());
-      }
-      return result;
-    }
-  } else if (current.IsObject()) {
-    std::vector<Value::MemberIterator> members;
-    for (auto it = current.MemberBegin(); it != current.MemberEnd(); ++it) {
-      members.push_back(it);
-    }
-
-    std::random_device rd;
-    std::mt19937 g(rd());
-    std::shuffle(members.begin(), members.end(), g);
-
-    Value o(kObjectType);
-    size_t n = std::min(count, members.size());
-    std::cout << n << std::endl;
-    for (size_t i = 0; i < n; ++i) {
-      Value name(members[i]->name, raw_data.GetAllocator());
-      Value value;
-      value.CopyFrom(members[i]->value, raw_data.GetAllocator());
-      o.AddMember(name, value, raw_data.GetAllocator());
-    }
-    return o;
-  }
-  std::cout << "unknown operator" << std::endl;
-  Value s;
-  s.SetString("nodata");
-  return s;
-}
-
-Value *GJson::getCompareElements(Value &current, const std::string &key,
-                                 const std::string &op,
-                                 const std::string &value, bool rindex) {
-  if (current.IsArray()) {
-    // 如果rindex为true，那么需要反向遍历
-    size_t start_i = 0;
-    size_t end_i = current.Size();
-    size_t offset = 1;
-    if (rindex) {
-      start_i = current.Size() - 1;
-      end_i = -1;
-      offset = -1;
-    }
-    for (size_t i = start_i; i != end_i; i += offset) {
-      if (current[i].IsString()) {
-        if (current[i].GetString() == value) {
-          return &current[i];
-        }
-      } else if (current[i].IsInt()) {
-        bool res = false;
-        int cur_val = current[i].GetInt();
-        int target_val = std::stoul(value);
-        if (op == "=")
-          res = cur_val == target_val;
-        if (op == ">")
-          res = target_val > cur_val;
-        if (op == "<")
-          res = target_val < cur_val;
-
-        if (res) {
-          return &current[i];
-        }
-      } else if (current[i].IsObject()) {
-        if (current[i].HasMember(key.c_str())) {
-          if (current[i][key.c_str()].IsString()) {
-            if (current[i][key.c_str()].GetString() == value) {
-              return &current[i];
-            }
-          } else if (current[i][key.c_str()].IsInt()) {
-            bool res = false;
-            int cur_val = current[i][key.c_str()].GetInt();
-            int target_val = std::stoul(value);
-            if (op == "=")
-              res = target_val == cur_val;
-            if (op == ">")
-              res = target_val > cur_val;
-            if (op == "<")
-              res = target_val < cur_val;
-            if (res) {
-              return &current[i];
-            }
-          }
-        }
-      } else {
-        return nullptr;
-      }
-    }
-    return nullptr;
-  }
-  return nullptr;
-}
-
-void GJson::parse_file(const std::string &filename) {
-  std::ifstream file(filename);
-  if (!file.is_open()) {
-    raw_data.Parse("{}");
-    return;
-  }
-  std::stringstream buffer;
-  buffer << file.rdbuf();
-  raw_data.Parse(buffer.str().c_str());
-  file.close();
-}
-
-Value GJson::parse(const std::string &data) {
-  rapidjson::Document doc;
-  doc.Parse(data.c_str());
-  if (doc.HasParseError()) {
-    return Value();
-  }
-  rapidjson::Value val;
-  val.CopyFrom(doc, doc.GetAllocator());
-  return val;
-}
-
-Value *GJson::query_value(const std::string &field) {
   std::vector<std::string> parts = split(field, ';');
   // Value curr_data;
   // curr_data.CopyFrom(raw_data, raw_data.GetAllocator());
-  Value *current = &raw_data;
+  // Value *current = &raw_data;
+  Value *current = const_cast<Value *>(static_cast<const Value *>(&raw_data));
 
   for (const auto &part : parts) {
     if (current == nullptr) {
@@ -253,7 +103,10 @@ Value *GJson::query_value(const std::string &field) {
 // 3、如果是#开头然后包含一个括号(),
 // 那么括号里面的就是一个解析参数，例如#(@=1)就是判断当前的object的key==1,
 // 注意这里都是字符串
-std::string GJson::query(const std::string &field) {
+std::string GJson::query(const std::string &field) const {
+  // std::shared_lock<std::shared_mutex> lock(rw_mtx);
+  std::lock_guard<std::recursive_mutex> lock(mutex_);
+
   Value *current = query_value(field);
   if (current == nullptr) {
     return "";
@@ -265,7 +118,10 @@ std::string GJson::query(const std::string &field) {
   return buffer.GetString();
 }
 
-std::vector<std::string> GJson::keys(const std::string &field) {
+std::vector<std::string> GJson::keys(const std::string &field) const {
+  // std::shared_lock<std::shared_mutex> lock(rw_mtx);
+  std::lock_guard<std::recursive_mutex> lock(mutex_);
+
   Value *current = query_value(field);
   if (current == nullptr) {
     return {};
@@ -283,7 +139,10 @@ std::vector<std::string> GJson::keys(const std::string &field) {
   return result;
 }
 
-std::vector<std::string> GJson::values(const std::string &field) {
+std::vector<std::string> GJson::values(const std::string &field) const {
+  // std::shared_lock<std::shared_mutex> lock(rw_mtx);
+  std::lock_guard<std::recursive_mutex> lock(mutex_);
+
   Value *current = query_value(field);
   if (current == nullptr) {
     return {};
@@ -310,12 +169,180 @@ std::vector<std::string> GJson::values(const std::string &field) {
   return result;
 }
 
+// =======
+// private
+// =======
+std::vector<std::string> GJson::split(const std::string &s,
+                                      char delimiter) const {
+  std::vector<std::string> tokens;
+  std::string token;
+  std::istringstream tokenStream(s);
+  while (std::getline(tokenStream, token, delimiter)) {
+    tokens.push_back(token);
+  }
+  return tokens;
+}
+
+Value *GJson::traverse(Value &current, const std::string &key) const {
+  if (current.IsObject()) {
+    if (current.HasMember(key.c_str())) {
+      return &current[key.c_str()];
+    }
+  } else if (current.IsArray()) {
+    size_t index = std::stoul(key);
+    if (index < current.Size()) {
+      return &current[index];
+    }
+  }
+  return nullptr;
+}
+
+Value GJson::getRandomElements(Value &current, size_t count) const {
+  Document doc;
+  if (current.IsArray()) {
+    std::vector<size_t> indices(current.Size());
+    std::iota(indices.begin(), indices.end(), 0);
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(indices.begin(), indices.end(), g);
+    size_t n = std::min(count, indices.size());
+
+    if (n == 1) {
+      Value curr;
+      curr.CopyFrom(current[indices[0]], doc.GetAllocator());
+      return curr;
+    } else {
+      Value result(kArrayType);
+      for (size_t i = 0; i < n; ++i) {
+        Value curr;
+        curr.CopyFrom(current[indices[i]], doc.GetAllocator());
+        result.PushBack(curr, doc.GetAllocator());
+      }
+      return result;
+    }
+  } else if (current.IsObject()) {
+    std::vector<Value::MemberIterator> members;
+    for (auto it = current.MemberBegin(); it != current.MemberEnd(); ++it) {
+      members.push_back(it);
+    }
+
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(members.begin(), members.end(), g);
+
+    Value o(kObjectType);
+    size_t n = std::min(count, members.size());
+    std::cout << n << std::endl;
+    for (size_t i = 0; i < n; ++i) {
+      Value name(members[i]->name, doc.GetAllocator());
+      Value value;
+      value.CopyFrom(members[i]->value, doc.GetAllocator());
+      o.AddMember(name, value, doc.GetAllocator());
+    }
+    return o;
+  }
+  std::cout << "unknown operator" << std::endl;
+  Value s;
+  s.SetString("nodata");
+  return s;
+}
+
+Value *GJson::getCompareElements(Value &current, const std::string &key,
+                                 const std::string &op,
+                                 const std::string &value, bool rindex) const {
+  if (current.IsArray()) {
+    // 如果rindex为true，那么需要反向遍历
+    size_t start_i = 0;
+    size_t end_i = current.Size();
+    size_t offset = 1;
+    if (rindex) {
+      start_i = current.Size() - 1;
+      end_i = -1;
+      offset = -1;
+    }
+    for (size_t i = start_i; i != end_i; i += offset) {
+      if (current[i].IsString()) {
+        if (current[i].GetString() == value) {
+          return &current[i];
+        }
+      } else if (current[i].IsInt()) {
+        bool res = false;
+        int cur_val = current[i].GetInt();
+        int target_val = std::stoul(value);
+        if (op == "=")
+          res = cur_val == target_val;
+        if (op == ">")
+          res = target_val > cur_val;
+        if (op == "<")
+          res = target_val < cur_val;
+
+        if (res) {
+          return &current[i];
+        }
+      } else if (current[i].IsObject()) {
+        if (current[i].HasMember(key.c_str())) {
+          if (current[i][key.c_str()].IsString()) {
+            if (current[i][key.c_str()].GetString() == value) {
+              return &current[i];
+            }
+          } else if (current[i][key.c_str()].IsInt()) {
+            bool res = false;
+            int cur_val = current[i][key.c_str()].GetInt();
+            int target_val = std::stoul(value);
+            if (op == "=")
+              res = target_val == cur_val;
+            if (op == ">")
+              res = target_val > cur_val;
+            if (op == "<")
+              res = target_val < cur_val;
+            if (res) {
+              return &current[i];
+            }
+          }
+        }
+      } else {
+        return nullptr;
+      }
+    }
+    return nullptr;
+  }
+  return nullptr;
+}
+
+void GJson::parse_file(const std::string &filename) {
+  // std::unique_lock<std::shared_mutex> lock(rw_mtx);
+  std::lock_guard<std::recursive_mutex> lock(mutex_);
+
+  std::ifstream file(filename);
+  if (!file.is_open()) {
+    raw_data.Parse("{}");
+    return;
+  }
+  std::stringstream buffer;
+  buffer << file.rdbuf();
+  raw_data.Parse(buffer.str().c_str());
+  file.close();
+}
+
+Value GJson::parse(const std::string &data) {
+  std::lock_guard<std::recursive_mutex> lock(mutex_);
+
+  rapidjson::Document doc;
+  doc.Parse(data.c_str());
+  if (doc.HasParseError()) {
+    return Value();
+  }
+  rapidjson::Value val;
+  val.CopyFrom(doc, doc.GetAllocator());
+  return val;
+}
 // 根据action的值来对current进行相应的修改
 // +: 将Val上的值加到current上
 // -: 将Val上的值减去current上
 // 空白：直接替换current
 bool GJson::update_(const std::string &field, const std::string &action,
-                   Value &val) {
+                    Value &val) {
+  std::lock_guard<std::recursive_mutex> lock(mutex_);
   Value *current = query_value(field);
   if (!current) {
     // 字段不存在，如果raw_data为object，那么设置key，value
