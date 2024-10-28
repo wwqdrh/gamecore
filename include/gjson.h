@@ -76,22 +76,17 @@ public:
   }
   // 注册通知
   // 订阅路径变化
-  void subscribe(const std::string &path, CallbackFunc callback) {
-    std::unique_lock<ReentrantRWLock> lock(rwlock);
-
-    std::vector<std::string> parts = split(path, ';');
-    TrieNode *current = callback_trie_.get();
-
-    for (const auto &part : parts) {
-      if (current->children.count(part) == 0) {
-        current->children[part] = std::make_unique<TrieNode>();
-      }
-      current = current->children[part].get();
-    }
-
-    current->is_endpoint = true;
-    current->callbacks.push_back(callback);
+  void subscribe(const std::string &path, CallbackFunc &&callback) {
+    // 直接使用 std::forward 转发
+    subscribeImpl(path, std::forward<CallbackFunc>(callback));
   }
+
+  // 左值引用版本
+  void subscribe(const std::string &path, const CallbackFunc &callback) {
+    // 复制回调函数
+    subscribeImpl(path, callback);
+  }
+
   // 取消订阅
   void unsubscribe(const std::string &path) {
     std::unique_lock<ReentrantRWLock> lock(rwlock);
@@ -235,6 +230,24 @@ public:
     if (value.IsNull())
       return T{};
     return convert_impl<T>(value);
+  }
+
+private:
+  void subscribeImpl(const std::string &path, const CallbackFunc &callback) {
+    std::unique_lock<ReentrantRWLock> lock(rwlock);
+
+    std::vector<std::string> parts = split(path, ';');
+    TrieNode *current = callback_trie_.get();
+
+    for (const auto &part : parts) {
+      if (current->children.count(part) == 0) {
+        current->children[part] = std::make_unique<TrieNode>();
+      }
+      current = current->children[part].get();
+    }
+
+    current->is_endpoint = true;
+    current->callbacks.push_back(callback);
   }
 
 private:
