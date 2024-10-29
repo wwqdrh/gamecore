@@ -39,12 +39,36 @@ public:
     tasks.push_back(task);
     return true;
   }
-
-  bool has_task(int task_id) {
+  bool addTaskTarget(int taskid, const std::string &desc, int targetProgress) {
+    for (auto item : tasks) {
+      if (item->id == taskid) {
+        return item->addTarget(desc, targetProgress);
+      }
+    }
+    return false;
+  }
+  bool updateTaskTarget(int taskid, int targetid, int currentProgress) {
+    for (auto item : tasks) {
+      if (item->id == taskid) {
+        return item->updateTarget(targetid, currentProgress);
+      }
+    }
+    return false;
+  }
+  bool has_task(int task_id) const {
     for (size_t i = 0; i < tasks.size(); i++) {
       std::shared_ptr<TaskItem> current_task = tasks[i];
       if (current_task->id == task_id) {
         return true;
+      }
+    }
+    return false;
+  }
+
+  bool checkComplete(int taskid) const {
+    for (auto item : tasks) {
+      if (item->id == taskid) {
+        return item->checkComplete();
       }
     }
     return false;
@@ -72,17 +96,19 @@ public:
     return nullptr;
   }
 
-  void update_task_progress(int task_id, int progress) {
-    for (size_t i = 0; i < tasks.size(); i++) {
-      std::shared_ptr<TaskItem> current_task = tasks[i];
-      if (current_task->id == task_id) {
-        current_task->progress += progress;
-        return;
-      }
-    }
-  }
+  // void update_task_progress(int task_id, int progress) {
+  //   for (size_t i = 0; i < tasks.size(); i++) {
+  //     std::shared_ptr<TaskItem> current_task = tasks[i];
+  //     if (current_task->id == task_id) {
+  //       current_task->progress += progress;
+  //       return;
+  //     }
+  //   }
+  // }
 
-  std::vector<std::shared_ptr<TaskItem>> get_all_tasks() { return tasks; }
+  const std::vector<std::shared_ptr<TaskItem>> &get_all_tasks() {
+    return tasks;
+  }
 };
 
 class TaskAvaliablePool : public TaskPool {};

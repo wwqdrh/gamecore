@@ -68,6 +68,36 @@ public:
     save();
     return true;
   }
+
+  // currentProgress是增量形式
+  bool updateTaskTarget(int taskid, int targetid, int currentProgress) {
+    if (!active_pool.has_task(taskid)) {
+      return false;
+    }
+    if (!active_pool.updateTaskTarget(taskid, targetid, currentProgress)){
+      return false;
+    }
+    save();
+    return true;
+  }
+  bool addTaskTarget(int taskid, const std::string &desc, int targetProgress) {
+    // 只能在还未执行的时候才能添加新的目标
+    if (!avaliable_pool.has_task(taskid)) {
+      return false;
+    }
+    if (!avaliable_pool.addTaskTarget(taskid, desc, targetProgress)) {
+      return false;
+    }
+    save();
+    return true;
+  }
+  bool checkComplete(int taskId) const {
+    if (!active_pool.has_task(taskId)) {
+      return false; // 没有开始这个任务
+    }
+    return active_pool.checkComplete(taskId);
+  }
+
   bool startTask(int id) {
     if (!avaliable_pool.has_task(id)) {
       return false;
@@ -82,6 +112,9 @@ public:
   }
   bool completeTask(int id) {
     if (!active_pool.has_task(id)) {
+      return false;
+    }
+    if (!checkComplete(id)) {
       return false;
     }
 

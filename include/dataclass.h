@@ -9,6 +9,7 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <type_traits>
 #include <typeindex>
 
 #include <rapidjson/document.h>
@@ -23,7 +24,9 @@ private:
   std::map<std::string, std::function<std::any(const T &)>> getters;
 
   template <typename V> static V convert_any(const std::any &value) {
-    if constexpr (std::is_same_v<V, std::string>) {
+    if constexpr (std::is_same_v<V, std::vector<V>>) {
+      return std::any_cast<std::vector<V>>(value);
+    } else if constexpr (std::is_same_v<V, std::string>) {
       if (value.type() == typeid(const char *))
         return std::string(std::any_cast<const char *>(value));
       else
@@ -130,6 +133,29 @@ public:
         writer.String(std::any_cast<std::string>(pair.second).c_str());
       } else if (pair.second.type() == typeid(bool)) {
         writer.Bool(std::any_cast<bool>(pair.second));
+      } else if (pair.second.type() == typeid(std::vector<int>)) {
+        writer.StartArray();
+        const auto &vec = std::any_cast<const std::vector<int> &>(pair.second);
+        for (const auto &elem : vec) {
+          writer.Int(elem);
+        }
+        writer.EndArray();
+      } else if (pair.second.type() == typeid(std::vector<double>)) {
+        writer.StartArray();
+        const auto &vec =
+            std::any_cast<const std::vector<double> &>(pair.second);
+        for (const auto &elem : vec) {
+          writer.Double(elem);
+        }
+        writer.EndArray();
+      } else if (pair.second.type() == typeid(std::vector<std::string>)) {
+        writer.StartArray();
+        const auto &vec =
+            std::any_cast<const std::vector<std::string> &>(pair.second);
+        for (const auto &elem : vec) {
+          writer.String(elem.c_str());
+        }
+        writer.EndArray();
       }
     }
 
