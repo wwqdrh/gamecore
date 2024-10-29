@@ -9,10 +9,18 @@
 
 using namespace gamedb;
 
+// 增加物品
+// 删除物品
+// 列出所有物品
+// 查询物品
+// 监听函数，当有物品发生改变那么就更新，还有单独监听某个物品的变化
+
+
 TEST(InventoryTest, TestInventoryCRUD) {
   // 背包系统
   // 设置最大格数
   // 添加物品，根据id进行判断，如果id相同则加在一起，否则新建一个格子，如果格子不够了那么就不能继续添加了
+  // 删除物品，同时保证数据连续性
   Inventory inv(3);
   inv.add_item(std::make_shared<GoodItem>("商品1", 1));
   ASSERT_EQ(inv.fill_slot_num(), 1);
@@ -23,6 +31,16 @@ TEST(InventoryTest, TestInventoryCRUD) {
   ASSERT_EQ(inv.fill_slot_num(), 3);
   ASSERT_EQ(inv.has_item("商品1"), true);
   ASSERT_EQ(inv.has_item("商品4"), false);
+  inv.subscribe("商品2", [](const std::string &name, int count) {
+    ASSERT_EQ(name, "商品2");
+    ASSERT_EQ(count, 0); // 成功消费了1个，还剩0个
+  });
+  ASSERT_FALSE(inv.consume_item("商品2", 2));
+  ASSERT_TRUE(inv.consume_item("商品2", 1));
+  auto names = inv.get_goods_name();
+  ASSERT_EQ(names.size(), 2);
+  ASSERT_EQ(names[1], "商品3");
+
 
   // 可以设置初始状态，用于控制id的获取生成
   // maxid是一定大于ids的大小的，因为ids可能中途删除了

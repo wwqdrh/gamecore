@@ -28,6 +28,7 @@ public:
 
 public:
   bool isEmpty() const { return good == nullptr; }
+  void clear() { good = nullptr; }
   std::shared_ptr<GoodItem> get_good() const { return good; }
   std::string get_good_name() const {
     if (isEmpty()) {

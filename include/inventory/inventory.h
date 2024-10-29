@@ -12,6 +12,7 @@
 #include "inventory/item.h"
 #include "inventory/slot.h"
 #include "lock.h"
+#include "timedmap.h"
 
 namespace gamedb {
 
@@ -19,6 +20,8 @@ namespace gamedb {
 class Inventory {
 public:
   static inline std::string DB_PREFIX = "gamedb;inventory";
+  using CallbackFunc =
+      std::function<void(const std::string &path, const int value)>;
 
 private:
   int max_slot_ = -1;
@@ -26,8 +29,10 @@ private:
   std::map<std::string, int> ids_;
   int max_ids_ = -1;
 
-  std::vector<std::shared_ptr<Slot>> slots_;
+  // std::vector<std::shared_ptr<Slot>> slots_;
+  TimedOrderedMap<std::string, std::shared_ptr<Slot>> slots_;
   std::shared_ptr<GJson> gjson_;
+  std::map<std::string, std::vector<CallbackFunc>> callbacks;
 
   // mutable std::recursive_mutex rw_mtx;
   mutable ReentrantRWLock rwlock;
@@ -119,6 +124,25 @@ public:
   }
 
 public:
+  // ====
+  // 订阅通知
+  // ====
+  // 注册通知
+  // 订阅路径变化
+  void subscribe(const std::string &path, CallbackFunc &&callback) {
+    // 直接使用 std::forward 转发
+    subscribeImpl(path, std::forward<CallbackFunc>(callback));
+  }
+
+  // 左值引用版本
+  void subscribe(const std::string &path, const CallbackFunc &callback) {
+    // 复制回调函数
+    subscribeImpl(path, callback);
+  }
+
+  // ====
+  // crud
+  // ====
   void set_store(std::shared_ptr<GJson> g) {
     auto writer = rwlock.unique_lock();
 
@@ -139,27 +163,67 @@ public:
   bool add_item(std::shared_ptr<GoodItem> good) {
     auto writer = rwlock.unique_lock();
 
-    for (auto item : slots_) {
+    for (auto goodname : slots_.getKeysByInsertionOrder()) {
+      auto item = slots_.get(goodname);
       if (item->addGood(good)) {
         // 判断是否存在, 不存在则创建name与id的映射
         // 可以快速查找一个商品是否存在
         if (!has_item(good->name)) {
           get_create_id(good->name);
         }
+        // 添加成功，那么进行通知
+        if (callbacks.find(good->name) != callbacks.end()) {
+          for (auto itemfn : callbacks[good->name]) {
+            itemfn(good->name, item->get_good_count());
+          }
+        }
         return true;
       }
     }
 
     if (max_slot_ == -1 || slots_.size() < max_slot_) {
-      slots_.push_back(std::make_shared<Slot>());
-      slots_.back()->addGood(good);
+      auto slot = std::make_shared<Slot>();
+      slot->addGood(good);
+      slots_.insert(good->name, slot);
       if (!has_item(good->name)) {
         get_create_id(good->name);
+      }
+      // 添加成功，那么进行通知
+      if (callbacks.find(good->name) != callbacks.end()) {
+        for (auto itemfn : callbacks[good->name]) {
+          itemfn(good->name, slot->get_good_count());
+        }
       }
       return true;
     }
 
     return false;
+  }
+  bool consume_item(const std::string &name, int count) {
+    auto item = get_item(name);
+    if (!item || item->count < count) {
+      return false;
+    }
+    item->count -= count;
+    if (item->count == 0) {
+      // 需要将这个slot置空, slots_中间删除一个元素
+      slots_.erase(name);
+    }
+    // 消费成功，那么进行通知
+    if (callbacks.find(item->name) != callbacks.end()) {
+      for (auto itemfn : callbacks[item->name]) {
+        itemfn(item->name, item->count);
+      }
+    }
+
+    return true;
+  }
+  std::vector<std::string> get_goods_name() {
+    std::vector<std::string> res;
+    for (auto item : slots_.getKeysByInsertionOrder()) {
+      res.push_back(item);
+    }
+    return res;
   }
   int get_create_id(const std::string &name) {
     auto writer = rwlock.unique_lock();
@@ -187,7 +251,8 @@ public:
   std::shared_ptr<GoodItem> get_item(const std::string &name) const {
     auto read = rwlock.shared_lock();
 
-    for (auto item : slots_) {
+    for (auto key_name : slots_.getKeysByInsertionOrder()) {
+      auto item = slots_.get(key_name);
       if (!item->isEmpty() && item->get_good_name() == name) {
         return item->get_good();
       }
@@ -199,7 +264,8 @@ public:
     auto read = rwlock.shared_lock();
 
     std::vector<std::shared_ptr<GoodItem>> res;
-    for (auto item : slots_) {
+    for (const std::string &key_name : slots_.getKeysByInsertionOrder()) {
+      auto item = slots_.get(key_name);
       if (!item->isEmpty() && item->get_good()->check_ext(name, val)) {
         res.push_back(item->get_good());
       }
@@ -210,7 +276,8 @@ public:
     auto read = rwlock.shared_lock();
 
     int count = 0;
-    for (auto item : slots_) {
+    for (auto name : slots_.getKeysByInsertionOrder()) {
+      auto item = slots_.get(name);
       if (!item->isEmpty())
         count++;
     }
@@ -240,6 +307,14 @@ private:
     }
     Inventory other = Inventory::fromJson(*v);
     *this = std::move(other);
+  }
+
+  void subscribeImpl(const std::string &path, const CallbackFunc &callback) {
+    std::unique_lock<ReentrantRWLock> lock(rwlock);
+    if (callbacks.find(path) == callbacks.end()) {
+      callbacks[path] = std::vector<CallbackFunc>();
+    }
+    callbacks[path].push_back(callback);
   }
 };
 
