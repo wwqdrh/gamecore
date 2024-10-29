@@ -325,6 +325,12 @@ void GJson::update_from_string(const std::string &data) {
   raw_data.Parse(data.c_str());
 }
 
+bool GJson::update(const std::string &field, const std::string &action,
+                   const std::string &val) {
+  auto v = toValue(val);
+  return update(field, action, v);
+}
+
 // 根据action的值来对current进行相应的修改
 // +: 将Val上的值加到current上
 // -: 将Val上的值减去current上
@@ -419,13 +425,82 @@ bool GJson::update_(const std::string &field, const std::string &action,
     }
   } else if (action == "~") {
     // 直接替换
-    current->CopyFrom(val, raw_data.GetAllocator());
+    // current->CopyFrom(val, raw_data.GetAllocator());
+    safeReplaceValue(current, val);
   } else {
     // 不支持的操作
     return false;
   }
 
   return true;
+}
+
+bool GJson::safeReplaceValue(rapidjson::Value *current,
+                             const rapidjson::Value &newVal) {
+  if (!current) {
+    return false;
+  }
+  // 根据不同的类型使用不同的复制策略
+  switch (newVal.GetType()) {
+  case rapidjson::kNullType:
+    current->SetNull();
+    return true;
+
+  case rapidjson::kFalseType:
+  case rapidjson::kTrueType:
+    current->SetBool(newVal.GetBool());
+    return true;
+
+  case rapidjson::kStringType:
+    // 字符串类型需要使用allocator
+    current->SetString(newVal.GetString(), newVal.GetStringLength(),
+                       raw_data.GetAllocator());
+    return true;
+
+  case rapidjson::kNumberType:
+    if (newVal.IsInt()) {
+      current->SetInt(newVal.GetInt());
+    } else if (newVal.IsUint()) {
+      current->SetUint(newVal.GetUint());
+    } else if (newVal.IsInt64()) {
+      current->SetInt64(newVal.GetInt64());
+    } else if (newVal.IsUint64()) {
+      current->SetUint64(newVal.GetUint64());
+    } else if (newVal.IsDouble()) {
+      current->SetDouble(newVal.GetDouble());
+    }
+    return true;
+
+  case rapidjson::kArrayType: {
+    // 数组类型需要逐个复制元素
+    current->SetArray();
+    current->Reserve(newVal.Size(), raw_data.GetAllocator());
+    for (const auto &item : newVal.GetArray()) {
+      rapidjson::Value temp;
+      temp.CopyFrom(item, raw_data.GetAllocator());
+      current->PushBack(temp, raw_data.GetAllocator());
+    }
+    return true;
+  }
+
+  case rapidjson::kObjectType: {
+    // 对象类型需要逐个复制成员
+    current->SetObject();
+    for (const auto &m : newVal.GetObject()) {
+      rapidjson::Value key;
+      key.CopyFrom(m.name, raw_data.GetAllocator());
+
+      rapidjson::Value value;
+      value.CopyFrom(m.value, raw_data.GetAllocator());
+
+      current->AddMember(key, value, raw_data.GetAllocator());
+    }
+    return true;
+  }
+
+  default:
+    return false;
+  }
 }
 
 void GJson::trigger_callbacks(const std::string &field) {

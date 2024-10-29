@@ -48,7 +48,7 @@ TEST(DataClassTest, TestFromJson) {
 }
 
 TEST(DataClassTest, TestFromJsonArr) {
-  std::vector<Person> res = Person::fromJsonArr(R"([{
+  std::vector<std::shared_ptr<Person>> res = Person::fromJsonArr(R"([{
         "name": "Alice",
         "age": 30
     },{
@@ -57,6 +57,6 @@ TEST(DataClassTest, TestFromJsonArr) {
     }])");
 
   EXPECT_EQ(res.size(), 2);
-  EXPECT_EQ(res[0].get_name(), "Alice");
-  EXPECT_EQ(res[1].get_name(), "Alice2");
+  EXPECT_EQ(res[0]->get_name(), "Alice");
+  EXPECT_EQ(res[1]->get_name(), "Alice2");
 }

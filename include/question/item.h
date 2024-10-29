@@ -14,6 +14,7 @@ public:
   int progress = 0;
   bool objective_completed = false;
 
+public:
   TaskItem() {
     addMember("id", &TaskItem::id);
     addMember("name", &TaskItem::name);
@@ -22,7 +23,7 @@ public:
     addMember("progress", &TaskItem::progress);
     addMember("objective_completed", &TaskItem::objective_completed);
   }
-
+  explicit TaskItem(int id) : TaskItem() { this->id = id; }
   explicit TaskItem(const std::string &data) : TaskItem() { fromJson(data); }
 };
 } // namespace libs

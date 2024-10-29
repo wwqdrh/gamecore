@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <any>
 #include <map>
 #include <memory>
 #include <mutex>
@@ -160,6 +161,7 @@ public:
     Value v = toValue(val, allo);
     return update(field, action, v);
   }
+  bool update(const std::string &field, const std::string &action, const std::string &val);
   bool update(const std::string &field, const std::string &action, Value &val) {
     auto write = rwlock.unique_lock();
 
@@ -175,6 +177,7 @@ public:
     return res;
   }
 
+
 private:
   void trigger_callbacks(const std::string &field);
   // 获取所有需要触发的回调
@@ -182,6 +185,8 @@ private:
       TrieNode *node, const std::string &base_path,
       std::vector<std::pair<std::string, CallbackFunc>> &callbacks);
   bool update_(const std::string &field, const std::string &action, Value &val);
+  bool safeReplaceValue(rapidjson::Value *current,
+                        const rapidjson::Value &newVal);
   std::vector<std::string> split(const std::string &s, char delimiter) const;
 
   Value *traverse(Value &current, const std::string &key) const;
@@ -199,7 +204,9 @@ public:
   template <typename T>
   static rapidjson::Value
   toValue(const T &data, rapidjson::Document::AllocatorType &allocator) {
-    if constexpr (std::is_same_v<T, std::string>) {
+    if constexpr (std::is_same_v<T, std::any>) {
+      return handleAnyType(data, allocator);
+    } else if constexpr (std::is_same_v<T, std::string>) {
       return toValue(data.c_str(), allocator);
     } else if constexpr (std::is_same_v<T, const char *> ||
                          std::is_same_v<T, char *>) {
@@ -253,16 +260,77 @@ public:
     // 自定义类型的转换 - 需要实现 toJson 方法
     else if constexpr (has_to_json<T>::value) {
       return data.toJson(allocator);
-    } else {
-      static_assert(always_false<T>::value,
-                    "Unsupported type for JSON conversion");
     }
+    //  else {
+    //   static_assert(always_false<T>::value,
+    //                 "Unsupported type for JSON conversion");
+    // }
+    rapidjson::Value v;
+    v.SetBool(false);
+    return v;
   }
   // rapidjson::Value -> T
   template <typename T> static T convert(const Value &value) {
     if (value.IsNull())
       return T{};
     return convert_impl<T>(value);
+  }
+
+  // 辅助函数来处理 std::any 类型
+  static rapidjson::Value
+  handleAnyType(const std::any &data,
+                rapidjson::Document::AllocatorType &allocator) {
+    // 处理基本类型
+    if (data.type() == typeid(std::string)) {
+      return toValue(std::any_cast<std::string>(data), allocator);
+    }
+    if (data.type() == typeid(const char *)) {
+      return toValue(std::any_cast<const char *>(data), allocator);
+    }
+    if (data.type() == typeid(int)) {
+      return toValue(std::any_cast<int>(data), allocator);
+    }
+    if (data.type() == typeid(int64_t)) {
+      return toValue(std::any_cast<int64_t>(data), allocator);
+    }
+    if (data.type() == typeid(unsigned int)) {
+      return toValue(std::any_cast<unsigned int>(data), allocator);
+    }
+    if (data.type() == typeid(uint64_t)) {
+      return toValue(std::any_cast<uint64_t>(data), allocator);
+    }
+    if (data.type() == typeid(double)) {
+      return toValue(std::any_cast<double>(data), allocator);
+    }
+    if (data.type() == typeid(float)) {
+      return toValue(std::any_cast<float>(data), allocator);
+    }
+    if (data.type() == typeid(bool)) {
+      return toValue(std::any_cast<bool>(data), allocator);
+    }
+
+    // 处理容器类型
+    if (data.type() == typeid(std::vector<std::any>)) {
+      const auto &vec = std::any_cast<const std::vector<std::any> &>(data);
+      rapidjson::Value arr(rapidjson::kArrayType);
+      for (const auto &item : vec) {
+        arr.PushBack(handleAnyType(item, allocator), allocator);
+      }
+      return arr;
+    }
+
+    if (data.type() == typeid(std::map<std::string, std::any>)) {
+      const auto &map =
+          std::any_cast<const std::map<std::string, std::any> &>(data);
+      rapidjson::Value obj(rapidjson::kObjectType);
+      for (const auto &[key, value] : map) {
+        obj.AddMember(rapidjson::Value(key.c_str(), allocator).Move(),
+                      handleAnyType(value, allocator), allocator);
+      }
+      return obj;
+    }
+
+    return toValue("", allocator);
   }
 
 private:

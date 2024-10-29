@@ -1,9 +1,12 @@
 #pragma once
 
+#include "gjson.h"
+#include "rapidjson/rapidjson.h"
 #include <any>
 #include <functional>
 #include <iostream>
 #include <map>
+#include <memory>
 #include <sstream>
 #include <string>
 #include <typeindex>
@@ -73,8 +76,17 @@ public:
       return;
     }
 
+    fromJsonValue(document);
+  }
+
+  void fromJsonValue(const rapidjson::Value &data) {
+    if (!data.IsObject()) {
+      std::cerr << "Expected a JSON object" << std::endl;
+      return;
+    }
+
     std::map<std::string, std::any> m;
-    for (auto it = document.MemberBegin(); it != document.MemberEnd(); ++it) {
+    for (auto it = data.MemberBegin(); it != data.MemberEnd(); ++it) {
       std::string key = it->name.GetString();
 
       // 根据不同类型解析值
@@ -126,8 +138,14 @@ public:
     return buffer.GetString(); // 将缓冲区中的数据转换为字符串
   }
 
-  static std::vector<T> fromJsonArr(const std::string &data) {
-    std::vector<T> result;
+  rapidjson::Value toJsonValue() const {
+    rapidjson::Document doc;
+    std::map<std::string, std::any> m = toMap();
+    return GJson::toValue(m, doc.GetAllocator());
+  }
+
+  static std::vector<std::shared_ptr<T>> fromJsonArr(const std::string &data) {
+    std::vector<std::shared_ptr<T>> result;
 
     rapidjson::Document document;
     document.Parse(data.c_str());
@@ -144,21 +162,36 @@ public:
       if (it == nullptr) {
         continue;
       }
-      rapidjson::StringBuffer buffer;
-      rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
-      it->Accept(writer);
-
       T item;
-      item.fromJson(buffer.GetString());
-      result.push_back(item);
+      item.fromJsonValue(*it);
+      result.push_back(std::make_shared<T>(item));
     }
     return result;
   }
 
-  static std::string toJsonArr(const std::vector<T> &data) {
+  static std::vector<std::shared_ptr<T>>
+  fromJsonValueArr(const rapidjson::Value &data) {
+    std::vector<std::shared_ptr<T>> result;
+
+    if (!data.IsArray()) {
+      std::cerr << "Expected a JSON array" << std::endl;
+      return result;
+    }
+    for (auto it = data.Begin(); it != data.End(); ++it) {
+      if (it == nullptr) {
+        continue;
+      }
+      T item;
+      item.fromJsonValue(*it);
+      result.push_back(std::make_shared<T>(item));
+    }
+    return result;
+  }
+
+  static std::string toJsonArr(const std::vector<std::shared_ptr<T>> &data) {
     std::string result = "[";
     for (size_t i = 0; i < data.size(); i++) {
-      result += data[i].toJson();
+      result += data[i]->toJson();
       if (i != data.size() - 1) {
         result += ",";
       }
