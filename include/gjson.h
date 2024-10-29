@@ -48,6 +48,18 @@ private:
   std::unique_ptr<TrieNode> callback_trie_;
 
 public:
+  static Value toValue(const std::string &data) {
+    rapidjson::Document doc;
+    doc.Parse(data.c_str());
+    if (doc.HasParseError()) {
+      return Value();
+    }
+    rapidjson::Value val;
+    val.CopyFrom(doc, doc.GetAllocator());
+    return val;
+  }
+
+public:
   GJson() : callback_trie_(std::make_unique<TrieNode>()) {
     raw_data.Parse("{}");
   };
@@ -60,6 +72,9 @@ public:
   rapidjson::Document::AllocatorType get_alloctor() {
     return raw_data.GetAllocator();
   }
+
+  void update_from_file(const std::string &filename);
+  void update_from_string(const std::string &data);
   void load_or_store(std::shared_ptr<FileStore> store) {
     auto write = rwlock.unique_lock();
     // std::unique_lock<std::shared_mutex> lock(rw_mtx);
@@ -87,9 +102,29 @@ public:
     subscribeImpl(path, callback);
   }
 
+  // 是否存在某个key
+  bool has(const std::string &path) const {
+    auto lock = rwlock.shared_lock();
+
+    std::vector<std::string> parts = split(path, ';');
+    Value *current = const_cast<Value *>(static_cast<const Value *>(&raw_data));
+
+    for (const auto &part : parts) {
+      if (current == nullptr) {
+        return false;
+      }
+      if (part.empty())
+        continue;
+
+      current = traverse(*current, part);
+    }
+
+    return current != nullptr;
+  }
+
   // 取消订阅
   void unsubscribe(const std::string &path) {
-    std::unique_lock<ReentrantRWLock> lock(rwlock);
+    auto guard = rwlock.unique_lock();
 
     std::vector<std::string> parts = split(path, ';');
     TrieNode *current = callback_trie_.get();
@@ -104,8 +139,6 @@ public:
     current->callbacks.clear();
     current->is_endpoint = false;
   }
-  void parse_file(const std::string &filename);
-  Value parse(const std::string &data);
   std::string query(const std::string &field) const; // 返回的是json字符串
   // 查询指定字段的值并返回特定类型
   Value *query_value(const std::string &field) const;

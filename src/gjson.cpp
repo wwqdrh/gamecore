@@ -22,7 +22,7 @@ namespace gamedb {
 // public
 // =============
 Value *GJson::query_value(const std::string &field) const {
-  auto write = rwlock.shared_lock();
+  auto lock = rwlock.shared_lock();
 
   std::vector<std::string> parts = split(field, ';');
   // Value curr_data;
@@ -104,7 +104,7 @@ Value *GJson::query_value(const std::string &field) const {
 // 那么括号里面的就是一个解析参数，例如#(@=1)就是判断当前的object的key==1,
 // 注意这里都是字符串
 std::string GJson::query(const std::string &field) const {
-  auto write = rwlock.shared_lock();
+  auto lock = rwlock.shared_lock();
 
   Value *current = query_value(field);
   if (current == nullptr) {
@@ -306,7 +306,7 @@ Value *GJson::getCompareElements(Value &current, const std::string &key,
   return nullptr;
 }
 
-void GJson::parse_file(const std::string &filename) {
+void GJson::update_from_file(const std::string &filename) {
   auto l = rwlock.unique_lock();
 
   std::ifstream file(filename);
@@ -320,18 +320,11 @@ void GJson::parse_file(const std::string &filename) {
   file.close();
 }
 
-Value GJson::parse(const std::string &data) {
+void GJson::update_from_string(const std::string &data) {
   auto l = rwlock.unique_lock();
-
-  rapidjson::Document doc;
-  doc.Parse(data.c_str());
-  if (doc.HasParseError()) {
-    return Value();
-  }
-  rapidjson::Value val;
-  val.CopyFrom(doc, doc.GetAllocator());
-  return val;
+  raw_data.Parse(data.c_str());
 }
+
 // 根据action的值来对current进行相应的修改
 // +: 将Val上的值加到current上
 // -: 将Val上的值减去current上

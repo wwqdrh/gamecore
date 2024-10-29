@@ -36,6 +36,8 @@ TEST(GJsonTest, ParseAndQuery) {
   EXPECT_EQ(json.query("is_student"), "false");
   EXPECT_EQ(json.query("grades;0"), "85");
   EXPECT_EQ(json.query("address;street"), "\"123 Main St\"");
+  EXPECT_TRUE(json.has("address;street"));
+  EXPECT_FALSE(json.has("address;streeterr"));
 }
 
 TEST(GJsonTest, TypeConvert) {
