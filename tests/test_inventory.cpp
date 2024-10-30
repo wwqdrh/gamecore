@@ -95,7 +95,7 @@ TEST(InventoryTest, TestInventoryAutoStore) {
 
   // 测试是否自动保存了
   // 从test_filesave.json中加载数据
-  Inventory inv2(
+  Inventory inv2("default",
       std::make_shared<GJson>(std::make_shared<FileStore>(test_file)));
   ASSERT_EQ(inv2.has_item("商品1"), true);
   ASSERT_EQ(inv2.get_item("商品1")->count, 1);

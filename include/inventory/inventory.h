@@ -40,7 +40,9 @@ private:
 
 public:
   Inventory() = default;
-  Inventory(std::shared_ptr<GJson> store) { set_store(store); }
+  Inventory(std::string name, std::shared_ptr<GJson> store) : name(name) {
+    set_store(store);
+  }
   Inventory(int slot) : max_slot_(slot) {}
   Inventory(int slot, int page_slot)
       : max_slot_(slot), pagesize_slot_(page_slot) {}
