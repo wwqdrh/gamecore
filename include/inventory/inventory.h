@@ -59,6 +59,21 @@ public:
                   allocator);
     obj.AddMember("ids", GJson::toValue(ids_, allocator), allocator);
     obj.AddMember("max_ids", GJson::toValue(max_ids_, allocator), allocator);
+    // slots name
+    std::vector<std::string> slot_names;
+    for (auto &slot : slots_.getKeysByInsertionOrder()) {
+      slot_names.push_back(slot);
+    }
+    obj.AddMember("good_names", GJson::toValue(slot_names, allocator),
+                  allocator);
+
+    // slots count
+    std::vector<int> slot_counts;
+    for (auto &name : slots_.getKeysByInsertionOrder()) {
+      slot_counts.push_back(get_item(name)->count);
+    }
+    obj.AddMember("good_counts", GJson::toValue(slot_counts, allocator),
+                  allocator);
     return obj;
   }
 
@@ -82,6 +97,17 @@ public:
     }
     if (value.HasMember("max_ids")) {
       inventory.max_ids_ = GJson::convert<int>(value["max_ids"]);
+    }
+    if (value.HasMember("good_names") && value.HasMember("good_counts")) {
+      auto names =
+          GJson::convert<std::vector<std::string>>(value["good_names"]);
+      auto counts = GJson::convert<std::vector<int>>(value["good_counts"]);
+      if (names.size() != counts.size()) {
+        return inventory;
+      }
+      for (int i = 0; i < names.size(); i++) {
+        inventory.add_item(std::make_shared<GoodItem>(names[i], counts[i]));
+      }
     }
     return inventory;
   }
