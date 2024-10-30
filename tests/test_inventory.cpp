@@ -90,8 +90,8 @@ TEST(InventoryTest, TestInventoryAutoStore) {
   inv.add_item(std::make_shared<GoodItem>("商品3", 1));
   inv.store();
   std::cout << json->query("") << std::endl;
-  ASSERT_EQ(json->queryT<int>(Inventory::DB_PREFIX + ";max_slot"), 10);
-  ASSERT_EQ(json->queryT<int>(Inventory::DB_PREFIX + ";pagesize"), 3);
+  ASSERT_EQ(json->queryT<int>(Inventory::DB_PREFIX + ";default;max_slot"), 10); // 默认背包前缀名为default
+  ASSERT_EQ(json->queryT<int>(Inventory::DB_PREFIX + ";default;pagesize"), 3);
 
   // 测试是否自动保存了
   // 从test_filesave.json中加载数据

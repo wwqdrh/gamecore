@@ -24,6 +24,7 @@ public:
       std::function<void(const std::string &path, const int value)>;
 
 private:
+  std::string name = "default";
   int max_slot_ = -1;
   int pagesize_slot_ = -1;
   std::map<std::string, int> ids_;
@@ -52,6 +53,7 @@ public:
     auto reader = rwlock.shared_lock();
 
     rapidjson::Value obj(rapidjson::kObjectType);
+    obj.AddMember("name", GJson::toValue(name, allocator), allocator);
     obj.AddMember("max_slot", GJson::toValue(max_slot_, allocator), allocator);
     obj.AddMember("pagesize", GJson::toValue(pagesize_slot_, allocator),
                   allocator);
@@ -66,6 +68,9 @@ public:
       return inventory;
     }
 
+    if (value.HasMember("name")) {
+      inventory.name = GJson::convert<std::string>(value["name"]);
+    }
     if (value.HasMember("max_slot")) {
       inventory.max_slot_ = GJson::convert<int>(value["max_slot"]);
     }
@@ -158,7 +163,7 @@ public:
     }
     auto all = gjson_->get_alloctor();
     rapidjson::Value val = toJson(all);
-    gjson_->update(DB_PREFIX, "~", val);
+    gjson_->update(DB_PREFIX + ";" + name, "~", val);
   }
   bool add_item(std::shared_ptr<GoodItem> good) {
     auto writer = rwlock.unique_lock();
@@ -301,7 +306,7 @@ private:
     if (gjson_ == nullptr) {
       return;
     }
-    auto v = gjson_->query_value(DB_PREFIX);
+    auto v = gjson_->query_value(DB_PREFIX + ";" + name);
     if (v == nullptr) {
       return;
     }
