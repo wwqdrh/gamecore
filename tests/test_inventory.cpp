@@ -98,6 +98,7 @@ TEST(InventoryTest, TestInventoryAutoStore) {
   Inventory inv2(
       std::make_shared<GJson>(std::make_shared<FileStore>(test_file)));
   ASSERT_EQ(inv2.has_item("商品1"), true);
+  ASSERT_EQ(inv2.get_item("商品1")->count, 1);
   ASSERT_EQ(inv2.has_item("商品2"), true);
   ASSERT_EQ(inv2.has_item("商品4"), false);
   // 删除test_filesave.json文件

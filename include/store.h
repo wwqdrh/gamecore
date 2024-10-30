@@ -7,8 +7,8 @@ namespace gamedb {
 class FileStore {
 public:
   // 定义函数类型别名，使代码更清晰
-  using LoadHandler = std::function<std::string()>;
-  using SaveHandler = std::function<void(const std::string &)>;
+  using LoadHandler = std::function<std::vector<uint8_t>()>;
+  using SaveHandler = std::function<void(std::vector<uint8_t>)>;
 
 private:
   std::string filename_ = "store.json";
@@ -39,7 +39,7 @@ public:
   std::string loadData();
 
 private:
-  std::string encrypt(const std::string &data) const;
-  std::string decrypt(const std::string &data) const;
+  std::vector<uint8_t> encrypt(const std::string &data) const;
+  std::string decrypt(const std::vector<uint8_t> &data) const;
 };
 } // namespace gamedb
