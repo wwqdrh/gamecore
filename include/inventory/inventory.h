@@ -129,6 +129,9 @@ public:
   }
 
 public:
+  void set_name(const std::string &name) { this->name = name; }
+  void set_maxslot(int slot) { max_slot_ = slot; }
+  void set_pagesize(int slot) { pagesize_slot_ = slot; }
   // ====
   // 订阅通知
   // ====
@@ -182,6 +185,7 @@ public:
             itemfn(good->name, item->get_good_count());
           }
         }
+        store();
         return true;
       }
     }
@@ -199,10 +203,18 @@ public:
           itemfn(good->name, slot->get_good_count());
         }
       }
+      store();
       return true;
     }
 
     return false;
+  }
+  bool clear() {
+    auto writer = rwlock.unique_lock();
+
+    slots_.clear();
+    store();
+    return true;
   }
   bool consume_item(const std::string &name, int count) {
     auto item = get_item(name);
@@ -220,10 +232,10 @@ public:
         itemfn(item->name, item->count);
       }
     }
-
+    store();
     return true;
   }
-  std::vector<std::string> get_goods_name() {
+  std::vector<std::string> get_goods_name() const {
     std::vector<std::string> res;
     for (auto item : slots_.getKeysByInsertionOrder()) {
       res.push_back(item);
@@ -250,8 +262,13 @@ public:
   bool has_item(const std::string &name) const {
     auto read = rwlock.shared_lock();
 
-    auto it = ids_.find(name);
-    return it != ids_.end();
+    for (auto key_name : slots_.getKeysByInsertionOrder()) {
+      auto item = slots_.get(key_name);
+      if (!item->isEmpty() && item->get_good_name() == name) {
+        return true;
+      }
+    }
+    return false;
   }
   std::shared_ptr<GoodItem> get_item(const std::string &name) const {
     auto read = rwlock.shared_lock();
