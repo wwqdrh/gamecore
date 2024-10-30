@@ -2,6 +2,7 @@
 #include <fstream>
 #include <functional>
 #include <map>
+#include <memory>
 #include <string>
 #include <thread>
 #include <vector>
@@ -29,6 +30,7 @@ TEST(GJsonTest, ParseAndQuery) {
     })");
 
   // 使用 query 方法测试各种数据类型的获取
+  EXPECT_TRUE(json.query("").length() > 2);
   EXPECT_EQ(json.query("name"), "\"John Doe\"");
   EXPECT_EQ(json.query("age"), "30");
   EXPECT_EQ(json.queryT<int>("age"), 30);
@@ -38,6 +40,18 @@ TEST(GJsonTest, ParseAndQuery) {
   EXPECT_EQ(json.query("address;street"), "\"123 Main St\"");
   EXPECT_TRUE(json.has("address;street"));
   EXPECT_FALSE(json.has("address;streeterr"));
+
+  // update_from_function
+  // !! 不能有多余逗号。否则不能解析
+  GJson json2;
+  json2.update_from_string(R"({
+	"1": {
+		"name": "任务1"
+	}
+})");
+  // std::cout << json2.query("") << std::endl;
+  EXPECT_TRUE(json2.query("").length() > 2);
+  EXPECT_EQ(json2.query("1;name"), "\"任务1\"");
 }
 
 TEST(GJsonTest, TypeConvert) {
@@ -252,7 +266,8 @@ TEST(GJsonTest, WatchBasicProperty) {
   ASSERT_EQ(address_change, 1);
 
   std::map<std::string, GJson::variant> newExt({{"address", "addressb"}});
-  auto newExtVal = GJson::toValue<std::map<std::string, GJson::variant>>(newExt, allo);
+  auto newExtVal =
+      GJson::toValue<std::map<std::string, GJson::variant>>(newExt, allo);
   json.update("ext", "~", newExtVal);
   ASSERT_EQ(address_change, 2);
 }

@@ -316,12 +316,14 @@ void GJson::update_from_file(const std::string &filename) {
   }
   std::stringstream buffer;
   buffer << file.rdbuf();
-  raw_data.Parse(buffer.str().c_str());
   file.close();
+  // update("", "~", buffer.str().c_str()); // 直接覆盖
+  raw_data.Parse(buffer.str().c_str());
 }
 
 void GJson::update_from_string(const std::string &data) {
   auto l = rwlock.unique_lock();
+  // update("", "~", data); // 直接覆盖
   raw_data.Parse(data.c_str());
 }
 
