@@ -51,13 +51,12 @@ public:
     }
     return false;
   }
-  bool updateTaskTarget(int taskid, int targetid, int progress) {
+  void updateTaskTarget(int taskid, int targetid, int progress) {
     for (auto item : tasks) {
       if (item->id == taskid) {
-        return item->updateTarget(targetid, progress);
+        item->updateTarget(targetid, progress);
       }
     }
-    return false;
   }
   bool has_task(int task_id) const {
     for (size_t i = 0; i < tasks.size(); i++) {

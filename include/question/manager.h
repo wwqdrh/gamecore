@@ -80,8 +80,9 @@ public:
     if (!active_pool.has_task(taskid)) {
       return false;
     }
-    if (!active_pool.updateTaskTarget(taskid, targetid, progress)) {
-      return false;
+    active_pool.updateTaskTarget(taskid, targetid, progress);
+    if (checkComplete(taskid)) {
+      completeTask(taskid);
     }
     save();
     return true;
@@ -119,7 +120,12 @@ public:
     }
     return false;
   }
-  std::vector<int> get_active_task() const { return active_pool.get_all_id(); }
+  const std::vector<std::shared_ptr<TaskItem>> &get_active_task() const {
+    return active_pool.get_all_tasks();
+  }
+  std::vector<int> get_active_task_ids() const {
+    return active_pool.get_all_id();
+  }
   std::vector<int> get_complete_task() const {
     return complete_pool.get_all_id();
   }
