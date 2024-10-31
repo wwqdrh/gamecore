@@ -31,6 +31,9 @@ public:
     }
     return res;
   }
+  const std::vector<std::shared_ptr<TaskItem>> &get_all_tasks() const {
+    return tasks;
+  }
   // 如果某个task.id已经存在了，那么就不能再添加了
   bool add_task(std::shared_ptr<TaskItem> task) {
     if (!task || has_task(task->id)) {
@@ -39,18 +42,19 @@ public:
     tasks.push_back(task);
     return true;
   }
-  bool addTaskTarget(int taskid, const std::string &desc, int targetProgress) {
+  bool addTaskTarget(int taskid, const std::string &desc, int progress,
+                     const std::string &event_flag = "") {
     for (auto item : tasks) {
       if (item->id == taskid) {
-        return item->addTarget(desc, targetProgress);
+        return item->addTarget(desc, event_flag, progress);
       }
     }
     return false;
   }
-  bool updateTaskTarget(int taskid, int targetid, int currentProgress) {
+  bool updateTaskTarget(int taskid, int targetid, int progress) {
     for (auto item : tasks) {
       if (item->id == taskid) {
-        return item->updateTarget(targetid, currentProgress);
+        return item->updateTarget(targetid, progress);
       }
     }
     return false;

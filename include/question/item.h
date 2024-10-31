@@ -1,6 +1,8 @@
 #pragma once
 
 #include "dataclass.h"
+#include "question/target.h"
+#include <memory>
 #include <vector>
 
 namespace gamedb {
@@ -9,7 +11,7 @@ enum class TaskStatus { NotStarted, InProgress, Completed, Failed };
 class TaskItem : public DataClass<TaskItem> {
 public:
   int id = 0;
-  std::string desc = "";
+  std::vector<std::string> progress_flags;
 
 private:
   std::vector<std::string> progress_desc;
@@ -19,7 +21,7 @@ private:
 public:
   TaskItem() {
     addMember("id", &TaskItem::id);
-    addMember("desc", &TaskItem::desc);
+    addMember("progress_flags", &TaskItem::progress_flags);
     addMember("progress_desc", &TaskItem::progress_desc);
     addMember("progress_target", &TaskItem::progress_target);
     addMember("progress_current", &TaskItem::progress_current);
@@ -28,11 +30,15 @@ public:
   explicit TaskItem(const std::string &data) : TaskItem() { fromJson(data); }
 
 public:
-  bool addTarget(const std::string &desc, int target) {
+  bool addTarget(const std::string &desc, const std::string &flag, int target) {
+    progress_flags.push_back(flag);
     progress_desc.push_back(desc);
     progress_target.push_back(target);
     progress_current.push_back(0);
     return true;
+  }
+  bool addTarget(std::shared_ptr<QuesTarget> target) {
+    return addTarget(target->desc, target->event_flag, target->progress);
   }
   bool updateTarget(int targetid, int current) {
     if (targetid < 0 || targetid >= progress_target.size()) {

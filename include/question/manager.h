@@ -4,6 +4,7 @@
 #include "lock.h"
 #include "question/item.h"
 #include "question/pool.h"
+#include "question/target.h"
 #include "rapidjson/document.h"
 #include <algorithm>
 #include <memory>
@@ -15,7 +16,6 @@ public:
   static inline std::string DB_PREFIX = "gamedb;question";
 
 private:
-  TaskAvaliablePool avaliable_pool;
   TaskActivePool active_pool;
   TaskCompletePool complete_pool;
 
@@ -26,9 +26,7 @@ private:
 public:
   QuesManager() = default;
   QuesManager(std::shared_ptr<GJson> store) { set_store(store); }
-  QuesManager(const std::string &abaliableJson, const std::string &activeJson,
-              const std::string &completeJson) {
-    avaliable_pool.fromJSON(abaliableJson);
+  QuesManager(const std::string &activeJson, const std::string &completeJson) {
     active_pool.fromJSON(activeJson);
     complete_pool.fromJSON(completeJson);
   }
@@ -36,7 +34,6 @@ public:
     // std::lock_guard<std::recursive_mutex> lock(other.rw_mtx);
     auto reader = other.rwlock.unique_lock();
 
-    avaliable_pool = std::move(other.avaliable_pool);
     active_pool = std::move(other.active_pool);
     complete_pool = std::move(other.complete_pool);
     if (other.gjson_) {
@@ -52,44 +49,53 @@ public:
     gjson_ = g;
     load();
   }
-  void set_avaialable(const rapidjson::Value &data) {
-    avaliable_pool.fromJSONValue(data);
-  }
   void set_activate(const rapidjson::Value &data) {
     active_pool.fromJSONValue(data);
   }
   void set_complete(const rapidjson::Value &data) {
     complete_pool.fromJSONValue(data);
   }
-  bool addTask(int id) {
-    if (!avaliable_pool.add_task(std::make_shared<TaskItem>(id))) {
+
+  bool startTask(int id,
+                 std::vector<std::shared_ptr<QuesTarget>> targets = {}) {
+    if (active_pool.has_task(id)) {
+      // 不能重复开始
       return false;
     }
-    save();
-    return true;
+
+    auto task = std::make_shared<TaskItem>(id);
+    for (auto &target : targets) {
+      task->addTarget(target);
+    }
+    if (active_pool.add_task(task)) {
+      save();
+      return true;
+    }
+    return false;
   }
 
-  // currentProgress是增量形式
-  bool updateTaskTarget(int taskid, int targetid, int currentProgress) {
+  // currentProgress是增量形式内无
+  // 直接通过指定taskid以及targetid来更新具体的re
+  bool updateTaskTarget(int taskid, int targetid, int progress) {
     if (!active_pool.has_task(taskid)) {
       return false;
     }
-    if (!active_pool.updateTaskTarget(taskid, targetid, currentProgress)){
+    if (!active_pool.updateTaskTarget(taskid, targetid, progress)) {
       return false;
     }
     save();
     return true;
   }
-  bool addTaskTarget(int taskid, const std::string &desc, int targetProgress) {
-    // 只能在还未执行的时候才能添加新的目标
-    if (!avaliable_pool.has_task(taskid)) {
-      return false;
+  // 通过事件flag来判断哪些任务可以更新
+  void updateTaskTarget(const std::string &event_flag, int progress) {
+    for (auto task : active_pool.get_all_tasks()) {
+      // 获取event_flag在task->flags的位置
+      auto it = std::find(task->progress_flags.begin(),
+                          task->progress_flags.end(), event_flag);
+      if (it != task->progress_flags.end()) {
+        updateTaskTarget(task->id, it - task->progress_flags.begin(), progress);
+      }
     }
-    if (!avaliable_pool.addTaskTarget(taskid, desc, targetProgress)) {
-      return false;
-    }
-    save();
-    return true;
   }
   bool checkComplete(int taskId) const {
     if (!active_pool.has_task(taskId)) {
@@ -98,18 +104,6 @@ public:
     return active_pool.checkComplete(taskId);
   }
 
-  bool startTask(int id) {
-    if (!avaliable_pool.has_task(id)) {
-      return false;
-    }
-
-    auto task = avaliable_pool.remove_task(id);
-    if (task && active_pool.add_task(task)) {
-      save();
-      return true;
-    }
-    return false;
-  }
   bool completeTask(int id) {
     if (!active_pool.has_task(id)) {
       return false;
@@ -125,9 +119,6 @@ public:
     }
     return false;
   }
-  std::vector<int> get_available_task() const {
-    return avaliable_pool.get_all_id();
-  }
   std::vector<int> get_active_task() const { return active_pool.get_all_id(); }
   std::vector<int> get_complete_task() const {
     return complete_pool.get_all_id();
@@ -136,7 +127,6 @@ public:
 private:
   void save() {
     if (gjson_) {
-      gjson_->update(DB_PREFIX + ";avaliable", "~", avaliable_pool.toJSON());
       gjson_->update(DB_PREFIX + ";active", "~", active_pool.toJSON());
       gjson_->update(DB_PREFIX + ";complete", "~", complete_pool.toJSON());
     }
@@ -149,14 +139,10 @@ private:
     if (v == nullptr) {
       return;
     }
-    auto ava = gjson_->query_value(DB_PREFIX + ";avaliable");
     auto active = gjson_->query_value(DB_PREFIX + ";active");
     auto complete = gjson_->query_value(DB_PREFIX + ";complete");
 
     QuesManager other = QuesManager();
-    if (ava) {
-      other.set_avaialable(*ava);
-    }
     if (active) {
       other.set_activate(*active);
     }
