@@ -67,6 +67,7 @@ Value GJson::query_value_dynamic(const std::string &field) const {
   // Value *current = &raw_data;
   Value *current = const_cast<Value *>(static_cast<const Value *>(&raw_data));
 
+  Value temp;
   for (const auto &part : parts) {
     if (current == nullptr) {
       break;
@@ -89,17 +90,18 @@ Value GJson::query_value_dynamic(const std::string &field) const {
       std::vector<std::string> ops =
           split(part.substr(part.find('(') + 1, part.length() - idx - 2), '|');
       if (operation == "all") {
-        Value res(kArrayType);
+        temp.Clear();
+        temp.SetArray();
         for (size_t i = 0; i < current->Size(); ++i) {
           Value *t = getCompareElements(current->operator[](i), ops[0], ops[1],
                                         ops[2], false);
           if (t != nullptr) {
             Value tt;
             tt.CopyFrom(*t, raw_data.GetAllocator());
-            res.PushBack(tt, raw_data.GetAllocator());
+            temp.PushBack(tt, raw_data.GetAllocator());
           }
         }
-        current = &res;
+        current = &temp;
         continue;
       } else if (operation == "last") {
         current = getCompareElements(*current, ops[0], ops[1], ops[2], true);
@@ -108,26 +110,31 @@ Value GJson::query_value_dynamic(const std::string &field) const {
         current = getCompareElements(*current, ops[0], ops[1], ops[2], false);
         continue;
       } else if (operation == "random") {
+        // temp.Clear();
+        // temp.SetArray();
         size_t count = std::stoul(ops[0]);
-        Value randomVal = getRandomElements(*current, count);
-        current = &randomVal;
+        temp = getRandomElements(*current, count);
+        current = &temp;
+        break;
       } else if (operation == "condition") {
-        Value res(kArrayType);
+        temp.Clear();
+        temp.SetArray();
         for (size_t i = 0; i < current->Size(); ++i) {
           Value *t = checkCondition_(current->operator[](i), ops[0]);
           if (t != nullptr) {
             Value tt;
             tt.CopyFrom(*t, raw_data.GetAllocator());
-            res.PushBack(tt, raw_data.GetAllocator());
+            temp.PushBack(tt, raw_data.GetAllocator());
           }
         }
-        current = &res;
-        continue;
+        current = &temp;
+        break;
       } else if (operation == "branch") {
         // 判断current是不是object，是的话看有没有#branch分支，有的话遍历并进行检查
         if (current->IsObject() && current->HasMember("#branch") &&
             current->operator[]("#branch").IsArray()) {
-          Value res(kArrayType);
+          temp.Clear();
+          temp.SetArray();
           auto v = current->operator[]("#branch").GetArray();
           variantDict cur_state = variantDictFromJSON(ops[0]);
           for (size_t i = 0; i < v.Size(); ++i) {
@@ -149,10 +156,10 @@ Value GJson::query_value_dynamic(const std::string &field) const {
             if (t != nullptr) {
               Value tt;
               tt.CopyFrom(*t, raw_data.GetAllocator());
-              res.PushBack(tt, raw_data.GetAllocator());
+              temp.PushBack(tt, raw_data.GetAllocator());
             }
           }
-          current = &res;
+          current = &temp;
           continue;
         } else {
           current = nullptr;
