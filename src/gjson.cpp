@@ -6,6 +6,7 @@
 #include <shared_mutex>
 #include <sstream>
 #include <unordered_set>
+#include <vector>
 #if defined(_WIN32) || defined(_WIN64)
 #include <numeric>
 #endif
@@ -55,6 +56,8 @@ Value *GJson::query_value(const std::string &field) const {
   return current;
 }
 
+// #condition, 会检查#include、#exclude
+// #branch, condition:tag,...
 Value GJson::query_value_dynamic(const std::string &field) const {
   auto lock = rwlock.shared_lock();
 
@@ -126,9 +129,22 @@ Value GJson::query_value_dynamic(const std::string &field) const {
             current->operator[]("#branch").IsArray()) {
           Value res(kArrayType);
           auto v = current->operator[]("#branch").GetArray();
+          variantDict cur_state = variantDictFromJSON(ops[0]);
           for (size_t i = 0; i < v.Size(); ++i) {
             std::string name = v[i].GetString();
+            std::vector<std::string> name_parts = split(name, ':');
+            if (name_parts.size() == 2) {
+              // 第一部分是条件
+              if (!condition_.checkCondition(cur_state, name_parts[0])) {
+                // 不满足条件，不进入这个分支
+                continue;
+              }
+              name = name_parts[1];
+            } else if (name_parts.size() == 1) {
+              name = name_parts[0];
+            }
             Value vitem = query_value_dynamic(name);
+            // 满足条件了也需要检查
             Value *t = checkCondition_(vitem, ops[0]);
             if (t != nullptr) {
               Value tt;
@@ -311,17 +327,25 @@ Value *GJson::checkCondition_(Value &current, const std::string &data) const {
     return nullptr;
   }
 
-  if (!current.HasMember("#condition") || !current["#condition"].IsString()) {
+  if ((!current.HasMember("#include") || !current["#include"].IsString()) &&
+      (!current.HasMember("#exclude") || !current["#exclude"].IsString())) {
+    // 两个标签都没有就直接返回
     return &current;
   }
 
+  // #include判断是否包含，#exclude判断是否不包含，需要两个条件同时为true才返回
   variantDict data_dict = variantDictFromJSON(data);
-  std::string cond = current["#condition"].GetString();
-  if (condition_.checkCondition(data_dict, cond)) {
-    return &current;
-  } else {
+  std::string cond = current["#include"].GetString();
+  if (!condition_.checkCondition(data_dict, cond)) {
     return nullptr;
   }
+  if (current.HasMember("#exclude") && current["#exclude"].IsString()) {
+    std::string exclude_cond = current["#exclude"].GetString();
+    if (condition_.checkCondition(data_dict, exclude_cond)) {
+      return nullptr; // exclude满足条件则排除在外
+    }
+  }
+  return &current;
 }
 Value *GJson::getCompareElements(Value &current, const std::string &key,
                                  const std::string &op,
