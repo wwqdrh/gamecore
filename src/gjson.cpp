@@ -1,3 +1,4 @@
+#include "traits.h"
 #include <fstream>
 #include <iostream>
 #include <memory>
@@ -76,13 +77,14 @@ Value GJson::query_value_dynamic(const std::string &field) const {
       // example3: #last('age' | '', '>', 10),
       // 对于数组来说，如果第一个参数有值那么就是针对数组[字典]，寻找字典中满足大于10的最后一个元素，否组就是当前数组中的大于10的最后一个元素
       // example3: #first('age' | '', '>', 10), 同上
+      // #condition({"val": 1})
       // example3: #random
       // Special operation
       // 将part字符串()中的提取出来，并且使用,分割，并且获取#last()括号之前的字符串
       int idx = part.find('(');
       std::string operation = part.substr(1, idx - 1);
       std::vector<std::string> ops =
-          split(part.substr(part.find('(') + 1, part.length() - idx - 2), ',');
+          split(part.substr(part.find('(') + 1, part.length() - idx - 2), '|');
       if (operation == "all") {
         Value res(kArrayType);
         for (size_t i = 0; i < current->Size(); ++i) {
@@ -106,6 +108,18 @@ Value GJson::query_value_dynamic(const std::string &field) const {
         size_t count = std::stoul(ops[0]);
         Value randomVal = getRandomElements(*current, count);
         current = &randomVal;
+      } else if (operation == "condition") {
+        Value res(kArrayType);
+        for (size_t i = 0; i < current->Size(); ++i) {
+          Value *t = checkCondition_(current->operator[](i), ops[0]);
+          if (t != nullptr) {
+            Value tt;
+            tt.CopyFrom(*t, raw_data.GetAllocator());
+            res.PushBack(tt, raw_data.GetAllocator());
+          }
+        }
+        current = &res;
+        continue;
       }
     } else {
       // Normal key or index
@@ -270,7 +284,23 @@ Value GJson::getRandomElements(Value &current, size_t count) const {
   s.SetString("nodata");
   return s;
 }
+Value *GJson::checkCondition_(Value &current, const std::string &data) const {
+  if (!current.IsObject()) {
+    return nullptr;
+  }
 
+  if (!current.HasMember("#condition") || !current["#condition"].IsString()) {
+    return &current;
+  }
+
+  variantDict data_dict = variantDictFromJSON(data);
+  std::string cond = current["#condition"].GetString();
+  if (condition_.checkCondition(data_dict, cond)) {
+    return &current;
+  } else {
+    return nullptr;
+  }
+}
 Value *GJson::getCompareElements(Value &current, const std::string &key,
                                  const std::string &op,
                                  const std::string &value, bool rindex) const {

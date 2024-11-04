@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "dataclass.h"
+#include "traits.h"
 using namespace gamedb;
 class Person : public DataClass<Person> {
 private:
@@ -26,7 +27,7 @@ public:
 
 TEST(DataClassTest, TestFromMap) {
   Person p;
-  std::map<std::string, std::any> data = {{"name", "Alice"}, {"age", 30}};
+  variantDict data = {{"name", "Alice"}, {"age", 30}};
 
   p.fromMap(data);
 

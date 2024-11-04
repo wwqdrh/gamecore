@@ -5,6 +5,22 @@
 #include <type_traits>
 
 namespace gamedb {
+// =====
+// 类型标注
+// ====
+using variant =
+    std::variant<int, std::string, double, bool, std::vector<std::string>,
+                 std::vector<int>, std::vector<double>>;
+using variantDict = std::map<std::string, variant>;
+
+bool compareValues(const variant &v1, const variant &v2);
+bool isInVector(const variant &single, const variant &vec);
+variantDict variantDictFromJSON(const std::string &data);
+variantDict variantDictFromValue(const rapidjson::Value &data);
+double variantToDouble(const variant &value);
+// ====
+// traits
+//
 template <typename T> struct always_false : std::false_type {};
 
 // 判断variant类型

@@ -61,30 +61,35 @@ TEST(GJsonTest, ParseAndQueryWithFlag) {
   GJson json(R"([{
         "name": "user1",
         "age": 30,
-        "city": "New York"
+        "city": "New York",
+        "#condition": "lv>=3"
     },
     {
         "name": "John Doe",
         "age": 31,
-        "city": "New York"
+        "city": "New York",
+        "#condition": "lv>=4"
     },
     {
         "name": "user2",
         "age": 30,
-        "city": "New York"
+        "city": "New York",
+        "#condition": "lv>=5"
     },
     {
         "name": "John Doe",
         "age": 32,
-        "city": "New York"
+        "city": "New York",
+        "#condition": "lv>=6"
     }
     ])");
 
   // 使用 query 方法测试各种数据类型的获取
   ASSERT_TRUE(json.query_value("#random(2)") == nullptr);
   ASSERT_TRUE(json.query_value_dynamic("#random(2)").Size() == 2);
-  ASSERT_TRUE(json.query_value_dynamic("#all(age,=,30)").Size() == 2);
-  ASSERT_TRUE(json.query("#all(age,=,30)").length() > 0);
+  ASSERT_TRUE(json.query_value_dynamic("#all(age|=|30)").Size() == 2);
+  ASSERT_TRUE(json.query("#all(age|=|30)").length() > 0);
+  ASSERT_TRUE(json.query_value_dynamic("#condition({\"lv\":4})").Size() == 2);
 }
 
 TEST(GJsonTest, TypeConvert) {
@@ -298,9 +303,9 @@ TEST(GJsonTest, WatchBasicProperty) {
   json.update("ext;address", "~", newAddress);
   ASSERT_EQ(address_change, 1);
 
-  std::map<std::string, GJson::variant> newExt({{"address", "addressb"}});
+  std::map<std::string, gamedb::variant> newExt({{"address", "addressb"}});
   auto newExtVal =
-      GJson::toValue<std::map<std::string, GJson::variant>>(newExt, allo);
+      GJson::toValue<std::map<std::string, gamedb::variant>>(newExt, allo);
   json.update("ext", "~", newExtVal);
   ASSERT_EQ(address_change, 2);
 }

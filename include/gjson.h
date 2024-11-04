@@ -13,6 +13,7 @@
 #include <variant>
 #include <vector>
 
+#include "check.h"
 #include "lock.h"
 #include "rapidjson/document.h"
 #include "rapidjson/stringbuffer.h"
@@ -26,7 +27,6 @@ namespace gamedb {
 
 class GJson {
 public:
-  using variant = std::variant<int, std::string, double>;
   // 定义回调函数类型
   using CallbackFunc = std::function<void(const std::string &path,
                                           const rapidjson::Value *value)>;
@@ -34,6 +34,8 @@ public:
 private:
   mutable Document raw_data;
   std::shared_ptr<FileStore> store_;
+  ConditionParser
+      condition_; // 用于#conditon命令(在condition命令中传入json字符串用于检查)，检查当前json节点下#condition字段的条件
 
 private:
   // mutable std::recursive_mutex mutex_;
@@ -197,6 +199,7 @@ private:
   Value *traverse(Value &current, const std::string &key) const;
 
   Value getRandomElements(Value &current, size_t count) const;
+  Value *checkCondition_(Value &current, const std::string &data) const;
   Value *getCompareElements(Value &current, const std::string &key,
                             const std::string &op, const std::string &value,
                             bool rindex = false) const;
