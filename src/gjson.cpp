@@ -120,6 +120,28 @@ Value GJson::query_value_dynamic(const std::string &field) const {
         }
         current = &res;
         continue;
+      } else if (operation == "branch") {
+        // 判断current是不是object，是的话看有没有#branch分支，有的话遍历并进行检查
+        if (current->IsObject() && current->HasMember("#branch") &&
+            current->operator[]("#branch").IsArray()) {
+          Value res(kArrayType);
+          auto v = current->operator[]("#branch").GetArray();
+          for (size_t i = 0; i < v.Size(); ++i) {
+            std::string name = v[i].GetString();
+            Value vitem = query_value_dynamic(name);
+            Value *t = checkCondition_(vitem, ops[0]);
+            if (t != nullptr) {
+              Value tt;
+              tt.CopyFrom(*t, raw_data.GetAllocator());
+              res.PushBack(tt, raw_data.GetAllocator());
+            }
+          }
+          current = &res;
+          continue;
+        } else {
+          current = nullptr;
+          break;
+        }
       }
     } else {
       // Normal key or index

@@ -62,7 +62,8 @@ TEST(GJsonTest, ParseAndQueryWithFlag) {
         "name": "user1",
         "age": 30,
         "city": "New York",
-        "#condition": "lv>=3"
+        "#condition": "lv>=3",
+        "#branch": ["1", "3"]
     },
     {
         "name": "John Doe",
@@ -90,6 +91,7 @@ TEST(GJsonTest, ParseAndQueryWithFlag) {
   ASSERT_TRUE(json.query_value_dynamic("#all(age|=|30)").Size() == 2);
   ASSERT_TRUE(json.query("#all(age|=|30)").length() > 0);
   ASSERT_TRUE(json.query_value_dynamic("#condition({\"lv\":4})").Size() == 2);
+  ASSERT_TRUE(json.query_value_dynamic("0;#branch({\"lv\":4})").Size() == 1); // 检查#branch分支，判断是否满足condtion
 }
 
 TEST(GJsonTest, TypeConvert) {
