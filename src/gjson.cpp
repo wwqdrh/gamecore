@@ -68,6 +68,7 @@ Value GJson::query_value_dynamic(const std::string &field) const {
   Value *current = const_cast<Value *>(static_cast<const Value *>(&raw_data));
 
   Value temp;
+  temp.SetArray();
   for (const auto &part : parts) {
     if (current == nullptr) {
       break;
