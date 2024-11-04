@@ -9,6 +9,7 @@
 #include <shared_mutex>
 #include <sstream>
 #include <stdexcept>
+#include <unordered_set>
 #include <variant>
 #include <vector>
 
@@ -31,7 +32,7 @@ public:
                                           const rapidjson::Value *value)>;
 
 private:
-  Document raw_data;
+  mutable Document raw_data;
   std::shared_ptr<FileStore> store_;
 
 private:
@@ -143,6 +144,8 @@ public:
   std::string query(const std::string &field) const; // 返回的是json字符串
   // 查询指定字段的值并返回特定类型
   Value *query_value(const std::string &field) const;
+  Value query_value_dynamic(
+      const std::string &field) const; // 不是json数中的，是构造的
   template <typename T> T queryT(const std::string &field) const {
     Value *current = query_value(field);
     if (current == nullptr) {
@@ -161,7 +164,8 @@ public:
     Value v = toValue(val, allo);
     return update(field, action, v);
   }
-  bool update(const std::string &field, const std::string &action, const std::string &val);
+  bool update(const std::string &field, const std::string &action,
+              const std::string &val);
   bool update(const std::string &field, const std::string &action, Value &val) {
     auto write = rwlock.unique_lock();
 
@@ -177,9 +181,10 @@ public:
     return res;
   }
 
-
 private:
   void trigger_callbacks(const std::string &field);
+  bool check_object_(Value &curr, const std::string &key, const std::string &op,
+                     const std::string &value) const;
   // 获取所有需要触发的回调
   void collect_affected_callbacks(
       TrieNode *node, const std::string &base_path,

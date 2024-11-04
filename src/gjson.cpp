@@ -1,5 +1,6 @@
 #include <fstream>
 #include <iostream>
+#include <memory>
 #include <mutex>
 #include <shared_mutex>
 #include <sstream>
@@ -38,62 +39,88 @@ Value *GJson::query_value(const std::string &field) const {
       continue;
 
     if (part[0] == '#') {
-      // Special operation
-      // example1: #(a=1)
-      // example2: #(@=name), 对于object来说，寻找key为name所对应的值
-      // example3: #last('age' | '', '>', 10),
-      // 对于数组来说，如果第一个参数有值那么就是针对数组[字典]，寻找字典中满足大于10的最后一个元素，否组就是当前数组中的大于10的最后一个元素
-      // example3: #first('age' | '', '>', 10), 同上
-      // example3: #random
-      if (part[1] == '(' && part.back() == ')') {
-        // Case 3: Condition within parentheses
-        std::string condition = part.substr(2, part.length() - 1 - 2);
-        std::cout << condition << std::endl;
-        std::vector<std::string> condParts = split(condition, '=');
-        if (condParts.size() != 2) {
-          // std::cerr << "Invalid condition format: " << condition <<
-          // std::endl;
-          continue;
-        }
-
-        if (current->IsObject() && condParts[0] == "@") {
-          for (auto it = current->MemberBegin(); it != current->MemberEnd();
-               ++it) {
-            if (it->name.IsString() && it->name.GetString() == condParts[1]) {
-              current = &it->value;
-              break;
-            }
-          }
-        }
-      } else {
-        // Special operation
-        // 将part字符串()中的提取出来，并且使用,分割，并且获取#last()括号之前的字符串
-        std::string operation = part.substr(1, part.find('(') - 1);
-        std::vector<std::string> ops =
-            split(part.substr(part.find('(') + 1, part.length() - 2), ',');
-        if (operation == "last") {
-          current = getCompareElements(*current, ops[0], ops[1], ops[2], true);
-          continue;
-        } else if (operation == "first") {
-          current = getCompareElements(*current, ops[0], ops[1], ops[2], false);
-          continue;
-        } else if (operation == "random") {
-          size_t count = std::stoul(ops[0]);
-          Value randomVal = getRandomElements(*current, count);
-          current = &randomVal;
-        }
-      }
+      // 有动态请求请使用query_valud_dynamic方法
+      return nullptr;
     } else {
       // Normal key or index
       Value *next = traverse(*current, part);
       if (next == nullptr) {
-        return next;
+        return nullptr;
       }
       current = next;
     }
   }
   // std::cout << current->Size() << std::endl;
   return current;
+}
+
+Value GJson::query_value_dynamic(const std::string &field) const {
+  auto lock = rwlock.shared_lock();
+
+  std::vector<std::string> parts = split(field, ';');
+  // Value curr_data;
+  // curr_data.CopyFrom(raw_data, raw_data.GetAllocator());
+  // Value *current = &raw_data;
+  Value *current = const_cast<Value *>(static_cast<const Value *>(&raw_data));
+
+  for (const auto &part : parts) {
+    if (current == nullptr) {
+      break;
+    }
+    if (part.empty())
+      continue;
+
+    if (part[0] == '#') {
+      // Special operation
+      // example1: #(a=1)
+      // example3: #last('age' | '', '>', 10),
+      // 对于数组来说，如果第一个参数有值那么就是针对数组[字典]，寻找字典中满足大于10的最后一个元素，否组就是当前数组中的大于10的最后一个元素
+      // example3: #first('age' | '', '>', 10), 同上
+      // example3: #random
+      // Special operation
+      // 将part字符串()中的提取出来，并且使用,分割，并且获取#last()括号之前的字符串
+      int idx = part.find('(');
+      std::string operation = part.substr(1, idx - 1);
+      std::vector<std::string> ops =
+          split(part.substr(part.find('(') + 1, part.length() - idx - 2), ',');
+      if (operation == "all") {
+        Value res(kArrayType);
+        for (size_t i = 0; i < current->Size(); ++i) {
+          Value *t = getCompareElements(current->operator[](i), ops[0], ops[1],
+                                        ops[2], false);
+          if (t != nullptr) {
+            Value tt;
+            tt.CopyFrom(*t, raw_data.GetAllocator());
+            res.PushBack(tt, raw_data.GetAllocator());
+          }
+        }
+        current = &res;
+        continue;
+      } else if (operation == "last") {
+        current = getCompareElements(*current, ops[0], ops[1], ops[2], true);
+        continue;
+      } else if (operation == "first") {
+        current = getCompareElements(*current, ops[0], ops[1], ops[2], false);
+        continue;
+      } else if (operation == "random") {
+        size_t count = std::stoul(ops[0]);
+        Value randomVal = getRandomElements(*current, count);
+        current = &randomVal;
+      }
+    } else {
+      // Normal key or index
+      Value *next = traverse(*current, part);
+      current = next;
+      if (next == nullptr) {
+        break;
+      }
+    }
+  }
+  // std::cout << current->Size() << std::endl;
+  StringBuffer buffer;
+  Writer<StringBuffer> writer(buffer);
+  current->Accept(writer);
+  return toValue(buffer.GetString());
 }
 
 // 解析传入的查询参数
@@ -106,14 +133,14 @@ Value *GJson::query_value(const std::string &field) const {
 std::string GJson::query(const std::string &field) const {
   auto lock = rwlock.shared_lock();
 
-  Value *current = query_value(field);
-  if (current == nullptr) {
+  Value current = query_value_dynamic(field);
+  if (current.IsNull()) {
     return "";
   }
   // std::cout << current->Size() << std::endl;
   StringBuffer buffer;
   Writer<StringBuffer> writer(buffer);
-  current->Accept(writer);
+  current.Accept(writer);
   return buffer.GetString();
 }
 
@@ -277,33 +304,53 @@ Value *GJson::getCompareElements(Value &current, const std::string &key,
           return &current[i];
         }
       } else if (current[i].IsObject()) {
-        if (current[i].HasMember(key.c_str())) {
-          if (current[i][key.c_str()].IsString()) {
-            if (current[i][key.c_str()].GetString() == value) {
-              return &current[i];
-            }
-          } else if (current[i][key.c_str()].IsInt()) {
-            bool res = false;
-            int cur_val = current[i][key.c_str()].GetInt();
-            int target_val = std::stoul(value);
-            if (op == "=")
-              res = target_val == cur_val;
-            if (op == ">")
-              res = target_val > cur_val;
-            if (op == "<")
-              res = target_val < cur_val;
-            if (res) {
-              return &current[i];
-            }
-          }
+        if (check_object_(current[i], key, op, value)) {
+          return &current[i];
+        } else {
+          return nullptr;
         }
       } else {
         return nullptr;
       }
     }
     return nullptr;
+  } else if (current.IsObject()) {
+    if (check_object_(current, key, op, value)) {
+      return &current;
+    } else {
+      return nullptr;
+    }
   }
   return nullptr;
+}
+
+bool GJson::check_object_(Value &curr, const std::string &key,
+                          const std::string &op,
+                          const std::string &value) const {
+  if (!curr.IsObject()) {
+    return false;
+  }
+  if (curr.HasMember(key.c_str())) {
+    if (curr[key.c_str()].IsString()) {
+      if (curr[key.c_str()].GetString() == value) {
+        return true;
+      }
+    } else if (curr[key.c_str()].IsInt()) {
+      bool res = false;
+      int cur_val = curr[key.c_str()].GetInt();
+      int target_val = std::stoul(value);
+      if (op == "=")
+        res = target_val == cur_val;
+      if (op == ">")
+        res = target_val > cur_val;
+      if (op == "<")
+        res = target_val < cur_val;
+      if (res) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 void GJson::update_from_file(const std::string &filename) {

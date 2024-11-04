@@ -89,7 +89,12 @@ public:
   }
   // 通过事件flag来判断哪些任务可以更新
   void updateTaskTarget(const std::string &event_flag, int progress) {
-    for (auto task : active_pool.get_all_tasks()) {
+    auto tasks = active_pool.get_all_tasks();
+    for (int i = 0; i < tasks.size(); i++) {
+      auto task = tasks[i];
+      if (!task) {
+        continue;
+      }
       // 获取event_flag在task->flags的位置
       auto it = std::find(task->progress_flags.begin(),
                           task->progress_flags.end(), event_flag);
@@ -106,6 +111,9 @@ public:
   }
 
   bool completeTask(int id) {
+    if (complete_pool.has_task(id)) {
+      return true;
+    }
     if (!active_pool.has_task(id)) {
       return false;
     }
@@ -120,7 +128,7 @@ public:
     }
     return false;
   }
-  const std::vector<std::shared_ptr<TaskItem>> &get_active_task() const {
+  std::vector<std::shared_ptr<TaskItem>> get_active_task() const {
     return active_pool.get_all_tasks();
   }
   std::vector<int> get_active_task_ids() const {

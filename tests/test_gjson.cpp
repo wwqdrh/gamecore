@@ -37,6 +37,8 @@ TEST(GJsonTest, ParseAndQuery) {
   EXPECT_EQ(json.query("city"), "\"New York\"");
   EXPECT_EQ(json.query("is_student"), "false");
   EXPECT_EQ(json.query("grades;0"), "85");
+  EXPECT_TRUE(json.query("grades").length() > 0);
+  EXPECT_TRUE(json.query("address").length() > 0);
   EXPECT_EQ(json.query("address;street"), "\"123 Main St\"");
   EXPECT_TRUE(json.has("address;street"));
   EXPECT_FALSE(json.has("address;streeterr"));
@@ -52,6 +54,37 @@ TEST(GJsonTest, ParseAndQuery) {
   // std::cout << json2.query("") << std::endl;
   EXPECT_TRUE(json2.query("").length() > 2);
   EXPECT_EQ(json2.query("1;name"), "\"任务1\"");
+}
+
+TEST(GJsonTest, ParseAndQueryWithFlag) {
+  // 创建一个 GJson 对象
+  GJson json(R"([{
+        "name": "user1",
+        "age": 30,
+        "city": "New York"
+    },
+    {
+        "name": "John Doe",
+        "age": 31,
+        "city": "New York"
+    },
+    {
+        "name": "user2",
+        "age": 30,
+        "city": "New York"
+    },
+    {
+        "name": "John Doe",
+        "age": 32,
+        "city": "New York"
+    }
+    ])");
+
+  // 使用 query 方法测试各种数据类型的获取
+  ASSERT_TRUE(json.query_value("#random(2)") == nullptr);
+  ASSERT_TRUE(json.query_value_dynamic("#random(2)").Size() == 2);
+  ASSERT_TRUE(json.query_value_dynamic("#all(age,=,30)").Size() == 2);
+  ASSERT_TRUE(json.query("#all(age,=,30)").length() > 0);
 }
 
 TEST(GJsonTest, TypeConvert) {

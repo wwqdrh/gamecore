@@ -109,9 +109,7 @@ public:
   //   }
   // }
 
-  const std::vector<std::shared_ptr<TaskItem>> &get_all_tasks() {
-    return tasks;
-  }
+  std::vector<std::shared_ptr<TaskItem>> get_all_tasks() { return tasks; }
 };
 
 class TaskAvaliablePool : public TaskPool {};

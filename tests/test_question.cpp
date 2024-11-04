@@ -13,11 +13,10 @@ using namespace gamedb;
 TEST(QuestionTest, TestBasic) {
   QuesManager ques;
   std::vector<int> ava_ids;
-  std::vector<int> active_ids;
 
   ASSERT_TRUE(ques.startTask(1, {}));  // 添加一个active任务
   ASSERT_FALSE(ques.startTask(1, {})); // 添加一个active任务
-  active_ids = ques.get_active_task();
+  auto active_ids = ques.get_active_task();
   ASSERT_EQ(active_ids.size(), 1);
   // ASSERT_FALSE(ques.startTask(2)); // 不存在的任务不能开始
   ASSERT_TRUE(ques.completeTask(
@@ -54,7 +53,6 @@ TEST(QuestionTest, TestLoadFile) {
   ques.set_store(json);
 
   // std::vector<int> ava_ids;
-  std::vector<int> active_ids;
   std::cout << json->query("") << std::endl;
   // ASSERT_TRUE(ques.addTask(1));
   // ava_ids = ques.get_available_task();
@@ -63,7 +61,7 @@ TEST(QuestionTest, TestLoadFile) {
   ASSERT_TRUE(ques.startTask(1)); // 开始任务
   // ava_ids = ques.get_available_task();
   // ASSERT_EQ(ava_ids.size(), 0);
-  active_ids = ques.get_active_task();
+  auto active_ids = ques.get_active_task();
   ASSERT_EQ(active_ids.size(), 1);
   // ASSERT_FALSE(ques.startTask(2));
   ASSERT_TRUE(ques.completeTask(1));  // 完成任务
