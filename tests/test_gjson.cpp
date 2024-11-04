@@ -91,10 +91,48 @@ TEST(GJsonTest, ParseAndQueryWithFlag) {
   ASSERT_TRUE(json.query_value_dynamic("#random(2)").Size() == 2);
   ASSERT_TRUE(json.query_value_dynamic("#all(age|=|30)").Size() == 2);
   ASSERT_TRUE(json.query("#all(age|=|30)").length() > 0);
-  ASSERT_TRUE(json.query_value_dynamic("#condition({\"lv\":4})").Size() == 2); // 0和1
-  ASSERT_TRUE(json.query_value_dynamic("#condition({\"lv\":4,\"age\":35})").Size() == 1); // 0
-  ASSERT_TRUE(json.query_value_dynamic("0;#branch({\"lv\":4})").Size() == 1); // 检查#branch分支，判断是否满足condtion
-  ASSERT_TRUE(json.query_value_dynamic("0;#branch({\"lv\":5})").Size() == 2); // 满足branch条件，可以去2分支
+  ASSERT_TRUE(json.query_value_dynamic("#condition({\"lv\":4})").Size() ==
+              2); // 0和1
+  ASSERT_TRUE(
+      json.query_value_dynamic("#condition({\"lv\":4,\"age\":35})").Size() ==
+      1); // 0
+  ASSERT_TRUE(json.query_value_dynamic("0;#branch({\"lv\":4})").Size() ==
+              1); // 检查#branch分支，判断是否满足condtion
+  ASSERT_TRUE(json.query_value_dynamic("0;#branch({\"lv\":5})").Size() ==
+              2); // 满足branch条件，可以去2分支
+
+  // test2
+  GJson json2(R"(
+  [
+	{
+		"id": 10001,
+		"event": "你出生了，是个男孩。",
+		"#include": "AGE=0",
+		"#exclude": "TLT?[1004,1024,1025,1113]"
+	},
+	{
+		"id": 10002,
+		"event": "你出生了，是个女孩。",
+		"#include": "AGE=0",
+		"#exclude": "TLT?[1003,1024,1025]"
+	},
+	{
+		"id": 10003,
+		"event": "你生了场重病。",
+		"postEvent": "家里花了不少钱。",
+		"effect": {
+			"MNY": -1,
+			"SPR": -1
+		},
+		"#exclude": "STR>6",
+		"#branch": [
+			"TLT?[1001]:10004",
+			"STR<2&MNY<3:10000"
+		]
+	}
+]
+  )");
+  std::cout << json2.query("#condition({\"AGE\":0})") << std::endl;
 }
 
 TEST(GJsonTest, TypeConvert) {

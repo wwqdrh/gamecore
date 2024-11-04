@@ -335,9 +335,11 @@ Value *GJson::checkCondition_(Value &current, const std::string &data) const {
 
   // #include判断是否包含，#exclude判断是否不包含，需要两个条件同时为true才返回
   variantDict data_dict = variantDictFromJSON(data);
-  std::string cond = current["#include"].GetString();
-  if (!condition_.checkCondition(data_dict, cond)) {
-    return nullptr;
+  if (current.HasMember("#include") && current["#include"].IsString()) {
+    std::string cond = current["#include"].GetString();
+    if (!condition_.checkCondition(data_dict, cond)) {
+      return nullptr;
+    }
   }
   if (current.HasMember("#exclude") && current["#exclude"].IsString()) {
     std::string exclude_cond = current["#exclude"].GetString();
