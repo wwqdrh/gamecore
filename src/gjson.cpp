@@ -253,10 +253,14 @@ Value GJson::query_value_dynamic(const std::string &field) const {
     }
   }
   // std::cout << current->Size() << std::endl;
-  StringBuffer buffer;
-  Writer<StringBuffer> writer(buffer);
-  current->Accept(writer);
-  return toValue(buffer.GetString());
+  if (current != nullptr) {
+    StringBuffer buffer;
+    Writer<StringBuffer> writer(buffer);
+    current->Accept(writer);
+    return toValue(buffer.GetString());
+  } else {
+    return toValue("");
+  }
 }
 
 // 解析传入的查询参数
