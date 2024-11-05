@@ -225,7 +225,8 @@ Value GJson::query_value_dynamic(const std::string &field) const {
           break;
         }
 
-        std::mt19937 gen(rd); // 使用 Mersenne Twister 19937 引擎
+        std::random_device rd; // 使用硬件生成随机数种子
+        std::mt19937 gen(rd());  // 使用 Mersenne Twister 19937 引擎
         // 定义范围 1 到 n 的均匀分布
         std::uniform_int_distribution<> distrib(1, int(_event_weight_total));
         // 生成随机数

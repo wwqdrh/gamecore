@@ -29,9 +29,7 @@ class GJson {
 public:
   // 定义回调函数类型
   using CallbackFunc = std::function<void(const std::string &path,
-                                          const rapidjson::Value *value)>;
-  std::random_device rd;  // 使用硬件生成随机数种子
-  
+                                          const rapidjson::Value *value)>;  
 private:
   mutable Document raw_data;
   std::shared_ptr<FileStore> store_;
