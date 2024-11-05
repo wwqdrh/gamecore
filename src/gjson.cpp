@@ -197,19 +197,19 @@ Value GJson::query_value_dynamic(const std::string &field) const {
           }
         }
         auto v = current->operator[]("#weight").GetArray();
-        int _event_weight_total = 0;
-        std::vector<std::pair<std::string, int>> events;
+        double _event_weight_total = 0;
+        std::vector<std::pair<std::string, double>> events;
         for (size_t i = 0; i < v.Size(); ++i) {
           if (i < joined.size() && !joined[i]) {
             continue;
           }
-          int weight = 1;
+          double weight = 1.0;
           std::string eid = "";
           if (v[i].IsString()) {
             std::vector<std::string> parts = split(v[i].GetString(), '*');
             eid = parts[0];
             if (parts.size() == 2) {
-              weight = std::stoi(parts[1]);
+              weight = variantToDouble(parts[1]);
             }
             _event_weight_total += weight;
 
@@ -225,7 +225,11 @@ Value GJson::query_value_dynamic(const std::string &field) const {
           break;
         }
 
-        int r = rand() % _event_weight_total;
+        std::mt19937 gen(rd); // 使用 Mersenne Twister 19937 引擎
+        // 定义范围 1 到 n 的均匀分布
+        std::uniform_int_distribution<> distrib(1, int(_event_weight_total));
+        // 生成随机数
+        int r = distrib(gen);
         bool found = false;
         for (auto &event : events) {
           if (r < event.second) {
