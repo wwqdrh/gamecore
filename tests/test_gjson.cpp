@@ -107,7 +107,6 @@ TEST(GJsonTest, ParseAndQueryWithFlag) {
 	{
 		"id": 10001,
 		"event": "你出生了，是个男孩。",
-		"#include": "AGE=0",
 		"#exclude": "TLT?[1004,1024,1025,1113]"
 	},
 	{
@@ -135,6 +134,7 @@ TEST(GJsonTest, ParseAndQueryWithFlag) {
 ]
   )");
   std::cout << json2.query("#condition({\"AGE\":0})") << std::endl;
+  std::cout << json2.query("0;#condition({\"AGE\":0})") << std::endl;
   ASSERT_TRUE(json2.query("#first(id|=|10002);#weight(001)") ==
               "\"102\""); // 必定是102，因为前面两个不参与计算
   ASSERT_TRUE(json2.query("#first(id|=|10003);#weight()") ==

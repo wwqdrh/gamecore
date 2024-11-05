@@ -120,18 +120,30 @@ Value GJson::query_value_dynamic(const std::string &field) const {
         current = &temp;
         break;
       } else if (operation == "condition") {
-        temp.Clear();
-        temp.SetArray();
-        for (size_t i = 0; i < current->Size(); ++i) {
-          Value *t = checkCondition_(current->operator[](i), ops[0]);
-          if (t != nullptr) {
-            Value tt;
-            tt.CopyFrom(*t, raw_data.GetAllocator());
-            temp.PushBack(tt, raw_data.GetAllocator());
+        if (current->IsArray()) {
+          temp.Clear();
+          temp.SetArray();
+          for (size_t i = 0; i < current->Size(); ++i) {
+            Value *t = checkCondition_(current->operator[](i), ops[0]);
+            if (t != nullptr) {
+              Value tt;
+              tt.CopyFrom(*t, raw_data.GetAllocator());
+              temp.PushBack(tt, raw_data.GetAllocator());
+            }
           }
+          current = &temp;
+          break;
+        } else if (current->IsObject()) {
+          Value *t = checkCondition_(*current, ops[0]);
+          if (t == nullptr) {
+            current = nullptr;
+            break;
+          }
+        } else {
+          current = nullptr;
+          break;
         }
-        current = &temp;
-        break;
+
       } else if (operation == "branch") {
         // 判断current是不是object，是的话看有没有#branch分支，有的话遍历并进行检查
         if (current->IsObject() && current->HasMember("#branch") &&
