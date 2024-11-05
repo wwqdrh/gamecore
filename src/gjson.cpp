@@ -204,12 +204,20 @@ Value GJson::query_value_dynamic(const std::string &field) const {
             continue;
           }
           int weight = 1;
-          std::vector<std::string> parts = split(v[i].GetString(), '*');
-          std::string eid = parts[0];
-          if (parts.size() == 2) {
-            weight = std::stoi(parts[1]);
+          std::string eid = "";
+          if (v[i].IsString()) {
+            std::vector<std::string> parts = split(v[i].GetString(), '*');
+            eid = parts[0];
+            if (parts.size() == 2) {
+              weight = std::stoi(parts[1]);
+            }
+            _event_weight_total += weight;
+
+          } else if (v[i].IsInt()) {
+            eid = std::to_string(v[i].GetInt());
+          } else if (v[i].IsDouble()) {
+            eid = std::to_string(int(v[i].GetDouble()));
           }
-          _event_weight_total += weight;
           events.push_back({eid, weight});
         }
         if (events.size() == 0) {
