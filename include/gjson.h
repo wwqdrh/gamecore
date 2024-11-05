@@ -76,6 +76,9 @@ public:
   rapidjson::Document::AllocatorType get_alloctor() {
     return raw_data.GetAllocator();
   }
+  bool check_condition(Value &val, const std::string &data) {
+    return checkCondition_(val, data) != nullptr;
+  }
 
   void update_from_file(const std::string &filename);
   void update_from_string(const std::string &data);

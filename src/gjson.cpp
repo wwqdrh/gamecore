@@ -6,6 +6,7 @@
 #include <shared_mutex>
 #include <sstream>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 #if defined(_WIN32) || defined(_WIN64)
 #include <numeric>
@@ -69,6 +70,7 @@ Value GJson::query_value_dynamic(const std::string &field) const {
 
   Value temp;
   temp.SetArray();
+  Value str_temp;
   for (const auto &part : parts) {
     if (current == nullptr) {
       break;
@@ -164,6 +166,60 @@ Value GJson::query_value_dynamic(const std::string &field) const {
           continue;
         } else {
           current = nullptr;
+          break;
+        }
+      } else if (operation == "weight") {
+        // ["100*1", 1001, "1002*9", 1003*9999]
+        // 计算概率，并且使用10二进制对应某个位置上是否参与计算
+
+        if (!current->IsObject() || !current->HasMember("#weight") ||
+            !current->operator[]("#weight").IsArray()) {
+          current = nullptr;
+          break;
+        }
+
+        std::vector<bool> joined;
+        if (ops.size() > 0) {
+          for (auto ch : ops[0]) {
+            joined.push_back(ch == '1');
+          }
+        }
+        auto v = current->operator[]("#weight").GetArray();
+        int _event_weight_total = 0;
+        std::vector<std::pair<std::string, int>> events;
+        for (size_t i = 0; i < v.Size(); ++i) {
+          if (i < joined.size() && !joined[i]) {
+            continue;
+          }
+          int weight = 1;
+          std::vector<std::string> parts = split(v[i].GetString(), '*');
+          std::string eid = parts[0];
+          if (parts.size() == 2) {
+            weight = std::stoi(parts[1]);
+          }
+          _event_weight_total += weight;
+          events.push_back({eid, weight});
+        }
+        if (events.size() == 0) {
+          current = nullptr;
+          break;
+        }
+
+        int r = rand() % _event_weight_total;
+        bool found = false;
+        for (auto &event : events) {
+          if (r < event.second) {
+            str_temp.SetString(event.first.c_str(), raw_data.GetAllocator());
+            current = &str_temp;
+            found = true;
+            break;
+          }
+        }
+
+        if (!found) {
+          str_temp.SetString(events.back().first.c_str(),
+                             raw_data.GetAllocator());
+          current = &str_temp;
           break;
         }
       }
@@ -392,8 +448,6 @@ Value *GJson::getCompareElements(Value &current, const std::string &key,
       } else if (current[i].IsObject()) {
         if (check_object_(current[i], key, op, value)) {
           return &current[i];
-        } else {
-          return nullptr;
         }
       } else {
         return nullptr;
@@ -426,11 +480,20 @@ bool GJson::check_object_(Value &curr, const std::string &key,
       int cur_val = curr[key.c_str()].GetInt();
       int target_val = std::stoul(value);
       if (op == "=")
-        res = target_val == cur_val;
-      if (op == ">")
-        res = target_val > cur_val;
-      if (op == "<")
-        res = target_val < cur_val;
+        res = variantToDouble(target_val) == variantToDouble(cur_val) ||
+              target_val == cur_val;
+      else if (op == ">")
+        res = variantToDouble(target_val) > variantToDouble(cur_val) ||
+              target_val > cur_val;
+      else if (op == ">=")
+        res = variantToDouble(target_val) >= variantToDouble(cur_val) ||
+              target_val >= cur_val;
+      else if (op == "<")
+        res = variantToDouble(target_val) < variantToDouble(cur_val) ||
+              target_val < cur_val;
+      else if (op == "<=")
+        res = variantToDouble(target_val) <= variantToDouble(cur_val) ||
+              target_val <= cur_val;
       if (res) {
         return true;
       }
