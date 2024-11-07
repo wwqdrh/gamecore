@@ -18,6 +18,7 @@ public:
     addMember("flag", &QuesTarget::event_flag);
     addMember("progress", &QuesTarget::progress);
   }
+  ~QuesTarget() = default;
   explicit QuesTarget(const std::string &data) : QuesTarget() {
     fromJson(data);
   }

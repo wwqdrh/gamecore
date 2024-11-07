@@ -29,6 +29,7 @@ public:
   }
 
 public:
+  ~ConditionParser() = default;
   bool checkCondition(const variantDict &property,
                       const std::string &condition) const {
     auto conditions = parseCondition(condition);

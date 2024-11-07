@@ -25,6 +25,7 @@ public:
       ""}; // 判断是否完成的表达式，与progress不同在于这个更像0，1
 
   Task() {}
+  ~Task() = default;
 
   bool is_null() { return this->id == 0; }
 

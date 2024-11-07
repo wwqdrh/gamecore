@@ -11,6 +11,7 @@ private:
   std::vector<std::shared_ptr<TaskItem>> tasks;
 
 public:
+  ~TaskPool() = default;
   std::string toJSON() const { return TaskItem::toJsonArr(tasks); }
 
   void fromJSON(const std::string &data) {

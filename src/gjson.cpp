@@ -225,8 +225,8 @@ Value GJson::query_value_dynamic(const std::string &field) const {
           break;
         }
 
-        std::random_device rd; // 使用硬件生成随机数种子
-        std::mt19937 gen(rd());  // 使用 Mersenne Twister 19937 引擎
+        std::random_device rd;  // 使用硬件生成随机数种子
+        std::mt19937 gen(rd()); // 使用 Mersenne Twister 19937 引擎
         // 定义范围 1 到 n 的均匀分布
         std::uniform_int_distribution<> distrib(1, int(_event_weight_total));
         // 生成随机数
@@ -530,28 +530,6 @@ bool GJson::check_object_(Value &curr, const std::string &key,
   }
   return false;
 }
-
-void GJson::update_from_file(const std::string &filename) {
-  auto l = rwlock.unique_lock();
-
-  std::ifstream file(filename);
-  if (!file.is_open()) {
-    raw_data.Parse("{}");
-    return;
-  }
-  std::stringstream buffer;
-  buffer << file.rdbuf();
-  file.close();
-  // update("", "~", buffer.str().c_str()); // 直接覆盖
-  raw_data.Parse(buffer.str().c_str());
-}
-
-void GJson::update_from_string(const std::string &data) {
-  auto l = rwlock.unique_lock();
-  // update("", "~", data); // 直接覆盖
-  raw_data.Parse(data.c_str());
-}
-
 bool GJson::update(const std::string &field, const std::string &action,
                    const std::string &val) {
   auto v = toValue(val);
@@ -791,6 +769,16 @@ void GJson::collect_affected_callbacks(
     }
     new_path += child.first;
     collect_affected_callbacks(child.second.get(), new_path, callbacks);
+  }
+}
+
+void GJson::trigger_all_callbacks() {
+  // 遍历callback_trie_树节点，并且保留路径上的名字，如果is_endpoint为true，获取整个路径名用于数据查询，将这个数据传给callbacks上
+  std::vector<std::pair<std::string, CallbackFunc>> callbacks_to_trigger;
+  collect_affected_callbacks(callback_trie_.get(), "", callbacks_to_trigger);
+  for (const auto &[callback_path, callback] : callbacks_to_trigger) {
+    const rapidjson::Value *callback_value = query_value(callback_path);
+    callback(callback_path, callback_value);
   }
 }
 

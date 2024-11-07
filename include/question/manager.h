@@ -25,6 +25,7 @@ private:
 
 public:
   QuesManager() = default;
+  ~QuesManager() {}
   QuesManager(std::shared_ptr<GJson> store) { set_store(store); }
   QuesManager(const std::string &activeJson, const std::string &completeJson) {
     active_pool.fromJSON(activeJson);

@@ -59,6 +59,7 @@ protected:
   }
 
 public:
+  ~DataClass() = default;
   void fromMap(const variantDict &data) {
     for (const auto &[key, value] : data) {
       if (setters.find(key) != setters.end()) {

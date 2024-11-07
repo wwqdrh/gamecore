@@ -25,7 +25,7 @@ public:
   FileStore(LoadHandler &&loadHandler, SaveHandler &&saveHandler)
       : customLoadHandler_(std::move(loadHandler)),
         customSaveHandler_(std::move(saveHandler)) {}
-
+  ~FileStore() {}
   // 单独设置自定义处理函数的方法
   void setCustomLoadHandler(LoadHandler handler) {
     customLoadHandler_ = std::move(handler);

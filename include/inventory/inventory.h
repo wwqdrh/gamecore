@@ -40,6 +40,7 @@ private:
 
 public:
   Inventory() = default;
+  ~Inventory() = default;
   Inventory(std::string name, std::shared_ptr<GJson> store) : name(name) {
     set_store(store);
   }

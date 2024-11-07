@@ -17,6 +17,7 @@ private:
   std::map<K, std::chrono::system_clock::time_point> key_to_time;
 
 public:
+  ~TimedOrderedMap() {}
   // 插入或更新元素
   void insert(const K &key, const V &value) {
     auto now = std::chrono::system_clock::now();

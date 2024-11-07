@@ -15,6 +15,7 @@ private:
 
 public:
   Slot() = default;
+  ~Slot() = default;
   // std::string get_name() const { return item.name; }
   // int get_goodid() const { return item.id; }
   // int get_count() const { return count; }

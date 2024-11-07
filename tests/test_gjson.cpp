@@ -1,6 +1,7 @@
 #include <atomic>
 #include <fstream>
 #include <functional>
+#include <iostream>
 #include <map>
 #include <memory>
 #include <string>
@@ -45,8 +46,7 @@ TEST(GJsonTest, ParseAndQuery) {
 
   // update_from_function
   // !! 不能有多余逗号。否则不能解析
-  GJson json2;
-  json2.update_from_string(R"({
+  GJson json2(R"({
 	"1": {
 		"name": "任务1"
 	}
@@ -357,4 +357,25 @@ TEST(GJsonTest, WatchBasicProperty) {
       GJson::toValue<std::map<std::string, gamedb::variant>>(newExt, allo);
   json.update("ext", "~", newExtVal);
   ASSERT_EQ(address_change, 2);
+}
+
+TEST(GJsonTest, WatchBasicPropertyAndReimport) {
+  GJson json(R"({
+    "value": 1
+})");
+  ASSERT_TRUE(!json.HasParseError());
+
+  int address_change = 0;
+  json.subscribe("value", [&address_change](const std::string &path,
+                                            const rapidjson::Value *value) {
+    if (path == "value" && value != nullptr && value->IsInt()) {
+      address_change += value->GetInt();
+    }
+  });
+  ASSERT_EQ(address_change, 1);
+  json.load_or_store(R"({
+    "value": 10
+})");
+  ASSERT_TRUE(!json.HasParseError());
+  ASSERT_EQ(address_change, 11);
 }

@@ -19,6 +19,7 @@ private:
 public:
   friend class Slot;
   GoodItem() = default;
+  ~GoodItem() = default;
   GoodItem(const std::string &name, int count) : name(name), count(count) {}
   GoodItem(const std::string &name, int count, std::vector<std::string> exts)
       : name(name), count(count) {

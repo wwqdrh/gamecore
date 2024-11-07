@@ -31,6 +31,7 @@ private:
 
 public:
   ReentrantRWLock() = default;
+  ~ReentrantRWLock() {}
 
   // 禁止拷贝和移动
   ReentrantRWLock(const ReentrantRWLock &) = delete;

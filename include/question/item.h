@@ -28,6 +28,7 @@ public:
   }
   explicit TaskItem(int id) : TaskItem() { this->id = id; }
   explicit TaskItem(const std::string &data) : TaskItem() { fromJson(data); }
+  ~TaskItem() {}
 
 public:
   bool addTarget(const std::string &desc, const std::string &flag, int target) {
@@ -53,7 +54,7 @@ public:
         return false;
       }
     }
-    
+
     return true;
   }
 };

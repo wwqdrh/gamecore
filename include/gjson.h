@@ -29,9 +29,11 @@ class GJson {
 public:
   // 定义回调函数类型
   using CallbackFunc = std::function<void(const std::string &path,
-                                          const rapidjson::Value *value)>;  
+                                          const rapidjson::Value *value)>;
+
 private:
   mutable Document raw_data;
+  bool imported_ = false;
   std::shared_ptr<FileStore> store_;
   ConditionParser
       condition_; // 用于#conditon命令(在condition命令中传入json字符串用于检查)，检查当前json节点下#condition字段的条件
@@ -51,6 +53,7 @@ private:
   std::unique_ptr<TrieNode> callback_trie_;
 
 public:
+  ~GJson() = default;
   static Value toValue(const std::string &data) {
     rapidjson::Document doc;
     doc.Parse(data.c_str());
@@ -69,31 +72,46 @@ public:
   explicit GJson(std::shared_ptr<FileStore> store) : GJson() {
     load_or_store(store);
   }
-  explicit GJson(const std::string &data) : GJson() {
-    raw_data.Parse(data.c_str());
-  }
+  explicit GJson(const std::string &data) : GJson() { load_or_store(data); }
   rapidjson::Document::AllocatorType get_alloctor() {
     return raw_data.GetAllocator();
   }
   bool check_condition(Value &val, const std::string &data) {
     return checkCondition_(val, data) != nullptr;
   }
+  void load_or_store(const std::string &data) {
+    if (data.empty()) {
+      return;
+    }
 
-  void update_from_file(const std::string &filename);
-  void update_from_string(const std::string &data);
+    auto write = rwlock.unique_lock();
+    // 判断解析是否出错
+    raw_data.Parse(data.c_str());
+
+    if (imported_) {
+      trigger_all_callbacks(); // 通知注册者
+    }
+    imported_ = true;
+  }
+  bool HasParseError() { return raw_data.HasParseError(); }
   void load_or_store(std::shared_ptr<FileStore> store) {
+    if (store == nullptr) {
+      return;
+    }
+
     auto write = rwlock.unique_lock();
     // std::unique_lock<std::shared_mutex> lock(rw_mtx);
     store_ = store;
-    if (store_ == nullptr) {
-      return;
-    }
     std::string data = store_->loadData();
     if (data.empty()) {
       store_->saveData("{}");
     } else {
       raw_data.Parse(data.c_str());
     }
+    if (imported_) {
+      trigger_all_callbacks(); // 通知注册者
+    }
+    imported_ = true;
   }
   // 注册通知
   // 订阅路径变化
@@ -186,6 +204,7 @@ public:
   }
 
 private:
+  void trigger_all_callbacks(); // 用于通知所有注册了的回调
   void trigger_callbacks(const std::string &field);
   bool check_object_(Value &curr, const std::string &key, const std::string &op,
                      const std::string &value) const;
@@ -359,6 +378,8 @@ private:
 
     current->is_endpoint = true;
     current->callbacks.push_back(callback);
+    Value *val = query_value(path);
+    callback(path, val);
   }
 
 private:
