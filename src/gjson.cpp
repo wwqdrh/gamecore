@@ -1,4 +1,3 @@
-#include "traits.h"
 #include <fstream>
 #include <iostream>
 #include <memory>
@@ -8,15 +7,15 @@
 #include <unordered_set>
 #include <utility>
 #include <vector>
-#if defined(_WIN32) || defined(_WIN64)
-#include <numeric>
-#endif
 
-#include "gjson.h"
 #include "rapidjson/document.h"
 #include "rapidjson/rapidjson.h"
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
+
+#include "gjson.h"
+#include "traits.h"
+
 
 using namespace rapidjson;
 

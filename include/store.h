@@ -3,6 +3,8 @@
 #include <functional>
 #include <string>
 
+#include "cross.h"
+
 namespace gamedb {
 class FileStore {
 public:

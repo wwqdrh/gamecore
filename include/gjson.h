@@ -13,6 +13,7 @@
 #include <variant>
 #include <vector>
 
+#include "cross.h"
 #include "lock.h"
 #include "rapidjson/document.h"
 #include "rapidjson/stringbuffer.h"
