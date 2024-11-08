@@ -1,4 +1,3 @@
-#include "check.h"
 #include "traits.h"
 #include <gtest/gtest.h>
 
