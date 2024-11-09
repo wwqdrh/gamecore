@@ -1,7 +1,7 @@
 #pragma once
 
-#include <chrono>
 #include <map>
+#include <optional>
 #include <set>
 
 namespace gamedb {
@@ -11,25 +11,29 @@ private:
   std::map<K, V> data_map;
 
   // 存储插入时间和对应的key
-  std::map<std::chrono::system_clock::time_point, K> time_map;
+  std::map<int, K> time_map;
 
   // 反向映射：key到插入时间
-  std::map<K, std::chrono::system_clock::time_point> key_to_time;
+  std::map<K, int> key_to_time;
+
+  int start_index_ = 0;
 
 public:
   ~TimedOrderedMap() {}
   // 插入或更新元素
   void insert(const K &key, const V &value) {
-    auto now = std::chrono::system_clock::now();
-
-    // 只记录第一次添加的位置
-    if (key_to_time.find(key) == key_to_time.end()) {
-      time_map[now] = key;
-      key_to_time[key] = now;
+    // 如果key已存在，先删除旧的时间记录
+    auto it = key_to_time.find(key);
+    if (it != key_to_time.end()) {
+      time_map.erase(it->second);
+      key_to_time.erase(it);
     }
 
     // 更新所有映射
     data_map[key] = value;
+    time_map[start_index_] = key;
+    key_to_time[key] = start_index_;
+    start_index_++;
   }
 
   // 删除元素
@@ -46,12 +50,12 @@ public:
   }
 
   // 获取值
-  V get(const K &key) const {
+  std::optional<V> get(const K &key) const {
     auto it = data_map.find(key);
     if (it != data_map.end()) {
       return (it->second);
     }
-    return nullptr;
+    return std::nullopt;
   }
 
   // 按插入时间顺序获取所有键

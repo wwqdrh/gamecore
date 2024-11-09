@@ -34,7 +34,7 @@ jobs:
       
       - name: Configure CMake And Test
         run: |
-          cd build && emcmake cmake .. \
+          cd '${{ github.workspace }}/build' && emcmake cmake .. \
             -DCMAKE_BUILD_TYPE=Debug \
             -DARCH=wasm32 && make .. check --config Debug
       

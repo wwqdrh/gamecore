@@ -201,7 +201,11 @@ public:
     auto writer = rwlock.unique_lock();
 
     for (auto goodname : slots_.getKeysByInsertionOrder()) {
-      auto item = slots_.get(goodname);
+      auto v = slots_.get(goodname);
+      if (!v.has_value()) {
+        continue;
+      }
+      std::shared_ptr<Slot> item = v.value();
       if (item->addGood(good)) {
         // 判断是否存在, 不存在则创建name与id的映射
         // 可以快速查找一个商品是否存在
@@ -292,7 +296,11 @@ public:
     auto read = rwlock.shared_lock();
 
     for (auto key_name : slots_.getKeysByInsertionOrder()) {
-      auto item = slots_.get(key_name);
+      auto v = slots_.get(key_name);
+      if (!v.has_value()) {
+        continue;
+      }
+      std::shared_ptr<Slot> item = v.value();
       if (!item->isEmpty() && item->get_good_name() == name) {
         return true;
       }
@@ -303,7 +311,11 @@ public:
     auto read = rwlock.shared_lock();
 
     for (auto key_name : slots_.getKeysByInsertionOrder()) {
-      auto item = slots_.get(key_name);
+      auto v = slots_.get(key_name);
+      if (!v.has_value()) {
+        continue;
+      }
+      std::shared_ptr<Slot> item = v.value();
       if (!item->isEmpty() && item->get_good_name() == name) {
         return item->get_good();
       }
@@ -316,7 +328,11 @@ public:
 
     std::vector<std::shared_ptr<GoodItem>> res;
     for (const std::string &key_name : slots_.getKeysByInsertionOrder()) {
-      auto item = slots_.get(key_name);
+      auto v = slots_.get(key_name);
+      if (!v.has_value()) {
+        continue;
+      }
+      std::shared_ptr<Slot> item = v.value();
       if (!item->isEmpty() && item->get_good()->check_ext(name, val)) {
         res.push_back(item->get_good());
       }
@@ -328,7 +344,11 @@ public:
 
     int count = 0;
     for (auto name : slots_.getKeysByInsertionOrder()) {
-      auto item = slots_.get(name);
+      auto v = slots_.get(name);
+      if (!v.has_value()) {
+        continue;
+      }
+      std::shared_ptr<Slot> item = v.value();
       if (!item->isEmpty())
         count++;
     }
