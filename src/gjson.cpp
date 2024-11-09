@@ -16,7 +16,6 @@
 #include "gjson.h"
 #include "traits.h"
 
-
 using namespace rapidjson;
 
 namespace gamedb {
@@ -712,6 +711,9 @@ void GJson::trigger_callbacks(const std::string &field) {
 
   // 构建完整路径并收集回调
   TrieNode *current = callback_trie_.get();
+  if (current == nullptr) {
+    return;
+  }
   std::string current_path;
   for (size_t i = 0; i < parts.size(); ++i) {
     if (!current_path.empty()) {

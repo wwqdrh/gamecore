@@ -23,19 +23,15 @@ public:
   // 带自定义处理函数的构造函数
   FileStore(const LoadHandler &loadHandler, const SaveHandler &saveHandler)
       : customLoadHandler_(loadHandler), customSaveHandler_(saveHandler) {}
-
-  FileStore(LoadHandler &&loadHandler, SaveHandler &&saveHandler)
-      : customLoadHandler_(std::move(loadHandler)),
-        customSaveHandler_(std::move(saveHandler)) {}
+  FileStore(FileStore &&other) noexcept
+      : customLoadHandler_(other.customLoadHandler_),
+        customSaveHandler_(other.customSaveHandler_) {}
+  FileStore &operator=(FileStore &&other) noexcept {
+    customLoadHandler_ = std::move(other.customLoadHandler_);
+    customSaveHandler_ = std::move(other.customSaveHandler_);
+    return *this;
+  }
   ~FileStore() {}
-  // 单独设置自定义处理函数的方法
-  void setCustomLoadHandler(LoadHandler handler) {
-    customLoadHandler_ = std::move(handler);
-  }
-
-  void setCustomSaveHandler(SaveHandler handler) {
-    customSaveHandler_ = std::move(handler);
-  }
 
   void saveData(const std::string &data);
   std::string loadData();

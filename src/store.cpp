@@ -6,7 +6,7 @@
 namespace gamedb {
 void FileStore::saveData(const std::string &data) {
   std::vector<uint8_t> encryptedData = encrypt(data);
-  if (customSaveHandler_) {
+  if (customSaveHandler_ != nullptr) {
     // 使用自定义保存处理函数
     customSaveHandler_(encryptedData);
     return;
@@ -22,7 +22,7 @@ void FileStore::saveData(const std::string &data) {
 
 std::string FileStore::loadData() {
   std::vector<uint8_t> data;
-  if (customLoadHandler_) {
+  if (customLoadHandler_ != nullptr) {
     // 使用自定义读取处理函数
     data = customLoadHandler_();
   } else {

@@ -132,6 +132,9 @@ public:
 
     std::vector<std::string> parts = split(path, ';');
     Value *current = const_cast<Value *>(static_cast<const Value *>(&raw_data));
+    if (current == nullptr) {
+      return false;
+    }
 
     for (const auto &part : parts) {
       if (current == nullptr) {
@@ -152,6 +155,9 @@ public:
 
     std::vector<std::string> parts = split(path, ';');
     TrieNode *current = callback_trie_.get();
+    if (current == nullptr) {
+      return;
+    }
 
     for (const auto &part : parts) {
       if (current->children.count(part) == 0) {
@@ -368,6 +374,9 @@ private:
 
     std::vector<std::string> parts = split(path, ';');
     TrieNode *current = callback_trie_.get();
+    if (current == nullptr) {
+      return;
+    }
 
     for (const auto &part : parts) {
       if (current->children.count(part) == 0) {
