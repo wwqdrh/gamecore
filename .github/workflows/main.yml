@@ -1,0 +1,41 @@
+name: WASM CI
+
+on:
+    workflow_dispatch:
+    push:
+        branches:
+          - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: build-and-test-wasm
+    env:
+      EM_VERSION: 3.1.39
+      EM_CACHE_FOLDER: "emsdk-cache"
+    
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v3
+      
+      - name: Setup Emscripten
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: ${{env.EM_VERSION}}
+          actions-cache-folder: ${{env.EM_CACHE_FOLDER}}
+
+      - name: Verify Emscripten
+        run: |
+          emcc --version
+          em++ --version
+      
+      - name: Create Build Directory
+        run: mkdir -p build
+      
+      - name: Configure CMake And Test
+        run: |
+          cd build && emcmake cmake .. \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DARCH=wasm32 && make .. check --config Debug
+      
+    

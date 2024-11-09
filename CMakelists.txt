@@ -6,9 +6,37 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+
+# 检测是否是 WASM 构建
+if(EMSCRIPTEN)
+    # WASM 特定设置
+    set(CMAKE_EXECUTABLE_SUFFIX ".js")
+    
+    # WASM 编译选项
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s WASM=1")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s ALLOW_MEMORY_GROWTH=1")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s NO_EXIT_RUNTIME=1")
+    
+    # 如果需要使用 pthread
+    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_PTHREADS=1")
+    
+    # 如果需要导出特定函数
+    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s EXPORTED_FUNCTIONS=['_main']")
+    
+    # 设置内存初始值和最大值（根据需要调整）
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s INITIAL_MEMORY=16MB -s MAXIMUM_MEMORY=512MB")
+    
+    # 链接时优化
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+endif()
+
 # 如果没有设置ARCH那么就设置为x86_64
 if(NOT DEFINED ARCH)
-    set(ARCH x86_64)
+    if(EMSCRIPTEN)
+        set(ARCH wasm32)
+    else()
+        set(ARCH x86_64)
+    endif()
 endif()
 
 # 如果没有设置CMAKE_BUILD_TYPE那么就是Debug
