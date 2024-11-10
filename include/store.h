@@ -35,9 +35,9 @@ public:
 
   void saveData(const std::string &data);
   std::string loadData();
+  std::vector<uint8_t> encrypt(const std::string &data) const;
 
 private:
-  std::vector<uint8_t> encrypt(const std::string &data) const;
   std::string decrypt(const std::vector<uint8_t> &data) const;
 };
 } // namespace gamedb

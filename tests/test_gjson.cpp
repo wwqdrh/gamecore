@@ -235,8 +235,8 @@ TEST(GJsonTest, TypeConvert) {
 TEST(GJsonTest, AutoFileSave) {
   std::string test_file = "test_filesave.json";
 
-  GJson json;
-  json.load_or_store(std::make_shared<FileStore>(test_file));
+  GJson json(std::make_shared<FileStore>(test_file));
+  json.load_by_store();
   json.updateT<int>("field1", "", 1);
   json.updateT<std::string>("field2", "", "name");
 
@@ -246,8 +246,8 @@ TEST(GJsonTest, AutoFileSave) {
   file.close();
 
   // 从test_filesave.json中加载数据
-  GJson json2;
-  json2.load_or_store(std::make_shared<FileStore>(test_file));
+  GJson json2(std::make_shared<FileStore>(test_file));
+  json2.load_by_store();
   ASSERT_EQ(json2.queryT<int>("field1"), 1);
   ASSERT_EQ(json2.queryT<std::string>("field2"), "name");
 
@@ -378,4 +378,29 @@ TEST(GJsonTest, WatchBasicPropertyAndReimport) {
 })");
   ASSERT_TRUE(!json.HasParseError());
   ASSERT_EQ(address_change, 11);
+}
+
+TEST(GJsonTest, storeinClass) {
+  class StoreInClass {
+  public:
+    std::shared_ptr<GJson> core_ = nullptr;
+
+  public:
+    StoreInClass() {
+      core_ = std::make_shared<GJson>(std::make_shared<FileStore>(
+          [this](void) { return this->load_data(); },
+          [this](std::vector<uint8_t> data) { this->save_data(data); }));
+    }
+    std::vector<uint8_t> load_data() {
+      std::vector<uint8_t> data;
+      return data;
+    }
+    void save_data(const std::vector<uint8_t> &data) {
+      std::cout << "do save data" << std::endl;
+    }
+    std::string query(const std::string field) { return core_->query(field); }
+  };
+
+  StoreInClass jsonin;
+  ASSERT_EQ(jsonin.query(""), "{}");
 }

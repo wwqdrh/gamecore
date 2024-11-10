@@ -15,7 +15,6 @@ using namespace gamedb;
 // 查询物品
 // 监听函数，当有物品发生改变那么就更新，还有单独监听某个物品的变化
 
-
 TEST(InventoryTest, TestInventoryCRUD) {
   // 背包系统
   // 设置最大格数
@@ -40,7 +39,6 @@ TEST(InventoryTest, TestInventoryCRUD) {
   auto names = inv.get_goods_name();
   ASSERT_EQ(names.size(), 2);
   ASSERT_EQ(names[1], "商品3");
-
 
   // 可以设置初始状态，用于控制id的获取生成
   // maxid是一定大于ids的大小的，因为ids可能中途删除了
@@ -82,6 +80,7 @@ TEST(InventoryTest, TestInventoryAutoStore) {
   std::string test_file = "test_inventory_autostore.json";
 
   auto json = std::make_shared<GJson>(std::make_shared<FileStore>(test_file));
+  json->load_by_store();
 
   Inventory inv(10, 3);
   inv.set_store(json);
@@ -90,13 +89,15 @@ TEST(InventoryTest, TestInventoryAutoStore) {
   inv.add_item(std::make_shared<GoodItem>("商品3", 1));
   inv.store();
   std::cout << json->query("") << std::endl;
-  ASSERT_EQ(json->queryT<int>(Inventory::DB_PREFIX + ";default;max_slot"), 10); // 默认背包前缀名为default
+  ASSERT_EQ(json->queryT<int>(Inventory::DB_PREFIX + ";default;max_slot"),
+            10); // 默认背包前缀名为default
   ASSERT_EQ(json->queryT<int>(Inventory::DB_PREFIX + ";default;pagesize"), 3);
 
   // 测试是否自动保存了
   // 从test_filesave.json中加载数据
-  Inventory inv2("default",
-      std::make_shared<GJson>(std::make_shared<FileStore>(test_file)));
+  auto json2 = std::make_shared<GJson>(std::make_shared<FileStore>(test_file));
+  json2->load_by_store();
+  Inventory inv2("default", json2);
   ASSERT_EQ(inv2.has_item("商品1"), true);
   ASSERT_EQ(inv2.get_item("商品1")->count, 1);
   ASSERT_EQ(inv2.has_item("商品2"), true);

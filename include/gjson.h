@@ -70,7 +70,10 @@ public:
     raw_data.Parse("{}");
   };
   explicit GJson(std::shared_ptr<FileStore> store) : GJson() {
-    load_or_store(store);
+    store_ = store;
+    // 不要在构造函数这里直接初始化，要分成两段，因为传递的读取函数可能会用到这个core部分
+    // 导致还未初始化完成，报错
+    // load_or_store(store);
   }
   explicit GJson(const std::string &data) : GJson() { load_or_store(data); }
   rapidjson::Document::AllocatorType get_alloctor() {
@@ -94,14 +97,18 @@ public:
     imported_ = true;
   }
   bool HasParseError() { return raw_data.HasParseError(); }
-  void load_or_store(std::shared_ptr<FileStore> store) {
-    if (store == nullptr) {
+  std::vector<uint8_t> encrypt(const std::string &data) const {
+    if (store_ == nullptr) {
+      return {};
+    }
+    return store_->encrypt(data);
+  }
+  void load_by_store() {
+    if (!store_) {
       return;
     }
-
     auto write = rwlock.unique_lock();
     // std::unique_lock<std::shared_mutex> lock(rw_mtx);
-    store_ = store;
     std::string data = store_->loadData();
     if (data.empty()) {
       store_->saveData("{}");
