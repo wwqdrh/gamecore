@@ -17,6 +17,7 @@ private:
   // 存储自定义处理函数
   LoadHandler customLoadHandler_ = nullptr;
   SaveHandler customSaveHandler_ = nullptr;
+  bool is_encrypt_ = true;
 
 public:
   FileStore(const std::string &filename) : filename_(filename){};
@@ -33,6 +34,8 @@ public:
   }
   ~FileStore() {}
 
+  void enable_encrypt() { is_encrypt_ = true; }
+  void disable_encrypt() { is_encrypt_ = false; }
   void saveData(const std::string &data);
   std::string loadData();
   std::vector<uint8_t> encrypt(const std::string &data) const;

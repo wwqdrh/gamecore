@@ -79,6 +79,8 @@ public:
   rapidjson::Document::AllocatorType get_alloctor() {
     return raw_data.GetAllocator();
   }
+  void enable_encrypt() { store_->enable_encrypt(); }
+  void disable_encrypt() { store_->disable_encrypt(); }
   bool check_condition(Value &val, const std::string &data) {
     return checkCondition_(val, data) != nullptr;
   }

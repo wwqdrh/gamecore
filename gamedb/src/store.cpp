@@ -42,8 +42,10 @@ std::vector<uint8_t> FileStore::encrypt(const std::string &data) const {
   const char key = 0x42;
   std::vector<uint8_t> result(data.begin(), data.end());
 
-  for (auto &c : result) {
-    c ^= key;
+  if (is_encrypt_) {
+    for (auto &c : result) {
+      c ^= key;
+    }
   }
 
   return result;
@@ -53,9 +55,11 @@ std::string FileStore::decrypt(const std::vector<uint8_t> &data) const {
   // 解密过程与加密相同（异或运算的特性）
   std::vector<uint8_t> decryptedData = data;
 
-  const char key = 0x42;
-  for (auto &c : decryptedData) {
-    c ^= key;
+  if (is_encrypt_) {
+    const char key = 0x42;
+    for (auto &c : decryptedData) {
+      c ^= key;
+    }
   }
 
   // 将解密后的数据转换为字符串

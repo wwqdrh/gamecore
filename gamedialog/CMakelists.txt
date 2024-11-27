@@ -1,0 +1,89 @@
+cmake_minimum_required(VERSION 3.6)
+project(gamedb)
+# 构建选项
+option(BUILD_TESTS "Build the tests" ON)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g")
+
+# 如果没有设置ARCH那么就设置为x86_64
+if(NOT DEFINED ARCH)
+    set(ARCH x86_64)
+endif()
+
+# 如果没有设置CMAKE_BUILD_TYPE那么就是Debug
+if(NOT DEFINED CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Debug)
+endif()
+
+include_directories("include")
+include_directories("3rd/rapidjson-master")
+
+add_subdirectory(src)
+
+if (BUILD_TESTS)
+    # Google Test
+    include(FetchContent)
+    FetchContent_Declare(
+    googletest
+    URL https://github.com/google/googletest/releases/download/v1.15.2/googletest-1.15.2.tar.gz
+    DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+    )
+    # For Windows: Prevent overriding the parent project's compiler/linker settings
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(googletest)
+
+    # 启用测试
+    enable_testing()
+    include(GoogleTest)  # 添加这行以支持 gtest_discover_tests
+
+    # 设置测试选项
+    option(TEST_OUTPUT_ON_FAILURE "Show output when tests fail" ON)
+    # 设置测试文件的搜索路径
+    # 如果测试输出在失败时显示
+    if(TEST_OUTPUT_ON_FAILURE)
+        set(CMAKE_CTEST_ARGUMENTS "--output-on-failure")
+    endif()
+
+    # 查找所有的测试文件
+    file(GLOB TEST_SOURCES "tests/test_*.cpp")
+    # 如果没有找到测试文件，输出警告
+    if(NOT TEST_SOURCES)
+        message(WARNING "No test files found matching pattern '${TEST_DIR}/test_*.cpp'")
+    endif()
+
+    # 存储所有测试目标的列表
+    set(TEST_TARGETS "")
+    # 为每个测试文件创建一个测试可执行文件
+    foreach(TEST_FILE ${TEST_SOURCES})
+    # 获取不带扩展名的文件名作为测试名
+        get_filename_component(TEST_NAME ${TEST_FILE} NAME_WE)
+        add_executable(${TEST_NAME} ${TEST_FILE})
+        
+        # 链接 Google Test 的 main 函数和你的项目库
+        target_link_libraries(${TEST_NAME}  PRIVATE 
+            GTest::gtest 
+            GTest::gtest_main
+            gamedialog
+        )
+        
+        # # 添加测试
+        add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
+        # 使用 gtest_discover_tests 来自动发现测试
+        gtest_discover_tests(${TEST_NAME}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+            PROPERTIES TIMEOUT 10  # 设置测试超时时间
+        )
+        # 将测试目标添加到列表中
+        list(APPEND TEST_TARGETS ${TEST_NAME})
+    endforeach()
+
+    # 添加一个运行所有测试的目标
+    add_custom_target(check 
+        COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
+        DEPENDS ${TEST_TARGETS}
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        COMMENT "Running all tests..."  
+    )
+endif()
