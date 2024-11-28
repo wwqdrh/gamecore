@@ -322,6 +322,35 @@ public:
     }
     return nullptr;
   }
+  std::shared_ptr<GoodItem> get_at(int idx) const {
+    auto read = rwlock.shared_lock();
+
+    auto v = slots_.get_at(idx);
+    if (!v.has_value()) {
+      return nullptr;
+    }
+    std::shared_ptr<Slot> item = v.value();
+    if (!item->isEmpty() && item->get_good_name() == name) {
+      return item->get_good();
+    }
+    return nullptr;
+  }
+  void remove_item(const std::string &name) {
+    auto writer = rwlock.unique_lock();
+
+    auto item = get_item(name);
+    if (!item) {
+      return;
+    }
+    slots_.erase(name);
+    // 消费成功，那么进行通知
+    if (callbacks.find(item->name) != callbacks.end()) {
+      for (auto itemfn : callbacks[item->name]) {
+        itemfn(item->name, 0);
+      }
+    }
+    store();
+  }
   std::vector<std::shared_ptr<GoodItem>> filter(const std::string &name,
                                                 GoodItem::variant val) const {
     auto read = rwlock.shared_lock();

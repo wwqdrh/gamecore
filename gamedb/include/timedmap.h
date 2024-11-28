@@ -58,6 +58,20 @@ public:
     return std::nullopt;
   }
 
+  std::optional<V> get_at(int index) const {
+    if (index < 0) {
+      return std::nullopt;
+    }
+    for (const auto &pair : time_map) {
+      if (index == 0) {
+        K key = pair.second;
+        return get(key);
+      }
+      index--;
+    }
+    return std::nullopt;
+  }
+
   // 按插入时间顺序获取所有键
   std::vector<K> getKeysByInsertionOrder() const {
     std::vector<K> keys;
