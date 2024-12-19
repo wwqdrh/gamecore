@@ -78,6 +78,7 @@ TEST(InventoryTest, TestInventoryExtInfo) {
 
 TEST(InventoryTest, TestInventoryAutoStore) {
   std::string test_file = "test_inventory_autostore.json";
+  std::remove(test_file.c_str());
 
   auto json = std::make_shared<GJson>(std::make_shared<FileStore>(test_file));
   json->load_by_store();

@@ -154,7 +154,7 @@ Value GJson::query_value_dynamic(const std::string &field) const {
             std::string name = v[i].GetString();
             std::vector<std::string> name_parts = split(name, ':');
             if (name_parts.size() == 2) {
-              // 第一部分是条件
+              // 第一部分是条��
               if (!condition_.checkCondition(cur_state, name_parts[0])) {
                 // 不满足条件，不进入这个分支
                 continue;
@@ -271,7 +271,7 @@ Value GJson::query_value_dynamic(const std::string &field) const {
 // 1、每一个部分，如果不以#开头，则就是简单的key参数，如果是数字就是对应的位置的元素
 // 2、每一个部分，如果以#开头，那么就是特殊操作，例如#random:10，就是指在当前的object(需要适配{}和[])中随机获取10个元素
 // 3、如果是#开头然后包含一个括号(),
-// 那么括号里面的就是一个解析参数，例如#(@=1)就是判断当前的object的key==1,
+// 那么括号里面的就是一个解析参数，例如#(@=1)就是判断��前的object的key==1,
 // 注意这里都是字符串
 std::string GJson::query(const std::string &field) const {
   auto lock = rwlock.shared_lock();
@@ -356,9 +356,12 @@ Value *GJson::traverse(Value &current, const std::string &key) const {
       return &current[key.c_str()];
     }
   } else if (current.IsArray()) {
-    size_t index = std::stoul(key);
-    if (index < current.Size()) {
-      return &current[index];
+    // Check if key is a valid number
+    if (!key.empty() && std::all_of(key.begin(), key.end(), ::isdigit)) {
+      size_t index = std::stoul(key);
+      if (index < current.Size()) {
+        return &current[index];
+      }
     }
   }
   return nullptr;
@@ -561,7 +564,7 @@ bool GJson::update_(const std::string &field, const std::string &action,
       cur_current = query_value(prefix);
       if (!cur_current) {
         if (!current) {
-          // 按道理来说至少有一个root，走到这里就有问题
+          // 按道理来说至少有一个root，走到这里就有问��
           return false;
         }
         // 不存在，需要构建一个object，然后给current

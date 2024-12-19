@@ -234,6 +234,7 @@ TEST(GJsonTest, TypeConvert) {
 
 TEST(GJsonTest, AutoFileSave) {
   std::string test_file = "test_filesave.json";
+  std::remove(test_file.c_str());
 
   GJson json(std::make_shared<FileStore>(test_file));
   json.load_by_store();
