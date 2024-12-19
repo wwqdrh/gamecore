@@ -14,6 +14,7 @@
 #include "rapidjson/writer.h"
 
 #include "gjson.h"
+#include "glogger.h"
 #include "traits.h"
 
 using namespace rapidjson;
@@ -25,33 +26,40 @@ namespace gamedb {
 // =============
 Value *GJson::query_value(const std::string &field) const {
   auto lock = rwlock.shared_lock();
+  GLOG_DEBUG("GJson", "Entering query_value with field: " + field);
+
+  if (raw_data.IsNull()) {
+    GLOG_ERROR("GJson", "raw_data is null");
+    return nullptr;
+  }
 
   std::vector<std::string> parts = split(field, ';');
-  // Value curr_data;
-  // curr_data.CopyFrom(raw_data, raw_data.GetAllocator());
-  // Value *current = &raw_data;
   Value *current = const_cast<Value *>(static_cast<const Value *>(&raw_data));
+  GLOG_DEBUG("GJson", "Initial current pointer status: " +
+                          std::string(current ? "valid" : "null"));
 
   for (const auto &part : parts) {
-    if (current == nullptr) {
-      break;
+    if (current == nullptr || part.empty()) {
+      GLOG_WARNING("GJson",
+                   "Current pointer is null or part is empty. Part: " + part);
+      return nullptr;
     }
-    if (part.empty())
-      continue;
 
     if (part[0] == '#') {
-      // 有动态请求请使用query_valud_dynamic方法
+      GLOG_DEBUG("GJson", "Found special operator '#' in part: " + part);
       return nullptr;
     } else {
-      // Normal key or index
+      GLOG_DEBUG("GJson", "Traversing with part: " + part);
       Value *next = traverse(*current, part);
       if (next == nullptr) {
+        GLOG_WARNING("GJson", "Traverse returned null for part: " + part);
         return nullptr;
       }
       current = next;
     }
   }
-  // std::cout << current->Size() << std::endl;
+
+  GLOG_DEBUG("GJson", "Successfully found value for field: " + field);
   return current;
 }
 
@@ -154,7 +162,7 @@ Value GJson::query_value_dynamic(const std::string &field) const {
             std::string name = v[i].GetString();
             std::vector<std::string> name_parts = split(name, ':');
             if (name_parts.size() == 2) {
-              // 第一部分是条��
+              // 第一部分是条
               if (!condition_.checkCondition(cur_state, name_parts[0])) {
                 // 不满足条件，不进入这个分支
                 continue;
@@ -271,7 +279,7 @@ Value GJson::query_value_dynamic(const std::string &field) const {
 // 1、每一个部分，如果不以#开头，则就是简单的key参数，如果是数字就是对应的位置的元素
 // 2、每一个部分，如果以#开头，那么就是特殊操作，例如#random:10，就是指在当前的object(需要适配{}和[])中随机获取10个元素
 // 3、如果是#开头然后包含一个括号(),
-// 那么括号里面的就是一个解析参数，例如#(@=1)就是判断��前的object的key==1,
+// 那么括号里面的就是一个解析参数，例如#(@=1)就是判断前的object的key==1,
 // 注意这里都是字符串
 std::string GJson::query(const std::string &field) const {
   auto lock = rwlock.shared_lock();
@@ -351,19 +359,26 @@ std::vector<std::string> GJson::split(const std::string &s,
 }
 
 Value *GJson::traverse(Value &current, const std::string &key) const {
+  GLOG_DEBUG("GJson", "Entering traverse with key: " + key);
+
   if (current.IsObject()) {
+    GLOG_DEBUG("GJson", "Current is object, checking for key: " + key);
     if (current.HasMember(key.c_str())) {
       return &current[key.c_str()];
     }
   } else if (current.IsArray()) {
-    // Check if key is a valid number
+    GLOG_DEBUG("GJson", "Current is array, checking index: " + key);
     if (!key.empty() && std::all_of(key.begin(), key.end(), ::isdigit)) {
       size_t index = std::stoul(key);
       if (index < current.Size()) {
         return &current[index];
       }
+      GLOG_WARNING("GJson", "Array index out of bounds: " + key +
+                                ", size: " + std::to_string(current.Size()));
     }
   }
+
+  GLOG_WARNING("GJson", "Traverse failed for key: " + key);
   return nullptr;
 }
 
@@ -545,9 +560,11 @@ bool GJson::update(const std::string &field, const std::string &action,
 bool GJson::update_(const std::string &field, const std::string &action,
                     Value &val) {
   auto l = rwlock.unique_lock();
+  GLOG_DEBUG("GJson", "Updating field: " + field + " with action: " + action);
 
   Value *current = query_value(field);
   if (!current) {
+    GLOG_DEBUG("GJson", "Field not found, attempting to create path: " + field);
     // 字段不存在，如果raw_data为object，那么设置key，value
     // 如果key是 key1;sub2;sub3;sub4这种结构，那么前面不存在的也需要进行构建
     std::vector<std::string> parts =
@@ -564,10 +581,10 @@ bool GJson::update_(const std::string &field, const std::string &action,
       cur_current = query_value(prefix);
       if (!cur_current) {
         if (!current) {
-          // 按道理来说至少有一个root，走到这里就有问��
+          // 按道理来说至少有一个root，走到这里就有问题
           return false;
         }
-        // 不存在，需要构建一个object，然后给current
+        // 不存在，需要构建个object，然后给current
         if (i == parts.size() - 1) {
           // 添加元素
           Value cur;
@@ -743,7 +760,7 @@ void GJson::trigger_callbacks(const std::string &field) {
     if (null_paths.count(callback_path) > 0) {
       continue;
     }
-    // 获取回调路径对应的值
+    // 获取回调路径对的值
     const rapidjson::Value *callback_value = query_value(callback_path);
     if (callback_value == nullptr) {
       null_paths.insert(callback_path);
@@ -784,6 +801,29 @@ void GJson::trigger_all_callbacks() {
     const rapidjson::Value *callback_value = query_value(callback_path);
     callback(callback_path, callback_value);
   }
+}
+
+void GJson::load_or_store(const std::string &data) {
+  if (data.empty()) {
+    GLOG_WARNING("GJson", "Attempted to load empty data");
+    return;
+  }
+
+  auto write = rwlock.unique_lock();
+  GLOG_DEBUG("GJson", "Parsing JSON data");
+  raw_data.Parse(data.c_str());
+
+  if (raw_data.HasParseError()) {
+    GLOG_ERROR("GJson", "JSON parse error at offset: " +
+                            std::to_string(raw_data.GetErrorOffset()));
+    return;
+  }
+
+  if (imported_) {
+    GLOG_DEBUG("GJson", "Triggering callbacks for data update");
+    trigger_all_callbacks();
+  }
+  imported_ = true;
 }
 
 } // namespace gamedb
