@@ -187,15 +187,15 @@ public:
     load();
   }
 
-  void store() {
+  bool store() {
     auto writer = rwlock.unique_lock();
 
     if (gjson_ == nullptr) {
-      return;
+      return false;
     }
     auto all = gjson_->get_alloctor();
     rapidjson::Value val = toJson(all);
-    gjson_->update(DB_PREFIX + ";" + name, "~", val);
+    return gjson_->update(DB_PREFIX + ";" + name, "~", val);
   }
   bool add_item(std::shared_ptr<GoodItem> good) {
     auto writer = rwlock.unique_lock();

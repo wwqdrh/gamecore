@@ -84,20 +84,7 @@ public:
   bool check_condition(Value &val, const std::string &data) {
     return checkCondition_(val, data) != nullptr;
   }
-  void load_or_store(const std::string &data) {
-    if (data.empty()) {
-      return;
-    }
-
-    auto write = rwlock.unique_lock();
-    // 判断解析是否出错
-    raw_data.Parse(data.c_str());
-
-    if (imported_) {
-      trigger_all_callbacks(); // 通知注册者
-    }
-    imported_ = true;
-  }
+  void load_or_store(const std::string &data);
   bool HasParseError() { return raw_data.HasParseError(); }
   std::vector<uint8_t> encrypt(const std::string &data) const {
     if (store_ == nullptr) {
