@@ -41,23 +41,25 @@ answer no!!
   ASSERT_EQ(parser.current_stage(), "stage1");
 }
 
-TEST(TimelineTest, TestStagePreCheck) {
+TEST(TimelineTest, TestStageEntryConditions) {
   Timeline parser(R"(
-[stage1@func1]
+[stage1]
+```
+?global.state=s1
+```
 (John)
 Hello there!
 :skip:2
 
-[next_scene@func2]
+[next_scene]
+```
+?global.state=s2
+```
 (Mary)
 answer yes!!
 :end
 )");
-
-  std::string cur_state = "func2";
-  parser.set_precheck([&cur_state](const std::string &expr) -> bool {
-    return cur_state == expr;
-  });
-
+  SceneManager::instance().set_variable("state", "s2");
+  // 需要跳过第一个不满足条件的stage
   ASSERT_EQ(parser.next()->get_name(), "Mary");
 }

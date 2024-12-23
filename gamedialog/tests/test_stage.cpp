@@ -157,3 +157,37 @@ Done.
   word = stage.next();
   ASSERT_EQ(word->get_text(), "Done.");
 }
+
+TEST(StageTest, TestEntryConditions) {
+    // Set up a global variable first
+    SceneManager::instance().set_variable("level", "5");
+    
+    gamedialog::DiaStage stage(R"(
+[stage1]
+```
+points=100
+?global.level>3&points>50
+```
+(John)
+Hello there!
+)");
+
+    ASSERT_TRUE(stage.check_entry_conditions());
+    
+    // Test with failing condition
+    SceneManager::instance().set_variable("level", "2");
+    ASSERT_FALSE(stage.check_entry_conditions());
+    
+    // Test with multiple operators
+    gamedialog::DiaStage stage2(R"(
+[stage2]
+```
+score=75
+?score>=75&global.level<=5
+```
+(Mary)
+Hi!
+)");
+
+    ASSERT_TRUE(stage2.check_entry_conditions());
+}

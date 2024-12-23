@@ -198,23 +198,103 @@ std::string DiaStage::get_variable(const std::string &key) const {
   return it != scene_variables_.end() ? it->second : "";
 }
 
-void DiaStage::_parse_variables(const std::string &var_block) {
-  std::stringstream ss(var_block);
-  std::string line;
-
-  while (std::getline(ss, line)) {
-    line = strip(line);
-    if (line.empty() || line[0] == '#')
-      continue;
-
-    auto pos = line.find('=');
-    if (pos != std::string::npos) {
-      std::string key = strip(line.substr(0, pos));
-      std::string value = strip(line.substr(pos + 1));
-      if (!key.empty()) {
-        scene_variables_[key] = value;
-      }
+void DiaStage::_parse_variables(const std::string& var_block) {
+    std::istringstream stream(var_block);
+    std::string line;
+    
+    while (std::getline(stream, line)) {
+        line = strip(line);
+        if (line.empty()) continue;
+        
+        if (line[0] == '?') {
+            // Parse condition expression
+            parse_condition_expression(line.substr(1));
+            continue;
+        }
+        
+        // Original variable parsing code
+        auto parts = split(line, '=');
+        if (parts.size() == 2) {
+            scene_variables_[strip(parts[0])] = strip(parts[1]);
+        }
     }
-  }
+}
+
+void DiaStage::parse_condition_expression(const std::string& expr) {
+    auto conditions = split(expr, '&');
+    
+    for (const auto& cond : conditions) {
+        Condition condition;
+        
+        // Check for operators
+        size_t op_pos = std::string::npos;
+        if ((op_pos = cond.find(">=")) != std::string::npos) {
+            condition.op = ">=";
+        } else if ((op_pos = cond.find("<=")) != std::string::npos) {
+            condition.op = "<=";
+        } else if ((op_pos = cond.find(">")) != std::string::npos) {
+            condition.op = ">";
+        } else if ((op_pos = cond.find("<")) != std::string::npos) {
+            condition.op = "<";
+        } else if ((op_pos = cond.find("=")) != std::string::npos) {
+            condition.op = "=";
+        } else {
+            continue; // Invalid condition
+        }
+        
+        std::string var_name = strip(cond.substr(0, op_pos));
+        condition.value = strip(cond.substr(op_pos + condition.op.length()));
+        
+        // Check if it's a global variable
+        if (starts_with(var_name, "global.")) {
+            condition.is_global = true;
+            condition.variable = var_name.substr(7); // Remove "global." prefix
+        } else {
+            condition.is_global = false;
+            condition.variable = var_name;
+        }
+        
+        entry_conditions_.push_back(condition);
+    }
+}
+
+std::string DiaStage::get_condition_variable(const Condition& cond) const {
+    if (cond.is_global) {
+        return SceneManager::instance().get_variable(cond.variable);
+    }
+    return get_variable(cond.variable);
+}
+
+bool DiaStage::evaluate_condition(const Condition& cond) const {
+    std::string actual = get_condition_variable(cond);
+    
+    if (cond.op == "=") {
+        return actual == cond.value;
+    }
+    
+    // Try to convert to numbers for numeric comparisons
+    try {
+        double actual_num = std::stod(actual);
+        double value_num = std::stod(cond.value);
+        
+        if (cond.op == ">") return actual_num > value_num;
+        if (cond.op == "<") return actual_num < value_num;
+        if (cond.op == ">=") return actual_num >= value_num;
+        if (cond.op == "<=") return actual_num <= value_num;
+    } catch (...) {
+        // If conversion fails, return false
+        return false;
+    }
+    
+    return false;
+}
+
+bool DiaStage::check_entry_conditions() const {
+    for (const auto& condition : entry_conditions_) {
+        if (!evaluate_condition(condition)) {
+            return false;
+        }
+    }
+    return true;
 }
 } // namespace gamedialog

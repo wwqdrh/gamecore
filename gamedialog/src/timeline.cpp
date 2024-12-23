@@ -93,10 +93,6 @@ bool Timeline::has_next() const {
 }
 
 void Timeline::get_first_flag() {
-  if (fn == nullptr) {
-    return; // 使用默认的
-  }
-
   // 如果是刚开头寻找新的stage
   // 找到第一个满足flag的stage
   for (auto item : stages) {
@@ -143,22 +139,12 @@ std::vector<std::string> Timeline::all_stages() {
 }
 
 bool Timeline::check_stage_flag(const std::string &stage) {
-  if (fn == nullptr) {
-    return true;
-  }
-
   auto it = stage_map.find(stage);
   if (it == stage_map.end()) {
     return false;
   }
   auto stage_data = stages[it->second];
-  auto flags = stage_data->get_flags();
-  for (auto flag : flags) {
-    if (!fn(flag)) {
-      return false;
-    }
-  }
-  return true;
+  return stage_data->check_entry_conditions();
 }
 
 void Timeline::goto_stage(const std::string &stage) {

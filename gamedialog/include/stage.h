@@ -25,6 +25,13 @@ private:
   Timeline *timeline_;
   std::map<std::string, std::string> scene_variables_;
   std::map<std::string, size_t> labels_;
+  struct Condition {
+    std::string variable;
+    std::string op;
+    std::string value;
+    bool is_global;
+  };
+  std::vector<Condition> entry_conditions_;
 
 public:
   DiaStage() = default;
@@ -59,6 +66,8 @@ public:
     }
     return false;
   }
+
+  bool check_entry_conditions() const;
 
 private:
   void _parse_section(const std::vector<std::string> &names,
@@ -129,5 +138,9 @@ private:
     }
     return true;
   }
+
+  void parse_condition_expression(const std::string& expr);
+  bool evaluate_condition(const Condition& cond) const;
+  std::string get_condition_variable(const Condition& cond) const;
 };
 } // namespace gamedialog
