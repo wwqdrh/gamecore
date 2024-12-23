@@ -104,3 +104,56 @@ answer yes!!
   ASSERT_EQ(cur->get_name(), "Mary");
   ASSERT_EQ(cur->get_text(), "answer yes!!");
 }
+
+TEST(StageTest, TestSceneVariables) {
+  gamedialog::DiaStage stage(R"(
+[stage1]
+```
+name=John Doe
+age=30
+```
+Hello there!
+@set:age=31
+)");
+
+  ASSERT_EQ(stage.get_stage_name(), "stage1");
+  ASSERT_EQ(stage.get_line_size(), 1);
+  ASSERT_EQ(stage.get_variable("name"), "John Doe");
+  ASSERT_EQ(stage.get_variable("age"), "30");
+  ASSERT_EQ(stage.next()->get_text(), "Hello there!");
+  ASSERT_EQ(stage.get_variable("age"), "31");
+}
+
+TEST(StageTest, TestMultipleConditions) {
+  gamedialog::DiaStage stage(R"(
+[stage1]
+```
+status=happy
+points=100
+```
+(John)
+Hello
+@if:status=happy&points=100:high_score:low_score
+
+@label:high_score
+High score!
+@goto:end
+
+@label:low_score
+Low score!
+@goto:end
+
+@label:end
+Done.
+)");
+
+  auto word = stage.next();
+  ASSERT_EQ(word->get_text(), "Hello");
+  
+  // Should go to high_score because both conditions are met
+  word = stage.next();
+  ASSERT_EQ(word->get_text(), "High score!");
+  
+  word = stage.next();
+  ASSERT_EQ(word->get_text(), "Done.");
+}
