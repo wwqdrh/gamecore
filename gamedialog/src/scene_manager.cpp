@@ -43,4 +43,14 @@ bool SceneManager::has_variable(const std::string& key) const {
     return global_variables.find(key) != global_variables.end();
 }
 
+std::map<std::string, std::vector<std::string>> SceneManager::get_all_available_stages() const {
+    std::map<std::string, std::vector<std::string>> result;
+    
+    for (const auto& [timeline_name, timeline] : timelines) {
+        result[timeline_name] = timeline->get_available_stages();
+    }
+    
+    return result;
+}
+
 } // namespace gamedialog 

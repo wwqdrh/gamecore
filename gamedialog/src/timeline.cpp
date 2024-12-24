@@ -101,7 +101,7 @@ void Timeline::get_first_flag() {
       return;
     }
   }
-  // 没有一个满足条件的,直接end
+  // 没有一个满足��件的,直接end
   goto_end();
 }
 
@@ -163,5 +163,15 @@ int Timeline::stage_index(const std::string &label) {
     return -1;
   }
   return stage_map[label];
+}
+
+std::vector<std::string> Timeline::get_available_stages() {
+  std::vector<std::string> available_stages;
+  for (auto item : stages) {
+    if (check_stage_flag(item->get_stage_name())) {
+      available_stages.push_back(item->get_stage_name());
+    }
+  }
+  return available_stages;
 }
 } // namespace gamedialog

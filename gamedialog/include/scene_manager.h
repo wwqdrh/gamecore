@@ -27,9 +27,19 @@ public:
     Timeline* get_timeline(const std::string& name);
 
     // 全局变量管理
+    std::vector<std::string> get_all_variables() const {
+        std::vector<std::string> variables;
+        for (const auto& pair : global_variables) {
+            variables.push_back(pair.first + "=" + pair.second);
+        }
+        return variables;
+    }
     void set_variable(const std::string& key, const std::string& value);
     std::string get_variable(const std::string& key) const;
     bool has_variable(const std::string& key) const;
+
+    // Add new method
+    std::map<std::string, std::vector<std::string>> get_all_available_stages() const;
 
 private:
     SceneManager() = default;

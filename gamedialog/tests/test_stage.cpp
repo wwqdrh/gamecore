@@ -144,7 +144,6 @@ Low score!
 @goto:end
 
 @label:end
-Done.
 )");
 
   auto word = stage.next();
@@ -154,8 +153,7 @@ Done.
   word = stage.next();
   ASSERT_EQ(word->get_text(), "High score!");
   
-  word = stage.next();
-  ASSERT_EQ(word->get_text(), "Done.");
+  ASSERT_FALSE(stage.has_next());
 }
 
 TEST(StageTest, TestEntryConditions) {
