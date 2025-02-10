@@ -8,6 +8,7 @@
 #include <string>
 #include <variant>
 #include <vector>
+#include <map>
 
 namespace gamedialog {
 class ControlFlow;
@@ -22,6 +23,15 @@ private:
   std::vector<LineVariant> dialogue_keys;
   int current_ = 0;
   Timeline *timeline_;
+  std::map<std::string, std::string> scene_variables_;
+  std::map<std::string, size_t> labels_;
+  struct Condition {
+    std::string variable;
+    std::string op;
+    std::string value;
+    bool is_global;
+  };
+  std::vector<Condition> entry_conditions_;
 
 public:
   DiaStage() = default;
@@ -39,10 +49,30 @@ public:
   void clean() { current_ = 0; }
   bool is_start() { return current_ == 0; }
   bool is_doing() { return current_ > 0 && current_ < dialogue_keys.size(); }
+  const std::map<std::string, std::string>& get_variables() const { return scene_variables_; }
+  std::string get_variable(const std::string& key) const;
+  void set_variable(const std::string& key, const std::string& value) {
+    scene_variables_[key] = value;
+  }
+  void set_label(const std::string& label, size_t position) {
+    labels_[label] = position;
+  }
+  
+  bool goto_label(const std::string& label) {
+    auto it = labels_.find(label);
+    if (it != labels_.end()) {
+      current_ = it->second;
+      return true;
+    }
+    return false;
+  }
+
+  bool check_entry_conditions() const;
 
 private:
   void _parse_section(const std::vector<std::string> &names,
                       const std::vector<std::string> &words);
+  void _parse_variables(const std::string& var_block);
   // 检查字符串是否为空或只包含空白字符
   bool is_empty(const std::string &str) const {
     return str.find_first_not_of(" \t\n\r") == std::string::npos;
@@ -92,5 +122,25 @@ private:
     return str.size() >= suffix.size() &&
            str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
   }
+  bool check_conditions(const std::string& conditions) {
+    auto pairs = split(conditions, '&');
+    for (const auto& pair : pairs) {
+      auto kv = split(pair, '=');
+      if (kv.size() != 2) continue;
+      
+      auto var = strip(kv[0]);
+      auto expected = strip(kv[1]);
+      auto actual = get_variable(var);
+      
+      if (actual != expected) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  void parse_condition_expression(const std::string& expr);
+  bool evaluate_condition(const Condition& cond) const;
+  std::string get_condition_variable(const Condition& cond) const;
 };
 } // namespace gamedialog

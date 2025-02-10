@@ -56,7 +56,37 @@ TEST(GJsonTest, ParseAndQuery) {
   EXPECT_EQ(json2.query("1;name"), "\"任务1\"");
 }
 
-TEST(GJsonTest, ParseAndQueryWithFlag) {
+TEST(GJsonTest, ParseQueryObject) {
+  GJson json(R"({
+    "data1": {
+        "name": "user1",
+        "age": 30,
+        "city": "New York"
+    },
+    "data2": {
+        "name": "John Doe",
+        "age": 31,
+        "city": "New York"
+    },
+    "data3": {
+        "name": "user2",
+        "age": 30,
+        "city": "New York"
+    }
+  })");
+
+  auto res = json.query_value_dynamic("#random(2)");
+  ASSERT_TRUE(res.IsObject());
+  ASSERT_TRUE(res.GetObj().MemberCount() == 2);
+
+  auto res2 = json.query_value_dynamic("#keys(data1|data3)");
+  ASSERT_TRUE(res2.IsArray());
+  ASSERT_TRUE(res2.GetArray().Size() == 2);
+  ASSERT_TRUE(res2.GetArray()[0].IsObject());
+  ASSERT_TRUE(res2.GetArray()[0].GetObject().HasMember("data1"));
+}
+
+TEST(GJsonTest, ParseAndQueryArrayWithFlag) {
   // 创建一个 GJson 对象
   GJson json(R"([{
         "name": "user1",

@@ -93,10 +93,6 @@ bool Timeline::has_next() const {
 }
 
 void Timeline::get_first_flag() {
-  if (fn == nullptr) {
-    return; // 使用默认的
-  }
-
   // 如果是刚开头寻找新的stage
   // 找到第一个满足flag的stage
   for (auto item : stages) {
@@ -105,7 +101,7 @@ void Timeline::get_first_flag() {
       return;
     }
   }
-  // 没有一个满足条件的,直接end
+  // 没有一个满足��件的,直接end
   goto_end();
 }
 
@@ -143,22 +139,12 @@ std::vector<std::string> Timeline::all_stages() {
 }
 
 bool Timeline::check_stage_flag(const std::string &stage) {
-  if (fn == nullptr) {
-    return true;
-  }
-
   auto it = stage_map.find(stage);
   if (it == stage_map.end()) {
     return false;
   }
   auto stage_data = stages[it->second];
-  auto flags = stage_data->get_flags();
-  for (auto flag : flags) {
-    if (!fn(flag)) {
-      return false;
-    }
-  }
-  return true;
+  return stage_data->check_entry_conditions();
 }
 
 void Timeline::goto_stage(const std::string &stage) {
@@ -177,5 +163,15 @@ int Timeline::stage_index(const std::string &label) {
     return -1;
   }
   return stage_map[label];
+}
+
+std::vector<std::string> Timeline::get_available_stages() {
+  std::vector<std::string> available_stages;
+  for (auto item : stages) {
+    if (check_stage_flag(item->get_stage_name())) {
+      available_stages.push_back(item->get_stage_name());
+    }
+  }
+  return available_stages;
 }
 } // namespace gamedialog

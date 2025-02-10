@@ -104,3 +104,88 @@ answer yes!!
   ASSERT_EQ(cur->get_name(), "Mary");
   ASSERT_EQ(cur->get_text(), "answer yes!!");
 }
+
+TEST(StageTest, TestSceneVariables) {
+  gamedialog::DiaStage stage(R"(
+[stage1]
+```
+name=John Doe
+age=30
+```
+Hello there!
+@set:age=31
+)");
+
+  ASSERT_EQ(stage.get_stage_name(), "stage1");
+  ASSERT_EQ(stage.get_line_size(), 1);
+  ASSERT_EQ(stage.get_variable("name"), "John Doe");
+  ASSERT_EQ(stage.get_variable("age"), "30");
+  ASSERT_EQ(stage.next()->get_text(), "Hello there!");
+  ASSERT_EQ(stage.get_variable("age"), "31");
+}
+
+TEST(StageTest, TestMultipleConditions) {
+  gamedialog::DiaStage stage(R"(
+[stage1]
+```
+status=happy
+points=100
+```
+(John)
+Hello
+@if:status=happy&points=100:high_score:low_score
+
+@label:high_score
+High score!
+@goto:end
+
+@label:low_score
+Low score!
+@goto:end
+
+@label:end
+)");
+
+  auto word = stage.next();
+  ASSERT_EQ(word->get_text(), "Hello");
+  
+  // Should go to high_score because both conditions are met
+  word = stage.next();
+  ASSERT_EQ(word->get_text(), "High score!");
+  
+  ASSERT_FALSE(stage.has_next());
+}
+
+TEST(StageTest, TestEntryConditions) {
+    // Set up a global variable first
+    SceneManager::instance().set_variable("level", "5");
+    
+    gamedialog::DiaStage stage(R"(
+[stage1]
+```
+points=100
+?global.level>3&points>50
+```
+(John)
+Hello there!
+)");
+
+    ASSERT_TRUE(stage.check_entry_conditions());
+    
+    // Test with failing condition
+    SceneManager::instance().set_variable("level", "2");
+    ASSERT_FALSE(stage.check_entry_conditions());
+    
+    // Test with multiple operators
+    gamedialog::DiaStage stage2(R"(
+[stage2]
+```
+score=75
+?score>=75&global.level<=5
+```
+(Mary)
+Hi!
+)");
+
+    ASSERT_TRUE(stage2.check_entry_conditions());
+}
