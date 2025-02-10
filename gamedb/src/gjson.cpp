@@ -125,6 +125,43 @@ Value GJson::query_value_dynamic(const std::string &field) const {
         temp = getRandomElements(*current, count);
         current = &temp;
         break;
+      } else if (operation == "keys") {
+        if (current->IsArray()) {
+          temp.Clear();
+          temp.SetArray();
+          for (int i = 0; i < ops.size(); i++) {
+            std::string key = ops[i];
+            Value *t = traverse(*current, key);
+            if (t != nullptr) {
+              Value tt;
+              tt.CopyFrom(*t, raw_data.GetAllocator());
+              temp.PushBack(tt, raw_data.GetAllocator());
+            }
+          }
+          current = &temp;
+          break;
+        } else if (current->IsObject()) {
+          temp.Clear();
+          temp.SetArray();
+
+          for (int i = 0; i < ops.size(); i++) {
+            std::string key = ops[i];
+            Value *t = traverse(*current, key);
+            if (t != nullptr) {
+              Value objectitem;
+              objectitem.SetObject();
+              Value name;
+              name.SetString(key.c_str(), raw_data.GetAllocator());
+              Value value;
+              value.CopyFrom(*t, raw_data.GetAllocator());
+              objectitem.AddMember(name, value, raw_data.GetAllocator());
+              temp.PushBack(objectitem, raw_data.GetAllocator());
+            }
+          }
+          current = &temp;
+          break;
+        }
+
       } else if (operation == "condition") {
         if (current->IsArray()) {
           temp.Clear();
