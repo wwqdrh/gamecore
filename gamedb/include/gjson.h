@@ -85,6 +85,7 @@ public:
     return checkCondition_(val, data) != nullptr;
   }
   void load_or_store(const std::string &data);
+  Value get_keys(Value &current) const;
   bool HasParseError() { return raw_data.HasParseError(); }
   std::vector<uint8_t> encrypt(const std::string &data) const {
     if (store_ == nullptr) {
