@@ -84,6 +84,10 @@ TEST(GJsonTest, ParseQueryObject) {
   ASSERT_TRUE(res2.GetArray().Size() == 2);
   ASSERT_TRUE(res2.GetArray()[0].IsObject());
   ASSERT_TRUE(res2.GetArray()[0].GetObject().HasMember("data1"));
+
+  auto res3 = json.query_value_dynamic("#keys()");
+  ASSERT_TRUE(res3.IsArray());
+  ASSERT_TRUE(res3.GetArray().Size() == 3);
 }
 
 TEST(GJsonTest, ParseAndQueryArrayWithFlag) {
