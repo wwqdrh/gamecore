@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "godot_cpp/core/error_macros.hpp"
 #include "rapidjson/document.h"
 #include "rapidjson/rapidjson.h"
 #include "rapidjson/stringbuffer.h"
@@ -806,12 +807,12 @@ void GJson::trigger_callbacks(const std::string &field) {
     return;
   }
 
-  std::vector<std::pair<std::string, CallbackFunc>> callbacks_to_trigger;
+  std::vector<std::tuple<std::string, CallbackFunc, int>> callbacks_to_trigger;
   collect_affected_callbacks(current, current_path, callbacks_to_trigger);
 
   // 执行收集到的回调
   std::unordered_set<std::string> null_paths; // 避免重复调用
-  for (const auto &[callback_path, callback] : callbacks_to_trigger) {
+  for (const auto &[callback_path, callback, idx] : callbacks_to_trigger) {
     if (null_paths.count(callback_path) > 0) {
       continue;
     }
@@ -821,7 +822,10 @@ void GJson::trigger_callbacks(const std::string &field) {
       null_paths.insert(callback_path);
       continue;
     }
-    callback(callback_path, callback_value);
+    if (!callback(callback_path, callback_value)) {
+      // 返回false，说明这一个callback已经回收了，那么这里也需要清理掉
+      remove_callback_item(callback_trie_.get(), callback_path, idx);
+    }
   }
 }
 
@@ -829,11 +833,12 @@ void GJson::trigger_callbacks(const std::string &field) {
 // 获取所有需要触发的回调
 void GJson::collect_affected_callbacks(
     TrieNode *node, const std::string &base_path,
-    std::vector<std::pair<std::string, CallbackFunc>> &callbacks) {
+    std::vector<std::tuple<std::string, CallbackFunc, int>> &callbacks) {
   // 如果当前节点是终点，添加回调
   if (node->is_endpoint) {
+    int idx = 0;
     for (const auto &callback : node->callbacks) {
-      callbacks.emplace_back(base_path, callback);
+      callbacks.emplace_back(base_path, callback, idx++);
     }
   }
 
@@ -848,11 +853,33 @@ void GJson::collect_affected_callbacks(
   }
 }
 
+// 删除callback字典树中的callback列表中指定一个元素的位置
+void GJson::remove_callback_item(TrieNode *node, const std::string &base_path,
+                                 int idx) {
+  if (node == nullptr) {
+    return;
+  }
+  std::istringstream iss(base_path);
+  std::string token;
+  while (std::getline(iss, token, ';')) {
+    if (token.empty()) {
+      continue;
+    }
+    if (node->children.find(token) == node->children.end()) {
+      return;
+    }
+    node = node->children[token].get();
+  }
+  if (idx >= 0 && idx < node->callbacks.size()) {
+    node->callbacks.erase(node->callbacks.begin() + idx);
+  }
+}
+
 void GJson::trigger_all_callbacks() {
   // 遍历callback_trie_树节点，并且保留路径上的名字，如果is_endpoint为true，获取整个路径名用于数据查询，将这个数据传给callbacks上
-  std::vector<std::pair<std::string, CallbackFunc>> callbacks_to_trigger;
+  std::vector<std::tuple<std::string, CallbackFunc, int>> callbacks_to_trigger;
   collect_affected_callbacks(callback_trie_.get(), "", callbacks_to_trigger);
-  for (const auto &[callback_path, callback] : callbacks_to_trigger) {
+  for (const auto &[callback_path, callback, idx] : callbacks_to_trigger) {
     const rapidjson::Value *callback_value = query_value(callback_path);
     callback(callback_path, callback_value);
   }

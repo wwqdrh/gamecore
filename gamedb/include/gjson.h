@@ -28,7 +28,7 @@ namespace gamedb {
 class GJson {
 public:
   // 定义回调函数类型
-  using CallbackFunc = std::function<void(const std::string &path,
+  using CallbackFunc = std::function<bool(const std::string &path,
                                           const rapidjson::Value *value)>;
 
 private:
@@ -167,6 +167,8 @@ public:
     current->is_endpoint = false;
   }
   std::string query(const std::string &field) const; // 返回的是json字符串
+  void remove_callback_item(TrieNode *node, const std::string &base_path,
+                            int idx);
   // 查询指定字段的值并返回特定类型
   Value *query_value(const std::string &field) const;
   Value query_value_dynamic(
@@ -214,7 +216,7 @@ private:
   // 获取所有需要触发的回调
   void collect_affected_callbacks(
       TrieNode *node, const std::string &base_path,
-      std::vector<std::pair<std::string, CallbackFunc>> &callbacks);
+      std::vector<std::tuple<std::string, CallbackFunc, int>> &callbacks);
   bool update_(const std::string &field, const std::string &action, Value &val);
   bool safeReplaceValue(rapidjson::Value *current,
                         const rapidjson::Value &newVal);
