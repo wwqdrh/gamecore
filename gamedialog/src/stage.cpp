@@ -273,7 +273,7 @@ bool DiaStage::evaluate_condition(const Condition& cond) const {
     }
     
     // Try to convert to numbers for numeric comparisons
-    try {
+    // try {
         double actual_num = std::stod(actual);
         double value_num = std::stod(cond.value);
         
@@ -281,10 +281,10 @@ bool DiaStage::evaluate_condition(const Condition& cond) const {
         if (cond.op == "<") return actual_num < value_num;
         if (cond.op == ">=") return actual_num >= value_num;
         if (cond.op == "<=") return actual_num <= value_num;
-    } catch (...) {
-        // If conversion fails, return false
-        return false;
-    }
+    // } catch (...) {
+    //     // If conversion fails, return false
+    //     return false;
+    // }
     
     return false;
 }

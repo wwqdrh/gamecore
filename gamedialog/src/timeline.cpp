@@ -178,4 +178,14 @@ int Timeline::stage_index(const std::string &label) {
   }
   return stage_map[label];
 }
+
+std::vector<std::string> Timeline::get_available_stages() {
+  std::vector<std::string> available_stages;
+  for (auto item : stages) {
+    if (check_stage_flag(item->get_stage_name())) {
+      available_stages.push_back(item->get_stage_name());
+    }
+  }
+  return available_stages;
+}
 } // namespace gamedialog
