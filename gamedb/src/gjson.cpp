@@ -698,232 +698,214 @@ bool GJson::update_(const std::string &field, const std::string &action,
           ++it;
         }
       }
-    } else if (action == "*") {
-      // 减法操作
-      if (current->IsInt() && val.IsInt()) {
-        current->SetInt(current->GetInt() * val.GetInt());
-      } else if (current->IsDouble() && val.IsDouble()) {
-        current->SetDouble(current->GetDouble() * val.GetDouble());
-      } else {
-        // 类型不匹配，无法进行减法操作
-        return false;
-      }
-    } else if (action == "/") {
-      // 减法操作
-      if (current->IsInt() && val.IsInt()) {
-        current->SetInt(current->GetInt() / val.GetInt());
-      } else if (current->IsDouble() && val.IsDouble()) {
-        current->SetDouble(current->GetDouble() / val.GetDouble());
-      } else {
-        // 类型不匹配，无法进行减法操作
-        return false;
-      }
-    } else if (action == "~") {
-      // 直接替换
-      // current->CopyFrom(val, raw_data.GetAllocator());
-      safeReplaceValue(current, val);
     } else {
-      // 不支持的操作
+      // 类型不匹配，无法进行减法操作
       return false;
     }
+  } else if (action == "~") {
+    // 直接替换
+    // current->CopyFrom(val, raw_data.GetAllocator());
+    safeReplaceValue(current, val);
+  } else {
+    // 不支持的操作
+    return false;
+  }
 
+  return true;
+}
+
+bool GJson::safeReplaceValue(rapidjson::Value *current,
+                             const rapidjson::Value &newVal) {
+  if (!current) {
+    return false;
+  }
+  // 根据不同的类型使用不同的复制策略
+  switch (newVal.GetType()) {
+  case rapidjson::kNullType:
+    current->SetNull();
+    return true;
+
+  case rapidjson::kFalseType:
+  case rapidjson::kTrueType:
+    current->SetBool(newVal.GetBool());
+    return true;
+
+  case rapidjson::kStringType:
+    // 字符串类型需要使用allocator
+    current->SetString(newVal.GetString(), newVal.GetStringLength(),
+                       raw_data.GetAllocator());
+    return true;
+
+  case rapidjson::kNumberType:
+    if (newVal.IsInt()) {
+      current->SetInt(newVal.GetInt());
+    } else if (newVal.IsUint()) {
+      current->SetUint(newVal.GetUint());
+    } else if (newVal.IsInt64()) {
+      current->SetInt64(newVal.GetInt64());
+    } else if (newVal.IsUint64()) {
+      current->SetUint64(newVal.GetUint64());
+    } else if (newVal.IsDouble()) {
+      current->SetDouble(newVal.GetDouble());
+    }
+    return true;
+
+  case rapidjson::kArrayType: {
+    // 数组类型需要逐个复制元素
+    current->SetArray();
+    current->Reserve(newVal.Size(), raw_data.GetAllocator());
+    for (const auto &item : newVal.GetArray()) {
+      rapidjson::Value temp;
+      temp.CopyFrom(item, raw_data.GetAllocator());
+      current->PushBack(temp, raw_data.GetAllocator());
+    }
     return true;
   }
 
-  bool GJson::safeReplaceValue(rapidjson::Value * current,
-                               const rapidjson::Value &newVal) {
-    if (!current) {
-      return false;
+  case rapidjson::kObjectType: {
+    // 对象类型需要逐个复制成员
+    current->SetObject();
+    for (const auto &m : newVal.GetObject()) {
+      rapidjson::Value key;
+      key.CopyFrom(m.name, raw_data.GetAllocator());
+
+      rapidjson::Value value;
+      value.CopyFrom(m.value, raw_data.GetAllocator());
+
+      current->AddMember(key, value, raw_data.GetAllocator());
     }
-    // 根据不同的类型使用不同的复制策略
-    switch (newVal.GetType()) {
-    case rapidjson::kNullType:
-      current->SetNull();
-      return true;
+    return true;
+  }
 
-    case rapidjson::kFalseType:
-    case rapidjson::kTrueType:
-      current->SetBool(newVal.GetBool());
-      return true;
+  default:
+    return false;
+  }
+}
 
-    case rapidjson::kStringType:
-      // 字符串类型需要使用allocator
-      current->SetString(newVal.GetString(), newVal.GetStringLength(),
-                         raw_data.GetAllocator());
-      return true;
+void GJson::trigger_callbacks(const std::string &field) {
+  std::vector<std::string> parts = split(field, ';');
 
-    case rapidjson::kNumberType:
-      if (newVal.IsInt()) {
-        current->SetInt(newVal.GetInt());
-      } else if (newVal.IsUint()) {
-        current->SetUint(newVal.GetUint());
-      } else if (newVal.IsInt64()) {
-        current->SetInt64(newVal.GetInt64());
-      } else if (newVal.IsUint64()) {
-        current->SetUint64(newVal.GetUint64());
-      } else if (newVal.IsDouble()) {
-        current->SetDouble(newVal.GetDouble());
-      }
-      return true;
-
-    case rapidjson::kArrayType: {
-      // 数组类型需要逐个复制元素
-      current->SetArray();
-      current->Reserve(newVal.Size(), raw_data.GetAllocator());
-      for (const auto &item : newVal.GetArray()) {
-        rapidjson::Value temp;
-        temp.CopyFrom(item, raw_data.GetAllocator());
-        current->PushBack(temp, raw_data.GetAllocator());
-      }
-      return true;
+  // 构建完整路径并收集回调
+  TrieNode *current = callback_trie_.get();
+  if (current == nullptr) {
+    return;
+  }
+  std::string current_path;
+  for (size_t i = 0; i < parts.size(); ++i) {
+    if (!current_path.empty()) {
+      current_path += ";";
     }
+    current_path += parts[i];
 
-    case rapidjson::kObjectType: {
-      // 对象类型需要逐个复制成员
-      current->SetObject();
-      for (const auto &m : newVal.GetObject()) {
-        rapidjson::Value key;
-        key.CopyFrom(m.name, raw_data.GetAllocator());
-
-        rapidjson::Value value;
-        value.CopyFrom(m.value, raw_data.GetAllocator());
-
-        current->AddMember(key, value, raw_data.GetAllocator());
-      }
-      return true;
+    if (current->children.count(parts[i])) {
+      current = current->children[parts[i]].get();
+    } else {
+      break;
     }
+  }
+  if (current_path != field) {
+    return;
+  }
 
-    default:
-      return false;
+  std::vector<std::tuple<std::string, CallbackFunc, int>> callbacks_to_trigger;
+  collect_affected_callbacks(current, current_path, callbacks_to_trigger);
+
+  // 执行收集到的回调
+  std::unordered_set<std::string> null_paths; // 避免重复调用
+  for (const auto &[callback_path, callback, idx] : callbacks_to_trigger) {
+    if (null_paths.count(callback_path) > 0) {
+      continue;
+    }
+    // 获取回调路径对的值
+    const rapidjson::Value *callback_value = query_value(callback_path);
+    if (callback_value == nullptr) {
+      null_paths.insert(callback_path);
+      continue;
+    }
+    if (!callback(callback_path, callback_value)) {
+      // 返回false，说明这一个callback已经回收了，那么这里也需要清理掉
+      remove_callback_item(callback_trie_.get(), callback_path, idx);
+    }
+  }
+}
+
+// 递归寻找字典树，寻找给定路径下的所有子节点isend为true的，然后将其回调加入回调队列
+// 获取所有需要触发的回调
+void GJson::collect_affected_callbacks(
+    TrieNode *node, const std::string &base_path,
+    std::vector<std::tuple<std::string, CallbackFunc, int>> &callbacks) {
+  // 如果当前节点是终点，添加回调
+  if (node->is_endpoint) {
+    int idx = 0;
+    for (const auto &callback : node->callbacks) {
+      callbacks.emplace_back(base_path, callback, idx++);
     }
   }
 
-  void GJson::trigger_callbacks(const std::string &field) {
-    std::vector<std::string> parts = split(field, ';');
+  // 递归处理所有子节点
+  for (const auto &child : node->children) {
+    std::string new_path = base_path;
+    if (!new_path.empty()) {
+      new_path += ";";
+    }
+    new_path += child.first;
+    collect_affected_callbacks(child.second.get(), new_path, callbacks);
+  }
+}
 
-    // 构建完整路径并收集回调
-    TrieNode *current = callback_trie_.get();
-    if (current == nullptr) {
+// 删除callback字典树中的callback列表中指定一个元素的位置
+void GJson::remove_callback_item(TrieNode *node, const std::string &base_path,
+                                 int idx) {
+  if (node == nullptr) {
+    return;
+  }
+  std::istringstream iss(base_path);
+  std::string token;
+  while (std::getline(iss, token, ';')) {
+    if (token.empty()) {
+      continue;
+    }
+    if (node->children.find(token) == node->children.end()) {
       return;
     }
-    std::string current_path;
-    for (size_t i = 0; i < parts.size(); ++i) {
-      if (!current_path.empty()) {
-        current_path += ";";
-      }
-      current_path += parts[i];
+    node = node->children[token].get();
+  }
+  if (idx >= 0 && idx < node->callbacks.size()) {
+    node->callbacks.erase(node->callbacks.begin() + idx);
+  }
+}
 
-      if (current->children.count(parts[i])) {
-        current = current->children[parts[i]].get();
-      } else {
-        break;
-      }
-    }
-    if (current_path != field) {
-      return;
-    }
+void GJson::trigger_all_callbacks() {
+  // 遍历callback_trie_树节点，并且保留路径上的名字，如果is_endpoint为true，获取整个路径名用于数据查询，将这个数据传给callbacks上
+  std::vector<std::tuple<std::string, CallbackFunc, int>> callbacks_to_trigger;
+  collect_affected_callbacks(callback_trie_.get(), "", callbacks_to_trigger);
+  for (const auto &[callback_path, callback, idx] : callbacks_to_trigger) {
+    const rapidjson::Value *callback_value = query_value(callback_path);
+    callback(callback_path, callback_value);
+  }
+}
 
-    std::vector<std::tuple<std::string, CallbackFunc, int>>
-        callbacks_to_trigger;
-    collect_affected_callbacks(current, current_path, callbacks_to_trigger);
-
-    // 执行收集到的回调
-    std::unordered_set<std::string> null_paths; // 避免重复调用
-    for (const auto &[callback_path, callback, idx] : callbacks_to_trigger) {
-      if (null_paths.count(callback_path) > 0) {
-        continue;
-      }
-      // 获取回调路径对的值
-      const rapidjson::Value *callback_value = query_value(callback_path);
-      if (callback_value == nullptr) {
-        null_paths.insert(callback_path);
-        continue;
-      }
-      if (!callback(callback_path, callback_value)) {
-        // 返回false，说明这一个callback已经回收了，那么这里也需要清理掉
-        remove_callback_item(callback_trie_.get(), callback_path, idx);
-      }
-    }
+void GJson::load_or_store(const std::string &data) {
+  if (data.empty()) {
+    GLOG_WARNING("GJson", "Attempted to load empty data");
+    return;
   }
 
-  // 递归寻找字典树，寻找给定路径下的所有子节点isend为true的，然后将其回调加入回调队列
-  // 获取所有需要触发的回调
-  void GJson::collect_affected_callbacks(
-      TrieNode * node, const std::string &base_path,
-      std::vector<std::tuple<std::string, CallbackFunc, int>> &callbacks) {
-    // 如果当前节点是终点，添加回调
-    if (node->is_endpoint) {
-      int idx = 0;
-      for (const auto &callback : node->callbacks) {
-        callbacks.emplace_back(base_path, callback, idx++);
-      }
-    }
+  auto write = rwlock.unique_lock();
+  GLOG_DEBUG("GJson", "Parsing JSON data");
+  raw_data.Parse(data.c_str());
 
-    // 递归处理所有子节点
-    for (const auto &child : node->children) {
-      std::string new_path = base_path;
-      if (!new_path.empty()) {
-        new_path += ";";
-      }
-      new_path += child.first;
-      collect_affected_callbacks(child.second.get(), new_path, callbacks);
-    }
+  if (raw_data.HasParseError()) {
+    GLOG_ERROR("GJson", "JSON parse error at offset: " +
+                            std::to_string(raw_data.GetErrorOffset()));
+    return;
   }
 
-  // 删除callback字典树中的callback列表中指定一个元素的位置
-  void GJson::remove_callback_item(TrieNode * node,
-                                   const std::string &base_path, int idx) {
-    if (node == nullptr) {
-      return;
-    }
-    std::istringstream iss(base_path);
-    std::string token;
-    while (std::getline(iss, token, ';')) {
-      if (token.empty()) {
-        continue;
-      }
-      if (node->children.find(token) == node->children.end()) {
-        return;
-      }
-      node = node->children[token].get();
-    }
-    if (idx >= 0 && idx < node->callbacks.size()) {
-      node->callbacks.erase(node->callbacks.begin() + idx);
-    }
+  if (imported_) {
+    GLOG_DEBUG("GJson", "Triggering callbacks for data update");
+    trigger_all_callbacks();
   }
-
-  void GJson::trigger_all_callbacks() {
-    // 遍历callback_trie_树节点，并且保留路径上的名字，如果is_endpoint为true，获取整个路径名用于数据查询，将这个数据传给callbacks上
-    std::vector<std::tuple<std::string, CallbackFunc, int>>
-        callbacks_to_trigger;
-    collect_affected_callbacks(callback_trie_.get(), "", callbacks_to_trigger);
-    for (const auto &[callback_path, callback, idx] : callbacks_to_trigger) {
-      const rapidjson::Value *callback_value = query_value(callback_path);
-      callback(callback_path, callback_value);
-    }
-  }
-
-  void GJson::load_or_store(const std::string &data) {
-    if (data.empty()) {
-      GLOG_WARNING("GJson", "Attempted to load empty data");
-      return;
-    }
-
-    auto write = rwlock.unique_lock();
-    GLOG_DEBUG("GJson", "Parsing JSON data");
-    raw_data.Parse(data.c_str());
-
-    if (raw_data.HasParseError()) {
-      GLOG_ERROR("GJson", "JSON parse error at offset: " +
-                              std::to_string(raw_data.GetErrorOffset()));
-      return;
-    }
-
-    if (imported_) {
-      GLOG_DEBUG("GJson", "Triggering callbacks for data update");
-      trigger_all_callbacks();
-    }
-    imported_ = true;
-  }
+  imported_ = true;
+}
 
 } // namespace gamedb
