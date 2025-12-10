@@ -11,18 +11,24 @@ namespace gamedialog {
 // public
 // =====
 void Timeline::goto_begin() {
-  stages[current_]->clean();
-  current_ = 0;
+  if (current_ < stages.size()) {
+    stages[current_]->clean();
+    current_ = 0;
+  }
 }
 void Timeline::goto_end() {
-  stages[current_]->clean();
-  current_ = stages.size();
+  if (current_ < stages.size()) {
+    stages[current_]->clean();
+    current_ = stages.size();
+  }
 }
 void Timeline::skip_stage_count(int count) {
-  stages[current_]->clean();
-  current_ += count;
-  if (current_ > stages.size() - 1) {
-    current_ = stages.size();
+  if (current_ < stages.size()) {
+    stages[current_]->clean();
+    current_ += count;
+    if (current_ > stages.size() - 1) {
+      current_ = stages.size();
+    }
   }
 }
 Timeline::Timeline(const std::string &data) {
