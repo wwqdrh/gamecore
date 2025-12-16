@@ -34,7 +34,7 @@ bool BehaviorTree::loadFromFile(const std::string &filename) {
   return loadFromString(buffer.str());
 }
 
-Value BehaviorTree::execute() {
+Value BehaviorTree::execute(int start_index) {
   if (!root) {
     // WARN_PRINT("Behavior tree not loaded");
     std::cerr << "Behavior tree not loaded" << std::endl;
@@ -49,7 +49,7 @@ Value BehaviorTree::execute() {
 
   // root->setDebug(debugEnabled);
   // WARN_PRINT("execute here");
-  Value result = root->evaluate(blackboard);
+  Value result = root->evaluate(blackboard, start_index);
 
   if (debugEnabled) {
     // WARN_PRINT("Execution completed");

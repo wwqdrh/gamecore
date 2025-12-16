@@ -1,6 +1,6 @@
 #include "AIParser/Parser.h"
-#include "godot_cpp/core/error_macros.hpp"
-#include "wrappers.h"
+// #include "godot_cpp/core/error_macros.hpp"
+// #include "wrappers.h"
 #include <algorithm>
 #include <stdexcept>
 
@@ -34,7 +34,10 @@ void Parser::consume(TokenType type, const std::string &errorMsg) {
   advance();
 }
 
-std::shared_ptr<ASTNode> Parser::parse() { return parseExpression(); }
+std::shared_ptr<ASTNode> Parser::parse() {
+  current_ast_index = 0;
+  return parseExpression();
+}
 
 std::shared_ptr<ASTNode> Parser::parseExpression() {
   if (check(TokenType::IDENTIFIER)) {
@@ -83,7 +86,10 @@ std::shared_ptr<ASTNode> Parser::parseSelector() {
 
   consume(TokenType::RPAREN, "Expected ')' after selector arguments");
 
-  return std::make_shared<SelectorNode>(children);
+  current_ast_index += 1;
+  auto node = std::make_shared<SelectorNode>(children);
+  node->treeIndex = current_ast_index;
+  return node;
 }
 
 std::shared_ptr<ASTNode> Parser::parseSequence() {
@@ -101,10 +107,14 @@ std::shared_ptr<ASTNode> Parser::parseSequence() {
 
   consume(TokenType::RPAREN, "Expected ')' after sequence arguments");
 
-  return std::make_shared<SequenceNode>(children);
+  current_ast_index += 1;
+  auto node = std::make_shared<SequenceNode>(children);
+  node->treeIndex = current_ast_index;
+  return node;
 }
 
 // 添加parseRepeat方法
+// TODO, repeat函数中无法正确计算current_index
 std::shared_ptr<ASTNode> Parser::parseRepeat() {
   consume(TokenType::LPAREN, "Expected '(' after repeat");
 
@@ -119,6 +129,10 @@ std::shared_ptr<ASTNode> Parser::parseRepeat() {
   consume(TokenType::RPAREN, "Expected ')' after repeat arguments");
 
   return std::make_shared<RepeatNode>(child, count);
+  // current_ast_index += count;
+  // auto node = std::make_shared<RepeatNode>(child, count);
+  // node->treeIndex = current_ast_index;
+  // return node;
 }
 
 std::shared_ptr<ASTNode> Parser::parseIf() {
@@ -140,7 +154,10 @@ std::shared_ptr<ASTNode> Parser::parseIf() {
 
   consume(TokenType::RPAREN, "Expected ')' after if arguments");
 
-  return std::make_shared<IfNode>(condition, trueBranch, falseBranch);
+  current_ast_index += 1;
+  auto node = std::make_shared<IfNode>(condition, trueBranch, falseBranch);
+  node->treeIndex = current_ast_index;
+  return node;
 }
 
 std::shared_ptr<ASTNode> Parser::parseCondition() {
@@ -185,7 +202,10 @@ std::shared_ptr<ASTNode> Parser::parseFunctionCall() {
 
   consume(TokenType::RPAREN, "Expected ')' after function arguments");
 
-  return std::make_shared<FunctionCallNode>(functionName, args);
+  current_ast_index += 1;
+  auto node = std::make_shared<FunctionCallNode>(functionName, args);
+  node->treeIndex = current_ast_index;
+  return node;
 }
 
 std::shared_ptr<ASTNode> Parser::parsePrimary() {

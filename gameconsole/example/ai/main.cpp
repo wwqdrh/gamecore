@@ -13,18 +13,22 @@ private:
 
 public:
   void setupEnemyAI() {
-    enemyAI.registerAction(
-        "extra_func", [this](const std::vector<Value> &args) {
-          if (std::holds_alternative<int>(args[0]),
-              std::holds_alternative<int>(args[1])) {
-            std::cout << "enemy now action extra_func: "
-                      << std::get<int>(args[0]) << ", "
-                      << std::get<int>(args[1]) << std::endl;
-          }
-          return true;
-        });
+    enemyAI.registerAction("extra_func", [this](
+                                             const std::vector<Value> &args) {
+      if (std::holds_alternative<int>(args[0])) {
+        std::cout << "funcindex: " << std::get<int>(args[0]) << std::endl;
+      }
+      // return Value("AI_END");
+      if (std::holds_alternative<int>(args[1]),
+          std::holds_alternative<int>(args[2])) {
+        std::cout << "enemy now action extra_func: " << std::get<int>(args[1])
+                  << ", " << std::get<int>(args[2]) << std::endl;
+      }
+      return Value(true);
+    });
     enemyAI.bind_actionfn([this](const std::vector<Value> &args) {
-      if (std::holds_alternative<std::string>(args[0])) {
+      std::cout << "here" << std::endl;
+      if (std::holds_alternative<std::string>(args[1])) {
         std::cout << "enemy now action: " << std::get<std::string>(args[0])
                   << std::endl;
       }
@@ -97,7 +101,7 @@ public:
     enemyAI.setBlackboardValue("health", 100);
     enemyAI.setBlackboardValue("can_see_player", true);
     enemyAI.setBlackboardValue("distance", 75.0f);
-    enemyAI.execute();
+    enemyAI.execute(3);
 
     std::cout << "\nScenario 2: Low health\n";
     enemyAI.setBlackboardValue("health", 20);
@@ -196,12 +200,12 @@ int main() {
   // 运行模拟
   sim.runEnemySimulation();
 
-  // 等待一下再运行NPC AI
-  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-  sim.runNPCSimulation();
+  // // 等待一下再运行NPC AI
+  // std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+  // sim.runNPCSimulation();
 
-  // 交互式演示
-  sim.interactiveDemo();
+  // // 交互式演示
+  // sim.interactiveDemo();
 
   std::cout << "\nDemo completed. Goodbye!\n";
 

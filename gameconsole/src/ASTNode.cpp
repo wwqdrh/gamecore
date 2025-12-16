@@ -6,12 +6,16 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+#include <variant>
 
 namespace AIParser {
 
 // SelectorNode实现
-Value SelectorNode::evaluate(
-    std::unordered_map<std::string, Value> &blackboard) {
+Value SelectorNode::evaluate(std::unordered_map<std::string, Value> &blackboard,
+                             int start_index) {
+  if (treeIndex != -1 && treeIndex < start_index) {
+    return true;
+  }
   if (debugEnabled) {
     log("Selector: executing " + std::to_string(children.size()) + " children");
   }
@@ -21,7 +25,11 @@ Value SelectorNode::evaluate(
       log("Selector: trying child " + std::to_string(i));
     }
 
-    Value result = children[i]->evaluate(blackboard);
+    Value result = children[i]->evaluate(blackboard, start_index);
+    if (std::holds_alternative<std::string>(result) &&
+        std::get<std::string>(result) == END_FLAG) {
+      return END_FLAG;
+    }
 
     // 如果子节点执行成功，返回成功
     if (!std::holds_alternative<nullptr_t>(result)) {
@@ -51,9 +59,12 @@ std::string SelectorNode::toString(int indent) const {
 }
 
 // SequenceNode实现
-Value SequenceNode::evaluate(
-    std::unordered_map<std::string, Value> &blackboard) {
+Value SequenceNode::evaluate(std::unordered_map<std::string, Value> &blackboard,
+                             int start_index) {
   // WARN_PRINT("do sequence now");
+  if (treeIndex != -1 && treeIndex < start_index) {
+    return true;
+  }
   if (debugEnabled) {
     log("Sequence: executing " + std::to_string(children.size()) + " children");
   }
@@ -65,7 +76,11 @@ Value SequenceNode::evaluate(
       log("Sequence: executing child " + std::to_string(i));
     }
 
-    lastResult = children[i]->evaluate(blackboard);
+    lastResult = children[i]->evaluate(blackboard, start_index);
+    if (std::holds_alternative<std::string>(lastResult) &&
+        std::get<std::string>(lastResult) == END_FLAG) {
+      return END_FLAG;
+    }
 
     // 如果子节点失败，返回失败
     if (std::holds_alternative<nullptr_t>(lastResult)) {
@@ -94,7 +109,11 @@ std::string SequenceNode::toString(int indent) const {
   return ss.str();
 }
 // RepeatNode实现
-Value RepeatNode::evaluate(std::unordered_map<std::string, Value> &blackboard) {
+Value RepeatNode::evaluate(std::unordered_map<std::string, Value> &blackboard,
+                           int start_index) {
+  if (treeIndex != -1 && treeIndex < start_index) {
+    return true;
+  }
   if (debugEnabled) {
     log("Repeat: mode = " +
         std::string(mode == RepeatMode::COUNT ? "COUNT" : "UNTIL_SUCCESS"));
@@ -119,7 +138,13 @@ Value RepeatNode::evaluate(std::unordered_map<std::string, Value> &blackboard) {
       return nullptr;
     }
 
-    Value countValue = countOrCondition->evaluate(blackboard);
+    Value countValue = countOrCondition->evaluate(blackboard, start_index);
+
+    if (std::holds_alternative<std::string>(countValue) &&
+        std::get<std::string>(countValue) == END_FLAG) {
+
+      return END_FLAG;
+    }
     int repeatCount = 0;
 
     if (std::holds_alternative<int>(countValue)) {
@@ -150,7 +175,11 @@ Value RepeatNode::evaluate(std::unordered_map<std::string, Value> &blackboard) {
             std::to_string(repeatCount));
       }
 
-      lastResult = child->evaluate(blackboard);
+      lastResult = child->evaluate(blackboard, start_index);
+      if (std::holds_alternative<std::string>(lastResult) &&
+          std::get<std::string>(lastResult) == END_FLAG) {
+        return END_FLAG;
+      }
 
       if (std::holds_alternative<nullptr_t>(lastResult)) {
         if (debugEnabled) {
@@ -175,7 +204,11 @@ Value RepeatNode::evaluate(std::unordered_map<std::string, Value> &blackboard) {
         log("Repeat: attempt " + std::to_string(attempts));
       }
 
-      lastResult = child->evaluate(blackboard);
+      lastResult = child->evaluate(blackboard, start_index);
+      if (std::holds_alternative<std::string>(lastResult) &&
+          std::get<std::string>(lastResult) == END_FLAG) {
+        return END_FLAG;
+      }
 
       // 如果成功，返回成功
       if (!std::holds_alternative<nullptr_t>(lastResult)) {
@@ -188,9 +221,13 @@ Value RepeatNode::evaluate(std::unordered_map<std::string, Value> &blackboard) {
 
       // 可选：检查停止条件
       if (countOrCondition) {
-        Value stopCondition = countOrCondition->evaluate(blackboard);
-        if (std::holds_alternative<bool>(stopCondition) &&
-            std::get<bool>(stopCondition)) {
+        Value stopCondition =
+            countOrCondition->evaluate(blackboard, start_index);
+        if (std::holds_alternative<std::string>(stopCondition) &&
+            std::get<std::string>(stopCondition) == END_FLAG) {
+          return END_FLAG;
+        } else if (std::holds_alternative<bool>(stopCondition) &&
+                   std::get<bool>(stopCondition)) {
           if (debugEnabled) {
             log("Repeat: stop condition met after " + std::to_string(attempts) +
                 " attempts");
@@ -243,12 +280,20 @@ std::string RepeatNode::toString(int indent) const {
 }
 
 // IfNode实现
-Value IfNode::evaluate(std::unordered_map<std::string, Value> &blackboard) {
+Value IfNode::evaluate(std::unordered_map<std::string, Value> &blackboard,
+                       int start_index) {
+  if (treeIndex != -1 && treeIndex < start_index) {
+    return true;
+  }
   if (debugEnabled) {
     log("If: evaluating condition");
   }
 
-  Value conditionResult = condition->evaluate(blackboard);
+  Value conditionResult = condition->evaluate(blackboard, start_index);
+  if (std::holds_alternative<std::string>(conditionResult) &&
+      std::get<std::string>(conditionResult) == END_FLAG) {
+    return END_FLAG;
+  }
 
   // 确保条件结果是布尔值
   if (!std::holds_alternative<bool>(conditionResult)) {
@@ -268,12 +313,12 @@ Value IfNode::evaluate(std::unordered_map<std::string, Value> &blackboard) {
     if (debugEnabled) {
       log("If: executing true branch");
     }
-    return trueBranch->evaluate(blackboard);
+    return trueBranch->evaluate(blackboard, start_index);
   } else if (falseBranch) {
     if (debugEnabled) {
       log("If: executing false branch");
     }
-    return falseBranch->evaluate(blackboard);
+    return falseBranch->evaluate(blackboard, start_index);
   }
 
   return nullptr;
@@ -297,7 +342,11 @@ std::string IfNode::toString(int indent) const {
 }
 
 // ActionNode实现
-Value ActionNode::evaluate(std::unordered_map<std::string, Value> &blackboard) {
+Value ActionNode::evaluate(std::unordered_map<std::string, Value> &blackboard,
+                           int start_index) {
+  if (treeIndex != -1 && treeIndex < start_index) {
+    return true;
+  }
   if (debugEnabled) {
     log("Action: executing " + name);
   }
@@ -305,14 +354,20 @@ Value ActionNode::evaluate(std::unordered_map<std::string, Value> &blackboard) {
   // 评估参数
   std::vector<Value> evaluatedArgs;
   for (const auto &arg : args) {
-    evaluatedArgs.push_back(arg->evaluate(blackboard));
+    auto res = arg->evaluate(blackboard, start_index);
+    if (std::holds_alternative<std::string>(res) &&
+        std::get<std::string>(res) == END_FLAG) {
+      return END_FLAG;
+    }
+    evaluatedArgs.push_back(res);
   }
 
   // 从注册表中执行动作
   auto &registry = ActionRegistry::getInstance();
   if (registry.hasAction(name)) {
     // WARN_PRINT(
-    //     godot::vformat("Action: %s found in registry", godot::TO_GSTR(name)));
+    //     godot::vformat("Action: %s found in registry",
+    //     godot::TO_GSTR(name)));
     // if (debugEnabled) {
     //   log("Action: " + name + " found in registry");
     // }
@@ -349,9 +404,20 @@ std::string ActionNode::toString(int indent) const {
 
 // ConditionNode实现
 Value ConditionNode::evaluate(
-    std::unordered_map<std::string, Value> &blackboard) {
-  Value leftVal = left->evaluate(blackboard);
-  Value rightVal = right->evaluate(blackboard);
+    std::unordered_map<std::string, Value> &blackboard, int start_index) {
+  if (treeIndex != -1 && treeIndex < start_index) {
+    return true;
+  }
+  Value leftVal = left->evaluate(blackboard, start_index);
+  if (std::holds_alternative<std::string>(leftVal) &&
+      std::get<std::string>(leftVal) == END_FLAG) {
+    return END_FLAG;
+  }
+  Value rightVal = right->evaluate(blackboard, start_index);
+  if (std::holds_alternative<std::string>(rightVal) &&
+      std::get<std::string>(rightVal) == END_FLAG) {
+    return END_FLAG;
+  }
   // 创建比较访问器
 
   return std::visit(CompareVisitor{type}, leftVal, rightVal);
@@ -392,7 +458,11 @@ std::string ConditionNode::toString(int indent) const {
 }
 
 // ValueNode实现
-Value ValueNode::evaluate(std::unordered_map<std::string, Value> &blackboard) {
+Value ValueNode::evaluate(std::unordered_map<std::string, Value> &blackboard,
+                          int start_index) {
+  if (treeIndex != -1 && treeIndex < start_index) {
+    return true;
+  }
   if (debugEnabled) {
     std::stringstream ss;
     ss << "Value: returning ";
@@ -441,8 +511,11 @@ std::string ValueNode::toString(int indent) const {
 }
 
 // VariableNode实现
-Value VariableNode::evaluate(
-    std::unordered_map<std::string, Value> &blackboard) {
+Value VariableNode::evaluate(std::unordered_map<std::string, Value> &blackboard,
+                             int start_index) {
+  if (treeIndex != -1 && treeIndex < start_index) {
+    return true;
+  }
   auto it = blackboard.find(name);
   if (it != blackboard.end()) {
     if (debugEnabled) {
@@ -468,16 +541,26 @@ std::string VariableNode::toString(int indent) const {
 
 // FunctionCallNode实现
 Value FunctionCallNode::evaluate(
-    std::unordered_map<std::string, Value> &blackboard) {
+    std::unordered_map<std::string, Value> &blackboard, int start_index) {
+  if (treeIndex != -1 && treeIndex < start_index) {
+    return true;
+  }
   // 对于非控制流的函数调用，当作Action处理
   // WARN_PRINT("do function now");
-  if (debugEnabled) {
-    log("FunctionCall: " + name);
-  }
+  // if (debugEnabled) {
+  //   log("FunctionCall: " + name);
+  // }
 
   std::vector<Value> evaluatedArgs;
+  evaluatedArgs.push_back(
+      treeIndex); // 新增当前function的index，用于使用者提供从某个位置恢复执行的能力
   for (const auto &arg : args) {
-    evaluatedArgs.push_back(arg->evaluate(blackboard));
+    auto res = arg->evaluate(blackboard, start_index);
+    if (std::holds_alternative<std::string>(res) &&
+        std::get<std::string>(res) == END_FLAG) {
+      return END_FLAG;
+    }
+    evaluatedArgs.push_back(res);
   }
 
   auto &registry = ActionRegistry::getInstance();
@@ -486,7 +569,7 @@ Value FunctionCallNode::evaluate(
     return registry.executeAction(name, evaluatedArgs);
   }
   //  else {
-    // WARN_PRINT(godot::vformat("%s is not in registry", godot::TO_GSTR(name)));
+  // WARN_PRINT(godot::vformat("%s is not in registry", godot::TO_GSTR(name)));
   // }
 
   return nullptr;

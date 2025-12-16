@@ -2,7 +2,7 @@
 #include "AIParser/AIActions.h"
 #include "ASTNode.h"
 // #include "godot_cpp/core/error_macros.hpp"
-#include "wrappers.h"
+// #include "wrappers.h"
 #include <memory>
 #include <unordered_map>
 
@@ -24,7 +24,7 @@ public:
   }
   void bind_actionfn(ActionFunc fn) { BuiltinActions::bind_actionfn(fn); }
   // 执行行为树
-  Value execute();
+  Value execute(int start_index = 0);
 
   // 黑板操作
   void setBlackboardValue(const std::string &key, const Value &value);

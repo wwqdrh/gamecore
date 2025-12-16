@@ -15,6 +15,7 @@ public:
   std::shared_ptr<ASTNode> parse();
 
 private:
+  int current_ast_index = 0;
   Tokenizer tokenizer;
   Token currentToken;
 
