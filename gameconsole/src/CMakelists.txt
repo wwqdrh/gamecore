@@ -1,3 +1,24 @@
-add_library(console STATIC 
-    argument.cpp
+# src/CMakeLists.txt
+# 添加你的源文件
+file(GLOB AIPARSER_SOURCES "*.cpp")
+
+# 创建库
+add_library(AIParser ${AIPARSER_SOURCES})
+
+# 设置库的属性
+set_target_properties(AIParser PROPERTIES
+    VERSION 1.0.0
+    SOVERSION 1
+)
+
+# 包含目录
+target_include_directories(AIParser PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include
+)
+
+# 安装规则
+install(TARGETS AIParser
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION bin
 )

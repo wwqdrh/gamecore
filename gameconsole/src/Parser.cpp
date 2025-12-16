@@ -1,0 +1,240 @@
+#include "AIParser/Parser.h"
+#include <algorithm>
+#include <stdexcept>
+
+namespace AIParser {
+
+const std::unordered_map<std::string, NodeType> Parser::controlKeywords = {
+    {"selector", NodeType::SELECTOR},
+    {"sequence", NodeType::SEQUENCE},
+    {"if", NodeType::IF},
+    {"while", NodeType::WHILE},
+    {"repeat", NodeType::REPEAT}};
+
+Parser::Parser(const std::string &source) : tokenizer(source) { advance(); }
+
+void Parser::advance() { currentToken = tokenizer.nextToken(); }
+
+bool Parser::match(TokenType type) {
+  if (check(type)) {
+    advance();
+    return true;
+  }
+  return false;
+}
+
+bool Parser::check(TokenType type) const { return currentToken.type == type; }
+
+void Parser::consume(TokenType type, const std::string &errorMsg) {
+  if (!check(type)) {
+    throw std::runtime_error(errorMsg + ", got: " + currentToken.value);
+  }
+  advance();
+}
+
+std::shared_ptr<ASTNode> Parser::parse() { return parseExpression(); }
+
+std::shared_ptr<ASTNode> Parser::parseExpression() {
+  if (check(TokenType::IDENTIFIER)) {
+    std::string identifier = currentToken.value;
+
+    // 检查是否为控制流关键字
+    auto it = controlKeywords.find(identifier);
+    if (it != controlKeywords.end()) {
+      advance(); // 消耗标识符
+
+      switch (it->second) {
+      case NodeType::SELECTOR:
+        return parseSelector();
+      case NodeType::SEQUENCE:
+        return parseSequence();
+      case NodeType::IF:
+        return parseIf();
+      default:
+        throw std::runtime_error("Unimplemented control keyword: " +
+                                 identifier);
+      }
+    }
+
+    // 普通函数调用
+    return parseFunctionCall();
+  }
+
+  // 值或变量
+  return parsePrimary();
+}
+
+std::shared_ptr<ASTNode> Parser::parseSelector() {
+  consume(TokenType::LPAREN, "Expected '(' after selector");
+
+  std::vector<std::shared_ptr<ASTNode>> children;
+
+  while (!check(TokenType::RPAREN)) {
+    children.push_back(parseExpression());
+
+    if (!check(TokenType::RPAREN)) {
+      consume(TokenType::COMMA, "Expected ',' or ')' in selector arguments");
+    }
+  }
+
+  consume(TokenType::RPAREN, "Expected ')' after selector arguments");
+
+  return std::make_shared<SelectorNode>(children);
+}
+
+std::shared_ptr<ASTNode> Parser::parseSequence() {
+  consume(TokenType::LPAREN, "Expected '(' after sequence");
+
+  std::vector<std::shared_ptr<ASTNode>> children;
+
+  while (!check(TokenType::RPAREN)) {
+    children.push_back(parseExpression());
+
+    if (!check(TokenType::RPAREN)) {
+      consume(TokenType::COMMA, "Expected ',' or ')' in sequence arguments");
+    }
+  }
+
+  consume(TokenType::RPAREN, "Expected ')' after sequence arguments");
+
+  return std::make_shared<SequenceNode>(children);
+}
+
+std::shared_ptr<ASTNode> Parser::parseIf() {
+  consume(TokenType::LPAREN, "Expected '(' after if");
+
+  // 解析条件
+  auto condition = parseCondition();
+
+  consume(TokenType::COMMA, "Expected ',' after if condition");
+
+  // 解析true分支
+  auto trueBranch = parseExpression();
+
+  // 解析可选的false分支
+  std::shared_ptr<ASTNode> falseBranch = nullptr;
+  if (match(TokenType::COMMA)) {
+    falseBranch = parseExpression();
+  }
+
+  consume(TokenType::RPAREN, "Expected ')' after if arguments");
+
+  return std::make_shared<IfNode>(condition, trueBranch, falseBranch);
+}
+
+std::shared_ptr<ASTNode> Parser::parseCondition() {
+  auto left = parsePrimary();
+
+  if (check(TokenType::OPERATOR)) {
+    std::string op = currentToken.value;
+    advance();
+
+    auto right = parsePrimary();
+
+    // 映射操作符到NodeType
+    NodeType opType;
+    if (op == "<")
+      opType = NodeType::LESS;
+    else if (op == ">")
+      opType = NodeType::GREATER;
+    else if (op == "==")
+      opType = NodeType::EQUAL;
+    else if (op == "!=")
+      opType = NodeType::NOT_EQUAL;
+    else if (op == "<=")
+      opType = NodeType::LESS_EQUAL;
+    else if (op == ">=")
+      opType = NodeType::GREATER_EQUAL;
+    else
+      throw std::runtime_error("Unknown operator: " + op);
+
+    return std::make_shared<ConditionNode>(left, opType, right);
+  }
+
+  return left;
+}
+
+std::shared_ptr<ASTNode> Parser::parseFunctionCall() {
+  std::string functionName = currentToken.value;
+  advance();
+
+  consume(TokenType::LPAREN, "Expected '(' after function name");
+
+  auto args = parseArgumentList();
+
+  consume(TokenType::RPAREN, "Expected ')' after function arguments");
+
+  return std::make_shared<FunctionCallNode>(functionName, args);
+}
+
+std::shared_ptr<ASTNode> Parser::parsePrimary() {
+  if (check(TokenType::NUMBER)) {
+    return parseValue();
+  } else if (check(TokenType::STRING)) {
+    return parseValue();
+  } else if (check(TokenType::BOOL)) {
+    return parseValue();
+  } else if (check(TokenType::IDENTIFIER)) {
+    // 可能是变量或函数调用
+    Token next = tokenizer.peekToken();
+    if (next.type == TokenType::LPAREN) {
+      return parseFunctionCall();
+    } else {
+      // 变量
+      std::string varName = currentToken.value;
+      advance();
+      return std::make_shared<VariableNode>(varName);
+    }
+  } else if (match(TokenType::LPAREN)) {
+    auto expr = parseExpression();
+    consume(TokenType::RPAREN, "Expected ')' after expression");
+    return expr;
+  }
+
+  throw std::runtime_error("Unexpected token in primary expression");
+}
+
+std::shared_ptr<ASTNode> Parser::parseValue() {
+  Token token = currentToken;
+  advance();
+
+  if (token.type == TokenType::NUMBER) {
+    // 检查是否是浮点数
+    if (token.value.find('.') != std::string::npos) {
+      float value = std::stof(token.value);
+      return std::make_shared<ValueNode>(value);
+    } else {
+      int value = std::stoi(token.value);
+      return std::make_shared<ValueNode>(value);
+    }
+  } else if (token.type == TokenType::STRING) {
+    return std::make_shared<ValueNode>(token.value);
+  } else if (token.type == TokenType::BOOL) {
+    bool value = (token.value == "true");
+    return std::make_shared<ValueNode>(value, NodeType::BOOL);
+  }
+
+  throw std::runtime_error("Invalid value token");
+}
+
+std::vector<std::shared_ptr<ASTNode>> Parser::parseArgumentList() {
+  std::vector<std::shared_ptr<ASTNode>> args;
+
+  if (check(TokenType::RPAREN)) {
+    return args; // 空参数列表
+  }
+
+  while (true) {
+    args.push_back(parseExpression());
+
+    if (check(TokenType::RPAREN)) {
+      break;
+    }
+
+    consume(TokenType::COMMA, "Expected ',' or ')' in argument list");
+  }
+
+  return args;
+}
+
+} // namespace AIParser

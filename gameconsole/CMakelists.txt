@@ -17,9 +17,71 @@ endif()
 
 # 构建选项
 option(BUILD_TESTS "Build the tests" ON)
+option(BUILD_EXAMPLES "Build example applications" ON)
 
 include_directories("include")
+
+# 先添加你的主库
 add_subdirectory(src)
+
+# 构建示例应用
+if (BUILD_EXAMPLES)
+    message(STATUS "Building example applications...")
+    
+    # 查找所有示例目录
+    file(GLOB EXAMPLE_DIRS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "example/*")
+    
+    # 为每个示例目录构建
+    foreach(EXAMPLE_DIR ${EXAMPLE_DIRS})
+        if(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${EXAMPLE_DIR})
+            # 获取示例目录名
+            get_filename_component(EXAMPLE_NAME ${EXAMPLE_DIR} NAME)
+            
+            # 查找该目录中的main.cpp
+            set(EXAMPLE_MAIN ${CMAKE_CURRENT_SOURCE_DIR}/${EXAMPLE_DIR}/main.cpp)
+            if(EXISTS ${EXAMPLE_MAIN})
+                message(STATUS "Found example: ${EXAMPLE_NAME}")
+                
+                # 创建可执行文件
+                add_executable(${EXAMPLE_NAME}_example ${EXAMPLE_MAIN})
+                
+                # 链接你的主库
+                target_link_libraries(${EXAMPLE_NAME}_example PRIVATE 
+                    AIParser  # 假设你的库名为AIParser
+                )
+                
+                # 设置输出目录
+                set_target_properties(${EXAMPLE_NAME}_example PROPERTIES
+                    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/examples
+                )
+                
+                # 添加安装规则（可选）
+                install(TARGETS ${EXAMPLE_NAME}_example
+                    RUNTIME DESTINATION bin/examples
+                )
+                
+                # 添加自定义目标以便更容易运行
+                add_custom_target(run_${EXAMPLE_NAME}
+                    COMMAND ${CMAKE_BINARY_DIR}/bin/examples/${EXAMPLE_NAME}_example
+                    DEPENDS ${EXAMPLE_NAME}_example
+                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                    COMMENT "Running example: ${EXAMPLE_NAME}"
+                )
+                
+            else()
+                message(STATUS "No main.cpp found in ${EXAMPLE_DIR}")
+            endif()
+        endif()
+    endforeach()
+    
+    # 添加一个运行所有示例的目标
+    add_custom_target(run_all_examples
+        COMMAND ${CMAKE_COMMAND} -E echo "Running all examples..."
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        COMMENT "Run individual examples with: make run_<example_name>"
+    )
+    
+endif()
 
 if (BUILD_TESTS)
     # Google Test
@@ -56,7 +118,7 @@ if (BUILD_TESTS)
     set(TEST_TARGETS "")
     # 为每个测试文件创建一个测试可执行文件
     foreach(TEST_FILE ${TEST_SOURCES})
-    # 获取不带扩展名的文件名作为测试名
+        # 获取不带扩展名的文件名作为测试名
         get_filename_component(TEST_NAME ${TEST_FILE} NAME_WE)
         add_executable(${TEST_NAME} ${TEST_FILE})
         
@@ -64,13 +126,19 @@ if (BUILD_TESTS)
         target_link_libraries(${TEST_NAME}  PRIVATE 
             GTest::gtest 
             GTest::gtest_main
+            AIParser  # 链接你的主库
+        )
+        
+        # 设置输出目录
+        set_target_properties(${TEST_NAME} PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/tests
         )
         
         # # 添加测试
         add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
         # 使用 gtest_discover_tests 来自动发现测试
         gtest_discover_tests(${TEST_NAME}
-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
             PROPERTIES TIMEOUT 10  # 设置测试超时时间
         )
         # 将测试目标添加到列表中
@@ -85,3 +153,19 @@ if (BUILD_TESTS)
         COMMENT "Running all tests..."  
     )
 endif()
+
+# 创建一个汇总所有构建目标的元目标
+add_custom_target(all_targets
+    DEPENDS ${TEST_TARGETS}
+    COMMENT "Build all targets"
+)
+
+# 创建常用的构建快捷方式
+add_custom_target(build_all
+    COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target all
+    COMMENT "Building everything..."
+)
+
+# 安装配置（可选）
+install(DIRECTORY include/AIParser DESTINATION include)
+install(TARGETS AIParser DESTINATION lib)
