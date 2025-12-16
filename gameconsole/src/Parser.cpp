@@ -1,4 +1,6 @@
 #include "AIParser/Parser.h"
+#include "godot_cpp/core/error_macros.hpp"
+#include "wrappers.h"
 #include <algorithm>
 #include <stdexcept>
 
@@ -26,7 +28,8 @@ bool Parser::check(TokenType type) const { return currentToken.type == type; }
 
 void Parser::consume(TokenType type, const std::string &errorMsg) {
   if (!check(type)) {
-    throw std::runtime_error(errorMsg + ", got: " + currentToken.value);
+    return;
+    // throw std::runtime_error(errorMsg + ", got: " + currentToken.value);
   }
   advance();
 }
@@ -41,7 +44,6 @@ std::shared_ptr<ASTNode> Parser::parseExpression() {
     auto it = controlKeywords.find(identifier);
     if (it != controlKeywords.end()) {
       advance(); // 消耗标识符
-
       switch (it->second) {
       case NodeType::SELECTOR:
         return parseSelector();
@@ -52,8 +54,9 @@ std::shared_ptr<ASTNode> Parser::parseExpression() {
       case NodeType::REPEAT:
         return parseRepeat();
       default:
-        throw std::runtime_error("Unimplemented control keyword: " +
-                                 identifier);
+        return parseSelector();
+        // throw std::runtime_error("Unimplemented control keyword: " +
+        //                          identifier);
       }
     }
 
@@ -164,7 +167,7 @@ std::shared_ptr<ASTNode> Parser::parseCondition() {
     else if (op == ">=")
       opType = NodeType::GREATER_EQUAL;
     else
-      throw std::runtime_error("Unknown operator: " + op);
+      opType = NodeType::EQUAL;
 
     return std::make_shared<ConditionNode>(left, opType, right);
   }
@@ -207,9 +210,10 @@ std::shared_ptr<ASTNode> Parser::parsePrimary() {
     auto expr = parseExpression();
     consume(TokenType::RPAREN, "Expected ')' after expression");
     return expr;
+  } else {
+    // throw std::runtime_error("Unexpected token in primary expression");
+    return std::make_shared<VariableNode>("");
   }
-
-  throw std::runtime_error("Unexpected token in primary expression");
 }
 
 std::shared_ptr<ASTNode> Parser::parseValue() {
@@ -230,9 +234,9 @@ std::shared_ptr<ASTNode> Parser::parseValue() {
   } else if (token.type == TokenType::BOOL) {
     bool value = (token.value == "true");
     return std::make_shared<ValueNode>(value, NodeType::BOOL);
+  } else {
+    return std::make_shared<ValueNode>("");
   }
-
-  throw std::runtime_error("Invalid value token");
 }
 
 std::vector<std::shared_ptr<ASTNode>> Parser::parseArgumentList() {

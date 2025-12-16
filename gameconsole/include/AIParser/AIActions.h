@@ -38,7 +38,6 @@ public:
   }
 
   // 移动相关
-  static Value move_to(const std::vector<Value> &args);
   static Value chase_player(const std::vector<Value> &args);
   static Value flee(const std::vector<Value> &args);
   static Value patrol(const std::vector<Value> &args);

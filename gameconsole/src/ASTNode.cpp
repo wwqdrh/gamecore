@@ -1,5 +1,8 @@
 #include "AIParser/ASTNode.h"
 #include "AIParser/AIActions.h"
+// #include "godot_cpp/core/error_macros.hpp"
+// #include "godot_cpp/variant/variant.hpp"
+// #include "wrappers.h"
 #include <iomanip>
 #include <iostream>
 #include <sstream>
@@ -50,6 +53,7 @@ std::string SelectorNode::toString(int indent) const {
 // SequenceNode实现
 Value SequenceNode::evaluate(
     std::unordered_map<std::string, Value> &blackboard) {
+  // WARN_PRINT("do sequence now");
   if (debugEnabled) {
     log("Sequence: executing " + std::to_string(children.size()) + " children");
   }
@@ -307,14 +311,19 @@ Value ActionNode::evaluate(std::unordered_map<std::string, Value> &blackboard) {
   // 从注册表中执行动作
   auto &registry = ActionRegistry::getInstance();
   if (registry.hasAction(name)) {
-    if (debugEnabled) {
-      log("Action: " + name + " found in registry");
-    }
+    // WARN_PRINT(
+    //     godot::vformat("Action: %s found in registry", godot::TO_GSTR(name)));
+    // if (debugEnabled) {
+    //   log("Action: " + name + " found in registry");
+    // }
     return registry.executeAction(name, evaluatedArgs);
   } else {
-    if (debugEnabled) {
-      log("Action: " + name + " not found in registry, returning nullptr");
-    }
+    // WARN_PRINT(
+    //     godot::vformat("Action: %s not found in registry, returning nullptr",
+    //                    godot::TO_GSTR(name)));
+    // if (debugEnabled) {
+    //   log("Action: " + name + " not found in registry, returning nullptr");
+    // }
     return nullptr;
   }
 }
@@ -461,6 +470,7 @@ std::string VariableNode::toString(int indent) const {
 Value FunctionCallNode::evaluate(
     std::unordered_map<std::string, Value> &blackboard) {
   // 对于非控制流的函数调用，当作Action处理
+  // WARN_PRINT("do function now");
   if (debugEnabled) {
     log("FunctionCall: " + name);
   }
@@ -472,8 +482,12 @@ Value FunctionCallNode::evaluate(
 
   auto &registry = ActionRegistry::getInstance();
   if (registry.hasAction(name)) {
+    // WARN_PRINT(godot::vformat("%s is in registry", godot::TO_GSTR(name)));
     return registry.executeAction(name, evaluatedArgs);
   }
+  //  else {
+    // WARN_PRINT(godot::vformat("%s is not in registry", godot::TO_GSTR(name)));
+  // }
 
   return nullptr;
 }

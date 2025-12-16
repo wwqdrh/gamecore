@@ -1,6 +1,8 @@
 #pragma once
 #include "AIParser/AIActions.h"
 #include "ASTNode.h"
+// #include "godot_cpp/core/error_macros.hpp"
+#include "wrappers.h"
 #include <memory>
 #include <unordered_map>
 
@@ -16,6 +18,7 @@ public:
   bool loadFromFile(const std::string &filename);
 
   void registerAction(const std::string &name, ActionFunc func) {
+    // WARN_PRINT(vformat("register here, %s", godot::TO_GSTR(name)));
     auto &registry = ActionRegistry::getInstance();
     registry.registerAction(name, func);
   }

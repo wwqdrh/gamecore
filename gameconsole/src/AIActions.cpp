@@ -1,4 +1,6 @@
 #include "AIParser/AIActions.h"
+// #include "godot_cpp/core/error_macros.hpp"
+// #include "wrappers.h"
 #include <iostream>
 
 namespace AIParser {
@@ -10,6 +12,7 @@ ActionRegistry &ActionRegistry::getInstance() {
 }
 
 void ActionRegistry::registerAction(const std::string &name, ActionFunc func) {
+  // WARN_PRINT(vformat("register a action %s", godot::TO_GSTR(name)));
   actions[name] = func;
 }
 
@@ -34,7 +37,6 @@ ActionFunc BuiltinActions::fn;
 void BuiltinActions::registerAll() {
   auto &registry = ActionRegistry::getInstance();
 
-  registry.registerAction("move_to", move_to);
   registry.registerAction("chase_player", chase_player);
   registry.registerAction("flee", flee);
   registry.registerAction("patrol", patrol);
@@ -46,25 +48,6 @@ void BuiltinActions::registerAll() {
   registry.registerAction("hide_dialog", hide_dialog);
   registry.registerAction("wait", wait);
   registry.registerAction("wait_for_input", wait_for_input);
-}
-
-// 默认实现 - 在真实项目中应该实现具体逻辑
-Value BuiltinActions::move_to(const std::vector<Value> &args) {
-  // std::cout << "[AI] Executing move_to" << std::endl;
-  // if (!args.empty()) {
-  //   std::visit(
-  //       [](auto &&arg) {
-  //         using T = std::decay_t<decltype(arg)>;
-  //         if constexpr (std::is_same_v<T, std::string>) {
-  //           std::cout << "  Target: " << arg << std::endl;
-  //         }
-  //       },
-  //       args[0]);
-  // }
-  if (fn != nullptr) {
-    return fn(copy_args("move_to", args));
-  }
-  return nullptr;
 }
 
 Value BuiltinActions::chase_player(const std::vector<Value> &args) {

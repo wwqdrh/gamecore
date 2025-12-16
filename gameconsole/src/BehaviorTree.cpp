@@ -1,6 +1,7 @@
 #include "AIParser/BehaviorTree.h"
 #include "AIParser/AIActions.h"
 #include "AIParser/Parser.h"
+// #include "godot_cpp/variant/variant.hpp"
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -15,14 +16,9 @@ BehaviorTree::BehaviorTree() : debugEnabled(false) {
 BehaviorTree::~BehaviorTree() {}
 
 bool BehaviorTree::loadFromString(const std::string &expression) {
-  try {
-    Parser parser(expression);
-    root = parser.parse();
-    return true;
-  } catch (const std::exception &e) {
-    std::cerr << "Failed to parse behavior tree: " << e.what() << std::endl;
-    return false;
-  }
+  Parser parser(expression);
+  root = parser.parse();
+  return true;
 }
 
 bool BehaviorTree::loadFromFile(const std::string &filename) {
@@ -40,28 +36,27 @@ bool BehaviorTree::loadFromFile(const std::string &filename) {
 
 Value BehaviorTree::execute() {
   if (!root) {
+    // WARN_PRINT("Behavior tree not loaded");
     std::cerr << "Behavior tree not loaded" << std::endl;
     return nullptr;
   }
 
   if (debugEnabled) {
+    // WARN_PRINT("Executing behavior tree...");
     std::cout << "Executing behavior tree..." << std::endl;
     std::cout << getTreeStructure() << std::endl;
   }
 
-  try {
-    // root->setDebug(debugEnabled);
-    Value result = root->evaluate(blackboard);
+  // root->setDebug(debugEnabled);
+  // WARN_PRINT("execute here");
+  Value result = root->evaluate(blackboard);
 
-    if (debugEnabled) {
-      std::cout << "Execution completed" << std::endl;
-    }
-
-    return result;
-  } catch (const std::exception &e) {
-    std::cerr << "Error executing behavior tree: " << e.what() << std::endl;
-    return nullptr;
+  if (debugEnabled) {
+    // WARN_PRINT("Execution completed");
+    std::cout << "Execution completed" << std::endl;
   }
+
+  return result;
 }
 
 void BehaviorTree::setBlackboardValue(const std::string &key,

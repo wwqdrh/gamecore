@@ -15,9 +15,11 @@ public:
   void setupEnemyAI() {
     enemyAI.registerAction(
         "extra_func", [this](const std::vector<Value> &args) {
-          if (std::holds_alternative<std::string>(args[0])) {
-            std::cout << "enemy now action extra_func: " << std::get<std::string>(args[0])
-                      << std::endl;
+          if (std::holds_alternative<int>(args[0]),
+              std::holds_alternative<int>(args[1])) {
+            std::cout << "enemy now action extra_func: "
+                      << std::get<int>(args[0]) << ", "
+                      << std::get<int>(args[1]) << std::endl;
           }
           return true;
         });
@@ -30,7 +32,7 @@ public:
     });
     std::string enemy_ai = R"(
           sequence(
-            extra_func("first"),
+            extra_func(1, 2),
             repeat(patrol(), 3),
             selector(
                 if(health < 30, sequence(flee(), find_heal())),

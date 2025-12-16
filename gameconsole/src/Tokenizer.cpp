@@ -82,9 +82,11 @@ Token Tokenizer::nextToken() {
   if (c == ',') {
     advance();
     return Token(TokenType::COMMA, ",", line, column - 1);
+  } else {
+    return Token(TokenType::COMMA, ",", line, column - 1);
   }
 
-  throw std::runtime_error("Unexpected character: " + std::string(1, c));
+  // throw std::runtime_error("Unexpected character: " + std::string(1, c));
 }
 
 Token Tokenizer::peekToken() {
@@ -195,7 +197,8 @@ Token Tokenizer::readString() {
   }
 
   if (currentChar() != quote) {
-    throw std::runtime_error("Unterminated string literal");
+    return Token(TokenType::STRING, value, startLine, startCol);
+    // throw std::runtime_error("Unterminated string literal");
   }
 
   advance(); // 跳过结束引号
