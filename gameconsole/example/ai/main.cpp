@@ -35,19 +35,11 @@ public:
       return true;
     });
     std::string enemy_ai = R"(
-          sequence(
-            repeat(extra_func(1, 2), 3),
-            extra_func(1, 2),
-            selector(
-                if(health < 30, sequence(flee(), find_heal())),
-                if(can_see_player, 
-                    selector(
-                        if(distance < 50, attack()),
-                        chase_player()
-                    )
-                ),
-                patrol()
-            )
+          repeat(
+            sequence(
+              extra_func(1, 2),
+              extra_func(3, 4)
+            ), 3
           )
         )";
 

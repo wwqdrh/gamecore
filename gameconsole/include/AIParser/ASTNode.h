@@ -98,6 +98,10 @@ public:
   Value evaluate(std::unordered_map<std::string, Value> &blackboard,
                  int start_index = -1) override;
   std::string toString(int indent = 0) const override;
+
+public:
+  int child_size = 0;
+  int current_index = 0;
 };
 
 // 在ControlNode相关声明后添加

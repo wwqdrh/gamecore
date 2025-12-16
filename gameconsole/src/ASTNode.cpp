@@ -61,7 +61,6 @@ std::string SelectorNode::toString(int indent) const {
 // SequenceNode实现
 Value SequenceNode::evaluate(std::unordered_map<std::string, Value> &blackboard,
                              int start_index) {
-  // WARN_PRINT("do sequence now");
   if (treeIndex != -1 && treeIndex < start_index) {
     return true;
   }
@@ -77,6 +76,7 @@ Value SequenceNode::evaluate(std::unordered_map<std::string, Value> &blackboard,
     }
 
     lastResult = children[i]->evaluate(blackboard, start_index);
+    children[i]->treeIndex += child_size;
     if (std::holds_alternative<std::string>(lastResult) &&
         std::get<std::string>(lastResult) == END_FLAG) {
       return END_FLAG;
@@ -175,8 +175,13 @@ Value RepeatNode::evaluate(std::unordered_map<std::string, Value> &blackboard,
             std::to_string(repeatCount));
       }
 
-      lastResult = child->evaluate(blackboard, start_index);
-      child->treeIndex += 1;
+      if (auto repeatNode = std::dynamic_pointer_cast<SequenceNode>(child)) {
+        lastResult = child->evaluate(blackboard, start_index);
+      } else if (auto repeatNode =
+                     std::dynamic_pointer_cast<FunctionCallNode>(child)) {
+        lastResult = child->evaluate(blackboard, start_index);
+        child->treeIndex += 1;
+      }
       if (std::holds_alternative<std::string>(lastResult) &&
           std::get<std::string>(lastResult) == END_FLAG) {
         return END_FLAG;

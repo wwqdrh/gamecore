@@ -107,9 +107,8 @@ std::shared_ptr<ASTNode> Parser::parseSequence() {
 
   consume(TokenType::RPAREN, "Expected ')' after sequence arguments");
 
-  current_ast_index += 1;
   auto node = std::make_shared<SequenceNode>(children);
-  node->treeIndex = current_ast_index;
+  node->child_size = children.size();
   return node;
 }
 
