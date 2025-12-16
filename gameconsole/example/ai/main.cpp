@@ -36,8 +36,8 @@ public:
     });
     std::string enemy_ai = R"(
           sequence(
+            repeat(extra_func(1, 2), 3),
             extra_func(1, 2),
-            repeat(patrol(), 3),
             selector(
                 if(health < 30, sequence(flee(), find_heal())),
                 if(can_see_player, 
@@ -103,18 +103,18 @@ public:
     enemyAI.setBlackboardValue("distance", 75.0f);
     enemyAI.execute(3);
 
-    std::cout << "\nScenario 2: Low health\n";
-    enemyAI.setBlackboardValue("health", 20);
-    enemyAI.execute();
+    // std::cout << "\nScenario 2: Low health\n";
+    // enemyAI.setBlackboardValue("health", 20);
+    // enemyAI.execute();
 
-    std::cout << "\nScenario 3: Cannot see player\n";
-    enemyAI.setBlackboardValue("can_see_player", false);
-    enemyAI.execute();
+    // std::cout << "\nScenario 3: Cannot see player\n";
+    // enemyAI.setBlackboardValue("can_see_player", false);
+    // enemyAI.execute();
 
-    std::cout << "\nScenario 4: Close distance\n";
-    enemyAI.setBlackboardValue("can_see_player", true);
-    enemyAI.setBlackboardValue("distance", 30.0f);
-    enemyAI.execute();
+    // std::cout << "\nScenario 4: Close distance\n";
+    // enemyAI.setBlackboardValue("can_see_player", true);
+    // enemyAI.setBlackboardValue("distance", 30.0f);
+    // enemyAI.execute();
   }
 
   void runNPCSimulation() {

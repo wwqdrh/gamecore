@@ -176,6 +176,7 @@ Value RepeatNode::evaluate(std::unordered_map<std::string, Value> &blackboard,
       }
 
       lastResult = child->evaluate(blackboard, start_index);
+      child->treeIndex += 1;
       if (std::holds_alternative<std::string>(lastResult) &&
           std::get<std::string>(lastResult) == END_FLAG) {
         return END_FLAG;

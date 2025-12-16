@@ -118,6 +118,7 @@ std::shared_ptr<ASTNode> Parser::parseSequence() {
 std::shared_ptr<ASTNode> Parser::parseRepeat() {
   consume(TokenType::LPAREN, "Expected '(' after repeat");
 
+  int prev_index = current_ast_index;
   // 第一个参数：要重复的子节点
   auto child = parseExpression();
 
@@ -127,6 +128,20 @@ std::shared_ptr<ASTNode> Parser::parseRepeat() {
   auto count = parseExpression();
 
   consume(TokenType::RPAREN, "Expected ')' after repeat arguments");
+
+  // 执行完了之后判断当前的index，即可知道一轮有多少次数
+  int index_one_turn = current_ast_index - prev_index;
+  // 转换为 RepeatNode 指针
+  if (auto countValue = std::dynamic_pointer_cast<ValueNode>(count)) {
+    int repeatCount = 0;
+    if (std::holds_alternative<int>(countValue->value)) {
+      repeatCount = std::get<int>(countValue->value);
+    } else if (std::holds_alternative<float>(countValue->value)) {
+      repeatCount = static_cast<int>(std::get<float>(countValue->value));
+    }
+    current_ast_index += (repeatCount - 1) * index_one_turn;
+  }
+  // 对于条件循环，无需设置index，每次恢复检查然后继续条件循环
 
   return std::make_shared<RepeatNode>(child, count);
   // current_ast_index += count;

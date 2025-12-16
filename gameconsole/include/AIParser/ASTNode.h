@@ -50,8 +50,8 @@ public:
   virtual ~ASTNode() = default;
 
   NodeType getType() const { return type; }
-  virtual Value
-  evaluate(std::unordered_map<std::string, Value> &blackboard, int start_index = -1) = 0;
+  virtual Value evaluate(std::unordered_map<std::string, Value> &blackboard,
+                         int start_index = -1) = 0;
   virtual std::string toString(int indent = 0) const = 0;
 
   // 添加调试控制
@@ -85,7 +85,8 @@ public:
   SelectorNode(std::vector<std::shared_ptr<ASTNode>> children)
       : ControlNode(NodeType::SELECTOR, children) {}
 
-  Value evaluate(std::unordered_map<std::string, Value> &blackboard, int start_index = -1) override;
+  Value evaluate(std::unordered_map<std::string, Value> &blackboard,
+                 int start_index = -1) override;
   std::string toString(int indent = 0) const override;
 };
 
@@ -94,7 +95,8 @@ public:
   SequenceNode(std::vector<std::shared_ptr<ASTNode>> children)
       : ControlNode(NodeType::SEQUENCE, children) {}
 
-  Value evaluate(std::unordered_map<std::string, Value> &blackboard, int start_index = -1) override;
+  Value evaluate(std::unordered_map<std::string, Value> &blackboard,
+                 int start_index = -1) override;
   std::string toString(int indent = 0) const override;
 };
 
@@ -132,12 +134,13 @@ public:
       : ControlNode(NodeType::REPEAT, {child}),
         countOrCondition(countOrCondition), mode(mode) {}
 
-  Value evaluate(std::unordered_map<std::string, Value> &blackboard, int start_index = -1) override;
+  Value evaluate(std::unordered_map<std::string, Value> &blackboard,
+                 int start_index = -1) override;
   std::string toString(int indent = 0) const override;
 
-private:
-  std::shared_ptr<ASTNode> countOrCondition;
+public:
   RepeatMode mode;
+  std::shared_ptr<ASTNode> countOrCondition;
 };
 
 class IfNode : public ASTNode {
@@ -148,7 +151,8 @@ public:
       : ASTNode(NodeType::IF), condition(condition), trueBranch(trueBranch),
         falseBranch(falseBranch) {}
 
-  Value evaluate(std::unordered_map<std::string, Value> &blackboard, int start_index = -1) override;
+  Value evaluate(std::unordered_map<std::string, Value> &blackboard,
+                 int start_index = -1) override;
   std::string toString(int indent = 0) const override;
 
 private:
@@ -164,7 +168,8 @@ public:
              std::vector<std::shared_ptr<ASTNode>> args = {})
       : ASTNode(NodeType::ACTION), name(name), args(args) {}
 
-  Value evaluate(std::unordered_map<std::string, Value> &blackboard, int start_index = -1) override;
+  Value evaluate(std::unordered_map<std::string, Value> &blackboard,
+                 int start_index = -1) override;
   std::string toString(int indent = 0) const override;
 
 private:
@@ -242,7 +247,8 @@ public:
                 std::shared_ptr<ASTNode> right)
       : ASTNode(op), left(left), right(right) {}
 
-  Value evaluate(std::unordered_map<std::string, Value> &blackboard, int start_index = -1) override;
+  Value evaluate(std::unordered_map<std::string, Value> &blackboard,
+                 int start_index = -1) override;
   std::string toString(int indent = 0) const override;
 
 private:
@@ -256,10 +262,11 @@ public:
   ValueNode(const Value &value, NodeType type = NodeType::NUMBER)
       : ASTNode(type), value(value) {}
 
-  Value evaluate(std::unordered_map<std::string, Value> &blackboard, int start_index = -1) override;
+  Value evaluate(std::unordered_map<std::string, Value> &blackboard,
+                 int start_index = -1) override;
   std::string toString(int indent = 0) const override;
 
-private:
+public:
   Value value;
 };
 
@@ -269,7 +276,8 @@ public:
   VariableNode(const std::string &name)
       : ASTNode(NodeType::VARIABLE), name(name) {}
 
-  Value evaluate(std::unordered_map<std::string, Value> &blackboard, int start_index = -1) override;
+  Value evaluate(std::unordered_map<std::string, Value> &blackboard,
+                 int start_index = -1) override;
   std::string toString(int indent = 0) const override;
 
 private:
@@ -283,7 +291,8 @@ public:
                    std::vector<std::shared_ptr<ASTNode>> args = {})
       : ASTNode(NodeType::FUNCTION_CALL), name(name), args(args) {}
 
-  Value evaluate(std::unordered_map<std::string, Value> &blackboard, int start_index = -1) override;
+  Value evaluate(std::unordered_map<std::string, Value> &blackboard,
+                 int start_index = -1) override;
   std::string toString(int indent = 0) const override;
 
 private:
