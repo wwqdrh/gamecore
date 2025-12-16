@@ -69,6 +69,7 @@ protected:
 public:
   bool debugEnabled;
   int treeIndex;
+  int realTreeIndex = -1; // 根据treeIndex基础，和其他控制节点计算的
 };
 
 // 控制流节点
@@ -101,6 +102,7 @@ public:
 
 public:
   int child_size = 0;
+  int turns = 0;
   int current_index = 0;
 };
 

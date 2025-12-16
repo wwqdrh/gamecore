@@ -75,8 +75,8 @@ Value SequenceNode::evaluate(std::unordered_map<std::string, Value> &blackboard,
       log("Sequence: executing child " + std::to_string(i));
     }
 
+    children[i]->realTreeIndex = children[i]->treeIndex + child_size * turns;
     lastResult = children[i]->evaluate(blackboard, start_index);
-    children[i]->treeIndex += child_size;
     if (std::holds_alternative<std::string>(lastResult) &&
         std::get<std::string>(lastResult) == END_FLAG) {
       return END_FLAG;
@@ -176,7 +176,8 @@ Value RepeatNode::evaluate(std::unordered_map<std::string, Value> &blackboard,
       }
 
       if (auto repeatNode = std::dynamic_pointer_cast<SequenceNode>(child)) {
-        lastResult = child->evaluate(blackboard, start_index);
+        repeatNode->turns = i;
+        lastResult = repeatNode->evaluate(blackboard, start_index);
       } else if (auto repeatNode =
                      std::dynamic_pointer_cast<FunctionCallNode>(child)) {
         lastResult = child->evaluate(blackboard, start_index);
@@ -548,18 +549,15 @@ std::string VariableNode::toString(int indent) const {
 // FunctionCallNode实现
 Value FunctionCallNode::evaluate(
     std::unordered_map<std::string, Value> &blackboard, int start_index) {
-  if (treeIndex != -1 && treeIndex < start_index) {
+  if (realTreeIndex == -1) {
+    realTreeIndex = treeIndex;
+  }
+  if (realTreeIndex != -1 && realTreeIndex < start_index) {
     return true;
   }
-  // 对于非控制流的函数调用，当作Action处理
-  // WARN_PRINT("do function now");
-  // if (debugEnabled) {
-  //   log("FunctionCall: " + name);
-  // }
-
   std::vector<Value> evaluatedArgs;
   evaluatedArgs.push_back(
-      treeIndex); // 新增当前function的index，用于使用者提供从某个位置恢复执行的能力
+      realTreeIndex); // 新增当前function的index，用于使用者提供从某个位置恢复执行的能力
   for (const auto &arg : args) {
     auto res = arg->evaluate(blackboard, start_index);
     if (std::holds_alternative<std::string>(res) &&
