@@ -26,6 +26,7 @@ private:
   std::shared_ptr<ASTNode> parseFunctionCall();
   std::shared_ptr<ASTNode> parseSelector();
   std::shared_ptr<ASTNode> parseSequence();
+  std::shared_ptr<ASTNode> parseRepeat();
   std::shared_ptr<ASTNode> parseIf();
   std::shared_ptr<ASTNode> parseValue();
   std::shared_ptr<ASTNode> parseCondition();

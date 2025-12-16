@@ -8,7 +8,6 @@ const std::unordered_map<std::string, NodeType> Parser::controlKeywords = {
     {"selector", NodeType::SELECTOR},
     {"sequence", NodeType::SEQUENCE},
     {"if", NodeType::IF},
-    {"while", NodeType::WHILE},
     {"repeat", NodeType::REPEAT}};
 
 Parser::Parser(const std::string &source) : tokenizer(source) { advance(); }
@@ -50,6 +49,8 @@ std::shared_ptr<ASTNode> Parser::parseExpression() {
         return parseSequence();
       case NodeType::IF:
         return parseIf();
+      case NodeType::REPEAT:
+        return parseRepeat();
       default:
         throw std::runtime_error("Unimplemented control keyword: " +
                                  identifier);
@@ -98,6 +99,23 @@ std::shared_ptr<ASTNode> Parser::parseSequence() {
   consume(TokenType::RPAREN, "Expected ')' after sequence arguments");
 
   return std::make_shared<SequenceNode>(children);
+}
+
+// 添加parseRepeat方法
+std::shared_ptr<ASTNode> Parser::parseRepeat() {
+  consume(TokenType::LPAREN, "Expected '(' after repeat");
+
+  // 第一个参数：要重复的子节点
+  auto child = parseExpression();
+
+  consume(TokenType::COMMA, "Expected ',' after repeat child");
+
+  // 第二个参数：重复次数
+  auto count = parseExpression();
+
+  consume(TokenType::RPAREN, "Expected ')' after repeat arguments");
+
+  return std::make_shared<RepeatNode>(child, count);
 }
 
 std::shared_ptr<ASTNode> Parser::parseIf() {

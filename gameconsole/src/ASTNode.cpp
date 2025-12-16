@@ -89,6 +89,154 @@ std::string SequenceNode::toString(int indent) const {
 
   return ss.str();
 }
+// RepeatNode实现
+Value RepeatNode::evaluate(std::unordered_map<std::string, Value> &blackboard) {
+  if (debugEnabled) {
+    log("Repeat: mode = " +
+        std::string(mode == RepeatMode::COUNT ? "COUNT" : "UNTIL_SUCCESS"));
+  }
+
+  if (children.empty()) {
+    if (debugEnabled) {
+      log("Repeat: no child to execute");
+    }
+    return nullptr;
+  }
+
+  auto &child = children[0];
+  Value lastResult = nullptr;
+
+  if (mode == RepeatMode::COUNT) {
+    // 计数模式
+    if (!countOrCondition) {
+      if (debugEnabled) {
+        log("Repeat: count mode but no count specified");
+      }
+      return nullptr;
+    }
+
+    Value countValue = countOrCondition->evaluate(blackboard);
+    int repeatCount = 0;
+
+    if (std::holds_alternative<int>(countValue)) {
+      repeatCount = std::get<int>(countValue);
+    } else if (std::holds_alternative<float>(countValue)) {
+      repeatCount = static_cast<int>(std::get<float>(countValue));
+    } else {
+      if (debugEnabled) {
+        log("Repeat: count is not a number");
+      }
+      return nullptr;
+    }
+
+    if (repeatCount <= 0) {
+      if (debugEnabled) {
+        log("Repeat: count <= 0, nothing to repeat");
+      }
+      return nullptr;
+    }
+
+    if (debugEnabled) {
+      log("Repeat: executing " + std::to_string(repeatCount) + " times");
+    }
+
+    for (int i = 0; i < repeatCount; i++) {
+      if (debugEnabled) {
+        log("Repeat: iteration " + std::to_string(i + 1) + "/" +
+            std::to_string(repeatCount));
+      }
+
+      lastResult = child->evaluate(blackboard);
+
+      if (std::holds_alternative<nullptr_t>(lastResult)) {
+        if (debugEnabled) {
+          log("Repeat: failed at iteration " + std::to_string(i + 1));
+        }
+        return nullptr;
+      }
+    }
+
+  } else {
+    // UNTIL_SUCCESS模式
+    if (debugEnabled) {
+      log("Repeat: repeating until success");
+    }
+
+    int maxAttempts = 1000; // 安全限制，防止无限循环
+    int attempts = 0;
+
+    while (attempts < maxAttempts) {
+      attempts++;
+      if (debugEnabled) {
+        log("Repeat: attempt " + std::to_string(attempts));
+      }
+
+      lastResult = child->evaluate(blackboard);
+
+      // 如果成功，返回成功
+      if (!std::holds_alternative<nullptr_t>(lastResult)) {
+        if (debugEnabled) {
+          log("Repeat: succeeded after " + std::to_string(attempts) +
+              " attempts");
+        }
+        return lastResult;
+      }
+
+      // 可选：检查停止条件
+      if (countOrCondition) {
+        Value stopCondition = countOrCondition->evaluate(blackboard);
+        if (std::holds_alternative<bool>(stopCondition) &&
+            std::get<bool>(stopCondition)) {
+          if (debugEnabled) {
+            log("Repeat: stop condition met after " + std::to_string(attempts) +
+                " attempts");
+          }
+          break;
+        }
+      }
+    }
+
+    if (attempts >= maxAttempts) {
+      if (debugEnabled) {
+        log("Repeat: reached maximum attempts (" + std::to_string(maxAttempts) +
+            ")");
+      }
+    }
+
+    return nullptr; // 从未成功
+  }
+
+  return lastResult;
+}
+
+std::string RepeatNode::toString(int indent) const {
+  std::stringstream ss;
+  std::string indentStr(indent, ' ');
+
+  // 根据模式选择不同的显示格式
+  if (mode == RepeatMode::COUNT) {
+    ss << indentStr << "Repeat(";
+    if (countOrCondition) {
+      ss << countOrCondition->toString(0);
+    } else {
+      ss << "<no count>";
+    }
+    ss << " times):\n";
+  } else {
+    ss << indentStr << "RepeatUntilSuccess(";
+    if (countOrCondition) {
+      ss << "while: " << countOrCondition->toString(0);
+    }
+    ss << "):\n";
+  }
+
+  // 显示子节点
+  if (!children.empty()) {
+    ss << children[0]->toString(indent + 2);
+  }
+
+  return ss.str();
+}
 
 // IfNode实现
 Value IfNode::evaluate(std::unordered_map<std::string, Value> &blackboard) {

@@ -13,9 +13,7 @@ enum class NodeType {
   // 控制流节点
   SELECTOR,
   SEQUENCE,
-  PARALLEL,
   IF,
-  WHILE,
   REPEAT,
 
   // 行为节点
@@ -42,8 +40,7 @@ enum class NodeType {
 
 // 值类型
 using Value = std::variant<bool, int, float, std::string, nullptr_t>;
-using actionfn = std::function<bool(const std::string &action,
-                                    const std::vector<Value> &args)>;
+using ActionFunc = std::function<Value(const std::vector<Value> &)>;
 
 // AST节点基类
 class ASTNode {
@@ -97,6 +94,48 @@ public:
 
   Value evaluate(std::unordered_map<std::string, Value> &blackboard) override;
   std::string toString(int indent = 0) const override;
+};
+
+// 在ControlNode相关声明后添加
+// 基本用法：重复3次
+// var basic_repeat = "repeat(patrol(), 3)"
+// // 重复直到成功
+// var until_success = """
+// repeat(
+//     try_open_door(),
+//     while(door_locked == true)
+// )
+// """
+// // 嵌套使用
+// var complex_ai = """
+// sequence(
+//     patrol(),
+//     repeat(scan_area(), 5),
+//     if(enemy_spotted,
+//         repeat(attack(), until_dead()),
+//         rest()
+//     )
+// )
+// """
+class RepeatNode : public ControlNode {
+public:
+  enum class RepeatMode {
+    COUNT,        // 重复指定次数
+    UNTIL_SUCCESS // 直到成功为止
+  };
+
+  RepeatNode(std::shared_ptr<ASTNode> child,
+             std::shared_ptr<ASTNode> countOrCondition = nullptr,
+             RepeatMode mode = RepeatMode::COUNT)
+      : ControlNode(NodeType::REPEAT, {child}),
+        countOrCondition(countOrCondition), mode(mode) {}
+
+  Value evaluate(std::unordered_map<std::string, Value> &blackboard) override;
+  std::string toString(int indent = 0) const override;
+
+private:
+  std::shared_ptr<ASTNode> countOrCondition;
+  RepeatMode mode;
 };
 
 class IfNode : public ASTNode {

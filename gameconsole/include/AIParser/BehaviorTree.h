@@ -15,7 +15,11 @@ public:
   bool loadFromString(const std::string &expression);
   bool loadFromFile(const std::string &filename);
 
-  void bind_actionfn(actionfn fn) { BuiltinActions::bind_actionfn(fn); }
+  void registerAction(const std::string &name, ActionFunc func) {
+    auto &registry = ActionRegistry::getInstance();
+    registry.registerAction(name, func);
+  }
+  void bind_actionfn(ActionFunc fn) { BuiltinActions::bind_actionfn(fn); }
   // 执行行为树
   Value execute();
 

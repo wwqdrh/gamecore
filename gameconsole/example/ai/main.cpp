@@ -13,12 +13,25 @@ private:
 
 public:
   void setupEnemyAI() {
-    enemyAI.bind_actionfn(
-        [this](const std::string &action, const std::vector<Value> &args) {
-          std::cout << "enemy now action: " << action << std::endl;
+    enemyAI.registerAction(
+        "extra_func", [this](const std::vector<Value> &args) {
+          if (std::holds_alternative<std::string>(args[0])) {
+            std::cout << "enemy now action extra_func: " << std::get<std::string>(args[0])
+                      << std::endl;
+          }
           return true;
         });
+    enemyAI.bind_actionfn([this](const std::vector<Value> &args) {
+      if (std::holds_alternative<std::string>(args[0])) {
+        std::cout << "enemy now action: " << std::get<std::string>(args[0])
+                  << std::endl;
+      }
+      return true;
+    });
     std::string enemy_ai = R"(
+          sequence(
+            extra_func("first"),
+            repeat(patrol(), 3),
             selector(
                 if(health < 30, sequence(flee(), find_heal())),
                 if(can_see_player, 
@@ -29,6 +42,7 @@ public:
                 ),
                 patrol()
             )
+          )
         )";
 
     if (enemyAI.loadFromString(enemy_ai)) {
@@ -46,11 +60,13 @@ public:
   }
 
   void setupNPCAI() {
-    npcAI.bind_actionfn(
-        [this](const std::string &action, const std::vector<Value> &args) {
-          std::cout << "npc now action: " << action << std::endl;
-          return true;
-        });
+    npcAI.bind_actionfn([this](const std::vector<Value> &args) {
+      if (std::holds_alternative<std::string>(args[0])) {
+        std::cout << "enemy now action: " << std::get<std::string>(args[0])
+                  << std::endl;
+      }
+      return true;
+    });
     std::string npc_ai = R"(
             sequence(
                 face_player(),

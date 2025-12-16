@@ -8,8 +8,6 @@ namespace AIParser {
 // 行为注册器
 class ActionRegistry {
 public:
-  using ActionFunc = std::function<Value(const std::vector<Value> &)>;
-
   static ActionRegistry &getInstance();
 
   void registerAction(const std::string &name, ActionFunc func);
@@ -24,11 +22,20 @@ private:
 // 内置行为实现
 class BuiltinActions {
 public:
-  static actionfn fn;
+  static ActionFunc fn;
 
 public:
-  static void bind_actionfn(actionfn fn_) { fn = fn_; }
+  static void bind_actionfn(ActionFunc fn_) { fn = fn_; }
   static void registerAll();
+  static std::vector<Value> copy_args(const std::string &action,
+                                      const std::vector<Value> &args) {
+    std::vector<Value> result;
+    result.reserve(args.size() + 1); // 预分配空间以提高效率
+    // 先插入新字符串
+    result.push_back(action);
+    result.insert(result.end(), args.begin(), args.end());
+    return result;
+  }
 
   // 移动相关
   static Value move_to(const std::vector<Value> &args);
