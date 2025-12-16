@@ -13,6 +13,11 @@ private:
 
 public:
   void setupEnemyAI() {
+    enemyAI.bind_actionfn(
+        [this](const std::string &action, const std::vector<Value> &args) {
+          std::cout << "enemy now action: " << action << std::endl;
+          return true;
+        });
     std::string enemy_ai = R"(
             selector(
                 if(health < 30, sequence(flee(), find_heal())),
@@ -41,6 +46,11 @@ public:
   }
 
   void setupNPCAI() {
+    npcAI.bind_actionfn(
+        [this](const std::string &action, const std::vector<Value> &args) {
+          std::cout << "npc now action: " << action << std::endl;
+          return true;
+        });
     std::string npc_ai = R"(
             sequence(
                 face_player(),

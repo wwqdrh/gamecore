@@ -24,6 +24,10 @@ private:
 // 内置行为实现
 class BuiltinActions {
 public:
+  static actionfn fn;
+
+public:
+  static void bind_actionfn(actionfn fn_) { fn = fn_; }
   static void registerAll();
 
   // 移动相关

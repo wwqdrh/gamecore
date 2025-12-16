@@ -42,6 +42,8 @@ enum class NodeType {
 
 // 值类型
 using Value = std::variant<bool, int, float, std::string, nullptr_t>;
+using actionfn = std::function<bool(const std::string &action,
+                                    const std::vector<Value> &args)>;
 
 // AST节点基类
 class ASTNode {

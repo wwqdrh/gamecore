@@ -1,4 +1,5 @@
 #pragma once
+#include "AIParser/AIActions.h"
 #include "ASTNode.h"
 #include <memory>
 #include <unordered_map>
@@ -14,6 +15,7 @@ public:
   bool loadFromString(const std::string &expression);
   bool loadFromFile(const std::string &filename);
 
+  void bind_actionfn(actionfn fn) { BuiltinActions::bind_actionfn(fn); }
   // 执行行为树
   Value execute();
 

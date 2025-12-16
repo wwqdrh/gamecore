@@ -28,6 +28,8 @@ Value ActionRegistry::executeAction(const std::string &name,
   return nullptr;
 }
 
+actionfn BuiltinActions::fn;
+
 // BuiltinActions实现
 void BuiltinActions::registerAll() {
   auto &registry = ActionRegistry::getInstance();
@@ -48,104 +50,140 @@ void BuiltinActions::registerAll() {
 
 // 默认实现 - 在真实项目中应该实现具体逻辑
 Value BuiltinActions::move_to(const std::vector<Value> &args) {
-  std::cout << "[AI] Executing move_to" << std::endl;
-  if (!args.empty()) {
-    std::visit(
-        [](auto &&arg) {
-          using T = std::decay_t<decltype(arg)>;
-          if constexpr (std::is_same_v<T, std::string>) {
-            std::cout << "  Target: " << arg << std::endl;
-          }
-        },
-        args[0]);
+  // std::cout << "[AI] Executing move_to" << std::endl;
+  // if (!args.empty()) {
+  //   std::visit(
+  //       [](auto &&arg) {
+  //         using T = std::decay_t<decltype(arg)>;
+  //         if constexpr (std::is_same_v<T, std::string>) {
+  //           std::cout << "  Target: " << arg << std::endl;
+  //         }
+  //       },
+  //       args[0]);
+  // }
+  if (fn != nullptr) {
+    return fn("move_to", args);
   }
   return nullptr;
 }
 
 Value BuiltinActions::chase_player(const std::vector<Value> &args) {
-  std::cout << "[AI] Executing chase_player" << std::endl;
+  // std::cout << "[AI] Executing chase_player" << std::endl;
+  if (fn != nullptr) {
+    return fn("chase_player", args);
+  }
   return nullptr;
 }
 
 Value BuiltinActions::flee(const std::vector<Value> &args) {
-  std::cout << "[AI] Executing flee" << std::endl;
+  if (fn != nullptr) {
+    return fn("flee", args);
+  }
+  // std::cout << "[AI] Executing flee" << std::endl;
   return nullptr;
 }
 
 Value BuiltinActions::patrol(const std::vector<Value> &args) {
-  std::cout << "[AI] Executing patrol" << std::endl;
+  // std::cout << "[AI] Executing patrol" << std::endl;
+  if (fn != nullptr) {
+    return fn("patrol", args);
+  }
   return nullptr;
 }
 
 Value BuiltinActions::attack(const std::vector<Value> &args) {
-  std::cout << "[AI] Executing attack" << std::endl;
+  if (fn != nullptr) {
+    return fn("attack", args);
+  }
+  // std::cout << "[AI] Executing attack" << std::endl;
   return nullptr;
 }
 
 Value BuiltinActions::find_heal(const std::vector<Value> &args) {
-  std::cout << "[AI] Executing find_heal" << std::endl;
+  if (fn != nullptr) {
+    return fn("find_heal", args);
+  }
+  // std::cout << "[AI] Executing find_heal" << std::endl;
   return nullptr;
 }
 
 Value BuiltinActions::play_animation(const std::vector<Value> &args) {
-  std::cout << "[AI] Executing play_animation" << std::endl;
-  if (!args.empty()) {
-    std::visit(
-        [](auto &&arg) {
-          using T = std::decay_t<decltype(arg)>;
-          if constexpr (std::is_same_v<T, std::string>) {
-            std::cout << "  Animation: " << arg << std::endl;
-          }
-        },
-        args[0]);
+  if (fn != nullptr) {
+    return fn("play_animation", args);
   }
+  // std::cout << "[AI] Executing play_animation" << std::endl;
+  // if (!args.empty()) {
+  //   std::visit(
+  //       [](auto &&arg) {
+  //         using T = std::decay_t<decltype(arg)>;
+  //         if constexpr (std::is_same_v<T, std::string>) {
+  //           std::cout << "  Animation: " << arg << std::endl;
+  //         }
+  //       },
+  //       args[0]);
+  // }
   return nullptr;
 }
 
 Value BuiltinActions::face_player(const std::vector<Value> &args) {
-  std::cout << "[AI] Executing face_player" << std::endl;
+    if (fn != nullptr) {
+    return fn("face_player", args);
+  }
+  // std::cout << "[AI] Executing face_player" << std::endl;
   return nullptr;
 }
 
 Value BuiltinActions::show_dialog(const std::vector<Value> &args) {
-  std::cout << "[AI] Executing show_dialog" << std::endl;
-  if (!args.empty()) {
-    std::visit(
-        [](auto &&arg) {
-          using T = std::decay_t<decltype(arg)>;
-          if constexpr (std::is_same_v<T, std::string>) {
-            std::cout << "  Dialog: " << arg << std::endl;
-          }
-        },
-        args[0]);
+    if (fn != nullptr) {
+    return fn("show_dialog", args);
   }
+  // std::cout << "[AI] Executing show_dialog" << std::endl;
+  // if (!args.empty()) {
+  //   std::visit(
+  //       [](auto &&arg) {
+  //         using T = std::decay_t<decltype(arg)>;
+  //         if constexpr (std::is_same_v<T, std::string>) {
+  //           std::cout << "  Dialog: " << arg << std::endl;
+  //         }
+  //       },
+  //       args[0]);
+  // }
   return nullptr;
 }
 
 Value BuiltinActions::hide_dialog(const std::vector<Value> &args) {
-  std::cout << "[AI] Executing hide_dialog" << std::endl;
+    if (fn != nullptr) {
+    return fn("hide_dialog", args);
+  }
+  // std::cout << "[AI] Executing hide_dialog" << std::endl;
   return nullptr;
 }
 
 Value BuiltinActions::wait(const std::vector<Value> &args) {
-  std::cout << "[AI] Executing wait" << std::endl;
-  if (!args.empty()) {
-    std::visit(
-        [](auto &&arg) {
-          using T = std::decay_t<decltype(arg)>;
-          if constexpr (std::is_same_v<T, float>) {
-            std::cout << "  Duration: " << arg << " seconds" << std::endl;
-          } else if constexpr (std::is_same_v<T, int>) {
-            std::cout << "  Duration: " << arg << " seconds" << std::endl;
-          }
-        },
-        args[0]);
+    if (fn != nullptr) {
+    return fn("wait", args);
   }
+  // std::cout << "[AI] Executing wait" << std::endl;
+  // if (!args.empty()) {
+  //   std::visit(
+  //       [](auto &&arg) {
+  //         using T = std::decay_t<decltype(arg)>;
+  //         if constexpr (std::is_same_v<T, float>) {
+  //           std::cout << "  Duration: " << arg << " seconds" << std::endl;
+  //         } else if constexpr (std::is_same_v<T, int>) {
+  //           std::cout << "  Duration: " << arg << " seconds" << std::endl;
+  //         }
+  //       },
+  //       args[0]);
+  // }
   return nullptr;
 }
 
 Value BuiltinActions::wait_for_input(const std::vector<Value> &args) {
-  std::cout << "[AI] Executing wait_for_input" << std::endl;
+    if (fn != nullptr) {
+    return fn("wait_for_input", args);
+  }
+  // std::cout << "[AI] Executing wait_for_input" << std::endl;
   return nullptr;
 }
 
