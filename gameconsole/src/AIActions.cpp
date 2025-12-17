@@ -1,7 +1,10 @@
 #include "AIParser/AIActions.h"
 // #include "godot_cpp/core/error_macros.hpp"
 // #include "wrappers.h"
+#include <chrono>
 #include <iostream>
+#include <random>
+#include <variant>
 
 namespace AIParser {
 
@@ -11,9 +14,17 @@ ActionRegistry &ActionRegistry::getInstance() {
   return instance;
 }
 
-void ActionRegistry::registerAction(const std::string &name, ActionFunc func) {
+void ActionRegistry::registerAction(const std::string &name, ActionFunc func,
+                                    bool is_builtin) {
   // WARN_PRINT(vformat("register a action %s", godot::TO_GSTR(name)));
   actions[name] = func;
+  if (is_builtin) {
+    builtin_actions.insert(name);
+  }
+}
+
+bool ActionRegistry::isBuiltinAction(const std::string &name) {
+  return builtin_actions.find(name) != builtin_actions.end();
 }
 
 bool ActionRegistry::hasAction(const std::string &name) const {
@@ -36,18 +47,57 @@ ActionFunc BuiltinActions::fn;
 // BuiltinActions实现
 void BuiltinActions::registerAll() {
   auto &registry = ActionRegistry::getInstance();
+  registry.registerAction("randi_range", randi_range, true);
+  registry.registerAction("randf_range", randf_range, true);
+  registry.registerAction("chase_player", chase_player, true);
+  registry.registerAction("flee", flee, true);
+  registry.registerAction("patrol", patrol, true);
+  registry.registerAction("attack", attack, true);
+  registry.registerAction("find_heal", find_heal, true);
+  registry.registerAction("play_animation", play_animation, true);
+  registry.registerAction("face_player", face_player, true);
+  registry.registerAction("show_dialog", show_dialog, true);
+  registry.registerAction("hide_dialog", hide_dialog, true);
+}
 
-  registry.registerAction("chase_player", chase_player);
-  registry.registerAction("flee", flee);
-  registry.registerAction("patrol", patrol);
-  registry.registerAction("attack", attack);
-  registry.registerAction("find_heal", find_heal);
-  registry.registerAction("play_animation", play_animation);
-  registry.registerAction("face_player", face_player);
-  registry.registerAction("show_dialog", show_dialog);
-  registry.registerAction("hide_dialog", hide_dialog);
-  registry.registerAction("wait", wait);
-  registry.registerAction("wait_for_input", wait_for_input);
+Value BuiltinActions::randi_range(const std::vector<Value> &args) {
+  if (args.size() != 2) {
+    return nullptr;
+  }
+  if (std::holds_alternative<int>(args[0]) &&
+      std::holds_alternative<int>(args[1])) {
+    // 使用时间种子确保每次运行不同
+    static std::mt19937 gen(static_cast<unsigned>(
+        std::chrono::steady_clock::now().time_since_epoch().count()));
+
+    // 创建均匀分布
+    std::uniform_int_distribution<int> dist(std::get<int>(args[0]),
+                                            std::get<int>(args[1]));
+
+    int res = dist(gen);
+    return Value(res);
+  }
+  return nullptr;
+}
+
+Value BuiltinActions::randf_range(const std::vector<Value> &args) {
+  if (args.size() != 2) {
+    return nullptr;
+  }
+  if (std::holds_alternative<float>(args[0]) &&
+      std::holds_alternative<float>(args[1])) {
+    // 使用时间种子确保每次运行不同
+    static std::mt19937 gen(static_cast<unsigned>(
+        std::chrono::steady_clock::now().time_since_epoch().count()));
+
+    // 创建均匀分布
+    std::uniform_real_distribution<float> dist(std::get<float>(args[0]),
+                                               std::get<float>(args[1]));
+    // 创建均匀分布
+
+    return dist(gen);
+  }
+  return nullptr;
 }
 
 Value BuiltinActions::chase_player(const std::vector<Value> &args) {
@@ -139,34 +189,6 @@ Value BuiltinActions::hide_dialog(const std::vector<Value> &args) {
     return fn(copy_args("hide_dialog", args));
   }
   // std::cout << "[AI] Executing hide_dialog" << std::endl;
-  return nullptr;
-}
-
-Value BuiltinActions::wait(const std::vector<Value> &args) {
-  if (fn != nullptr) {
-    return fn(copy_args("wait", args));
-  }
-  // std::cout << "[AI] Executing wait" << std::endl;
-  // if (!args.empty()) {
-  //   std::visit(
-  //       [](auto &&arg) {
-  //         using T = std::decay_t<decltype(arg)>;
-  //         if constexpr (std::is_same_v<T, float>) {
-  //           std::cout << "  Duration: " << arg << " seconds" << std::endl;
-  //         } else if constexpr (std::is_same_v<T, int>) {
-  //           std::cout << "  Duration: " << arg << " seconds" << std::endl;
-  //         }
-  //       },
-  //       args[0]);
-  // }
-  return nullptr;
-}
-
-Value BuiltinActions::wait_for_input(const std::vector<Value> &args) {
-  if (fn != nullptr) {
-    return fn(copy_args("wait_for_input", args));
-  }
-  // std::cout << "[AI] Executing wait_for_input" << std::endl;
   return nullptr;
 }
 

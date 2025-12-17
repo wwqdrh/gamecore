@@ -1,4 +1,5 @@
 #include "AIParser/Parser.h"
+#include "AIParser/AIActions.h"
 // #include "godot_cpp/core/error_macros.hpp"
 // #include "wrappers.h"
 #include <algorithm>
@@ -216,10 +217,14 @@ std::shared_ptr<ASTNode> Parser::parseFunctionCall() {
 
   consume(TokenType::RPAREN, "Expected ')' after function arguments");
 
-  current_ast_index += 1;
-  auto node = std::make_shared<FunctionCallNode>(functionName, args);
-  node->treeIndex = current_ast_index;
-  return node;
+  if (ActionRegistry::getInstance().isBuiltinAction(functionName)) {
+    return std::make_shared<FunctionCallNode>(functionName, args);
+  } else {
+    current_ast_index += 1;
+    auto node = std::make_shared<FunctionCallNode>(functionName, args);
+    node->treeIndex = current_ast_index;
+    return node;
+  }
 }
 
 std::shared_ptr<ASTNode> Parser::parsePrimary() {

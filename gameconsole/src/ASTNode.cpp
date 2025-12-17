@@ -555,20 +555,23 @@ Value FunctionCallNode::evaluate(
   if (realTreeIndex != -1 && realTreeIndex < start_index) {
     return true;
   }
-  std::vector<Value> evaluatedArgs;
-  evaluatedArgs.push_back(
-      realTreeIndex); // 新增当前function的index，用于使用者提供从某个位置恢复执行的能力
-  for (const auto &arg : args) {
-    auto res = arg->evaluate(blackboard, start_index);
-    if (std::holds_alternative<std::string>(res) &&
-        std::get<std::string>(res) == END_FLAG) {
-      return END_FLAG;
-    }
-    evaluatedArgs.push_back(res);
-  }
 
   auto &registry = ActionRegistry::getInstance();
+  std::vector<Value> evaluatedArgs;
+
   if (registry.hasAction(name)) {
+    if (!registry.isBuiltinAction(name)) {
+      evaluatedArgs.push_back(
+          realTreeIndex); // 新增当前function的index，用于使用者提供从某个位置恢复执行的能力
+    }
+    for (const auto &arg : args) {
+      auto res = arg->evaluate(blackboard, start_index);
+      if (std::holds_alternative<std::string>(res) &&
+          std::get<std::string>(res) == END_FLAG) {
+        return END_FLAG;
+      }
+      evaluatedArgs.push_back(res);
+    }
     // WARN_PRINT(godot::vformat("%s is in registry", godot::TO_GSTR(name)));
     return registry.executeAction(name, evaluatedArgs);
   }

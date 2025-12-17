@@ -16,7 +16,8 @@ public:
     enemyAI.registerAction("extra_func", [this](
                                              const std::vector<Value> &args) {
       if (std::holds_alternative<int>(args[0])) {
-        std::cout << "funcindex: " << std::get<int>(args[0]) << std::endl;
+        std::cout << "funcindex: " << std::get<int>(args[0]) << " arg size "
+                  << args.size() << std::endl;
       }
       // return Value("AI_END");
       if (std::holds_alternative<int>(args[1]),
@@ -37,8 +38,8 @@ public:
     std::string enemy_ai = R"(
           repeat(
             sequence(
-              extra_func(1, 2),
-              extra_func(3, 4)
+              extra_func(randi_range(1,10), 2),
+              extra_func(randi_range(1,10), 4)
             ), 3
           )
         )";
@@ -93,7 +94,7 @@ public:
     enemyAI.setBlackboardValue("health", 100);
     enemyAI.setBlackboardValue("can_see_player", true);
     enemyAI.setBlackboardValue("distance", 75.0f);
-    enemyAI.execute(3);
+    enemyAI.execute(2);
 
     // std::cout << "\nScenario 2: Low health\n";
     // enemyAI.setBlackboardValue("health", 20);

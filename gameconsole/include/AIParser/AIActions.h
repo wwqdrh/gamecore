@@ -2,6 +2,7 @@
 #include "ASTNode.h"
 #include <functional>
 #include <unordered_map>
+#include <unordered_set>
 
 namespace AIParser {
 
@@ -10,13 +11,16 @@ class ActionRegistry {
 public:
   static ActionRegistry &getInstance();
 
-  void registerAction(const std::string &name, ActionFunc func);
+  void registerAction(const std::string &name, ActionFunc func,
+                      bool is_builtin = false);
+  bool isBuiltinAction(const std::string &name);
   bool hasAction(const std::string &name) const;
   Value executeAction(const std::string &name, const std::vector<Value> &args);
 
 private:
   ActionRegistry() = default;
   std::unordered_map<std::string, ActionFunc> actions;
+  std::unordered_set<std::string> builtin_actions;
 };
 
 // 内置行为实现
@@ -37,6 +41,9 @@ public:
     return result;
   }
 
+  // 数学相关
+  static Value randi_range(const std::vector<Value> &args);
+  static Value randf_range(const std::vector<Value> &args);
   // 移动相关
   static Value chase_player(const std::vector<Value> &args);
   static Value flee(const std::vector<Value> &args);
@@ -53,10 +60,6 @@ public:
   // 对话相关
   static Value show_dialog(const std::vector<Value> &args);
   static Value hide_dialog(const std::vector<Value> &args);
-
-  // 工具函数
-  static Value wait(const std::vector<Value> &args);
-  static Value wait_for_input(const std::vector<Value> &args);
 
 private:
   BuiltinActions() = default;
