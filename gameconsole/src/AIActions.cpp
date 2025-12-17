@@ -9,10 +9,10 @@
 namespace AIParser {
 
 // ActionRegistry实现
-ActionRegistry &ActionRegistry::getInstance() {
-  static ActionRegistry instance;
-  return instance;
-}
+// ActionRegistry &ActionRegistry::getInstance() {
+//   static ActionRegistry instance;
+//   return instance;
+// }
 
 void ActionRegistry::registerAction(const std::string &name, ActionFunc func,
                                     bool is_builtin) {
@@ -23,7 +23,7 @@ void ActionRegistry::registerAction(const std::string &name, ActionFunc func,
   }
 }
 
-bool ActionRegistry::isBuiltinAction(const std::string &name) {
+bool ActionRegistry::isBuiltinAction(const std::string &name) const {
   return builtin_actions.find(name) != builtin_actions.end();
 }
 
@@ -32,7 +32,7 @@ bool ActionRegistry::hasAction(const std::string &name) const {
 }
 
 Value ActionRegistry::executeAction(const std::string &name,
-                                    const std::vector<Value> &args) {
+                                    const std::vector<Value> &args) const {
   auto it = actions.find(name);
   if (it != actions.end()) {
     return it->second(args);
@@ -45,8 +45,7 @@ Value ActionRegistry::executeAction(const std::string &name,
 ActionFunc BuiltinActions::fn;
 
 // BuiltinActions实现
-void BuiltinActions::registerAll() {
-  auto &registry = ActionRegistry::getInstance();
+void BuiltinActions::registerAll(ActionRegistry &registry) {
   registry.registerAction("randi_range", randi_range, true);
   registry.registerAction("randf_range", randf_range, true);
   registry.registerAction("chase_player", chase_player, true);

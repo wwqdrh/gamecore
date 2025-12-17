@@ -19,7 +19,6 @@ public:
 
   void registerAction(const std::string &name, ActionFunc func) {
     // WARN_PRINT(vformat("register here, %s", godot::TO_GSTR(name)));
-    auto &registry = ActionRegistry::getInstance();
     registry.registerAction(name, func);
   }
   void bind_actionfn(ActionFunc fn) { BuiltinActions::bind_actionfn(fn); }
@@ -39,6 +38,8 @@ private:
   std::shared_ptr<ASTNode> root;
   std::unordered_map<std::string, Value> blackboard;
   bool debugEnabled;
+  std::string current_expression = "";
+  ActionRegistry registry;
 
   void log(const std::string &message) const;
 };

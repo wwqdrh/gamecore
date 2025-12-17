@@ -13,7 +13,10 @@ const std::unordered_map<std::string, NodeType> Parser::controlKeywords = {
     {"if", NodeType::IF},
     {"repeat", NodeType::REPEAT}};
 
-Parser::Parser(const std::string &source) : tokenizer(source) { advance(); }
+Parser::Parser(const std::string &source)
+    : tokenizer(source), current_registry(nullptr) {
+  advance();
+}
 
 void Parser::advance() { currentToken = tokenizer.nextToken(); }
 
@@ -217,7 +220,7 @@ std::shared_ptr<ASTNode> Parser::parseFunctionCall() {
 
   consume(TokenType::RPAREN, "Expected ')' after function arguments");
 
-  if (ActionRegistry::getInstance().isBuiltinAction(functionName)) {
+  if (current_registry && current_registry->isBuiltinAction(functionName)) {
     return std::make_shared<FunctionCallNode>(functionName, args);
   } else {
     current_ast_index += 1;

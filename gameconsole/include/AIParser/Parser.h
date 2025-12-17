@@ -1,4 +1,5 @@
 #pragma once
+#include "AIParser/AIActions.h"
 #include "ASTNode.h"
 #include "Tokenizer.h"
 #include <memory>
@@ -11,7 +12,7 @@ namespace AIParser {
 class Parser {
 public:
   Parser(const std::string &source);
-
+  ActionRegistry *current_registry;
   std::shared_ptr<ASTNode> parse();
 
 private:

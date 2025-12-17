@@ -1,24 +1,25 @@
 #pragma once
-#include "ASTNode.h"
 #include <functional>
 #include <unordered_map>
 #include <unordered_set>
+
+#include "AIParser/types.h"
 
 namespace AIParser {
 
 // 行为注册器
 class ActionRegistry {
 public:
-  static ActionRegistry &getInstance();
+  // static ActionRegistry &getInstance();
 
   void registerAction(const std::string &name, ActionFunc func,
                       bool is_builtin = false);
-  bool isBuiltinAction(const std::string &name);
+  bool isBuiltinAction(const std::string &name) const;
   bool hasAction(const std::string &name) const;
-  Value executeAction(const std::string &name, const std::vector<Value> &args);
+  Value executeAction(const std::string &name, const std::vector<Value> &args) const;
 
 private:
-  ActionRegistry() = default;
+  // ActionRegistry() = default;
   std::unordered_map<std::string, ActionFunc> actions;
   std::unordered_set<std::string> builtin_actions;
 };
@@ -30,7 +31,7 @@ public:
 
 public:
   static void bind_actionfn(ActionFunc fn_) { fn = fn_; }
-  static void registerAll();
+  static void registerAll(ActionRegistry &registry);
   static std::vector<Value> copy_args(const std::string &action,
                                       const std::vector<Value> &args) {
     std::vector<Value> result;

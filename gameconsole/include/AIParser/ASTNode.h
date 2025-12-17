@@ -1,4 +1,5 @@
 #pragma once
+#include "AIParser/AIActions.h"
 #include <iostream>
 #include <memory>
 #include <string>
@@ -38,11 +39,6 @@ enum class NodeType {
   FUNCTION_CALL
 };
 
-// 值类型
-using Value = std::variant<bool, int, float, std::string, nullptr_t>;
-using ActionFunc = std::function<Value(const std::vector<Value> &)>;
-const std::string END_FLAG = "AI_END";
-
 // AST节点基类
 class ASTNode {
 public:
@@ -51,6 +47,7 @@ public:
 
   NodeType getType() const { return type; }
   virtual Value evaluate(std::unordered_map<std::string, Value> &blackboard,
+                         const ActionRegistry &registry,
                          int start_index = -1) = 0;
   virtual std::string toString(int indent = 0) const = 0;
 
@@ -87,7 +84,7 @@ public:
       : ControlNode(NodeType::SELECTOR, children) {}
 
   Value evaluate(std::unordered_map<std::string, Value> &blackboard,
-                 int start_index = -1) override;
+                 const ActionRegistry &registry, int start_index = -1) override;
   std::string toString(int indent = 0) const override;
 };
 
@@ -97,7 +94,7 @@ public:
       : ControlNode(NodeType::SEQUENCE, children) {}
 
   Value evaluate(std::unordered_map<std::string, Value> &blackboard,
-                 int start_index = -1) override;
+                 const ActionRegistry &registry, int start_index = -1) override;
   std::string toString(int indent = 0) const override;
 
 public:
@@ -141,7 +138,7 @@ public:
         countOrCondition(countOrCondition), mode(mode) {}
 
   Value evaluate(std::unordered_map<std::string, Value> &blackboard,
-                 int start_index = -1) override;
+                 const ActionRegistry &registry, int start_index = -1) override;
   std::string toString(int indent = 0) const override;
 
 public:
@@ -158,7 +155,7 @@ public:
         falseBranch(falseBranch) {}
 
   Value evaluate(std::unordered_map<std::string, Value> &blackboard,
-                 int start_index = -1) override;
+                 const ActionRegistry &registry, int start_index = -1) override;
   std::string toString(int indent = 0) const override;
 
 private:
@@ -175,7 +172,7 @@ public:
       : ASTNode(NodeType::ACTION), name(name), args(args) {}
 
   Value evaluate(std::unordered_map<std::string, Value> &blackboard,
-                 int start_index = -1) override;
+                 const ActionRegistry &registry, int start_index = -1) override;
   std::string toString(int indent = 0) const override;
 
 private:
@@ -254,7 +251,7 @@ public:
       : ASTNode(op), left(left), right(right) {}
 
   Value evaluate(std::unordered_map<std::string, Value> &blackboard,
-                 int start_index = -1) override;
+                 const ActionRegistry &registry, int start_index = -1) override;
   std::string toString(int indent = 0) const override;
 
 private:
@@ -269,7 +266,7 @@ public:
       : ASTNode(type), value(value) {}
 
   Value evaluate(std::unordered_map<std::string, Value> &blackboard,
-                 int start_index = -1) override;
+                 const ActionRegistry &registry, int start_index = -1) override;
   std::string toString(int indent = 0) const override;
 
 public:
@@ -283,7 +280,7 @@ public:
       : ASTNode(NodeType::VARIABLE), name(name) {}
 
   Value evaluate(std::unordered_map<std::string, Value> &blackboard,
-                 int start_index = -1) override;
+                 const ActionRegistry &registry, int start_index = -1) override;
   std::string toString(int indent = 0) const override;
 
 private:
@@ -298,7 +295,7 @@ public:
       : ASTNode(NodeType::FUNCTION_CALL), name(name), args(args) {}
 
   Value evaluate(std::unordered_map<std::string, Value> &blackboard,
-                 int start_index = -1) override;
+                 const ActionRegistry &registry, int start_index = -1) override;
   std::string toString(int indent = 0) const override;
 
 private:

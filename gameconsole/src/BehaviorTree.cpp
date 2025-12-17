@@ -10,13 +10,18 @@ namespace AIParser {
 
 BehaviorTree::BehaviorTree() : debugEnabled(false) {
   // 注册内置行为
-  BuiltinActions::registerAll();
+  BuiltinActions::registerAll(registry);
 }
 
 BehaviorTree::~BehaviorTree() {}
 
 bool BehaviorTree::loadFromString(const std::string &expression) {
+  if (expression == current_expression) {
+    return true;
+  }
+  current_expression = expression;
   Parser parser(expression);
+  parser.current_registry = &registry;
   root = parser.parse();
   return true;
 }
@@ -49,7 +54,7 @@ Value BehaviorTree::execute(int start_index) {
 
   // root->setDebug(debugEnabled);
   // WARN_PRINT("execute here");
-  Value result = root->evaluate(blackboard, start_index);
+  Value result = root->evaluate(blackboard, registry, start_index);
 
   if (debugEnabled) {
     // WARN_PRINT("Execution completed");
