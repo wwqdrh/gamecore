@@ -1,10 +1,13 @@
+// #include "godot_cpp/core/error_macros.hpp"
+// #include "godot_cpp/variant/variant.hpp"
 #include "word.h"
 #include <memory>
-#include <variant>
+// #include <variant>
 #include <vector>
 
 #include "flow.h"
 #include "timeline.h"
+// #include "wrappers.h"
 
 namespace gamedialog {
 // =====
@@ -45,10 +48,12 @@ Timeline::Timeline(const std::string &data) {
     if (line[0] == '[' && line.back() == ']') {
       if (!cur_secions.empty() && tt != "") {
         // 解析stage
-        auto cur = std::make_shared<DiaStage>(cur_secions);
-        stages.push_back(cur);
-        cur->set_timeline(this);
-        stage_map[cur->get_stage_name()] = stages.size() - 1;
+        DiaStage node;
+        for (auto cur : node.parse_all_stage(cur_secions)) {
+          stages.push_back(cur);
+          cur->set_timeline(this);
+          stage_map[cur->get_stage_name()] = stages.size() - 1;
+        }
         cur_secions.clear();
         tt = "";
       }
@@ -61,10 +66,14 @@ Timeline::Timeline(const std::string &data) {
   if (!cur_secions.empty()) {
     // _parse_section(cur_stage, cur_names, cur_word);
     // 解析stage
-    auto cur = std::make_shared<DiaStage>(cur_secions);
-    stages.push_back(cur);
-    cur->set_timeline(this);
-    stage_map[cur->get_stage_name()] = stages.size() - 1;
+    DiaStage node;
+    for (auto cur : node.parse_all_stage(cur_secions)) {
+      // WARN_PRINT(godot::vformat("add stage: %s",
+      //                           godot::TO_GSTR(cur->get_stage_name())));
+      stages.push_back(cur);
+      cur->set_timeline(this);
+      stage_map[cur->get_stage_name()] = stages.size() - 1;
+    }
   }
 }
 

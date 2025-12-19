@@ -3,12 +3,12 @@
 #include "flow.h"
 #include "timeline.h"
 #include "word.h"
+#include <map>
 #include <memory>
 #include <sstream>
 #include <string>
 #include <variant>
 #include <vector>
-#include <map>
 
 namespace gamedialog {
 class ControlFlow;
@@ -35,11 +35,12 @@ private:
 
 public:
   DiaStage() = default;
-  DiaStage(const std::string &data);
-  DiaStage(const std::vector<std::string> &data) { initial(data); }
+  // DiaStage() : parent_stage(p_stage) {};
 
 public:
-  void initial(const std::vector<std::string> &data);
+  std::vector<std::shared_ptr<DiaStage>>
+  parse_all_stage(const std::vector<std::string> &data,
+                  std::string stage_prefix = "", int level = 0);
   void set_timeline(Timeline *timeline) { timeline_ = timeline; }
   std::string get_stage_name() const { return stage_name; }
   int get_line_size() const { return dialogue_keys.size(); }
@@ -49,16 +50,18 @@ public:
   void clean() { current_ = 0; }
   bool is_start() { return current_ == 0; }
   bool is_doing() { return current_ > 0 && current_ < dialogue_keys.size(); }
-  const std::map<std::string, std::string>& get_variables() const { return scene_variables_; }
-  std::string get_variable(const std::string& key) const;
-  void set_variable(const std::string& key, const std::string& value) {
+  const std::map<std::string, std::string> &get_variables() const {
+    return scene_variables_;
+  }
+  std::string get_variable(const std::string &key) const;
+  void set_variable(const std::string &key, const std::string &value) {
     scene_variables_[key] = value;
   }
-  void set_label(const std::string& label, size_t position) {
+  void set_label(const std::string &label, size_t position) {
     labels_[label] = position;
   }
-  
-  bool goto_label(const std::string& label) {
+
+  bool goto_label(const std::string &label) {
     auto it = labels_.find(label);
     if (it != labels_.end()) {
       current_ = it->second;
@@ -72,7 +75,7 @@ public:
 private:
   void _parse_section(const std::vector<std::string> &names,
                       const std::vector<std::string> &words);
-  void _parse_variables(const std::string& var_block);
+  void _parse_variables(const std::string &var_block);
   // 检查字符串是否为空或只包含空白字符
   bool is_empty(const std::string &str) const {
     return str.find_first_not_of(" \t\n\r") == std::string::npos;
@@ -122,16 +125,17 @@ private:
     return str.size() >= suffix.size() &&
            str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
   }
-  bool check_conditions(const std::string& conditions) {
+  bool check_conditions(const std::string &conditions) {
     auto pairs = split(conditions, '&');
-    for (const auto& pair : pairs) {
+    for (const auto &pair : pairs) {
       auto kv = split(pair, '=');
-      if (kv.size() != 2) continue;
-      
+      if (kv.size() != 2)
+        continue;
+
       auto var = strip(kv[0]);
       auto expected = strip(kv[1]);
       auto actual = get_variable(var);
-      
+
       if (actual != expected) {
         return false;
       }
@@ -139,8 +143,8 @@ private:
     return true;
   }
 
-  void parse_condition_expression(const std::string& expr);
-  bool evaluate_condition(const Condition& cond) const;
-  std::string get_condition_variable(const Condition& cond) const;
+  void parse_condition_expression(const std::string &expr);
+  bool evaluate_condition(const Condition &cond) const;
+  std::string get_condition_variable(const Condition &cond) const;
 };
 } // namespace gamedialog
