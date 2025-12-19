@@ -31,8 +31,16 @@ DiaStage::parse_all_stage(const std::vector<std::string> &data,
     }
 
     // 计算开头有空格的行，作为
-    if (line[0] == ' ') {
-      childrens.push_back(line.substr((level + 1) * 2));
+    int space_count = 0;
+    for (auto ch : line) {
+      if (ch == ' ') {
+        space_count += 1;
+      } else {
+        break;
+      }
+    }
+    if (space_count >= 2) {
+      childrens.push_back(line.substr(2));
       continue;
     } else {
       // 处理之前一段子场景
@@ -157,9 +165,9 @@ DiaStage::parse_all_stage(const std::vector<std::string> &data,
       // 说明前面一段有场景
       for (auto item :
            child_stage.parse_all_stage(childrens, stage_name, level + 1)) {
-                  //  WARN_PRINT(godot::vformat("2 prefix: %s,  current stage: %s",
-                  //                     godot::TO_GSTR(stage_name),
-                  //                     godot::TO_GSTR(item->get_stage_name())));
+        //  WARN_PRINT(godot::vformat("2 prefix: %s,  current stage: %s",
+        //                     godot::TO_GSTR(stage_name),
+        //                     godot::TO_GSTR(item->get_stage_name())));
         res2.push_back(item);
       }
       child_stage_data.clear();

@@ -47,6 +47,9 @@ public:
   bool current_stage_is_doing();
   SceneManager &get_scene_manager() { return SceneManager::instance(); }
   std::vector<std::string> get_available_stages();
+
+protected:
+  std::string replaceLeadingTabsWithSpaces(const std::string &str);
 };
 
 } // namespace gamedialog

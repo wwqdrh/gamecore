@@ -40,10 +40,12 @@ Timeline::Timeline(const std::string &data) {
 
   std::string tt = "";
   std::vector<std::string> cur_secions;
+  // WARN_PRINT("initial");
   while (std::getline(stream, line)) {
     if (line == "") {
       continue;
     }
+    line = replaceLeadingTabsWithSpaces(line);
     // 处理场景标记 [scene]
     if (line[0] == '[' && line.back() == ']') {
       if (!cur_secions.empty() && tt != "") {
@@ -76,7 +78,20 @@ Timeline::Timeline(const std::string &data) {
     }
   }
 }
+std::string Timeline::replaceLeadingTabsWithSpaces(const std::string &str) {
+  std::string result = str;
+  size_t pos = 0;
 
+  // 只替换开头的制表符
+  // WARN_PRINT(godot::TO_GSTR(str));
+  while (pos < result.length() && result[pos] == '\t') {
+    // WARN_PRINT("replace tab");
+    result.replace(pos, 1, "    "); // 替换为4个空格
+    pos += 4;                       // 跳过刚插入的4个空格
+  }
+
+  return result;
+}
 std::string Timeline::current_stage() {
   if (current_ >= stages.size()) {
     return "";
