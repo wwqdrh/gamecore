@@ -16,40 +16,40 @@ const ENTITIES_JSON := """
 {
   "entities": [
     {
-      "id": "goblin", "name": "哥布林", "type": "monster", "weight": 5.0,
-      "stats": { "hp": {"scale":"linear","base":20,"per_level":8,"variance":0.1}, "atk": {"scale":"linear","base":5,"per_level":2,"variance":0.1}, "def": {"scale":"fixed","value":1} }
+	  "id": "goblin", "name": "哥布林", "type": "monster", "weight": 5.0,
+	  "stats": { "hp": {"scale":"linear","base":20,"per_level":8,"variance":0.1}, "atk": {"scale":"linear","base":5,"per_level":2,"variance":0.1}, "def": {"scale":"fixed","value":1} }
     },
     {
-      "id": "skeleton", "name": "骷髅兵", "type": "monster", "weight": 3.0, "min_depth": 2,
-      "stats": { "hp": {"scale":"linear","base":30,"per_level":10,"variance":0.1}, "atk": {"scale":"linear","base":8,"per_level":2.5,"variance":0.1}, "def": {"scale":"fixed","value":3} }
+	  "id": "skeleton", "name": "骷髅兵", "type": "monster", "weight": 3.0, "min_depth": 2,
+	  "stats": { "hp": {"scale":"linear","base":30,"per_level":10,"variance":0.1}, "atk": {"scale":"linear","base":8,"per_level":2.5,"variance":0.1}, "def": {"scale":"fixed","value":3} }
     },
     {
-      "id": "orc", "name": "兽人", "type": "monster", "weight": 2.0, "min_depth": 3,
-      "stats": { "hp": {"scale":"linear","base":50,"per_level":12,"variance":0.1}, "atk": {"scale":"linear","base":12,"per_level":3,"variance":0.1}, "def": {"scale":"fixed","value":5} }
+	  "id": "orc", "name": "兽人", "type": "monster", "weight": 2.0, "min_depth": 3,
+	  "stats": { "hp": {"scale":"linear","base":50,"per_level":12,"variance":0.1}, "atk": {"scale":"linear","base":12,"per_level":3,"variance":0.1}, "def": {"scale":"fixed","value":5} }
     },
     {
-      "id": "wooden_sword", "name": "木剑", "type": "weapon", "weight": 4.0,
-      "stats": { "atk": {"scale":"linear","base":3,"per_level":1,"variance":0.1} }
+	  "id": "wooden_sword", "name": "木剑", "type": "weapon", "weight": 4.0,
+	  "stats": { "atk": {"scale":"linear","base":3,"per_level":1,"variance":0.1} }
     },
     {
-      "id": "iron_sword", "name": "铁剑", "type": "weapon", "weight": 2.0, "min_depth": 2,
-      "stats": { "atk": {"scale":"linear","base":6,"per_level":1.5,"variance":0.1} }
+	  "id": "iron_sword", "name": "铁剑", "type": "weapon", "weight": 2.0, "min_depth": 2,
+	  "stats": { "atk": {"scale":"linear","base":6,"per_level":1.5,"variance":0.1} }
     },
     {
-      "id": "wooden_shield", "name": "木盾", "type": "armor", "weight": 4.0,
-      "stats": { "def": {"scale":"linear","base":2,"per_level":0.8,"variance":0.1} }
+	  "id": "wooden_shield", "name": "木盾", "type": "armor", "weight": 4.0,
+	  "stats": { "def": {"scale":"linear","base":2,"per_level":0.8,"variance":0.1} }
     },
     {
-      "id": "iron_shield", "name": "铁盾", "type": "armor", "weight": 2.0, "min_depth": 2,
-      "stats": { "def": {"scale":"linear","base":5,"per_level":1.2,"variance":0.1} }
+	  "id": "iron_shield", "name": "铁盾", "type": "armor", "weight": 2.0, "min_depth": 2,
+	  "stats": { "def": {"scale":"linear","base":5,"per_level":1.2,"variance":0.1} }
     },
     {
-      "id": "heal_potion", "name": "治疗药水", "type": "item", "weight": 5.0,
-      "stats": { "heal": {"scale":"linear","base":15,"per_level":5,"variance":0.1} }
+	  "id": "heal_potion", "name": "治疗药水", "type": "item", "weight": 5.0,
+	  "stats": { "heal": {"scale":"linear","base":15,"per_level":5,"variance":0.1} }
     },
     {
-      "id": "big_potion", "name": "大治疗药水", "type": "item", "weight": 2.0, "min_depth": 3,
-      "stats": { "heal": {"scale":"linear","base":30,"per_level":8,"variance":0.1} }
+	  "id": "big_potion", "name": "大治疗药水", "type": "item", "weight": 2.0, "min_depth": 3,
+	  "stats": { "heal": {"scale":"linear","base":30,"per_level":8,"variance":0.1} }
     }
   ]
 }

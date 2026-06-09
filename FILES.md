@@ -21,6 +21,13 @@
 
 ### [addons/gamecore/core.gd](file:///Users/dengronghui/project/gamekit/core/addons/gamecore/core.gd)
 - EditorPlugin 脚本
+- 自动加载控制台面板（_enter_tree 时实例化 console_panel.gd）
+
+### [addons/gamecore/ui/console_panel.gd](file:///Users/dengronghui/project/gamekit/core/addons/gamecore/ui/console_panel.gd)
+- 控制台 UI 面板（继承 CanvasLayer）
+- 按 ` 键打开/关闭，输入框+日志输出
+- 命令历史导航（上下键），监听 GdConsole 的 console_output 信号
+- 可配置：toggle_key、console_height_ratio、max_log_lines、font_size
 
 ### [addons/gamecore/plugin.cfg](file:///Users/dengronghui/project/gamekit/core/addons/gamecore/plugin.cfg)
 - 插件元信息
@@ -185,6 +192,18 @@
 - 方法：get_pile_id, get_card_count, get_top_card, has_exit_card, get_all_cards
 - 工厂方法：from_dict（从 VarDictionary 构造）
 
+### [rust/src/console/mod.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/console/mod.rs)
+- 后台控制台模块入口，导出 gdconsole 子模块
+
+### [rust/src/console/gdconsole.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/console/gdconsole.rs)
+- **GdConsole** 类（继承 RefCounted）
+- 全局控制台单例，注册为 Engine singleton "GdConsole"
+- 基于 mlua (Lua 5.1) 的 Lua 控制台，支持运行时执行 Lua 脚本
+- 内置 Lua 函数：fps(), memory(), gc_info(), cpu_info(), help(), print()
+- 支持 GDScript 注册命令函数（register_command），在 Lua 中直接按名称调用
+- 信号：console_output(text: String)
+- 方法：execute, eval, register_command, unregister_command, list_commands
+
 ## GDScript 示例
 
 ### [example/test_from_gd_script.gd](file:///Users/dengronghui/project/gamekit/core/example/test_from_gd_script.gd)
@@ -218,6 +237,14 @@
 
 ### [example/rogue/rogue_game.tscn](file:///Users/dengronghui/project/gamekit/core/example/rogue/rogue_game.tscn)
 - 肉鸽卡牌游戏示例场景，根节点为 Control，挂载 rogue_game.gd 脚本
+
+### [example/console/console_example.gd](file:///Users/dengronghui/project/gamekit/core/example/console/console_example.gd)
+- 控制台命令注册示例脚本，继承 Node2D
+- 注册6个GDScript命令：heal/damage/status/set_name/add_score/reset
+- 运行时加载控制台面板，按`键打开
+
+### [example/console/console_example.tscn](file:///Users/dengronghui/project/gamekit/core/example/console/console_example.tscn)
+- 控制台示例场景，根节点为 Node2D，挂载 console_example.gd 脚本
 
 ## 构建脚本
 
@@ -283,3 +310,11 @@
 | 2026-05-31 | example/rogue/rogue_game.gd | 新建肉鸽卡牌游戏示例脚本 |
 | 2026-05-31 | example/rogue/rogue_game.tscn | 新建肉鸽卡牌游戏示例场景 |
 | 2026-06-08 | rust/src/state/coredata.rs | 修复 initial 方法中目录创建 bug：使用 std::path::Path 解析 user:// 路径会错误创建 user: 文件夹，改为字符串解析 Godot 路径 |
+| 2026-06-09 | rust/Cargo.toml | 添加 mlua 依赖（lua51/send/vendored） |
+| 2026-06-09 | rust/src/console/mod.rs | 新建后台控制台模块入口 |
+| 2026-06-09 | rust/src/console/gdconsole.rs | 新建GdConsole全局控制台单例，基于mlua的Lua控制台 |
+| 2026-06-09 | rust/src/lib.rs | 添加console模块，注册/注销GdConsole单例 |
+| 2026-06-09 | addons/gamecore/ui/console_panel.gd | 新建控制台UI面板，输入框+日志输出，按`键切换 |
+| 2026-06-09 | addons/gamecore/core.gd | EditorPlugin自动加载控制台面板 |
+| 2026-06-09 | example/console/console_example.gd | 新建控制台命令注册示例脚本 |
+| 2026-06-09 | example/console/console_example.tscn | 新建控制台示例场景 |

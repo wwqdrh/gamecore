@@ -17,6 +17,7 @@ use godot::init::InitStage;
 mod runtime;
 mod state;
 mod rogue;
+mod console;
 
 #[doc(hidden)]
 pub enum OnFinishCall {
@@ -31,11 +32,13 @@ unsafe impl ExtensionLibrary for GameKitCore {
     fn on_stage_init(stage: InitStage) {
         if stage == InitStage::Scene {
             state::gdcore::register_gdcore_singleton();
+            console::register_gdconsole_singleton();
         }
     }
 
     fn on_stage_deinit(stage: InitStage) {
         if stage == InitStage::Scene {
+            console::unregister_gdconsole_singleton();
             state::gdcore::unregister_gdcore_singleton();
         }
     }

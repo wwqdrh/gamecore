@@ -50,6 +50,16 @@ core 是一个基于 Rust 的 Godot 4 GDExtension 项目，使用 gdext 库与 G
    - RogueCardPile：牌堆包装类（继承 RefCounted），暴露牌堆数据和顶牌查询
    - 支持种子可复现、快照/恢复（存档读档）、过程化实体生成（模板+缩放曲线）
 
+8. **后台控制台**（console 模块）
+   - 基于 mlua (Lua 5.1) 的后台控制台，支持运行时执行 Lua 脚本
+   - GdConsole：全局控制台单例（继承 RefCounted），注册为 Engine singleton "GdConsole"
+   - 内置函数：fps()、memory()、gc_info()、cpu_info()、help()
+   - 支持 GDScript 注册命令函数（register_command），在 Lua 中直接按名称调用
+   - 支持 execute（执行代码）和 eval（执行表达式返回结果）
+   - console_output 信号：每次执行后触发，输出内容回传给 GDScript
+   - 内置控制台 UI 面板：按 ` 键打开/关闭，输入框+日志输出，命令历史导航（上下键）
+   - EditorPlugin 自动加载：插件启用时在编辑器中显示控制台
+
 ## 项目结构
 
 ```
@@ -60,8 +70,10 @@ core/
 ├── project.godot           # Godot 项目配置
 ├── addons/gamecore/            # Godot 插件目录
 │   ├── core.gdextension    # GDExtension 配置（统一入口）
-│   ├── core.gd             # EditorPlugin 脚本
+│   ├── core.gd             # EditorPlugin 脚本（自动加载控制台面板）
 │   ├── plugin.cfg          # 插件元信息
+│   ├── ui/                 # 内置 UI 组件
+│   │   └── console_panel.gd # 控制台面板（输入框+日志输出）
 │   └── bin/               # 构建产物输出目录
 │       ├── macos/         # macOS framework 产物
 │       ├── linux/         # Linux .so 产物
@@ -98,6 +110,9 @@ core/
 │           ├── engine.rs   # RogueEngine 核心引擎类
 │           ├── card.rs     # RogueCard 卡牌包装类
 │           └── card_pile.rs # RogueCardPile 牌堆包装类
+│       └── console/        # 后台控制台模块
+│           ├── mod.rs      # 模块入口
+│           └── gdconsole.rs # GdConsole 全局控制台单例
 ├── example/
 │   ├── test_from_gd_script.gd  # GDScript 测试脚本
 │   ├── fish_procedural_anim.gd # 鱼的程序化动画示例
@@ -107,6 +122,9 @@ core/
 │   └── rogue/                  # 肉鸽卡牌游戏示例
 │       ├── rogue_game.gd       # 示例游戏脚本
 │       └── rogue_game.tscn     # 示例游戏场景
+│   └── console/                # 控制台示例
+│       ├── console_example.gd  # 命令注册示例脚本
+│       └── console_example.tscn # 命令注册示例场景
 ├── PROJECT.md              # 本文档
 └── FILES.md                # 文件功能索引
 ```
@@ -502,6 +520,83 @@ func _process(delta):
     $Tail.rotation = tail_rot.z
 ```
 
+## GdConsole API
+
+GdConsole 是一个全局控制台单例，注册为 Engine singleton "GdConsole"。基于 mlua (Lua 5.1)，支持运行时执行 Lua 脚本和 GDScript 命令注册。
+
+### 方法
+
+| 方法 | 说明 |
+|------|------|
+| `execute(code: String) -> String` | 执行 Lua 代码，返回输出内容（print 输出或错误信息） |
+| `eval(code: String) -> Variant` | 执行 Lua 表达式并返回结果 |
+| `register_command(name: String, callable: Callable, description: String)` | 注册 GDScript 命令，可在 Lua 中按名称调用 |
+| `unregister_command(name: String)` | 注销已注册的命令 |
+| `list_commands() -> PackedStringArray` | 列出所有已注册命令及其描述 |
+
+### 信号
+
+| 信号 | 说明 |
+|------|------|
+| `console_output(text: String)` | 每次执行后触发，输出内容回传 |
+
+### 内置 Lua 函数
+
+| 函数 | 返回值 | 说明 |
+|------|--------|------|
+| `fps()` | number | 获取当前帧率 |
+| `memory()` | table | 获取内存信息（static, message_buffer_max） |
+| `gc_info()` | table | 获取 Godot 对象信息（object_count, resource_count, node_count） |
+| `cpu_info()` | table | 获取 CPU 信息（processor_count） |
+| `help()` | nil | 列出所有可用命令 |
+| `print(...)` | nil | 重定向输出到控制台缓冲区 |
+
+### GDScript 使用示例
+
+```gdscript
+# 获取 GdConsole 单例
+var console = Engine.get_singleton("GdConsole")
+
+# 执行 Lua 代码
+var output = console.execute("print('Hello from Lua!')")
+print(output)  # Hello from Lua!
+
+# 获取运行信息
+var fps_result = console.eval("fps()")
+print("FPS: ", fps_result)
+
+var mem_info = console.eval("memory()")
+print("Static memory: ", mem_info["static"])
+
+# 注册 GDScript 命令
+func _ready():
+    var console = Engine.get_singleton("GdConsole")
+    console.register_command("heal_player", heal_player, "Heal the player by amount")
+    console.register_command("get_pos", get_player_pos, "Get player position")
+
+func heal_player(amount: int):
+    player_hp += amount
+    return "Healed player by %d, HP: %d" % [amount, player_hp]
+
+func get_player_pos():
+    return {"x": position.x, "y": position.y}
+
+# 在控制台中调用注册的命令
+# console.execute("heal_player(50)")
+# console.execute("get_pos()")
+
+# 监听控制台输出
+func _ready():
+    var console = Engine.get_singleton("GdConsole")
+    console.console_output.connect(_on_console_output)
+
+func _on_console_output(text: String):
+    $OutputLabel.text += text + "\n"
+
+# 注销命令
+console.unregister_command("heal_player")
+```
+
 ## 开发命令
 
 ```bash
@@ -568,3 +663,11 @@ cargo build -p core --release
 | 2026-05-31 | example/rogue/rogue_game.gd | 新建肉鸽卡牌游戏示例脚本，展示完整的卡牌肉鸽游戏逻辑 |
 | 2026-05-31 | example/rogue/rogue_game.tscn | 新建肉鸽卡牌游戏示例场景 |
 | 2026-06-08 | rust/src/state/coredata.rs | 修复 initial 方法中目录创建 bug：使用 std::path::Path 解析 user:// 路径会错误创建 user: 文件夹，改为字符串解析 Godot 路径 |
+| 2026-06-09 | rust/Cargo.toml | 添加 mlua 依赖（lua51/send/vendored） |
+| 2026-06-09 | rust/src/console/mod.rs | 新建后台控制台模块入口 |
+| 2026-06-09 | rust/src/console/gdconsole.rs | 新建GdConsole全局控制台单例（继承RefCounted），基于mlua的Lua控制台，内置fps/memory/gc_info/cpu_info/help函数，支持GDScript注册命令和Lua脚本执行 |
+| 2026-06-09 | rust/src/lib.rs | 添加console模块，注册/注销GdConsole单例 |
+| 2026-06-09 | addons/gamecore/ui/console_panel.gd | 新建控制台UI面板（CanvasLayer），输入框+日志输出，按`键切换，命令历史导航 |
+| 2026-06-09 | addons/gamecore/core.gd | EditorPlugin自动加载控制台面板 |
+| 2026-06-09 | example/console/console_example.gd | 新建控制台示例脚本，演示命令注册（heal/damage/status/set_name/add_score/reset） |
+| 2026-06-09 | example/console/console_example.tscn | 新建控制台示例场景 |
