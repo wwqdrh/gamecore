@@ -3,7 +3,7 @@ use godot::meta::conv::ObjectToOwned;
 use godot::obj::WithBaseField;
 use godot::prelude::*;
 use crate::prelude::*;
-use crate::yielding::SpireYield;
+use crate::runtime::yielding::SpireYield;
 
 pub trait StartCoroutine {
 	/// Spawns and starts a new coroutine with default settings.

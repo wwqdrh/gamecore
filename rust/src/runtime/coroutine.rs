@@ -8,7 +8,7 @@ use godot::prelude::*;
 
 use crate::OnFinishCall;
 use crate::prelude::KeepWaiting;
-use crate::yielding::SpireYield;
+use crate::runtime::yielding::SpireYield;
 
 /// A Godot class responsible for managing a coroutine.
 ///

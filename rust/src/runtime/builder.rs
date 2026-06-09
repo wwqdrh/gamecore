@@ -7,7 +7,7 @@ use godot::task::TaskHandle;
 use parking_lot::Mutex;
 use crate::OnFinishCall;
 use crate::prelude::*;
-use crate::yielding::SpireYield;
+use crate::runtime::yielding::SpireYield;
 
 /// Builder struct for customizing coroutine behavior.
 #[must_use]

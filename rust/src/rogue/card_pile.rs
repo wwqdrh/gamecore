@@ -76,7 +76,7 @@ impl RogueCardPile {
             }
         }
 
-        let mut pile = Gd::<Self>::from_init_fn(|base| RogueCardPile {
+        let pile = Gd::<Self>::from_init_fn(|base| RogueCardPile {
             pile_id,
             cards,
             has_exit,

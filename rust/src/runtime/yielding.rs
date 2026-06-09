@@ -224,8 +224,7 @@ pub mod shortcuts {
     pub use super::wait_for_signal as signal;
     pub use super::wait_until as until;
     pub use super::wait_while as whilst;
-    pub use next_frame as unity_null;
-    
+
     #[inline]
     pub fn next_frame() -> super::SpireYield { super::frames(1) }
 }

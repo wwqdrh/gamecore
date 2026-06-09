@@ -14,11 +14,7 @@ use godot::builtin::{Callable, Variant};
 use godot::prelude::*;
 use godot::init::InitStage;
 
-mod coroutine;
-mod yielding;
-mod builder;
-mod start_coroutine;
-mod start_async_task;
+mod runtime;
 mod state;
 mod rogue;
 
@@ -46,7 +42,7 @@ unsafe impl ExtensionLibrary for GameKitCore {
 }
 
 pub mod prelude {
-	pub use crate::coroutine::{
+	pub use super::runtime::coroutine::{
 		SpireCoroutine,
 		SIGNAL_FINISHED,
 		IsRunning,
@@ -55,7 +51,7 @@ pub mod prelude {
 		PollMode,
 	};
 
-	pub use crate::yielding::{
+	pub use super::runtime::yielding::{
 		seconds,
 		frames,
 		wait_while,
@@ -68,7 +64,7 @@ pub mod prelude {
         shortcuts,
 	};
 
-	pub use crate::start_coroutine::StartCoroutine;
-	pub use crate::builder::CoroutineBuilder;
-	pub use crate::start_async_task::StartAsyncTask;
+	pub use super::runtime::start_coroutine::StartCoroutine;
+	pub use super::runtime::builder::CoroutineBuilder;
+	pub use super::runtime::start_async_task::StartAsyncTask;
 }
