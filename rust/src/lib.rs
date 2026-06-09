@@ -19,6 +19,7 @@ mod state;
 mod rogue;
 mod console;
 mod dialog;
+mod ui;
 
 #[doc(hidden)]
 pub enum OnFinishCall {

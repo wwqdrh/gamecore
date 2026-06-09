@@ -69,6 +69,25 @@ core 是一个基于 Rust 的 Godot 4 GDExtension 项目，使用 gdext 库与 G
    - 信号：s_finished（对话结束时触发）
    - gamedialog 库（vendor/gamedialog/）：纯 Rust 实现，包含 DialogueWord、ControlFlow、DiaStage、Timeline、SceneManager
 
+10. **UI 标记语言**（ui 模块）
+    - 类 HTML 的声明式 UI 描述语言，用于快速构建 Godot Control 节点树
+    - GdUiBuilder：UI 构建器类（继承 RefCounted），暴露给 GDScript 的 API
+    - 解析器：自写 HTML 子集解析器，支持标签/属性/样式块/自闭合标签/注释
+    - 构建器：AST → Godot Control 节点树，支持容器/控件实例化、属性设置、StyleBoxFlat 样式、信号绑定
+    - 支持的容器：VBoxContainer、HBoxContainer、GridContainer、MarginContainer、ScrollContainer、TabContainer、CenterContainer、PanelContainer
+    - 支持的控件：Label、Button、Panel、TextureRect、RichTextLabel、LineEdit、ProgressBar、SpinBox、HSeparator、VSeparator、NinePatchRect
+    - 样式系统：通过 `<style>` 块定义 CSS 类样式，映射到 Godot StyleBoxFlat
+    - 信号绑定：通过 `on_xxx` 属性声明，`connect_signals()` 方法批量连接
+    - 方法：parse_string、parse_file、connect_signals、validate
+    - 列表扩展节点（翻译自 C++ gmlc/）：
+      - GdUIHList：水平列表（继承 HBoxContainer），支持 slot 模板复制、点击高亮、填充效果
+      - GdUIVList：垂直列表（继承 VBoxContainer），同上 + 鼠标进入/离开事件 + 随机高度
+      - GdUIGrid：网格列表（继承 GridContainer），同上 + 移动端触摸长按 + patch_item
+      - GdListHelper：列表辅助工具（初始化/更新容器/节点值设置/信号批量绑定）
+      - GdSlotHighlight/GdSlotFill：方形/圆形高亮和填充效果（Shader）
+    - GML 标签：`<UIHList>`、`<UIVList>`、`<UIGrid>`
+    - 测试用例：12 个解析器测试（含列表标签、错误处理、深度嵌套等）
+
 ## 项目结构
 
 ```
@@ -126,6 +145,15 @@ core/
 │       └── dialog/          # 对话系统模块
 │           ├── mod.rs      # 模块入口
 │           └── gddialogue.rs # GdDialogue 对话控制节点
+│       └── ui/              # UI标记语言模块
+│           ├── mod.rs      # 模块入口
+│           ├── parser.rs   # 类HTML标记解析器（含12个测试用例）
+│           ├── builder.rs  # AST→Control节点树构建器
+│           ├── gdui_builder.rs # GdUiBuilder GDScript API类
+│           ├── ui_list_helper.rs # 列表辅助工具（GdListHelper/GdSlotHighlight/GdSlotFill）
+│           ├── ui_hlist.rs # GdUIHList水平列表节点
+│           ├── ui_vlist.rs # GdUIVList垂直列表节点
+│           └── ui_grid.rs  # GdUIGrid网格列表节点
 ├── example/
 │   ├── test_from_gd_script.gd  # GDScript 测试脚本
 │   ├── fish_procedural_anim.gd # 鱼的程序化动画示例
@@ -142,6 +170,10 @@ core/
 │       ├── chat1.txt           # 对话脚本文件
 │       ├── dialogue_example.gd # 对话示例脚本
 │       └── dialogue_example.tscn # 对话示例场景
+│   └── ui/                     # UI标记语言示例
+│       ├── ui_example.gd       # UI标记语言示例脚本
+│       ├── ui_example.tscn     # UI标记语言示例场景
+│       └── sample_ui.gml       # 示例.gml文件
 ├── PROJECT.md              # 本文档
 └── FILES.md                # 文件功能索引
 ```
@@ -614,6 +646,94 @@ func _on_console_output(text: String):
 console.unregister_command("heal_player")
 ```
 
+## GdUiBuilder API
+
+GdUiBuilder 是一个继承 RefCounted 的 Godot 类，在 GDScript 中通过 `GdUiBuilder.new()` 创建实例。提供类 HTML 声明式 UI 描述语言的解析和构建功能。
+
+### 方法
+
+| 方法 | 说明 |
+|------|------|
+| `parse_string(markup: String) -> Control` | 解析标记字符串，返回 Control 节点树 |
+| `parse_file(path: String) -> Control` | 解析 .gml 文件，返回 Control 节点树 |
+| `connect_signals(root: Control, target: Object)` | 递归连接 UI 节点树中的信号到目标脚本 |
+| `validate(markup: String) -> String` | 验证标记语法，返回错误信息（空字符串表示无错误） |
+
+### 标记语言语法
+
+```html
+<ui theme="default">
+  <style>
+    .button-primary {
+        background: #2e7d32;
+        color: white;
+        border_radius: 4;
+    }
+  </style>
+  <VBoxContainer anchor="full" margin="12">
+    <Label text="欢迎" font_size="24" align="center" />
+    <Button text="开始" class="button-primary" on_pressed="_on_start" />
+  </VBoxContainer>
+</ui>
+```
+
+### 支持的属性
+
+| 属性 | 说明 |
+|------|------|
+| `text` | 文字内容 |
+| `font_size` | 字体大小 |
+| `align` | 对齐方式（left/center/right/fill） |
+| `anchor` | 锚点预设（full/top_left/center 等） |
+| `margin` | 边距（"12" / "10 20" / "10 20 30 40"） |
+| `size` | 尺寸（"width,height"） |
+| `class` | 应用 `<style>` 中定义的样式 |
+| `on_xxx` | 信号绑定（如 on_pressed="_on_click"） |
+| `bbcode` | RichTextLabel 的 BBCode 文本 |
+| `texture` | TextureRect/NinePatchRect 的纹理路径 |
+| `stretch_mode` | TextureRect 拉伸模式 |
+| `columns` | GridContainer 列数 |
+| `visible` | 是否可见 |
+| `disabled` | 是否禁用（Button 等） |
+
+### 样式属性
+
+| 属性 | 说明 |
+|------|------|
+| `background` / `bg_color` | 背景颜色（#RRGGBB / #RRGGBBAA / 颜色名） |
+| `color` | 文字颜色 |
+| `border_radius` | 圆角半径 |
+| `border_color` | 边框颜色 |
+| `border_width` | 边框宽度 |
+| `padding` | 内边距 |
+
+### GDScript 使用示例
+
+```gdscript
+var builder = GdUiBuilder.new()
+
+# 从字符串解析
+var ui = builder.parse_string("""
+<ui>
+  <VBoxContainer>
+    <Label text="Hello" />
+    <Button text="Click" on_pressed="_on_click" />
+  </VBoxContainer>
+</ui>
+""")
+add_child(ui)
+builder.connect_signals(ui, self)
+
+# 从文件解析
+var file_ui = builder.parse_file("res://ui/main_menu.gml")
+add_child(file_ui)
+
+# 验证语法
+var error = builder.validate("<ui><Label text='test' /></ui>")
+if error != "":
+    print("Parse error: ", error)
+```
+
 ## 开发命令
 
 ```bash
@@ -691,3 +811,18 @@ cargo build -p core --release
 | 2026-06-09 | addons/gamecore/ui/dialogue_panel.gd | 新建对话框UI面板，说话人+文本+选项按钮，点击推进/选项选择 |
 | 2026-06-09 | example/dialogue/dialogue_example.gd | 新建对话系统示例脚本，加载chat1.txt并启动对话 |
 | 2026-06-09 | example/dialogue/dialogue_example.tscn | 新建对话系统示例场景 |
+| 2026-06-09 | rust/src/ui/mod.rs | 新建UI标记语言模块入口，导出parser/builder/gdui_builder子模块 |
+| 2026-06-09 | rust/src/ui/parser.rs | 新建类HTML标记解析器，将标记文本解析为AST节点树，支持标签/属性/样式块/自闭合标签/注释 |
+| 2026-06-09 | rust/src/ui/builder.rs | 新建UI构建器，将AST转换为Godot Control节点树，支持容器/控件实例化、属性设置、StyleBoxFlat样式、信号绑定元数据 |
+| 2026-06-09 | rust/src/ui/gdui_builder.rs | 新建GdUiBuilder类（继承RefCounted），暴露parse_string/parse_file/connect_signals/validate API给GDScript |
+| 2026-06-09 | rust/src/lib.rs | 添加ui模块 |
+| 2026-06-09 | example/ui/ui_example.gd | 新建UI标记语言示例脚本，演示基础布局/样式/信号绑定/复杂布局 |
+| 2026-06-09 | example/ui/ui_example.tscn | 新建UI标记语言示例场景 |
+| 2026-06-09 | example/ui/sample_ui.gml | 新建示例.gml文件，演示从外部文件加载UI |
+| 2026-06-09 | rust/src/ui/ui_list_helper.rs | 新建列表辅助工具，翻译自C++ gmlc/ui_list_helper，包含GdListHelper/GdSlotHighlight/GdSlotFill |
+| 2026-06-09 | rust/src/ui/ui_hlist.rs | 新建GdUIHList水平列表节点，翻译自C++ gmlc/ui_list，继承HBoxContainer |
+| 2026-06-09 | rust/src/ui/ui_vlist.rs | 新建GdUIVList垂直列表节点，翻译自C++ gmlc/ui_list_v，继承VBoxContainer |
+| 2026-06-09 | rust/src/ui/ui_grid.rs | 新建GdUIGrid网格列表节点，翻译自C++ gmlc/ui_list_grid，继承GridContainer |
+| 2026-06-09 | rust/src/ui/builder.rs | 更新：添加UIHList/UIVList/UIGrid标签支持和列表属性处理 |
+| 2026-06-09 | rust/src/ui/parser.rs | 更新：添加列表标签解析测试用例（共12个测试） |
+| 2026-06-09 | example/ui/ui_example.gd | 更新：添加列表扩展节点示例（UIHList/UIVList/UIGrid） |

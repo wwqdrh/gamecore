@@ -222,6 +222,57 @@
 - 信号：s_finished()
 - 方法：next, exec_response, is_registered_role, register_role_node, get_role_pos, initial, goto_stage, all_stages, has_next, stage_index
 
+### [rust/src/ui/mod.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/mod.rs)
+- UI标记语言模块入口，导出parser/builder/gdui_builder子模块
+
+### [rust/src/ui/parser.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/parser.rs)
+- **类HTML标记解析器**
+- 将标记文本解析为AST节点树（UiNode）
+- 支持标签/属性/样式块/自闭合标签/注释
+- StyleRule：CSS类样式定义
+- ParseResult：包含根节点和样式规则
+
+### [rust/src/ui/builder.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/builder.rs)
+- **UI构建器**
+- 将AST转换为Godot Control节点树
+- 支持容器/控件实例化（VBox/HBox/Grid/Margin/Scroll/Tab/Center/PanelContainer + Label/Button/Panel/TextureRect/RichTextLabel/LineEdit/ProgressBar/SpinBox/HSeparator/VSeparator/NinePatchRect）
+- 属性设置：text/font_size/align/anchor/margin/size/bbcode/texture/stretch_mode/columns/visible/disabled等
+- StyleBoxFlat样式应用：background/border_radius/border_color/border_width/padding/color
+- 信号绑定元数据：on_xxx属性存储为__signal_xxx元数据
+
+### [rust/src/ui/gdui_builder.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/gdui_builder.rs)
+- **GdUiBuilder** 类（继承 RefCounted）
+- UI标记语言GDScript API
+- 方法：parse_string, parse_file, connect_signals, validate
+- connect_signals：递归遍历节点树，将__signal_xxx元数据连接为信号
+
+### [rust/src/ui/ui_list_helper.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/ui_list_helper.rs)
+- 列表辅助工具，翻译自C++ gmlc/ui_list_helper
+- GdListHelper：list_initial/update_container/update_data_alias/update_node_value/allbind_signal/update_slot_fill
+- GdSlotHighlight：create_square_highlight_node/create_circle_highlight_node（Shader高亮效果）
+- GdSlotFill：create_square_fill_node/create_circle_fill_node（Shader填充效果）
+
+### [rust/src/ui/ui_hlist.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/ui_hlist.rs)
+- **GdUIHList** 水平列表节点（继承 HBoxContainer），翻译自C++ gmlc/ui_list
+- 支持slot模板复制、点击高亮、填充效果
+- 属性：count, highlight_mode, highlight_color, fill_mode, fill_color, space_left, space_right
+- 信号：s_click_item
+- 方法：initial, update, update_all, get_at, get_meta_value, set_width_times, allbind_signal
+
+### [rust/src/ui/ui_vlist.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/ui_vlist.rs)
+- **GdUIVList** 垂直列表节点（继承 VBoxContainer），翻译自C++ gmlc/ui_list_v
+- 支持slot模板复制、点击高亮、填充效果、鼠标进入/离开事件、随机高度
+- 属性：count, highlight_mode, highlight_color, fill_mode, fill_color, enable_random_pos, random_rotate
+- 信号：s_click_item, s_mouse_enter_item, s_mouse_exit_item
+- 方法：initial, update, update_all, get_at, get_meta_value, set_height_times, allbind_signal
+
+### [rust/src/ui/ui_grid.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/ui_grid.rs)
+- **GdUIGrid** 网格列表节点（继承 GridContainer），翻译自C++ gmlc/ui_list_grid
+- 支持slot模板复制、点击高亮、填充效果、鼠标进入/离开事件、移动端触摸长按
+- 属性：count, highlight_mode, highlight_color, fill_mode, fill_color
+- 信号：s_click_item, s_mouse_enter_item, s_mouse_exit_item
+- 方法：initial, update, update_all, patch_item, get_at, get_meta_value, allbind_signal
+
 ### [vendor/gamedialog/Cargo.toml](file:///Users/dengronghui/project/gamekit/core/vendor/gamedialog/Cargo.toml)
 - gamedialog crate 配置，纯 Rust 对话脚本引擎库
 
@@ -306,6 +357,19 @@
 ### [example/dialogue/dialogue_example.tscn](file:///Users/dengronghui/project/gamekit/core/example/dialogue/dialogue_example.tscn)
 - 对话系统示例场景，根节点为 Control，挂载 dialogue_example.gd 脚本
 
+### [example/ui/ui_example.gd](file:///Users/dengronghui/project/gamekit/core/example/ui/ui_example.gd)
+- UI标记语言示例脚本，继承 Control
+- 演示4个示例：基础布局/带样式UI/信号绑定/复杂布局
+- 使用 GdUiBuilder.parse_string() 解析标记字符串
+- 使用 GdUiBuilder.connect_signals() 连接信号
+
+### [example/ui/ui_example.tscn](file:///Users/dengronghui/project/gamekit/core/example/ui/ui_example.tscn)
+- UI标记语言示例场景，根节点为 Control，挂载 ui_example.gd 脚本
+
+### [example/ui/sample_ui.gml](file:///Users/dengronghui/project/gamekit/core/example/ui/sample_ui.gml)
+- 示例 .gml 文件，演示从外部文件加载 UI
+- 包含样式定义、面板布局、按钮信号绑定
+
 ## 构建脚本
 
 ### [build.sh](file:///Users/dengronghui/project/gamekit/core/build.sh)
@@ -381,3 +445,17 @@
 | 2026-06-09 | addons/gamecore/ui/dialogue_panel.gd | 新建对话框UI面板，说话人+文本+选项按钮，点击推进/选项选择 |
 | 2026-06-09 | example/dialogue/dialogue_example.gd | 新建对话系统示例脚本，加载chat1.txt并启动对话 |
 | 2026-06-09 | example/dialogue/dialogue_example.tscn | 新建对话系统示例场景 |
+| 2026-06-09 | rust/src/ui/mod.rs | 新建UI标记语言模块入口 |
+| 2026-06-09 | rust/src/ui/parser.rs | 新建类HTML标记解析器 |
+| 2026-06-09 | rust/src/ui/builder.rs | 新建UI构建器，AST→Control节点树 |
+| 2026-06-09 | rust/src/ui/gdui_builder.rs | 新建GdUiBuilder GDScript API类 |
+| 2026-06-09 | example/ui/ui_example.gd | 新建UI标记语言示例脚本 |
+| 2026-06-09 | example/ui/ui_example.tscn | 新建UI标记语言示例场景 |
+| 2026-06-09 | example/ui/sample_ui.gml | 新建示例.gml文件 |
+| 2026-06-09 | rust/src/ui/ui_list_helper.rs | 新建列表辅助工具，翻译自C++ gmlc/ui_list_helper |
+| 2026-06-09 | rust/src/ui/ui_hlist.rs | 新建GdUIHList水平列表节点，翻译自C++ gmlc/ui_list |
+| 2026-06-09 | rust/src/ui/ui_vlist.rs | 新建GdUIVList垂直列表节点，翻译自C++ gmlc/ui_list_v |
+| 2026-06-09 | rust/src/ui/ui_grid.rs | 新建GdUIGrid网格列表节点，翻译自C++ gmlc/ui_list_grid |
+| 2026-06-09 | rust/src/ui/builder.rs | 更新：添加UIHList/UIVList/UIGrid标签支持 |
+| 2026-06-09 | rust/src/ui/parser.rs | 更新：添加列表标签解析测试用例（共12个测试） |
+| 2026-06-09 | example/ui/ui_example.gd | 更新：添加列表扩展节点示例 |
