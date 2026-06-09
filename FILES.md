@@ -29,6 +29,13 @@
 - 命令历史导航（上下键），监听 GdConsole 的 console_output 信号
 - 可配置：toggle_key、console_height_ratio、max_log_lines、font_size
 
+### [addons/gamecore/ui/dialogue_panel.gd](file:///Users/dengronghui/project/gamekit/core/addons/gamecore/ui/dialogue_panel.gd)
+- 对话框 UI 面板（继承 CanvasLayer）
+- 底部显示说话人名称+对话文本+选项按钮
+- 作为 GdDialogue 的 dialogue_control 节点，接收 handle_line 回调
+- 点击对话区域推进下一条，选项按钮触发 exec_response
+- 可配置：panel_height_ratio、font_size、name_font_size、option_font_size、面板/文字颜色
+
 ### [addons/gamecore/plugin.cfg](file:///Users/dengronghui/project/gamekit/core/addons/gamecore/plugin.cfg)
 - 插件元信息
 
@@ -204,6 +211,47 @@
 - 信号：console_output(text: String)
 - 方法：execute, eval, register_command, unregister_command, list_commands
 
+### [rust/src/dialog/mod.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/dialog/mod.rs)
+- 对话系统模块入口，导出 gddialogue 子模块
+
+### [rust/src/dialog/gddialogue.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/dialog/gddialogue.rs)
+- **GdDialogue** 类（继承 Node）
+- 对话控制节点，管理 Timeline 和对话推进
+- 基于 gamedialog 库，支持多角色对话、分支控制流、场景变量、条件入口
+- 属性：dialogue_control_path, timeline_path, click_next, skip, skip_can_next, skip_time, handle_fn
+- 信号：s_finished()
+- 方法：next, exec_response, is_registered_role, register_role_node, get_role_pos, initial, goto_stage, all_stages, has_next, stage_index
+
+### [vendor/gamedialog/Cargo.toml](file:///Users/dengronghui/project/gamekit/core/vendor/gamedialog/Cargo.toml)
+- gamedialog crate 配置，纯 Rust 对话脚本引擎库
+
+### [vendor/gamedialog/src/lib.rs](file:///Users/dengronghui/project/gamekit/core/vendor/gamedialog/src/lib.rs)
+- gamedialog 库入口，导出 word/flow/stage/timeline/scene_manager 子模块
+
+### [vendor/gamedialog/src/word.rs](file:///Users/dengronghui/project/gamekit/core/vendor/gamedialog/src/word.rs)
+- **DialogueWord** 对话词条结构体
+- 包含说话人(name)、文本(text)、所属stage、选项列表(responses)、触发函数列表(functions)
+
+### [vendor/gamedialog/src/flow.rs](file:///Users/dengronghui/project/gamekit/core/vendor/gamedialog/src/flow.rs)
+- **ControlFlow** 控制流枚举
+- 4种变体：Start(回到开头)、End(终止)、Skip(跳过N个stage)、Goto(跳转到指定stage)
+- create_from_string 工厂方法：解析 ":start"/":end"/":skip:N"/":goto:name"
+
+### [vendor/gamedialog/src/stage.rs](file:///Users/dengronghui/project/gamekit/core/vendor/gamedialog/src/stage.rs)
+- **DiaStage** 场景阶段结构体
+- 核心解析和执行单元，支持脚本语法解析、变量块、条件入口、标签跳转
+- **LineVariant** 枚举：Word(DialogueWord) / Flow(ControlFlow)
+- **Condition** 条件表达式结构体：variable/op/value/is_global
+
+### [vendor/gamedialog/src/timeline.rs](file:///Users/dengronghui/project/gamekit/core/vendor/gamedialog/src/timeline.rs)
+- **Timeline** 时间线结构体
+- 管理 DiaStage 序列，提供全局导航（next/has_next/goto_stage/goto_begin/goto_end）
+- 支持 precheck 回调（flag 过滤）、控制流执行
+
+### [vendor/gamedialog/src/scene_manager.rs](file:///Users/dengronghui/project/gamekit/core/vendor/gamedialog/src/scene_manager.rs)
+- **SceneManager** 场景管理器结构体
+- 管理多个 Timeline 和全局变量（非单例设计）
+
 ## GDScript 示例
 
 ### [example/test_from_gd_script.gd](file:///Users/dengronghui/project/gamekit/core/example/test_from_gd_script.gd)
@@ -245,6 +293,18 @@
 
 ### [example/console/console_example.tscn](file:///Users/dengronghui/project/gamekit/core/example/console/console_example.tscn)
 - 控制台示例场景，根节点为 Node2D，挂载 console_example.gd 脚本
+
+### [example/dialogue/chat1.txt](file:///Users/dengronghui/project/gamekit/core/example/dialogue/chat1.txt)
+- 对话脚本文件，包含 stage0/meetinstreet/meetinschool 三个 stage
+- 演示多角色对话、选项分支跳转
+
+### [example/dialogue/dialogue_example.gd](file:///Users/dengronghui/project/gamekit/core/example/dialogue/dialogue_example.gd)
+- 对话系统示例脚本，继承 Control
+- 创建 GdDialogue 节点和 dialogue_panel 面板
+- 加载 chat1.txt 并启动对话，监听 s_finished 信号
+
+### [example/dialogue/dialogue_example.tscn](file:///Users/dengronghui/project/gamekit/core/example/dialogue/dialogue_example.tscn)
+- 对话系统示例场景，根节点为 Control，挂载 dialogue_example.gd 脚本
 
 ## 构建脚本
 
@@ -318,3 +378,6 @@
 | 2026-06-09 | addons/gamecore/core.gd | EditorPlugin自动加载控制台面板 |
 | 2026-06-09 | example/console/console_example.gd | 新建控制台命令注册示例脚本 |
 | 2026-06-09 | example/console/console_example.tscn | 新建控制台示例场景 |
+| 2026-06-09 | addons/gamecore/ui/dialogue_panel.gd | 新建对话框UI面板，说话人+文本+选项按钮，点击推进/选项选择 |
+| 2026-06-09 | example/dialogue/dialogue_example.gd | 新建对话系统示例脚本，加载chat1.txt并启动对话 |
+| 2026-06-09 | example/dialogue/dialogue_example.tscn | 新建对话系统示例场景 |

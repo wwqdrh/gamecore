@@ -60,6 +60,15 @@ core 是一个基于 Rust 的 Godot 4 GDExtension 项目，使用 gdext 库与 G
    - 内置控制台 UI 面板：按 ` 键打开/关闭，输入框+日志输出，命令历史导航（上下键）
    - EditorPlugin 自动加载：插件启用时在编辑器中显示控制台
 
+9. **对话系统**（dialog 模块）
+   - 基于 gamedialog 库的对话脚本引擎，支持结构化对话脚本解析和执行
+   - GdDialogue：对话控制节点（继承 Node），管理 Timeline 和对话推进
+   - 支持多角色对话、分支控制流（跳转/条件/循环）、场景变量、全局变量、条件入口
+   - 属性：dialogue_control_path、timeline_path、click_next、skip、skip_can_next、skip_time、handle_fn
+   - 方法：next、exec_response、is_registered_role、register_role_node、get_role_pos、initial、goto_stage、all_stages、has_next、stage_index
+   - 信号：s_finished（对话结束时触发）
+   - gamedialog 库（vendor/gamedialog/）：纯 Rust 实现，包含 DialogueWord、ControlFlow、DiaStage、Timeline、SceneManager
+
 ## 项目结构
 
 ```
@@ -73,7 +82,8 @@ core/
 │   ├── core.gd             # EditorPlugin 脚本（自动加载控制台面板）
 │   ├── plugin.cfg          # 插件元信息
 │   ├── ui/                 # 内置 UI 组件
-│   │   └── console_panel.gd # 控制台面板（输入框+日志输出）
+│   │   ├── console_panel.gd # 控制台面板（输入框+日志输出）
+│   │   └── dialogue_panel.gd # 对话框面板（说话人+文本+选项）
 │   └── bin/               # 构建产物输出目录
 │       ├── macos/         # macOS framework 产物
 │       ├── linux/         # Linux .so 产物
@@ -113,6 +123,9 @@ core/
 │       └── console/        # 后台控制台模块
 │           ├── mod.rs      # 模块入口
 │           └── gdconsole.rs # GdConsole 全局控制台单例
+│       └── dialog/          # 对话系统模块
+│           ├── mod.rs      # 模块入口
+│           └── gddialogue.rs # GdDialogue 对话控制节点
 ├── example/
 │   ├── test_from_gd_script.gd  # GDScript 测试脚本
 │   ├── fish_procedural_anim.gd # 鱼的程序化动画示例
@@ -125,6 +138,10 @@ core/
 │   └── console/                # 控制台示例
 │       ├── console_example.gd  # 命令注册示例脚本
 │       └── console_example.tscn # 命令注册示例场景
+│   └── dialogue/               # 对话系统示例
+│       ├── chat1.txt           # 对话脚本文件
+│       ├── dialogue_example.gd # 对话示例脚本
+│       └── dialogue_example.tscn # 对话示例场景
 ├── PROJECT.md              # 本文档
 └── FILES.md                # 文件功能索引
 ```
@@ -671,3 +688,6 @@ cargo build -p core --release
 | 2026-06-09 | addons/gamecore/core.gd | EditorPlugin自动加载控制台面板 |
 | 2026-06-09 | example/console/console_example.gd | 新建控制台示例脚本，演示命令注册（heal/damage/status/set_name/add_score/reset） |
 | 2026-06-09 | example/console/console_example.tscn | 新建控制台示例场景 |
+| 2026-06-09 | addons/gamecore/ui/dialogue_panel.gd | 新建对话框UI面板，说话人+文本+选项按钮，点击推进/选项选择 |
+| 2026-06-09 | example/dialogue/dialogue_example.gd | 新建对话系统示例脚本，加载chat1.txt并启动对话 |
+| 2026-06-09 | example/dialogue/dialogue_example.tscn | 新建对话系统示例场景 |
