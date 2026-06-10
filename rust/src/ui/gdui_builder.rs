@@ -92,7 +92,7 @@ impl GdUiBuilder {
 }
 
 /// 递归连接信号
-fn connect_signals_recursive(node: &mut Gd<Control>, target: &Gd<Object>) {
+pub fn connect_signals_recursive(node: &mut Gd<Control>, target: &Gd<Object>) {
     // 检查节点是否有信号元数据
     let meta_list = get_signal_meta_list(node);
     for (signal_name, method_name) in meta_list {

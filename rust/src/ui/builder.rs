@@ -13,6 +13,7 @@ use godot::classes::{
     TextureRect, RichTextLabel, LineEdit, ProgressBar,
     SpinBox, HSeparator, VSeparator, NinePatchRect,
     StyleBoxFlat, ResourceLoader, Range, Texture2D,
+    CheckButton, HSlider, ColorRect, OptionButton,
 };
 use godot::classes::control::LayoutPreset;
 use godot::classes::texture_rect::StretchMode;
@@ -22,6 +23,7 @@ use super::parser::{UiNode, StyleRule, ParseResult};
 use super::ui_hlist::GdUIHList;
 use super::ui_vlist::GdUIVList;
 use super::ui_grid::GdUIGrid;
+use super::ui_popup_panel::GdPopupPanel;
 
 /// UI 构建器：将 AST 转换为 Godot Control 节点树
 pub struct UiBuilder {
@@ -58,6 +60,9 @@ impl UiBuilder {
             root.add_child(&child_control);
             child_control.set_owner(&root);
         }
+
+        // 后处理：解析内部信号绑定（show:/hide:/toggle:NodeName）
+        resolve_internal_signals(&mut root);
 
         Ok(root)
     }
@@ -98,9 +103,23 @@ impl UiBuilder {
             self.apply_class_style(&mut control, &node.tag, cn);
         }
 
+        // PopupPanel：属性设置完成后立即构建内部 UI
+        // 这样 ContentContainer 在添加子节点前就已存在
+        if node.tag == "PopupPanel" {
+            control.call(&StringName::from("ensure_ui_built"), &[]);
+        }
+
         // 递归构建子节点
         for child_node in &node.children {
             let mut child_control = self.build_node(child_node)?;
+            // PopupPanel 的子节点添加到内容区域
+            if node.tag == "PopupPanel" {
+                control.call(
+                    &StringName::from("add_content_child"),
+                    &[child_control.clone().upcast::<godot::classes::Node>().to_variant()],
+                );
+                continue;
+            }
             control.add_child(&child_control);
             child_control.set_owner(&control);
         }
@@ -140,6 +159,13 @@ impl UiBuilder {
             "HSeparator" => HSeparator::new_alloc().upcast(),
             "VSeparator" => VSeparator::new_alloc().upcast(),
             "NinePatchRect" => NinePatchRect::new_alloc().upcast(),
+            // 表单控件
+            "CheckButton" => CheckButton::new_alloc().upcast(),
+            "HSlider" => HSlider::new_alloc().upcast(),
+            "ColorRect" => ColorRect::new_alloc().upcast(),
+            "OptionButton" => OptionButton::new_alloc().upcast(),
+            // 弹窗面板
+            "PopupPanel" => GdPopupPanel::new_alloc().upcast(),
             // 列表扩展节点
             "UIHList" => GdUIHList::new_alloc().upcast(),
             "UIVList" => GdUIVList::new_alloc().upcast(),
@@ -245,7 +271,7 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
                     lbl.set_text(&GString::from(value));
                     return lbl.upcast();
                 }
-                "Button" => {
+                "Button" | "CheckButton" => {
                     let mut btn = control.cast::<Button>();
                     btn.set_text(&GString::from(value));
                     return btn.upcast();
@@ -418,7 +444,7 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
             }
         }
         "value" => {
-            if tag == "ProgressBar" || tag == "SpinBox" {
+            if tag == "ProgressBar" || tag == "SpinBox" || tag == "HSlider" {
                 if let Ok(val) = value.parse::<f64>() {
                     let mut c = control.cast::<Range>();
                     c.set_value(val);
@@ -478,6 +504,89 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
                 control.set(&StringName::from(key), &val.to_variant());
             }
         }
+        "size_flags_horizontal" => {
+            apply_size_flags_horizontal(&mut control, value);
+        }
+        "size_flags_vertical" => {
+            apply_size_flags_vertical(&mut control, value);
+        }
+        "color" => {
+            if tag == "ColorRect" {
+                if let Some(c) = parse_color(value) {
+                    let mut cr = control.cast::<ColorRect>();
+                    cr.set_color(c);
+                    return cr.upcast();
+                }
+            }
+        }
+        "toggle_mode" => {
+            if tag == "Button" || tag == "CheckButton" {
+                let result = control.try_cast::<BaseButton>();
+                match result {
+                    Ok(mut base_btn) => {
+                        base_btn.set_toggle_mode(value == "true" || value == "1");
+                        return base_btn.upcast();
+                    }
+                    Err(original) => {
+                        control = original;
+                    }
+                }
+            }
+        }
+        "button_pressed" => {
+            if tag == "CheckButton" || tag == "Button" {
+                let result = control.try_cast::<BaseButton>();
+                match result {
+                    Ok(mut base_btn) => {
+                        base_btn.set_pressed(value == "true" || value == "1");
+                        return base_btn.upcast();
+                    }
+                    Err(original) => {
+                        control = original;
+                    }
+                }
+            }
+        }
+        "items" => {
+            if tag == "OptionButton" {
+                let mut ob = control.cast::<OptionButton>();
+                // items 格式: "item1,item2,item3"
+                for item in value.split(',') {
+                    let item = item.trim();
+                    if !item.is_empty() {
+                        ob.add_item(&GString::from(item));
+                    }
+                }
+                return ob.upcast();
+            }
+        }
+        "selected" => {
+            if tag == "OptionButton" {
+                if let Ok(idx) = value.parse::<i32>() {
+                    let mut ob = control.cast::<OptionButton>();
+                    ob.select(idx);
+                    return ob.upcast();
+                }
+            }
+        }
+        // PopupPanel 特有属性
+        "popup_title" => {
+            if tag == "PopupPanel" {
+                control.set(&StringName::from("popup_title"), &value.to_variant());
+            }
+        }
+        "popup_width" => {
+            if tag == "PopupPanel" {
+                if let Ok(w) = value.parse::<i32>() {
+                    control.set(&StringName::from("popup_width"), &w.to_variant());
+                }
+            }
+        }
+        "close_on_overlay" => {
+            if tag == "PopupPanel" {
+                control.set(&StringName::from("close_on_overlay"), &(value == "true" || value == "1").to_variant());
+            }
+        }
         _ => {
             godot_print!("[UiBuilder] Unhandled attribute: {}='{}' on <{}>", key, value, tag);
         }
@@ -488,13 +597,19 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
 /// 设置文字颜色
 fn apply_text_color(control: &mut Gd<Control>, tag: &str, color: Color) {
     match tag {
-        "Label" | "Button" => {
+        "Label" | "Button" | "CheckButton" => {
             control.add_theme_color_override(
                 &StringName::from("font_color"),
                 color,
             );
         }
         "LineEdit" => {
+            control.add_theme_color_override(
+                &StringName::from("font_color"),
+                color,
+            );
+        }
+        "OptionButton" => {
             control.add_theme_color_override(
                 &StringName::from("font_color"),
                 color,
@@ -622,11 +737,130 @@ fn parse_color(value: &str) -> Option<Color> {
 /// 获取标签对应的 StyleBox 名称
 fn get_stylebox_name_for_tag(tag: &str) -> &'static str {
     match tag {
-        "Button" => "normal",
+        "Button" | "CheckButton" => "normal",
         "Panel" => "panel",
         "LineEdit" => "normal",
+        "OptionButton" => "normal",
         "RichTextLabel" => "normal",
         "ProgressBar" => "background",
+        "HSlider" => "slider",
         _ => "panel",
     }
+}
+
+/// 应用 size_flags_horizontal
+/// 支持格式: "fill" (SIZE_FILL), "expand" (SIZE_EXPAND), "expand_fill" (SIZE_EXPAND_FILL)
+/// 或 Godot 原始整数值
+fn apply_size_flags_horizontal(control: &mut Gd<Control>, value: &str) {
+    use godot::classes::control::SizeFlags;
+    let flag = match value {
+        "fill" => SizeFlags::FILL,
+        "expand" => SizeFlags::EXPAND,
+        "expand_fill" => SizeFlags::EXPAND_FILL,
+        "shrink_center" => SizeFlags::SHRINK_CENTER,
+        "shrink_end" => SizeFlags::SHRINK_END,
+        _ => SizeFlags::FILL,
+    };
+    control.set_h_size_flags(flag);
+}
+
+/// 应用 size_flags_vertical
+/// 支持格式同 apply_size_flags_horizontal
+fn apply_size_flags_vertical(control: &mut Gd<Control>, value: &str) {
+    use godot::classes::control::SizeFlags;
+    let flag = match value {
+        "fill" => SizeFlags::FILL,
+        "expand" => SizeFlags::EXPAND,
+        "expand_fill" => SizeFlags::EXPAND_FILL,
+        "shrink_center" => SizeFlags::SHRINK_CENTER,
+        "shrink_end" => SizeFlags::SHRINK_END,
+        _ => SizeFlags::FILL,
+    };
+    control.set_v_size_flags(flag);
+}
+
+/// 内部信号动作类型
+enum InternalAction {
+    Show,
+    Hide,
+    Toggle,
+}
+
+/// 后处理：解析内部信号绑定
+/// 遍历节点树中所有带 __signal_xxx 元数据的节点，
+/// 如果元数据值匹配 "show:NodeName"、"hide:NodeName"、"toggle:NodeName" 格式，
+/// 则在根节点树中查找目标节点并直接连接信号
+fn resolve_internal_signals(root: &mut Gd<Control>) {
+    // 克隆 root 用于不可变引用查找
+    let root_clone = root.clone();
+    resolve_internal_signals_recursive(root, &root_clone);
+}
+
+fn resolve_internal_signals_recursive(node: &mut Gd<Control>, root: &Gd<Control>) {
+    let meta_list = node.get_meta_list();
+    let mut resolved_keys: Vec<StringName> = Vec::new();
+
+    for i in 0..meta_list.len() {
+        if let Some(key_sn) = meta_list.get(i) {
+            let key = key_sn.to_string();
+            if key.starts_with("__signal_") {
+                let signal_name = key[9..].to_string();
+                let method_value = node.get_meta(&StringName::from(key.as_str())).to_string();
+
+                // 检查是否为内部动作绑定
+                if let Some((action, target_name)) = parse_internal_action(&method_value) {
+                    // 在根节点树中查找目标节点
+                    if let Some(target) = root.find_child(&GString::from(target_name.as_str())) {
+                        let callable = match action {
+                            InternalAction::Show => Callable::from_object_method(&target, &StringName::from("show_popup")),
+                            InternalAction::Hide => Callable::from_object_method(&target, &StringName::from("hide_popup")),
+                            InternalAction::Toggle => Callable::from_object_method(&target, &StringName::from("toggle_popup")),
+                        };
+                        node.connect(&StringName::from(signal_name.as_str()), &callable);
+                        resolved_keys.push(key_sn.clone());
+                    } else {
+                        godot_error!("[UiBuilder] Cannot find target node '{}' for internal signal binding", target_name);
+                    }
+                }
+            }
+        }
+    }
+
+    // 移除已解析的内部绑定元数据（不再传递给外部 connect_signals）
+    for key in resolved_keys {
+        node.remove_meta(&key);
+    }
+
+    // 递归处理子节点
+    let children = node.get_children();
+    for i in 0..children.len() {
+        if let Some(child) = children.get(i) {
+            if let Ok(mut control) = child.clone().try_cast::<Control>() {
+                resolve_internal_signals_recursive(&mut control, root);
+            }
+        }
+    }
+}
+
+/// 解析内部动作绑定
+/// 格式: "show:NodeName", "hide:NodeName", "toggle:NodeName"
+fn parse_internal_action(value: &str) -> Option<(InternalAction, String)> {
+    let value = value.trim();
+    if let Some(rest) = value.strip_prefix("show:") {
+        let name = rest.trim().to_string();
+        if !name.is_empty() {
+            return Some((InternalAction::Show, name));
+        }
+    } else if let Some(rest) = value.strip_prefix("hide:") {
+        let name = rest.trim().to_string();
+        if !name.is_empty() {
+            return Some((InternalAction::Hide, name));
+        }
+    } else if let Some(rest) = value.strip_prefix("toggle:") {
+        let name = rest.trim().to_string();
+        if !name.is_empty() {
+            return Some((InternalAction::Toggle, name));
+        }
+    }
+    None
 }

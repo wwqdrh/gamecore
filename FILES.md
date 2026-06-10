@@ -235,8 +235,8 @@
 ### [rust/src/ui/builder.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/builder.rs)
 - **UI构建器**
 - 将AST转换为Godot Control节点树
-- 支持容器/控件实例化（VBox/HBox/Grid/Margin/Scroll/Tab/Center/PanelContainer + Label/Button/Panel/TextureRect/RichTextLabel/LineEdit/ProgressBar/SpinBox/HSeparator/VSeparator/NinePatchRect）
-- 属性设置：text/font_size/align/anchor/margin/size/bbcode/texture/stretch_mode/columns/visible/disabled等
+- 支持容器/控件实例化（VBox/HBox/Grid/Margin/Scroll/Tab/Center/PanelContainer + Label/Button/CheckButton/HSlider/ColorRect/OptionButton/Panel/TextureRect/RichTextLabel/LineEdit/ProgressBar/SpinBox/HSeparator/VSeparator/NinePatchRect/PopupPanel）
+- 属性设置：text/font_size/align/anchor/margin/size/bbcode/texture/stretch_mode/columns/visible/disabled/size_flags_horizontal/size_flags_vertical/color/toggle_mode/button_pressed/items/selected/popup_title/popup_width/close_on_overlay等
 - StyleBoxFlat样式应用：background/border_radius/border_color/border_width/padding/color
 - 信号绑定元数据：on_xxx属性存储为__signal_xxx元数据
 
@@ -245,6 +245,22 @@
 - UI标记语言GDScript API
 - 方法：parse_string, parse_file, connect_signals, validate
 - connect_signals：递归遍历节点树，将__signal_xxx元数据连接为信号
+
+### [rust/src/ui/ui_popup_panel.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/ui_popup_panel.rs)
+- **GdPopupPanel** 类（继承 Control）
+- 弹窗面板节点，替代旧版GDScript popup_panel.gd
+- 模态遮罩（点击外部关闭）+ 标题栏 + 关闭按钮 + 内容区域
+- GML标签：`<PopupPanel>`
+- 属性：popup_width, popup_title, close_on_overlay, popup_bg_color, popup_border_color, overlay_color, title_font_size, title_color, corner_radius
+- 方法：show_popup, hide_popup, is_popup_visible, toggle_popup, update_popup_title, get_content_path
+- 信号：s_popup_shown, s_popup_hidden
+
+### [rust/src/ui/ui_gml_scene.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/ui_gml_scene.rs)
+- **GdGmlScene** 类（继承 Control）
+- GML 文件加载节点，设置 gml_file 属性即可加载 .gml 文件并显示为 Control 节点树
+- 属性：gml_file（GML文件路径）, auto_connect（自动连接信号）
+- 方法：load_gml, load_from_string, reload, connect_signals, get_content, find_node, clear_content, is_loaded
+- 信号：s_gml_loaded, s_gml_load_failed
 
 ### [rust/src/ui/ui_list_helper.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/ui_list_helper.rs)
 - 列表辅助工具，翻译自C++ gmlc/ui_list_helper
@@ -370,6 +386,18 @@
 - 示例 .gml 文件，演示从外部文件加载 UI
 - 包含样式定义、面板布局、按钮信号绑定
 
+### [example/ui/scene_title.gml](file:///Users/dengronghui/project/gamekit/core/example/ui/scene_title.gml)
+- 游戏标题界面 GML 布局
+- 居中按钮组（Start Game/Continue/Quit）+ 右上角设置按钮
+- 使用 PopupPanel 标签构建设置弹窗（HSlider/CheckButton/OptionButton）
+- 使用 CSS 类样式定义按钮外观
+
+### [example/ui/scene_title.gd](file:///Users/dengronghui/project/gamekit/core/example/ui/scene_title.gd)
+- 游戏标题界面控制器（继承 Control）
+- 使用 GdUiBuilder 解析 scene_title.gml 构建标题界面
+- 直接使用 GML 中的 PopupPanel 节点，无需单独创建 popup_panel.gd
+- 演示 GML 信号绑定 + PopupPanel 节点操作 + 表单交互
+
 ## 构建脚本
 
 ### [build.sh](file:///Users/dengronghui/project/gamekit/core/build.sh)
@@ -459,3 +487,12 @@
 | 2026-06-09 | rust/src/ui/builder.rs | 更新：添加UIHList/UIVList/UIGrid标签支持 |
 | 2026-06-09 | rust/src/ui/parser.rs | 更新：添加列表标签解析测试用例（共12个测试） |
 | 2026-06-09 | example/ui/ui_example.gd | 更新：添加列表扩展节点示例 |
+| 2026-06-10 | addons/gamecore/ui/popup_panel.gd | 新建通用弹窗面板组件（继承CanvasLayer），模态遮罩+标题栏+GML内容构建+显示/隐藏 |
+| 2026-06-10 | example/ui/scene_title.gml | 新建游戏标题界面GML布局，居中按钮组+右上角设置按钮 |
+| 2026-06-10 | example/ui/scene_title.gd | 新建游戏标题界面控制器，GdUiBuilder+PopupPanel组合，设置弹窗（音量/全屏/语言） |
+| 2026-06-10 | rust/src/ui/builder.rs | 新增GML标签：CheckButton/HSlider/ColorRect/OptionButton/PopupPanel；新增属性：size_flags_horizontal/vertical/color/toggle_mode/button_pressed/items/selected/popup_title/popup_width/close_on_overlay |
+| 2026-06-10 | rust/src/ui/ui_popup_panel.rs | 新建GdPopupPanel弹窗面板节点（继承Control），模态遮罩+标题栏+关闭按钮+内容区域，GML标签<PopupPanel>，替代旧版GDScript popup_panel.gd |
+| 2026-06-10 | example/ui/scene_title.gml | 更新：使用PopupPanel标签替代旧版GDScript弹窗，使用HSlider/CheckButton/OptionButton替代SpinBox |
+| 2026-06-10 | example/ui/scene_title.gd | 简化：不再依赖popup_panel.gd，直接使用GML中的PopupPanel节点 |
+| 2026-06-10 | addons/gamecore/ui/popup_panel.gd | 删除：已被Rust实现的GdPopupPanel替代 |
+| 2026-06-10 | rust/src/ui/ui_gml_scene.rs | 新建GdGmlScene节点（继承Control），设置gml_file属性即可加载.gml文件并显示为Control节点树，支持自动信号连接 |

@@ -75,7 +75,7 @@ core 是一个基于 Rust 的 Godot 4 GDExtension 项目，使用 gdext 库与 G
     - 解析器：自写 HTML 子集解析器，支持标签/属性/样式块/自闭合标签/注释
     - 构建器：AST → Godot Control 节点树，支持容器/控件实例化、属性设置、StyleBoxFlat 样式、信号绑定
     - 支持的容器：VBoxContainer、HBoxContainer、GridContainer、MarginContainer、ScrollContainer、TabContainer、CenterContainer、PanelContainer
-    - 支持的控件：Label、Button、Panel、TextureRect、RichTextLabel、LineEdit、ProgressBar、SpinBox、HSeparator、VSeparator、NinePatchRect
+    - 支持的控件：Label、Button、CheckButton、HSlider、ColorRect、OptionButton、Panel、TextureRect、RichTextLabel、LineEdit、ProgressBar、SpinBox、HSeparator、VSeparator、NinePatchRect、PopupPanel
     - 样式系统：通过 `<style>` 块定义 CSS 类样式，映射到 Godot StyleBoxFlat
     - 信号绑定：通过 `on_xxx` 属性声明，`connect_signals()` 方法批量连接
     - 方法：parse_string、parse_file、connect_signals、validate
@@ -85,7 +85,8 @@ core 是一个基于 Rust 的 Godot 4 GDExtension 项目，使用 gdext 库与 G
       - GdUIGrid：网格列表（继承 GridContainer），同上 + 移动端触摸长按 + patch_item
       - GdListHelper：列表辅助工具（初始化/更新容器/节点值设置/信号批量绑定）
       - GdSlotHighlight/GdSlotFill：方形/圆形高亮和填充效果（Shader）
-    - GML 标签：`<UIHList>`、`<UIVList>`、`<UIGrid>`
+    - GML 标签：`<UIHList>`、`<UIVList>`、`<UIGrid>`、`<PopupPanel>`
+    - 新增属性：size_flags_horizontal、size_flags_vertical、color（ColorRect）、toggle_mode、button_pressed、items（OptionButton）、selected、popup_title、popup_width、close_on_overlay
     - 测试用例：12 个解析器测试（含列表标签、错误处理、深度嵌套等）
 
 ## 项目结构
@@ -150,6 +151,8 @@ core/
 │           ├── parser.rs   # 类HTML标记解析器（含12个测试用例）
 │           ├── builder.rs  # AST→Control节点树构建器
 │           ├── gdui_builder.rs # GdUiBuilder GDScript API类
+│           ├── ui_popup_panel.rs # GdPopupPanel 弹窗面板节点
+│           ├── ui_gml_scene.rs   # GdGmlScene GML文件加载节点
 │           ├── ui_list_helper.rs # 列表辅助工具（GdListHelper/GdSlotHighlight/GdSlotFill）
 │           ├── ui_hlist.rs # GdUIHList水平列表节点
 │           ├── ui_vlist.rs # GdUIVList垂直列表节点
@@ -173,7 +176,9 @@ core/
 │   └── ui/                     # UI标记语言示例
 │       ├── ui_example.gd       # UI标记语言示例脚本
 │       ├── ui_example.tscn     # UI标记语言示例场景
-│       └── sample_ui.gml       # 示例.gml文件
+│       ├── sample_ui.gml       # 示例.gml文件
+│       ├── scene_title.gd      # 游戏标题界面控制器
+│       └── scene_title.gml     # 游戏标题界面GML布局
 ├── PROJECT.md              # 本文档
 └── FILES.md                # 文件功能索引
 ```
@@ -695,6 +700,16 @@ GdUiBuilder 是一个继承 RefCounted 的 Godot 类，在 GDScript 中通过 `G
 | `columns` | GridContainer 列数 |
 | `visible` | 是否可见 |
 | `disabled` | 是否禁用（Button 等） |
+| `size_flags_horizontal` | 水平尺寸标志（fill=1, expand=2, expand_fill=3, shrink=4, shrink_center=5, shrink_end=6） |
+| `size_flags_vertical` | 垂直尺寸标志（同上） |
+| `toggle_mode` | 是否切换模式（CheckButton/Button） |
+| `button_pressed` | 按钮是否按下（CheckButton/Button） |
+| `color` | 颜色（ColorRect 的填充颜色） |
+| `items` | 选项列表，逗号分隔（OptionButton） |
+| `selected` | 选中索引（OptionButton） |
+| `popup_title` | 弹窗标题（PopupPanel） |
+| `popup_width` | 弹窗宽度（PopupPanel） |
+| `close_on_overlay` | 点击遮罩关闭弹窗（PopupPanel，true/false） |
 
 ### 样式属性
 
@@ -732,6 +747,125 @@ add_child(file_ui)
 var error = builder.validate("<ui><Label text='test' /></ui>")
 if error != "":
     print("Parse error: ", error)
+```
+
+## GdPopupPanel API
+
+GdPopupPanel 是一个继承 Control 的 Rust 弹窗面板节点，在 GML 中通过 `<PopupPanel>` 标签使用。支持模态遮罩、标题栏+关闭按钮、内容区域。替代了旧版 GDScript 实现的 popup_panel.gd。
+
+### 导出属性
+
+| 属性 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `popup_width` | int | 400 | 弹窗宽度 |
+| `popup_title` | String | "" | 弹窗标题 |
+| `close_on_overlay` | bool | true | 点击遮罩是否关闭弹窗 |
+| `popup_bg_color` | Color | (0.08,0.08,0.14,0.95) | 弹窗背景色 |
+| `popup_border_color` | Color | (0.35,0.4,0.55) | 弹窗边框颜色 |
+| `overlay_color` | Color | (0,0,0,0.5) | 遮罩颜色 |
+| `title_font_size` | int | 20 | 标题字体大小 |
+| `title_color` | Color | (0.4,0.8,1.0) | 标题颜色 |
+| `close_button_text` | String | "X" | 关闭按钮文字 |
+| `corner_radius` | int | 8 | 圆角半径 |
+
+### 方法
+
+| 方法 | 说明 |
+|------|------|
+| `set_title(text: String)` | 设置弹窗标题 |
+| `set_close_on_overlay(enabled: bool)` | 设置点击遮罩是否关闭 |
+| `set_content(node: Control)` | 设置弹窗内容区域节点 |
+| `get_content_node(name: String) -> Node` | 获取内容区域中的节点（按名称查找） |
+| `connect_content_signals(target: Object)` | 连接内容区域中的信号到目标对象 |
+| `show_popup()` | 显示弹窗 |
+| `hide_popup()` | 隐藏弹窗 |
+| `is_popup_visible() -> bool` | 弹窗是否可见 |
+| `toggle_popup()` | 切换弹窗显示/隐藏 |
+
+### GML 使用示例
+
+```html
+<PopupPanel popup_title="Settings" popup_width="500" close_on_overlay="true">
+  <VBoxContainer>
+    <Label text="Volume" />
+    <HSlider min_value="0" max_value="100" value="80" />
+    <CheckButton text="Fullscreen" toggle_mode="true" />
+    <OptionButton items="English,Chinese,Japanese" selected="0" />
+    <Button text="Apply" on_pressed="_on_apply" />
+  </VBoxContainer>
+</PopupPanel>
+```
+
+### GDScript 使用示例
+
+```gdscript
+# 通过 GdUiBuilder 解析含 PopupPanel 的 GML
+var builder = GdUiBuilder.new()
+var ui = builder.parse_file("res://ui/scene_title.gml")
+add_child(ui)
+builder.connect_signals(ui, self)
+
+# 获取 PopupPanel 节点并操作
+var popup = ui.find_child("PopupPanel", true, false)
+popup.show_popup()
+popup.hide_popup()
+popup.toggle_popup()
+
+# 获取内容区域中的节点
+var slider = popup.get_content_node("HSlider")
+```
+
+## GdGmlScene API
+
+GdGmlScene 是一个继承 Control 的 GML 文件加载节点，位于 `rust/src/ui/ui_gml_scene.rs`。设置 `gml_file` 属性即可加载 .gml 文件并显示为 Control 节点树。
+
+### 导出属性
+
+| 属性 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `gml_file` | String | "" | GML 文件路径，设置后在 ready 时自动加载 |
+| `auto_connect` | bool | true | 是否自动连接 GML 中的信号到父节点脚本 |
+
+### 方法
+
+| 方法 | 说明 |
+|------|------|
+| `load_gml()` | 手动加载当前 gml_file 指定的文件 |
+| `load_from_string(gml_content: String)` | 从字符串加载 GML 内容 |
+| `reload()` | 重新加载 GML 文件 |
+| `connect_signals(target: Object)` | 连接 GML 中定义的信号到目标对象 |
+| `get_content() -> Control` | 获取内容根节点 |
+| `find_node(name: String) -> Control` | 按 name 查找内容中的子节点 |
+| `clear_content()` | 清除已加载的内容 |
+| `is_loaded() -> bool` | 是否已加载 |
+
+### 信号
+
+| 信号 | 说明 |
+|------|------|
+| `s_gml_loaded()` | GML 加载完成 |
+| `s_gml_load_failed(error: String)` | GML 加载失败 |
+
+### GDScript 使用示例
+
+```gdscript
+# 方式1：在场景中添加 GmlScene 节点，设置 gml_file 属性
+
+# 方式2：代码创建
+var gml = GmlScene.new()
+gml.gml_file = "res://example/ui/scene_title.gml"
+add_child(gml)
+# 信号自动连接到当前脚本
+
+# 方式3：从字符串加载
+var gml = GmlScene.new()
+gml.auto_connect = false
+add_child(gml)
+gml.load_from_string("<ui><Label text='Hello' /></ui>")
+gml.connect_signals(self)
+
+# 查找子节点
+var btn = gml.find_node("StartBtn")
 ```
 
 ## 开发命令
@@ -826,3 +960,12 @@ cargo build -p core --release
 | 2026-06-09 | rust/src/ui/builder.rs | 更新：添加UIHList/UIVList/UIGrid标签支持和列表属性处理 |
 | 2026-06-09 | rust/src/ui/parser.rs | 更新：添加列表标签解析测试用例（共12个测试） |
 | 2026-06-09 | example/ui/ui_example.gd | 更新：添加列表扩展节点示例（UIHList/UIVList/UIGrid） |
+| 2026-06-10 | addons/gamecore/ui/popup_panel.gd | 新建通用弹窗面板组件（继承CanvasLayer），支持模态遮罩、标题栏+关闭按钮、GML内容构建、显示/隐藏切换 |
+| 2026-06-10 | example/ui/scene_title.gml | 新建游戏标题界面GML布局，包含居中按钮组、右上角设置按钮 |
+| 2026-06-10 | example/ui/scene_title.gd | 新建游戏标题界面控制器，演示GdUiBuilder+PopupPanel组合使用，包含设置弹窗（音量/全屏/语言表单） |
+| 2026-06-10 | rust/src/ui/builder.rs | 新增GML标签支持：CheckButton、HSlider、ColorRect、OptionButton、PopupPanel；新增属性：size_flags_horizontal/vertical、color、toggle_mode、button_pressed、items、selected、popup_title、popup_width、close_on_overlay |
+| 2026-06-10 | rust/src/ui/ui_popup_panel.rs | 新建GdPopupPanel弹窗面板节点（继承Control），模态遮罩+标题栏+关闭按钮+内容区域，GML标签<PopupPanel>，替代旧版GDScript popup_panel.gd |
+| 2026-06-10 | example/ui/scene_title.gml | 更新：使用PopupPanel标签替代旧版GDScript弹窗，使用HSlider/CheckButton/OptionButton替代SpinBox |
+| 2026-06-10 | example/ui/scene_title.gd | 简化：不再依赖popup_panel.gd，直接使用GML中的PopupPanel节点 |
+| 2026-06-10 | addons/gamecore/ui/popup_panel.gd | 删除：已被Rust实现的GdPopupPanel替代 |
+| 2026-06-10 | rust/src/ui/ui_gml_scene.rs | 新建GdGmlScene节点（继承Control），设置gml_file属性即可加载.gml文件并显示为Control节点树，支持自动信号连接 |
