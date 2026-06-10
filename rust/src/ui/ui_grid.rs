@@ -29,6 +29,7 @@ pub struct GdUIGrid {
     is_dragging: bool,
     drag_start_pos: Vector2,
     pressed_item_idx: i32,
+    tooltip_node: Option<Gd<Control>>,
 
     #[export]
     slot_path: GString,
@@ -44,6 +45,8 @@ pub struct GdUIGrid {
     fill_mode: i32,
     #[export]
     fill_color: Color,
+    #[export]
+    tooltip: GString,
 }
 
 #[godot_api]
@@ -60,6 +63,7 @@ impl IGridContainer for GdUIGrid {
             is_dragging: false,
             drag_start_pos: Vector2::ZERO,
             pressed_item_idx: -1,
+            tooltip_node: None,
             slot_path: GString::new(),
             count: -1,
             slots: Array::new(),
@@ -67,6 +71,7 @@ impl IGridContainer for GdUIGrid {
             highlight_color: Color::from_rgba(1.0, 1.0, 1.0, 1.0),
             fill_mode: 0,
             fill_color: Color::from_rgba(1.0, 1.0, 1.0, 1.0),
+            tooltip: GString::new(),
         }
     }
 
@@ -185,10 +190,12 @@ impl GdUIGrid {
     /// 获取指定索引的子节点
     #[func]
     fn get_at(&self, id: i32) -> Option<Gd<Control>> {
-        if id < 0 || id >= self.base().get_child_count() {
+        // +1 跳过 index 0 的 slot 模板
+        let actual_index = id + 1;
+        if actual_index < 1 || actual_index >= self.base().get_child_count() {
             return None;
         }
-        if let Some(child) = self.base().get_child(id) {
+        if let Some(child) = self.base().get_child(actual_index) {
             child.clone().try_cast::<Control>().ok()
         } else {
             None
@@ -331,15 +338,19 @@ impl GdUIGrid {
         let os = Os::singleton();
         let is_pc = os.has_feature(&GString::from("pc"));
 
-        for i in 0..children.len() {
+        // 从 index 1 开始，跳过 slot 模板
+        for i in 1..children.len() {
             if let Some(child_var) = children.get(i) {
                 if let Ok(mut n) = child_var.clone().try_cast::<Control>() {
+                    // item_index 为可见子节点索引（0-based）
+                    let item_index = (i - 1) as i64;
+
                     // 绑定点击事件 - 使用 bind 传入 item_index
                     let gui_signal = StringName::from("gui_input");
                     let callable = Callable::from_object_method(
                         &*self.base_mut(),
                         "_on_item_gui_input_internal",
-                    ).bind(&[Variant::from(i as i64)]);
+                    ).bind(&[Variant::from(item_index)]);
                     if !n.is_connected(&gui_signal, &callable) {
                         n.connect(&gui_signal, &callable);
                     }
@@ -350,7 +361,7 @@ impl GdUIGrid {
                         let enter_cb = Callable::from_object_method(
                             &*self.base_mut(),
                             "_on_item_mouse_enter_internal",
-                        ).bind(&[Variant::from(i as i64)]);
+                        ).bind(&[Variant::from(item_index)]);
                         if !n.is_connected(&enter_signal, &enter_cb) {
                             n.connect(&enter_signal, &enter_cb);
                         }
@@ -359,7 +370,7 @@ impl GdUIGrid {
                         let exit_cb = Callable::from_object_method(
                             &*self.base_mut(),
                             "_on_item_mouse_exit_internal",
-                        ).bind(&[Variant::from(i as i64)]);
+                        ).bind(&[Variant::from(item_index)]);
                         if !n.is_connected(&exit_signal, &exit_cb) {
                             n.connect(&exit_signal, &exit_cb);
                         }
@@ -384,6 +395,10 @@ impl GdUIGrid {
                 self.last_mouse_enter_time = godot::classes::Time::singleton()
                     .get_ticks_msec() as f64
                     / 1000.0;
+
+                // 自动 Tooltip 绑定
+                self.show_tooltip_for_item(click_item);
+
                 self.base_mut().emit_signal(
                     &StringName::from("s_mouse_enter_item"),
                     &[click_item.to_variant()],
@@ -397,10 +412,69 @@ impl GdUIGrid {
         let item_rect = Rect2::new(Vector2::ZERO, click_item.get_size());
         if !item_rect.contains_point(local_mouse_pos) {
             self.prev_mouse_enter_idx = -1;
+
+            // 自动隐藏 Tooltip
+            self.hide_tooltip();
+
             self.base_mut().emit_signal(
                 &StringName::from("s_mouse_exit_item"),
                 &[click_item.to_variant()],
             );
+        }
+    }
+
+    /// 查找 Tooltip 节点（向上遍历节点树搜索）
+    fn find_tooltip_node(&mut self) -> Option<Gd<Control>> {
+        if self.tooltip.is_empty() {
+            return None;
+        }
+        let tooltip_gstr = GString::from(&self.tooltip.to_string());
+        // 从直接父节点开始，逐级向上搜索
+        let mut current = self.base().get_parent();
+        while let Some(parent) = current {
+            if let Some(node) = parent.find_child(&tooltip_gstr) {
+                return node.try_cast::<Control>().ok();
+            }
+            current = parent.get_parent();
+        }
+        None
+    }
+
+    /// 为指定项显示 Tooltip
+    fn show_tooltip_for_item(&mut self, item: &Gd<Control>) {
+        if self.tooltip.is_empty() {
+            return;
+        }
+        if self.tooltip_node.is_none() {
+            self.tooltip_node = self.find_tooltip_node();
+        }
+        if let Some(ref mut tooltip_ctrl) = self.tooltip_node {
+            // 从 item 的 meta 中读取 name 和 desc（安全获取，避免 nil 传入导致 panic）
+            let name_key = StringName::from("name");
+            let desc_key = StringName::from("desc");
+            if !item.has_meta(&name_key) {
+                return;
+            }
+            let name_val = item.get_meta(&name_key);
+            let name_str = name_val.to_string();
+            if name_str.is_empty() {
+                return;
+            }
+            let desc_val = if item.has_meta(&desc_key) {
+                item.get_meta(&desc_key).to_string()
+            } else {
+                String::new()
+            };
+            tooltip_ctrl.call(&StringName::from("set_tooltip_title"), &[GString::from(&name_str).to_variant()]);
+            tooltip_ctrl.call(&StringName::from("set_tooltip_content"), &[GString::from(&desc_val).to_variant()]);
+            tooltip_ctrl.call(&StringName::from("show_tooltip"), &[]);
+        }
+    }
+
+    /// 隐藏 Tooltip
+    fn hide_tooltip(&mut self) {
+        if let Some(ref mut tooltip_ctrl) = self.tooltip_node {
+            tooltip_ctrl.call(&StringName::from("hide_tooltip"), &[]);
         }
     }
 

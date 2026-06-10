@@ -104,17 +104,144 @@ impl GdBean {
             }
         };
 
-        if let Ok(core_gd) = core.try_to::<Gd<GdCoreData>>() {
-            ins.bind_mut().initial(bean_id.clone(), core_gd);
-            ins.call("on_ready", &[]);
+        // 始终注册到 BEAN_INSTANCES，不依赖 GDCORE 是否可用
+        let instance_id = ins.instance_id().to_i64();
+        BEAN_INSTANCES.lock().insert(id.clone(), instance_id);
 
-            let instance_id = ins.instance_id().to_i64();
-            BEAN_INSTANCES.lock().insert(id, instance_id);
+        // 始终填充 propers，使 get_value_by_key / watch 可用
+        ins.bind_mut().populate_propers();
+
+        if let Ok(core_gd) = core.try_to::<Gd<GdCoreData>>() {
+            ins.bind_mut().setup_core_data(bean_id.clone(), core_gd);
+            ins.call("on_ready", &[]);
         } else {
-            godot_error!("the coredata is unrefed");
+            godot_warn!("[GdBean] bean '{}': GDCORE not available, skipping core_data setup", id);
         }
 
         ins
+    }
+
+    /// 填充 propers 列表（不依赖 GdCoreData），使 get_value_by_key / watch 可用
+    fn populate_propers(&mut self) {
+        self.propers.clear();
+
+        let properties: Vec<GString> = {
+            let mut base = self.base_mut();
+            let props = base.call("get_property_list", &[]);
+            let mut result = Vec::new();
+            let len: i64 = props.call("size", &[]).to();
+            for i in 0..len {
+                let pi = props.call("get", &[i.to_variant()]);
+                let usage: i64 = pi.call("get", &["usage".to_variant()]).to();
+                if usage & (PROPERTY_USAGE_SCRIPT_VARIABLE | PROPERTY_USAGE_STORE_IF_NULL) != 0 {
+                    let name: GString = pi.call("get", &["name".to_variant()]).to();
+                    let name_str = name.to_string();
+                    if name_str == "script" {
+                        continue;
+                    }
+                    result.push(name);
+                }
+            }
+            result
+        };
+
+        for key in properties {
+            let key_str = key.to_string();
+            let key_var = key.to_variant();
+            if self.excludes.contains(&key_var)
+                || key_str.starts_with('_')
+                || key_str.ends_with('_')
+            {
+                continue;
+            }
+            self.propers.push(&key);
+        }
+    }
+
+    /// 设置 GdCoreData 持久化（在 populate_propers 之后调用）
+    fn setup_core_data(&mut self, prefix: GString, core: Gd<GdCoreData>) {
+        self.core = Some(core.clone());
+        self.prefix = prefix.clone();
+
+        {
+            let mut core_gd = self.core.as_ref().unwrap().clone();
+            core_gd.call(
+                "change",
+                &[
+                    prefix.to_variant(),
+                    GString::from("").to_variant(),
+                    GString::from("{}").to_variant(),
+                    self.scope.to_variant(),
+                ],
+            );
+        }
+
+        // propers 已在 populate_propers 中填充，这里处理 GdCoreData 持久化
+        for i in 0..self.propers.len() {
+            let key = self.propers.get(i).unwrap();
+
+            let current_val = {
+                let mut base = self.base_mut();
+                base.call("get", &[key.clone().to_variant()])
+            };
+            self.initial_data.set(&key.to_variant(), &current_val);
+
+            let key_prefix = format!("{};{}", prefix, key);
+            let core_has: bool = {
+                let mut core_gd = self.core.as_ref().unwrap().clone();
+                core_gd.call("has", &[key_prefix.to_variant(), self.scope.to_variant()]).to()
+            };
+
+            if core_has && !self.force {
+                let has_from_json: bool = variant_has_method(&current_val, "from_json");
+                if has_from_json {
+                    let json_val = {
+                        let mut core_gd = self.core.as_ref().unwrap().clone();
+                        core_gd.call(
+                            "value",
+                            &[key_prefix.to_variant(), Variant::nil(), self.scope.to_variant()],
+                        )
+                    };
+                    let new_val = current_val.call("from_json", &[json_val]);
+                    self.base_mut().call("set", &[key.to_variant(), new_val]);
+                } else {
+                    let core_val = {
+                        let mut core_gd = self.core.as_ref().unwrap().clone();
+                        core_gd.call(
+                            "value",
+                            &[key_prefix.to_variant(), Variant::nil(), self.scope.to_variant()],
+                        )
+                    };
+                    self.base_mut().call("set", &[key.to_variant(), core_val]);
+                }
+            } else {
+                let has_to_json: bool = variant_has_method(&current_val, "to_json");
+                if has_to_json {
+                    let json_val = current_val.call("to_json", &[]);
+                    let mut core_gd = self.core.as_ref().unwrap().clone();
+                    core_gd.call(
+                        "update",
+                        &[
+                            format!("{};{}", prefix, key).to_variant(),
+                            GString::from("").to_variant(),
+                            json_val,
+                            self.scope.to_variant(),
+                        ],
+                    );
+                } else {
+                    let mut core_gd = self.core.as_ref().unwrap().clone();
+                    core_gd.call(
+                        "update",
+                        &[
+                            format!("{};{}", prefix, key).to_variant(),
+                            GString::from("").to_variant(),
+                            current_val,
+                            self.scope.to_variant(),
+                        ],
+                    );
+                }
+            }
+        }
     }
 
     #[func]
@@ -546,10 +673,6 @@ impl GdBean {
 
     #[func]
     fn update(&mut self, key: GString, value: Variant, metas: VarDictionary, force: bool) {
-        if self.core.is_none() {
-            return;
-        }
-
         let key_str = key.to_string();
         let parts: Vec<&str> = key_str.split(';').collect();
         let label = parts[0];
@@ -608,8 +731,9 @@ impl GdBean {
 
         let key_prefix = format!("{};{}", self.prefix, key);
         let has_to_json: bool = variant_has_method(&value, "to_json");
-        {
-            let mut core_gd = self.core.as_ref().unwrap().clone();
+        // GdCoreData 持久化：core 可用时才执行
+        if let Some(core_ref) = self.core.as_ref() {
+            let mut core_gd = core_ref.clone();
             if has_to_json {
                 let json_val = value.call("to_json", &[]);
                 core_gd.call(
@@ -858,7 +982,7 @@ impl GdBean {
     }
 }
 
-fn get_bean_by_id(bean_id: &str) -> Option<Gd<GdBean>> {
+pub(crate) fn get_bean_by_id(bean_id: &str) -> Option<Gd<GdBean>> {
     let instances = BEAN_INSTANCES.lock();
     if let Some(&instance_id) = instances.get(bean_id) {
         Gd::<GdBean>::try_from_instance_id(InstanceId::from_i64(instance_id)).ok()

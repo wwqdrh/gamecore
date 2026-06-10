@@ -22,6 +22,7 @@
 ### [addons/gamecore/core.gd](file:///Users/dengronghui/project/gamekit/core/addons/gamecore/core.gd)
 - EditorPlugin 脚本
 - 自动加载控制台面板（_enter_tree 时实例化 console_panel.gd）
+- 注册 .gml 扩展名到编辑器文本文件列表（使 .gml 文件在 FileSystem 中可见）
 
 ### [addons/gamecore/ui/console_panel.gd](file:///Users/dengronghui/project/gamekit/core/addons/gamecore/ui/console_panel.gd)
 - 控制台 UI 面板（继承 CanvasLayer）
@@ -223,7 +224,7 @@
 - 方法：next, exec_response, is_registered_role, register_role_node, get_role_pos, initial, goto_stage, all_stages, has_next, stage_index
 
 ### [rust/src/ui/mod.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/mod.rs)
-- UI标记语言模块入口，导出parser/builder/gdui_builder子模块
+- UI标记语言模块入口，导出parser/builder/gdui_builder/ui_popup_panel/ui_tooltip/ui_drawer/ui_gml_scene/ui_list_helper/ui_hlist/ui_vlist/ui_grid子模块
 
 ### [rust/src/ui/parser.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/parser.rs)
 - **类HTML标记解析器**
@@ -235,8 +236,9 @@
 ### [rust/src/ui/builder.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/builder.rs)
 - **UI构建器**
 - 将AST转换为Godot Control节点树
-- 支持容器/控件实例化（VBox/HBox/Grid/Margin/Scroll/Tab/Center/PanelContainer + Label/Button/CheckButton/HSlider/ColorRect/OptionButton/Panel/TextureRect/RichTextLabel/LineEdit/ProgressBar/SpinBox/HSeparator/VSeparator/NinePatchRect/PopupPanel）
-- 属性设置：text/font_size/align/anchor/margin/size/bbcode/texture/stretch_mode/columns/visible/disabled/size_flags_horizontal/size_flags_vertical/color/toggle_mode/button_pressed/items/selected/popup_title/popup_width/close_on_overlay等
+- 支持容器/控件实例化（VBox/HBox/Grid/Margin/Scroll/Tab/Center/PanelContainer + Label/Button/CheckButton/HSlider/ColorRect/OptionButton/Panel/TextureRect/RichTextLabel/LineEdit/ProgressBar/SpinBox/HSeparator/VSeparator/NinePatchRect/PopupPanel/Tooltip/Drawer）
+- 属性设置：text/font_size/align/anchor/margin/size/bbcode/texture/stretch_mode/columns/visible/disabled/size_flags_horizontal/size_flags_vertical/color/toggle_mode/button_pressed/items/selected/popup_title/popup_width/close_on_overlay/tooltip_title/tooltip_content/delay/offset_x/offset_y/max_width/direction/slide_width/animation_duration/drawer_title等
+- 模板绑定：`{{key}}` 语法检测，记录 `__tpl_{key}`/`__tpl_keys`/`__tpl_attr` 元数据
 - StyleBoxFlat样式应用：background/border_radius/border_color/border_width/padding/color
 - 信号绑定元数据：on_xxx属性存储为__signal_xxx元数据
 
@@ -255,25 +257,50 @@
 - 方法：show_popup, hide_popup, is_popup_visible, toggle_popup, update_popup_title, get_content_path
 - 信号：s_popup_shown, s_popup_hidden
 
+### [rust/src/ui/ui_tooltip.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/ui_tooltip.rs)
+- **GdUITooltip** 类（继承 Control）
+- 鼠标跟随提示框节点，浮动面板跟随鼠标位置显示
+- 支持延迟显示、自动位置调整（避免超出屏幕）、标题+内容布局
+- GML标签：`<Tooltip>`
+- 属性：tooltip_title_text, tooltip_content_text, delay, offset_x, offset_y, max_width, bg_color, border_color, title_color, content_color, corner_radius
+- 方法：show_tooltip, hide_tooltip, set_tooltip_title, set_tooltip_content
+- 信号：s_tooltip_shown, s_tooltip_hidden
+
+### [rust/src/ui/ui_drawer.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/ui_drawer.rs)
+- **GdUIDrawer** 类（继承 Control）
+- 抽屉面板节点，从屏幕边缘滑入/滑出
+- 支持动画过渡（ease-out cubic）、模态遮罩、标题栏+关闭按钮、内容区域
+- GML标签：`<Drawer>`
+- 属性：direction, slide_width, overlay_color, drawer_bg_color, drawer_border_color, corner_radius, animation_duration, close_on_overlay, drawer_title_text
+- 方法：open, close, toggle, is_drawer_open, set_drawer_title
+- 信号：s_drawer_opened, s_drawer_closed
+
 ### [rust/src/ui/ui_gml_scene.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/ui_gml_scene.rs)
 - **GdGmlScene** 类（继承 Control）
 - GML 文件加载节点，设置 gml_file 属性即可加载 .gml 文件并显示为 Control 节点树
-- 属性：gml_file（GML文件路径）, auto_connect（自动连接信号）
-- 方法：load_gml, load_from_string, reload, connect_signals, get_content, find_node, clear_content, is_loaded
+- 属性：gml_file（GML文件路径，编辑器中显示 .gml 文件选择器）, auto_connect（自动连接信号到自身脚本）
+- 数据自动绑定：加载后扫描 __data_var 元数据，支持两种格式：
+  - 简单变量名（如 `data="equip_data"`）：从脚本对象读取变量
+  - GdBean 引用（如 `data="bean:scene_main:equip_data"`）：从 GdBean 实例读取属性值，支持响应式更新
+- GdBean 响应式绑定：通过 bean.watch() 注册回调，属性变更时自动调用 on_bean_data_changed() 更新节点
+- 方法：load_gml, load_from_string, reload, connect_signals, get_content, find_node, clear_content, is_loaded, on_bean_data_changed
 - 信号：s_gml_loaded, s_gml_load_failed
 
 ### [rust/src/ui/ui_list_helper.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/ui_list_helper.rs)
 - 列表辅助工具，翻译自C++ gmlc/ui_list_helper
 - GdListHelper：list_initial/update_container/update_data_alias/update_node_value/allbind_signal/update_slot_fill
+- 模板绑定解析：update_container 中分离简单 key 和路径 key（含 `:` 或 `/` 的为路径 key），简单 key 通过 resolve_template_bindings_recursive 递归解析
+- 未被模板绑定使用的简单 key 自动存储为 meta（供 Tooltip 读取 name/desc）
 - GdSlotHighlight：create_square_highlight_node/create_circle_highlight_node（Shader高亮效果）
 - GdSlotFill：create_square_fill_node/create_circle_fill_node（Shader填充效果）
 
 ### [rust/src/ui/ui_hlist.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/ui_hlist.rs)
 - **GdUIHList** 水平列表节点（继承 HBoxContainer），翻译自C++ gmlc/ui_list
-- 支持slot模板复制、点击高亮、填充效果
-- 属性：count, highlight_mode, highlight_color, fill_mode, fill_color, space_left, space_right
-- 信号：s_click_item
+- 支持slot模板复制、点击高亮、填充效果、鼠标进入/离开事件
+- 属性：count, highlight_mode, highlight_color, fill_mode, fill_color, space_left, space_right, tooltip
+- 信号：s_click_item, s_mouse_enter_item, s_mouse_exit_item
 - 方法：initial, update, update_all, get_at, get_meta_value, set_width_times, allbind_signal
+- Tooltip 自动绑定：tooltip 属性指定 Tooltip 节点名，鼠标进入/离开子节点时自动从 meta 读取 name/desc 显示
 
 ### [rust/src/ui/ui_vlist.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/ui_vlist.rs)
 - **GdUIVList** 垂直列表节点（继承 VBoxContainer），翻译自C++ gmlc/ui_list_v
@@ -285,9 +312,10 @@
 ### [rust/src/ui/ui_grid.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/ui_grid.rs)
 - **GdUIGrid** 网格列表节点（继承 GridContainer），翻译自C++ gmlc/ui_list_grid
 - 支持slot模板复制、点击高亮、填充效果、鼠标进入/离开事件、移动端触摸长按
-- 属性：count, highlight_mode, highlight_color, fill_mode, fill_color
+- 属性：count, highlight_mode, highlight_color, fill_mode, fill_color, tooltip
 - 信号：s_click_item, s_mouse_enter_item, s_mouse_exit_item
 - 方法：initial, update, update_all, patch_item, get_at, get_meta_value, allbind_signal
+- Tooltip 自动绑定：tooltip 属性指定 Tooltip 节点名，鼠标进入/离开子节点时自动从 meta 读取 name/desc 显示
 
 ### [vendor/gamedialog/Cargo.toml](file:///Users/dengronghui/project/gamekit/core/vendor/gamedialog/Cargo.toml)
 - gamedialog crate 配置，纯 Rust 对话脚本引擎库
@@ -393,10 +421,31 @@
 - 使用 CSS 类样式定义按钮外观
 
 ### [example/ui/scene_title.gd](file:///Users/dengronghui/project/gamekit/core/example/ui/scene_title.gd)
-- 游戏标题界面控制器（继承 Control）
-- 使用 GdUiBuilder 解析 scene_title.gml 构建标题界面
-- 直接使用 GML 中的 PopupPanel 节点，无需单独创建 popup_panel.gd
-- 演示 GML 信号绑定 + PopupPanel 节点操作 + 表单交互
+- 游戏标题界面根节点脚本（继承 Control）
+- GML 加载和事件回调已移至 GmlScene 节点的脚本（scene_title_gml.gd）
+
+### [example/ui/scene_title_gml.gd](file:///Users/dengronghui/project/gamekit/core/example/ui/scene_title_gml.gd)
+- 游戏标题界面 GML 控制器（继承 GdGmlScene）
+- 处理 GML 中的事件回调：_on_start_game、_on_continue_game、_on_quit_game、_on_fullscreen_toggle
+- PopupPanel 的显示/隐藏由 GML 内部信号绑定自动处理
+
+### [example/ui/scene_main.gml](file:///Users/dengronghui/project/gamekit/core/example/ui/scene_main.gml)
+- 游戏主界面 GML 布局
+- 底部居中装备栏（UIHList，6个槽位）
+- Tooltip 提示框（鼠标跟随显示）
+- 右侧 Drawer 抽屉面板（含 UIGrid 背包网格）
+- 使用 CSS 类样式定义装备槽和网格项外观
+
+### [example/ui/scene_main_gml.gd](file:///Users/dengronghui/project/gamekit/core/example/ui/scene_main_gml.gd)
+- 游戏主界面 GML 控制器（继承 GdGmlScene）
+- 在 _ready() 中初始化 GdBean（SceneMainBean）并调用 load_gml()
+- 数据通过 GdBean 响应式绑定，GML 中 data="bean:scene_main:equip_data" 格式引用
+- Tooltip 显示由 Rust 内置的 tooltip 属性自动处理
+
+### [example/ui/scene_main_bean.gd](file:///Users/dengronghui/project/gamekit/core/example/ui/scene_main_bean.gd)
+- 游戏主界面数据 Bean（继承 GdBean）
+- 管理装备栏数据（equip_data）和背包数据（inventory_data）
+- 属性变更时自动触发 watch 回调，更新绑定的 UI 节点
 
 ## 构建脚本
 
@@ -496,3 +545,32 @@
 | 2026-06-10 | example/ui/scene_title.gd | 简化：不再依赖popup_panel.gd，直接使用GML中的PopupPanel节点 |
 | 2026-06-10 | addons/gamecore/ui/popup_panel.gd | 删除：已被Rust实现的GdPopupPanel替代 |
 | 2026-06-10 | rust/src/ui/ui_gml_scene.rs | 新建GdGmlScene节点（继承Control），设置gml_file属性即可加载.gml文件并显示为Control节点树，支持自动信号连接 |
+| 2026-06-11 | rust/src/ui/ui_gml_scene.rs | 优化：gml_file属性改为文件引用类型；auto_connect改为连接信号到自身脚本 |
+| 2026-06-11 | example/ui/scene_title_gml.gd | 新建继承GdGmlScene的GDScript，事件回调从scene_title.gd移入 |
+| 2026-06-11 | example/ui/scene_title.gd | 简化：移除已迁移到scene_title_gml.gd的回调函数 |
+| 2026-06-11 | example/ui/scene_title.tscn | 更新：GmlScene节点挂载scene_title_gml.gd脚本 |
+| 2026-06-11 | addons/gamecore/gml_import_plugin.gd | 删除：改用 EditorSettings textfile_extensions 方式 |
+| 2026-06-11 | addons/gamecore/core.gd | 更新：改用 _register_gml_extension() 注册 .gml 扩展名 |
+| 2026-06-11 | rust/src/ui/ui_tooltip.rs | 新建GdUITooltip鼠标跟随提示框节点，GML标签<Tooltip> |
+| 2026-06-11 | rust/src/ui/ui_drawer.rs | 新建GdUIDrawer抽屉面板节点，GML标签<Drawer> |
+| 2026-06-11 | rust/src/ui/mod.rs | 添加ui_tooltip和ui_drawer模块 |
+| 2026-06-11 | rust/src/ui/builder.rs | 注册Tooltip/Drawer标签；扩展内部信号绑定支持open:/close:动作；新增Tooltip和Drawer属性处理 |
+| 2026-06-11 | example/ui/scene_main.gml | 新建游戏主界面GML布局（装备栏+Tooltip+Drawer） |
+| 2026-06-11 | rust/src/ui/ui_hlist.rs | 更新：添加 s_mouse_enter_item / s_mouse_exit_item 信号 |
+| 2026-06-11 | example/ui/scene_main_gml.gd | 新建游戏主界面GML控制器脚本 |
+| 2026-06-11 | rust/src/ui/builder.rs | 新增 `{{key}}` 模板语法检测和元数据记录 |
+| 2026-06-11 | rust/src/ui/ui_list_helper.rs | 新增模板绑定解析（resolve_template_bindings_recursive），分离简单 key 和路径 key |
+| 2026-06-11 | rust/src/ui/ui_hlist.rs | 新增 tooltip 属性和自动 Tooltip 绑定 |
+| 2026-06-11 | rust/src/ui/ui_grid.rs | 新增 tooltip 属性和自动 Tooltip 绑定 |
+| 2026-06-11 | rust/src/ui/ui_drawer.rs | 修复初始显示灰色全屏遮挡 |
+| 2026-06-11 | example/ui/scene_main_gml.gd | 简化数据定义，移除手动 Tooltip 信号绑定 |
+| 2026-06-11 | rust/src/ui/ui_list_helper.rs | 修复 get_meta("__tpl_keys") 报错：添加 has_meta() 检查 |
+| 2026-06-11 | rust/src/ui/builder.rs | 新增 tooltip/data 属性处理；列表容器子节点跳过 set_owner |
+| 2026-06-11 | rust/src/ui/ui_gml_scene.rs | 新增数据自动绑定（auto_bind_data） |
+| 2026-06-11 | example/ui/scene_main.gml | UIHList/UIGrid 添加 data 属性 |
+| 2026-06-11 | example/ui/scene_main_gml.gd | 数据内联定义，移除 update 函数 |
+| 2026-06-11 | rust/src/state/bean.rs | get_bean_by_id 改为 pub(crate) fn |
+| 2026-06-11 | rust/src/ui/ui_gml_scene.rs | 新增 GdBean 响应式数据绑定和 on_bean_data_changed 方法 |
+| 2026-06-11 | example/ui/scene_main_bean.gd | 新建游戏主界面数据 Bean |
+| 2026-06-11 | example/ui/scene_main_gml.gd | 重构：移除内联数据，在 _ready() 中初始化 GdBean |
+| 2026-06-11 | example/ui/scene_main.gml | data 属性改为 bean: 前缀格式 |

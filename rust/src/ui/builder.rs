@@ -24,6 +24,8 @@ use super::ui_hlist::GdUIHList;
 use super::ui_vlist::GdUIVList;
 use super::ui_grid::GdUIGrid;
 use super::ui_popup_panel::GdPopupPanel;
+use super::ui_tooltip::GdUITooltip;
+use super::ui_drawer::GdUIDrawer;
 
 /// UI 构建器：将 AST 转换为 Godot Control 节点树
 pub struct UiBuilder {
@@ -103,9 +105,9 @@ impl UiBuilder {
             self.apply_class_style(&mut control, &node.tag, cn);
         }
 
-        // PopupPanel：属性设置完成后立即构建内部 UI
+        // PopupPanel/Drawer/Tooltip：属性设置完成后立即构建内部 UI
         // 这样 ContentContainer 在添加子节点前就已存在
-        if node.tag == "PopupPanel" {
+        if node.tag == "PopupPanel" || node.tag == "Drawer" || node.tag == "Tooltip" {
             control.call(&StringName::from("ensure_ui_built"), &[]);
         }
 
@@ -113,7 +115,7 @@ impl UiBuilder {
         for child_node in &node.children {
             let mut child_control = self.build_node(child_node)?;
             // PopupPanel 的子节点添加到内容区域
-            if node.tag == "PopupPanel" {
+            if node.tag == "PopupPanel" || node.tag == "Drawer" || node.tag == "Tooltip" {
                 control.call(
                     &StringName::from("add_content_child"),
                     &[child_control.clone().upcast::<godot::classes::Node>().to_variant()],
@@ -121,7 +123,10 @@ impl UiBuilder {
                 continue;
             }
             control.add_child(&child_control);
-            child_control.set_owner(&control);
+            // 列表容器的子节点（slot 模板）不设置 owner，避免运行时 duplicate 后的 owner 不一致警告
+            if node.tag != "UIHList" && node.tag != "UIVList" && node.tag != "UIGrid" {
+                child_control.set_owner(&control);
+            }
         }
 
         // 列表扩展节点：子节点构建完成后调用 initial()
@@ -166,6 +171,10 @@ impl UiBuilder {
             "OptionButton" => OptionButton::new_alloc().upcast(),
             // 弹窗面板
             "PopupPanel" => GdPopupPanel::new_alloc().upcast(),
+            // 提示框
+            "Tooltip" => GdUITooltip::new_alloc().upcast(),
+            // 抽屉面板
+            "Drawer" => GdUIDrawer::new_alloc().upcast(),
             // 列表扩展节点
             "UIHList" => GdUIHList::new_alloc().upcast(),
             "UIVList" => GdUIVList::new_alloc().upcast(),
@@ -263,6 +272,30 @@ fn apply_root_attribute(control: &mut Gd<Control>, key: &str, value: &str) {
 
 /// 应用通用属性到控件（消耗并返回 Gd<Control>，因为 cast() 消耗 self）
 fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) -> Gd<Control> {
+    // 模板绑定语法：{{data_key}} — 不设置属性值，而是记录绑定关系
+    // 当 UIHList/UIGrid 的 update() 被调用时，根据绑定关系从数据中取值
+    if value.starts_with("{{") && value.ends_with("}}") && value.len() > 4 {
+        let data_key = &value[2..value.len()-2];
+        let tpl_meta_key = format!("__tpl_{}", key);
+        control.set_meta(&StringName::from(tpl_meta_key.as_str()), &data_key.to_variant());
+        // 记录该节点有哪些模板绑定属性（逗号分隔）
+        let keys_str = if control.has_meta(&StringName::from("__tpl_keys")) {
+            let existing = control.get_meta(&StringName::from("__tpl_keys"));
+            if existing.get_type() == godot::builtin::VariantType::STRING {
+                let mut s = existing.to_string();
+                s.push(',');
+                s.push_str(key);
+                s
+            } else {
+                key.to_string()
+            }
+        } else {
+            key.to_string()
+        };
+        control.set_meta(&StringName::from("__tpl_keys"), &keys_str.to_variant());
+        return control;
+    }
+
     match key {
         "text" => {
             match tag {
@@ -504,6 +537,20 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
                 control.set(&StringName::from(key), &val.to_variant());
             }
         }
+        "tooltip" => {
+            if tag == "UIHList" || tag == "UIVList" || tag == "UIGrid" {
+                control.set(&StringName::from("tooltip"), &value.to_variant());
+            }
+        }
+        "data" => {
+            if tag == "UIHList" || tag == "UIVList" || tag == "UIGrid" {
+                // 存储数据变量名，由 GdGmlScene 在加载后自动绑定
+                godot_print!("[UiBuilder] Setting __data_var='{}' on node '{}' (tag={})", value, control.get_name(), tag);
+                control.set_meta(&StringName::from("__data_var"), &value.to_variant());
+            } else {
+                godot_warn!("[UiBuilder] 'data' attribute ignored on non-list tag '{}' (node='{}')", tag, control.get_name());
+            }
+        }
         "size_flags_horizontal" => {
             apply_size_flags_horizontal(&mut control, value);
         }
@@ -583,8 +630,72 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
             }
         }
         "close_on_overlay" => {
-            if tag == "PopupPanel" {
+            if tag == "PopupPanel" || tag == "Drawer" {
                 control.set(&StringName::from("close_on_overlay"), &(value == "true" || value == "1").to_variant());
+            }
+        }
+        // Tooltip 特有属性
+        "tooltip_title" => {
+            if tag == "Tooltip" {
+                control.set(&StringName::from("tooltip_title_text"), &value.to_variant());
+            }
+        }
+        "tooltip_content" => {
+            if tag == "Tooltip" {
+                control.set(&StringName::from("tooltip_content_text"), &value.to_variant());
+            }
+        }
+        "delay" => {
+            if tag == "Tooltip" {
+                if let Ok(val) = value.parse::<f64>() {
+                    control.set(&StringName::from("delay"), &val.to_variant());
+                }
+            }
+        }
+        "offset_x" | "offset_y" => {
+            if tag == "Tooltip" {
+                if let Ok(val) = value.parse::<f32>() {
+                    control.set(&StringName::from(key), &val.to_variant());
+                }
+            }
+        }
+        "max_width" => {
+            if tag == "Tooltip" {
+                if let Ok(val) = value.parse::<i32>() {
+                    control.set(&StringName::from("max_width"), &val.to_variant());
+                }
+            }
+        }
+        // Drawer 特有属性
+        "direction" => {
+            if tag == "Drawer" {
+                let dir = match value {
+                    "right" => 0,
+                    "left" => 1,
+                    "top" => 2,
+                    "bottom" => 3,
+                    _ => 0,
+                };
+                control.set(&StringName::from("direction"), &dir.to_variant());
+            }
+        }
+        "slide_width" => {
+            if tag == "Drawer" {
+                if let Ok(val) = value.parse::<i32>() {
+                    control.set(&StringName::from("slide_width"), &val.to_variant());
+                }
+            }
+        }
+        "animation_duration" => {
+            if tag == "Drawer" {
+                if let Ok(val) = value.parse::<f64>() {
+                    control.set(&StringName::from("animation_duration"), &val.to_variant());
+                }
+            }
+        }
+        "drawer_title" => {
+            if tag == "Drawer" {
+                control.set(&StringName::from("drawer_title_text"), &value.to_variant());
             }
         }
         _ => {
@@ -641,6 +752,8 @@ fn apply_anchor(control: &mut Gd<Control>, value: &str) {
         _ => return,
     };
     control.set_anchors_and_offsets_preset(preset);
+    // 存储 anchor 值为 meta，以便节点加入场景树后重新应用
+    control.set_meta(&StringName::from("__anchor"), &GString::from(value).to_variant());
 }
 
 /// 应用边距
@@ -784,6 +897,8 @@ enum InternalAction {
     Show,
     Hide,
     Toggle,
+    Open,
+    Close,
 }
 
 /// 后处理：解析内部信号绑定
@@ -811,10 +926,31 @@ fn resolve_internal_signals_recursive(node: &mut Gd<Control>, root: &Gd<Control>
                 if let Some((action, target_name)) = parse_internal_action(&method_value) {
                     // 在根节点树中查找目标节点
                     if let Some(target) = root.find_child(&GString::from(target_name.as_str())) {
+                        let target_obj = target.clone().upcast::<Object>();
                         let callable = match action {
-                            InternalAction::Show => Callable::from_object_method(&target, &StringName::from("show_popup")),
-                            InternalAction::Hide => Callable::from_object_method(&target, &StringName::from("hide_popup")),
-                            InternalAction::Toggle => Callable::from_object_method(&target, &StringName::from("toggle_popup")),
+                            InternalAction::Show => {
+                                if target_obj.has_method(&StringName::from("show_popup")) {
+                                    Callable::from_object_method(&target, &StringName::from("show_popup"))
+                                } else {
+                                    Callable::from_object_method(&target, &StringName::from("open"))
+                                }
+                            }
+                            InternalAction::Hide => {
+                                if target_obj.has_method(&StringName::from("hide_popup")) {
+                                    Callable::from_object_method(&target, &StringName::from("hide_popup"))
+                                } else {
+                                    Callable::from_object_method(&target, &StringName::from("close"))
+                                }
+                            }
+                            InternalAction::Toggle => {
+                                if target_obj.has_method(&StringName::from("toggle_popup")) {
+                                    Callable::from_object_method(&target, &StringName::from("toggle_popup"))
+                                } else {
+                                    Callable::from_object_method(&target, &StringName::from("toggle"))
+                                }
+                            }
+                            InternalAction::Open => Callable::from_object_method(&target, &StringName::from("open")),
+                            InternalAction::Close => Callable::from_object_method(&target, &StringName::from("close")),
                         };
                         node.connect(&StringName::from(signal_name.as_str()), &callable);
                         resolved_keys.push(key_sn.clone());
@@ -843,7 +979,7 @@ fn resolve_internal_signals_recursive(node: &mut Gd<Control>, root: &Gd<Control>
 }
 
 /// 解析内部动作绑定
-/// 格式: "show:NodeName", "hide:NodeName", "toggle:NodeName"
+/// 格式: "show:NodeName", "hide:NodeName", "toggle:NodeName", "open:NodeName", "close:NodeName"
 fn parse_internal_action(value: &str) -> Option<(InternalAction, String)> {
     let value = value.trim();
     if let Some(rest) = value.strip_prefix("show:") {
@@ -860,6 +996,16 @@ fn parse_internal_action(value: &str) -> Option<(InternalAction, String)> {
         let name = rest.trim().to_string();
         if !name.is_empty() {
             return Some((InternalAction::Toggle, name));
+        }
+    } else if let Some(rest) = value.strip_prefix("open:") {
+        let name = rest.trim().to_string();
+        if !name.is_empty() {
+            return Some((InternalAction::Open, name));
+        }
+    } else if let Some(rest) = value.strip_prefix("close:") {
+        let name = rest.trim().to_string();
+        if !name.is_empty() {
+            return Some((InternalAction::Close, name));
         }
     }
     None

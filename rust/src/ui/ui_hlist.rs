@@ -1,10 +1,10 @@
 // GdUIHList - 水平列表节点
 // 翻译自 C++ gmlc/ui_list.h/cpp
-// 继承 HBoxContainer，支持 slot 模板复制、点击高亮、填充效果
+// 继承 HBoxContainer，支持 slot 模板复制、点击高亮、填充效果、鼠标进入/离开事件
 // GML 标签：<UIHList count="5" highlight_mode="1" highlight_color="#ffff00">
 
 use godot::prelude::*;
-use godot::builtin::{GString, StringName, Color, Variant, Array, Dictionary, Vector2, NodePath};
+use godot::builtin::{GString, StringName, Color, Variant, Array, Dictionary, Vector2, Rect2, NodePath};
 use godot::classes::{
     IHBoxContainer, HBoxContainer, Control, InputEvent, InputEventMouseButton,
 };
@@ -20,6 +20,8 @@ pub struct GdUIHList {
 
     inited: bool,
     highlight_node: Option<Gd<Control>>,
+    prev_mouse_enter_idx: i32,
+    tooltip_node: Option<Gd<Control>>,
 
     #[export]
     slot_path: GString,
@@ -41,6 +43,8 @@ pub struct GdUIHList {
     space_left: f32,
     #[export]
     space_right: f32,
+    #[export]
+    tooltip: GString,
 }
 
 #[godot_api]
@@ -50,6 +54,8 @@ impl IHBoxContainer for GdUIHList {
             base,
             inited: false,
             highlight_node: None,
+            prev_mouse_enter_idx: -1,
+            tooltip_node: None,
             slot_path: GString::new(),
             count: -1,
             highlight_mode: 0,
@@ -60,6 +66,7 @@ impl IHBoxContainer for GdUIHList {
             slots: Array::new(),
             space_left: 0.0,
             space_right: 0.0,
+            tooltip: GString::new(),
         }
     }
 
@@ -73,6 +80,10 @@ impl IHBoxContainer for GdUIHList {
 impl GdUIHList {
     #[signal]
     fn s_click_item(node: Gd<Control>);
+    #[signal]
+    fn s_mouse_enter_item(node: Gd<Control>);
+    #[signal]
+    fn s_mouse_exit_item(node: Gd<Control>);
 
     /// 初始化列表
     #[func]
@@ -98,6 +109,9 @@ impl GdUIHList {
 
         let mut target = self.base_mut().clone().upcast::<Control>();
         ui_list_helper::list_initial(&mut target, &slot, self.count);
+
+        // 绑定鼠标事件
+        self.bind_events();
 
         // 设置左右间距
         if self.space_left > 0.0 {
@@ -143,10 +157,12 @@ impl GdUIHList {
     /// 获取指定索引的子节点
     #[func]
     fn get_at(&self, id: i32) -> Option<Gd<Control>> {
-        if id < 0 || id >= self.base().get_child_count() {
+        // +1 跳过 index 0 的 slot 模板
+        let actual_index = id + 1;
+        if actual_index < 1 || actual_index >= self.base().get_child_count() {
             return None;
         }
-        if let Some(child) = self.base().get_child(id) {
+        if let Some(child) = self.base().get_child(actual_index) {
             child.clone().try_cast::<Control>().ok()
         } else {
             None
@@ -198,6 +214,22 @@ impl GdUIHList {
             }
         }
     }
+
+    /// 内部：处理鼠标进入事件
+    #[func]
+    fn _on_item_mouse_enter_internal(&mut self, item_index: i32) {
+        if let Some(click_item) = self.get_at(item_index) {
+            self.on_item_mouse_enter(&click_item);
+        }
+    }
+
+    /// 内部：处理鼠标离开事件
+    #[func]
+    fn _on_item_mouse_exit_internal(&mut self, item_index: i32) {
+        if let Some(click_item) = self.get_at(item_index) {
+            self.on_item_mouse_exit(&click_item);
+        }
+    }
 }
 
 impl GdUIHList {
@@ -217,24 +249,48 @@ impl GdUIHList {
             .and_then(|n| n.try_cast::<Control>().ok())
     }
 
-    /// 为子节点绑定事件
+    /// 为子节点绑定事件（跳过 index 0 的 slot 模板）
     fn bind_events(&mut self) {
         let children = self.base().get_children();
         let fill_mode = self.fill_mode;
         let fill_color = self.fill_color;
 
-        for i in 0..children.len() {
+        // 从 index 1 开始，跳过 slot 模板
+        for i in 1..children.len() {
             if let Some(child_var) = children.get(i) {
                 if let Ok(mut n) = child_var.clone().try_cast::<Control>() {
+                    // item_index 为可见子节点索引（0-based）
+                    let item_index = (i - 1) as i64;
+
                     // 绑定点击事件 - 使用 bind 传入 item_index
                     let signal_name = StringName::from("gui_input");
                     let callable = Callable::from_object_method(
                         &*self.base_mut(),
                         "_on_item_gui_input_internal",
-                    ).bind(&[Variant::from(i as i64)]);
+                    ).bind(&[Variant::from(item_index)]);
 
                     if !n.is_connected(&signal_name, &callable) {
                         n.connect(&signal_name, &callable);
+                    }
+
+                    // 绑定鼠标进入事件
+                    let enter_signal = StringName::from("mouse_entered");
+                    let enter_cb = Callable::from_object_method(
+                        &*self.base_mut(),
+                        "_on_item_mouse_enter_internal",
+                    ).bind(&[Variant::from(item_index)]);
+                    if !n.is_connected(&enter_signal, &enter_cb) {
+                        n.connect(&enter_signal, &enter_cb);
+                    }
+
+                    // 绑定鼠标离开事件
+                    let exit_signal = StringName::from("mouse_exited");
+                    let exit_cb = Callable::from_object_method(
+                        &*self.base_mut(),
+                        "_on_item_mouse_exit_internal",
+                    ).bind(&[Variant::from(item_index)]);
+                    if !n.is_connected(&exit_signal, &exit_cb) {
+                        n.connect(&exit_signal, &exit_cb);
                     }
 
                     // 填充效果
@@ -279,6 +335,99 @@ impl GdUIHList {
                 &StringName::from("s_click_item"),
                 &[click_item.to_variant()],
             );
+        }
+    }
+
+    /// 处理鼠标进入
+    fn on_item_mouse_enter(&mut self, click_item: &Gd<Control>) {
+        let local_mouse_pos = click_item.get_local_mouse_position();
+        let item_rect = Rect2::new(Vector2::ZERO, click_item.get_size());
+        if item_rect.contains_point(local_mouse_pos) {
+            let idx = click_item.get_index() as i32;
+            if self.prev_mouse_enter_idx != idx {
+                self.prev_mouse_enter_idx = idx;
+
+                // 自动 Tooltip 绑定
+                self.show_tooltip_for_item(click_item);
+
+                self.base_mut().emit_signal(
+                    &StringName::from("s_mouse_enter_item"),
+                    &[click_item.to_variant()],
+                );
+            }
+        }
+    }
+
+    /// 处理鼠标离开
+    fn on_item_mouse_exit(&mut self, click_item: &Gd<Control>) {
+        let local_mouse_pos = click_item.get_local_mouse_position();
+        let item_rect = Rect2::new(Vector2::ZERO, click_item.get_size());
+        if !item_rect.contains_point(local_mouse_pos) {
+            self.prev_mouse_enter_idx = -1;
+
+            // 自动隐藏 Tooltip
+            self.hide_tooltip();
+
+            self.base_mut().emit_signal(
+                &StringName::from("s_mouse_exit_item"),
+                &[click_item.to_variant()],
+            );
+        }
+    }
+
+    /// 查找 Tooltip 节点（向上遍历节点树搜索）
+    fn find_tooltip_node(&mut self) -> Option<Gd<Control>> {
+        if self.tooltip.is_empty() {
+            return None;
+        }
+        let tooltip_gstr = GString::from(&self.tooltip.to_string());
+        // 从直接父节点开始，逐级向上搜索
+        let mut current = self.base().get_parent();
+        while let Some(parent) = current {
+            if let Some(node) = parent.find_child(&tooltip_gstr) {
+                return node.try_cast::<Control>().ok();
+            }
+            current = parent.get_parent();
+        }
+        None
+    }
+
+    /// 为指定项显示 Tooltip
+    fn show_tooltip_for_item(&mut self, item: &Gd<Control>) {
+        if self.tooltip.is_empty() {
+            return;
+        }
+        // 延迟查找 Tooltip 节点
+        if self.tooltip_node.is_none() {
+            self.tooltip_node = self.find_tooltip_node();
+        }
+        if let Some(ref mut tooltip_ctrl) = self.tooltip_node {
+            // 从 item 的 meta 中读取 name 和 desc（安全获取，避免 nil 传入导致 panic）
+            let name_key = StringName::from("name");
+            let desc_key = StringName::from("desc");
+            if !item.has_meta(&name_key) {
+                return;
+            }
+            let name_val = item.get_meta(&name_key);
+            let name_str = name_val.to_string();
+            if name_str.is_empty() {
+                return;
+            }
+            let desc_val = if item.has_meta(&desc_key) {
+                item.get_meta(&desc_key).to_string()
+            } else {
+                String::new()
+            };
+            tooltip_ctrl.call(&StringName::from("set_tooltip_title"), &[GString::from(&name_str).to_variant()]);
+            tooltip_ctrl.call(&StringName::from("set_tooltip_content"), &[GString::from(&desc_val).to_variant()]);
+            tooltip_ctrl.call(&StringName::from("show_tooltip"), &[]);
+        }
+    }
+
+    /// 隐藏 Tooltip
+    fn hide_tooltip(&mut self) {
+        if let Some(ref mut tooltip_ctrl) = self.tooltip_node {
+            tooltip_ctrl.call(&StringName::from("hide_tooltip"), &[]);
         }
     }
 }

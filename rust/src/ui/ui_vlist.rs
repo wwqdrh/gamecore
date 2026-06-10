@@ -180,10 +180,12 @@ impl GdUIVList {
     /// 获取指定索引的子节点
     #[func]
     fn get_at(&self, id: i32) -> Option<Gd<Control>> {
-        if id < 0 || id >= self.base().get_child_count() {
+        // +1 跳过 index 0 的 slot 模板
+        let actual_index = id + 1;
+        if actual_index < 1 || actual_index >= self.base().get_child_count() {
             return None;
         }
-        if let Some(child) = self.base().get_child(id) {
+        if let Some(child) = self.base().get_child(actual_index) {
             child.clone().try_cast::<Control>().ok()
         } else {
             None
@@ -334,20 +336,25 @@ impl GdUIVList {
             .and_then(|n| n.try_cast::<Control>().ok())
     }
 
+    /// 为子节点绑定事件（跳过 index 0 的 slot 模板）
     fn bind_events(&mut self) {
         let children = self.base().get_children();
         let fill_mode = self.fill_mode;
         let fill_color = self.fill_color;
 
-        for i in 0..children.len() {
+        // 从 index 1 开始，跳过 slot 模板
+        for i in 1..children.len() {
             if let Some(child_var) = children.get(i) {
                 if let Ok(mut n) = child_var.clone().try_cast::<Control>() {
+                    // item_index 为可见子节点索引（0-based）
+                    let item_index = (i - 1) as i64;
+
                     // 绑定点击事件 - 使用 bind 传入 item_index
                     let gui_signal = StringName::from("gui_input");
                     let callable = Callable::from_object_method(
                         &*self.base_mut(),
                         "_on_item_gui_input_internal",
-                    ).bind(&[Variant::from(i as i64)]);
+                    ).bind(&[Variant::from(item_index)]);
                     if !n.is_connected(&gui_signal, &callable) {
                         n.connect(&gui_signal, &callable);
                     }
@@ -357,7 +364,7 @@ impl GdUIVList {
                     let enter_cb = Callable::from_object_method(
                         &*self.base_mut(),
                         "_on_item_mouse_enter_internal",
-                    ).bind(&[Variant::from(i as i64)]);
+                    ).bind(&[Variant::from(item_index)]);
                     if !n.is_connected(&enter_signal, &enter_cb) {
                         n.connect(&enter_signal, &enter_cb);
                     }
@@ -366,7 +373,7 @@ impl GdUIVList {
                     let exit_cb = Callable::from_object_method(
                         &*self.base_mut(),
                         "_on_item_mouse_exit_internal",
-                    ).bind(&[Variant::from(i as i64)]);
+                    ).bind(&[Variant::from(item_index)]);
                     if !n.is_connected(&exit_signal, &exit_cb) {
                         n.connect(&exit_signal, &exit_cb);
                     }

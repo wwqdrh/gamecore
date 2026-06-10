@@ -276,13 +276,16 @@ pub fn update_data_alias(data: &Array<Variant>, slots: &Array<Variant>) -> Array
 pub fn update_container(target: &mut Gd<Control>, slot: &Gd<Control>, count: i32, data: &Array<Variant>) {
     let slot = slot.clone();
     let data_size = data.len() as i32;
+    let target_name = target.get_name().to_string();
+    // slot 模板始终在 index 0，可见子节点从 index 1 开始
+    let visible_count = target.get_child_count() - 1;
+    godot_print!("[ListHelper] update_container: node='{}', count={}, data_size={}, child_count={}, visible_count={}", target_name, count, data_size, target.get_child_count(), visible_count);
 
-    // 动态调整子节点数量
+    // 动态调整可见子节点数量（不含 slot 模板）
     if count > 0 {
-        let current_count = target.get_child_count();
-        if current_count > data_size && count > data_size {
-            // 清理多余节点
-            for i in (data_size..current_count.min(count)).rev() {
+        if visible_count > data_size && count > data_size {
+            // 清理多余可见节点（从末尾移除，跳过 index 0 的 slot）
+            for i in ((data_size + 1)..=(visible_count.min(count))).rev() {
                 if let Some(child) = target.get_child(i) {
                     let mut c = child;
                     c.set_owner(Gd::null_arg());
@@ -290,9 +293,9 @@ pub fn update_container(target: &mut Gd<Control>, slot: &Gd<Control>, count: i32
                     c.queue_free();
                 }
             }
-        } else if count < data_size && current_count < data_size {
-            // 创建不足的节点
-            for _ in current_count..data_size {
+        } else if count < data_size && visible_count < data_size {
+            // 创建不足的可见节点
+            for _ in visible_count..data_size {
                 let mut cc = slot.duplicate_node();
                 cc.set_owner(Gd::null_arg());
                 cc.set_custom_minimum_size(slot.get_custom_minimum_size());
@@ -302,15 +305,14 @@ pub fn update_container(target: &mut Gd<Control>, slot: &Gd<Control>, count: i32
         }
     } else {
         // count <= 0 时，按 data 大小动态调整
-        let current_count = target.get_child_count();
-        for _ in current_count..data_size {
+        for _ in visible_count..data_size {
             let mut cc = slot.duplicate_node();
             cc.set_owner(Gd::null_arg());
             cc.set_custom_minimum_size(slot.get_custom_minimum_size());
             target.add_child(&cc);
             cc.set_visible(true);
         }
-        for i in (data_size..current_count).rev() {
+        for i in ((data_size + 1)..=(visible_count)).rev() {
             if let Some(child) = target.get_child(i) {
                 let mut c = child;
                 c.set_owner(Gd::null_arg());
@@ -320,20 +322,45 @@ pub fn update_container(target: &mut Gd<Control>, slot: &Gd<Control>, count: i32
         }
     }
 
-    // 更新子节点数据
+    // 更新可见子节点数据（跳过 index 0 的 slot 模板）
     let children = target.get_children();
     for i in 0..data.len() {
         if let Some(data_item) = data.get(i) {
             if data_item.get_type() == godot::builtin::VariantType::DICTIONARY {
-                if let Some(child_var) = children.get(i) {
+                // data[i] 映射到 children[i+1]（跳过 slot 模板）
+                if let Some(child_var) = children.get(i + 1) {
                     if let Ok(mut c) = child_var.clone().try_cast::<Control>() {
                         let spec: Dictionary<Variant, Variant> = data_item.try_to::<Dictionary<Variant, Variant>>().unwrap_or_default();
                         let keys = spec.keys_array();
+
+                        // 分离简单 key 和路径 key
+                        let mut simple_keys: Vec<(String, Variant)> = Vec::new();
+                        let mut path_keys: Vec<(String, Variant)> = Vec::new();
                         for ki in 0..keys.len() {
                             if let Some(key_var) = keys.get(ki) {
                                 let key = key_var.to_string();
                                 let val = spec.get(&key_var).unwrap_or(Variant::nil());
-                                update_node_value(&mut c, &key, &val);
+                                if key.contains(':') || key.contains('/') {
+                                    path_keys.push((key, val));
+                                } else {
+                                    simple_keys.push((key, val));
+                                }
+                            }
+                        }
+
+                        // 先处理路径 key（兼容旧格式）
+                        for (key, val) in &path_keys {
+                            update_node_value(&mut c, key, val);
+                        }
+
+                        // 处理简单 key：通过模板绑定解析
+                        let mut used_keys: Vec<String> = Vec::new();
+                        resolve_template_bindings_recursive(&mut c, &simple_keys, &mut used_keys);
+
+                        // 未被模板绑定使用的简单 key，存储为 meta
+                        for (key, val) in &simple_keys {
+                            if !used_keys.contains(key) {
+                                c.set_meta(&StringName::from(key.as_str()), val);
                             }
                         }
                     }
@@ -342,12 +369,13 @@ pub fn update_container(target: &mut Gd<Control>, slot: &Gd<Control>, count: i32
         }
     }
 
-    // 重置 data.size 到 children.size 之间的数据为默认值
+    // 重置 data.size 到 visible_count 之间的数据为默认值
     let default_value = get_default_exported_variables(&slot);
-    let children_count = children.len() as i32;
-    if children_count > 0 && (children_count as usize) > data.len() {
-        for i in data.len()..(children_count as usize) {
-            if let Some(child_var) = children.get(i) {
+    let new_visible_count = (target.get_child_count() - 1) as usize;
+    if new_visible_count > data.len() {
+        for i in data.len()..new_visible_count {
+            // children[i+1] 跳过 slot 模板
+            if let Some(child_var) = children.get(i + 1) {
                 if let Ok(mut c) = child_var.clone().try_cast::<Control>() {
                     let keys = default_value.keys_array();
                     for ki in 0..keys.len() {
@@ -364,11 +392,14 @@ pub fn update_container(target: &mut Gd<Control>, slot: &Gd<Control>, count: i32
 }
 
 /// 更新单个子节点的字典数据
+/// child_index 是可见子节点的索引（0-based），内部 +1 跳过 slot 模板
 pub fn update_child_dict(target: &mut Gd<Control>, child_index: i32, data: &Dictionary<Variant, Variant>) {
-    if child_index < 0 || child_index >= target.get_child_count() {
+    // +1 跳过 index 0 的 slot 模板
+    let actual_index = child_index + 1;
+    if actual_index < 1 || actual_index >= target.get_child_count() {
         return;
     }
-    if let Some(child) = target.get_child(child_index) {
+    if let Some(child) = target.get_child(actual_index) {
         if let Ok(mut c) = child.try_cast::<Control>() {
             let keys = data.keys_array();
             for ki in 0..keys.len() {
@@ -383,11 +414,14 @@ pub fn update_child_dict(target: &mut Gd<Control>, child_index: i32, data: &Dict
 }
 
 /// 更新单个子节点的单个属性
+/// child_index 是可见子节点的索引（0-based），内部 +1 跳过 slot 模板
 pub fn update_child(target: &mut Gd<Control>, child_index: i32, key: &str, value: &Variant) {
-    if child_index < 0 || child_index >= target.get_child_count() {
+    // +1 跳过 index 0 的 slot 模板
+    let actual_index = child_index + 1;
+    if actual_index < 1 || actual_index >= target.get_child_count() {
         return;
     }
-    if let Some(child) = target.get_child(child_index) {
+    if let Some(child) = target.get_child(actual_index) {
         if let Ok(mut c) = child.try_cast::<Control>() {
             update_node_value(&mut c, key, value);
         }
@@ -555,4 +589,59 @@ pub fn get_default_exported_variables(target_node: &Gd<Control>) -> Dictionary<V
     }
 
     result
+}
+
+/// 递归解析模板绑定
+/// 遍历节点及其子节点，查找 __tpl_keys 和 __tpl_attr 元数据，
+/// 将数据字典中对应的值设置到节点的属性上
+fn resolve_template_bindings_recursive(
+    node: &mut Gd<Control>,
+    simple_keys: &[(String, Variant)],
+    used_keys: &mut Vec<String>,
+) {
+    let node_name = node.get_name().to_string();
+    // 检查当前节点的模板绑定
+    if node.has_meta(&StringName::from("__tpl_keys")) {
+        let tpl_keys_var = node.get_meta(&StringName::from("__tpl_keys"));
+        if tpl_keys_var.get_type() == godot::builtin::VariantType::STRING {
+            let keys_str = tpl_keys_var.to_string();
+            godot_print!("[ListHelper] resolve_template: node='{}' has __tpl_keys='{}', simple_keys={:?}", node_name, keys_str, simple_keys.iter().map(|(k, _)| k.as_str()).collect::<Vec<_>>());
+            for attr_name in keys_str.split(',') {
+                let attr_name = attr_name.trim();
+                if attr_name.is_empty() {
+                    continue;
+                }
+                let tpl_meta_key = format!("__tpl_{}", attr_name);
+                if !node.has_meta(&StringName::from(tpl_meta_key.as_str())) {
+                    godot_warn!("[ListHelper] resolve_template: node='{}' missing meta '{}'", node_name, tpl_meta_key);
+                    continue;
+                }
+                let data_key_var = node.get_meta(&StringName::from(tpl_meta_key.as_str()));
+                if data_key_var.get_type() == godot::builtin::VariantType::STRING {
+                    let data_key = data_key_var.to_string();
+                    // 在 simple_keys 中查找对应的值
+                    for (key, val) in simple_keys {
+                        if key == &data_key {
+                            godot_print!("[ListHelper] resolve_template: node='{}' set {} = {}", node_name, attr_name, val);
+                            node.set(&StringName::from(attr_name), val);
+                            if !used_keys.contains(&data_key) {
+                                used_keys.push(data_key.clone());
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // 递归处理子节点
+    let child_count = node.get_child_count();
+    for i in 0..child_count {
+        if let Some(child) = node.get_child(i) {
+            if let Ok(mut child_ctrl) = child.try_cast::<Control>() {
+                resolve_template_bindings_recursive(&mut child_ctrl, simple_keys, used_keys);
+            }
+        }
+    }
 }

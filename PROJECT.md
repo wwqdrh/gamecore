@@ -75,7 +75,7 @@ core 是一个基于 Rust 的 Godot 4 GDExtension 项目，使用 gdext 库与 G
     - 解析器：自写 HTML 子集解析器，支持标签/属性/样式块/自闭合标签/注释
     - 构建器：AST → Godot Control 节点树，支持容器/控件实例化、属性设置、StyleBoxFlat 样式、信号绑定
     - 支持的容器：VBoxContainer、HBoxContainer、GridContainer、MarginContainer、ScrollContainer、TabContainer、CenterContainer、PanelContainer
-    - 支持的控件：Label、Button、CheckButton、HSlider、ColorRect、OptionButton、Panel、TextureRect、RichTextLabel、LineEdit、ProgressBar、SpinBox、HSeparator、VSeparator、NinePatchRect、PopupPanel
+    - 支持的控件：Label、Button、CheckButton、HSlider、ColorRect、OptionButton、Panel、TextureRect、RichTextLabel、LineEdit、ProgressBar、SpinBox、HSeparator、VSeparator、NinePatchRect、PopupPanel、Tooltip、Drawer
     - 样式系统：通过 `<style>` 块定义 CSS 类样式，映射到 Godot StyleBoxFlat
     - 信号绑定：通过 `on_xxx` 属性声明，`connect_signals()` 方法批量连接
     - 方法：parse_string、parse_file、connect_signals、validate
@@ -85,8 +85,18 @@ core 是一个基于 Rust 的 Godot 4 GDExtension 项目，使用 gdext 库与 G
       - GdUIGrid：网格列表（继承 GridContainer），同上 + 移动端触摸长按 + patch_item
       - GdListHelper：列表辅助工具（初始化/更新容器/节点值设置/信号批量绑定）
       - GdSlotHighlight/GdSlotFill：方形/圆形高亮和填充效果（Shader）
-    - GML 标签：`<UIHList>`、`<UIVList>`、`<UIGrid>`、`<PopupPanel>`
-    - 新增属性：size_flags_horizontal、size_flags_vertical、color（ColorRect）、toggle_mode、button_pressed、items（OptionButton）、selected、popup_title、popup_width、close_on_overlay
+    - GML 标签：`<UIHList>`、`<UIVList>`、`<UIGrid>`、`<PopupPanel>`、`<Tooltip>`、`<Drawer>`
+    - 新增属性：size_flags_horizontal、size_flags_vertical、color（ColorRect）、toggle_mode、button_pressed、items（OptionButton）、selected、popup_title、popup_width、close_on_overlay、tooltip_title、tooltip_content、delay、offset_x、offset_y、max_width、direction、slide_width、animation_duration、drawer_title
+    - 模板绑定语法：GML 属性值中使用 `{{key}}` 格式（如 `text="{{icon}}"`），builder 阶段记录绑定关系到 meta（`__tpl_{key}`、`__tpl_keys`、`__tpl_attr`），update 阶段 `resolve_template_bindings_recursive` 递归解析并设置值
+    - Tooltip 自动绑定：UIHList/UIGrid 的 `tooltip` 属性指定 Tooltip 节点名，鼠标进入/离开子节点时自动从 item 的 meta 读取 name/desc 显示提示框，无需在 GDScript 中手动绑定信号
+    - Drawer 初始隐藏：`ready()` 中直接设置 `visible=false` 和 overlay 透明，避免初始状态灰色全屏遮挡
+    - 数据格式简化：update 数据 Dictionary 的 key 不再需要 `VBoxContainer/IconLabel:text` 路径前缀，直接使用简单 key（如 `icon`、`name`），含 `:` 或 `/` 的 key 兼容旧路径格式
+    - 数据自动绑定：UIHList/UIGrid 的 `data` 属性支持两种格式：
+      - 简单变量名（如 `data="equip_data"`）：从 GDScript 脚本变量读取（受 gdext 限制可能返回 NIL）
+      - GdBean 引用（如 `data="bean:scene_main:equip_data"`）：从 GdBean 实例读取属性值，支持响应式更新（bean 属性变更时自动更新绑定的 UI 节点）
+    - GdBean 响应式绑定：`data="bean:bean_id:property_key"` 格式通过 `get_bean_by_id()` 查找 GdBean 实例，调用 `get_value_by_key()` 获取数据，并通过 `bean.watch()` 注册回调，属性变更时自动调用 `on_bean_data_changed()` 更新节点
+    - 内部信号绑定方法自动适配：Toggle/Show/Hide 动作通过 `has_method()` 检测目标节点方法，Drawer 使用 `toggle`/`open`/`close`，PopupPanel 使用 `toggle_popup`/`show_popup`/`hide_popup`
+    - GDScript 继承 GdGmlScene 时需在 `_ready()` 中调用 `load_gml()` 加载 GML（gdext 的 `IControl::ready()` 不可从 GDScript `super._ready()` 调用）
     - 测试用例：12 个解析器测试（含列表标签、错误处理、深度嵌套等）
 
 ## 项目结构
@@ -99,7 +109,7 @@ core/
 ├── project.godot           # Godot 项目配置
 ├── addons/gamecore/            # Godot 插件目录
 │   ├── core.gdextension    # GDExtension 配置（统一入口）
-│   ├── core.gd             # EditorPlugin 脚本（自动加载控制台面板）
+│   ├── core.gd             # EditorPlugin 脚本（自动加载控制台面板+注册GML扩展名）
 │   ├── plugin.cfg          # 插件元信息
 │   ├── ui/                 # 内置 UI 组件
 │   │   ├── console_panel.gd # 控制台面板（输入框+日志输出）
@@ -152,6 +162,8 @@ core/
 │           ├── builder.rs  # AST→Control节点树构建器
 │           ├── gdui_builder.rs # GdUiBuilder GDScript API类
 │           ├── ui_popup_panel.rs # GdPopupPanel 弹窗面板节点
+│           ├── ui_tooltip.rs # GdUITooltip 鼠标跟随提示框节点
+│           ├── ui_drawer.rs  # GdUIDrawer 抽屉面板节点
 │           ├── ui_gml_scene.rs   # GdGmlScene GML文件加载节点
 │           ├── ui_list_helper.rs # 列表辅助工具（GdListHelper/GdSlotHighlight/GdSlotFill）
 │           ├── ui_hlist.rs # GdUIHList水平列表节点
@@ -177,8 +189,10 @@ core/
 │       ├── ui_example.gd       # UI标记语言示例脚本
 │       ├── ui_example.tscn     # UI标记语言示例场景
 │       ├── sample_ui.gml       # 示例.gml文件
-│       ├── scene_title.gd      # 游戏标题界面控制器
-│       └── scene_title.gml     # 游戏标题界面GML布局
+│       ├── scene_title.gd      # 游戏标题界面根节点脚本
+│       ├── scene_title_gml.gd  # 游戏标题界面GML控制器（继承GdGmlScene）
+│       ├── scene_title.gml     # 游戏标题界面GML布局
+│       └── scene_main.gml      # 游戏主界面GML布局（装备栏+Tooltip+Drawer）
 ├── PROJECT.md              # 本文档
 └── FILES.md                # 文件功能索引
 ```
@@ -815,16 +829,123 @@ popup.toggle_popup()
 var slider = popup.get_content_node("HSlider")
 ```
 
-## GdGmlScene API
+## GdUITooltip API
 
-GdGmlScene 是一个继承 Control 的 GML 文件加载节点，位于 `rust/src/ui/ui_gml_scene.rs`。设置 `gml_file` 属性即可加载 .gml 文件并显示为 Control 节点树。
+GdUITooltip 是一个继承 Control 的 Rust 鼠标跟随提示框节点，在 GML 中通过 `<Tooltip>` 标签使用。浮动面板跟随鼠标位置显示，支持延迟显示、自动位置调整、标题+内容布局。
 
 ### 导出属性
 
 | 属性 | 类型 | 默认值 | 说明 |
 |------|------|--------|------|
-| `gml_file` | String | "" | GML 文件路径，设置后在 ready 时自动加载 |
-| `auto_connect` | bool | true | 是否自动连接 GML 中的信号到父节点脚本 |
+| `tooltip_title_text` | String | "" | 提示框标题 |
+| `tooltip_content_text` | String | "" | 提示框内容 |
+| `delay` | float | 0.3 | 延迟显示时间（秒） |
+| `offset_x` | float | 12.0 | 鼠标X偏移 |
+| `offset_y` | float | 12.0 | 鼠标Y偏移 |
+| `max_width` | int | 300 | 最大宽度 |
+| `bg_color` | Color | (0.1,0.1,0.18,0.95) | 背景色 |
+| `border_color` | Color | (0.4,0.5,0.7) | 边框颜色 |
+| `title_color` | Color | (0.5,0.85,1.0) | 标题颜色 |
+| `content_color` | Color | (0.85,0.85,0.9) | 内容颜色 |
+| `corner_radius` | int | 6 | 圆角半径 |
+
+### 方法
+
+| 方法 | 说明 |
+|------|------|
+| `show_tooltip()` | 显示提示框（开始延迟计时） |
+| `hide_tooltip()` | 隐藏提示框 |
+| `set_tooltip_title(text: String)` | 设置标题 |
+| `set_tooltip_content(text: String)` | 设置内容 |
+
+### 信号
+
+| 信号 | 说明 |
+|------|------|
+| `s_tooltip_shown()` | 提示框显示 |
+| `s_tooltip_hidden()` | 提示框隐藏 |
+
+### GML 使用示例
+
+```html
+<Tooltip name="EquipTooltip" tooltip_title="Item" tooltip_content="Item description" delay="0.3" max_width="250" />
+```
+
+### GDScript 使用示例
+
+```gdscript
+var tooltip = ui.find_child("EquipTooltip", true, false)
+tooltip.set_tooltip_title("Sword")
+tooltip.set_tooltip_content("A sharp blade\nATK +10")
+tooltip.show_tooltip()
+tooltip.hide_tooltip()
+```
+
+## GdUIDrawer API
+
+GdUIDrawer 是一个继承 Control 的 Rust 抽屉面板节点，在 GML 中通过 `<Drawer>` 标签使用。从屏幕边缘滑入/滑出，支持动画过渡、模态遮罩、内容区域。
+
+### 导出属性
+
+| 属性 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `direction` | int | 0 | 方向：0=right, 1=left, 2=top, 3=bottom |
+| `slide_width` | int | 320 | 抽屉宽度/高度 |
+| `overlay_color` | Color | (0,0,0,0.5) | 遮罩颜色 |
+| `drawer_bg_color` | Color | (0.08,0.08,0.14,0.97) | 抽屉背景色 |
+| `drawer_border_color` | Color | (0.35,0.4,0.55) | 边框颜色 |
+| `corner_radius` | int | 0 | 圆角半径 |
+| `animation_duration` | float | 0.25 | 动画时长（秒） |
+| `close_on_overlay` | bool | true | 点击遮罩是否关闭 |
+| `drawer_title_text` | String | "" | 抽屉标题 |
+
+### 方法
+
+| 方法 | 说明 |
+|------|------|
+| `open()` | 打开抽屉 |
+| `close()` | 关闭抽屉 |
+| `toggle()` | 切换开关 |
+| `is_drawer_open() -> bool` | 抽屉是否打开 |
+| `set_drawer_title(text: String)` | 设置标题 |
+
+### 信号
+
+| 信号 | 说明 |
+|------|------|
+| `s_drawer_opened()` | 抽屉打开完成 |
+| `s_drawer_closed()` | 抽屉关闭 |
+
+### GML 使用示例
+
+```html
+<Drawer name="InventoryDrawer" direction="right" slide_width="360" drawer_title="Inventory" close_on_overlay="true">
+  <UIGrid name="InventoryGrid" count="12" columns="3">
+    <MarginContainer custom_minimum_size="96,96">
+      <Label name="ItemName" text="Item" />
+    </MarginContainer>
+  </UIGrid>
+</Drawer>
+```
+
+### 内部信号绑定
+
+Drawer 支持 `open:DrawerName`、`close:DrawerName`、`toggle:DrawerName` 格式的内部信号绑定：
+
+```html
+<Button text="Open" on_pressed="toggle:InventoryDrawer" />
+```
+
+## GdGmlScene API
+
+GdGmlScene 是一个继承 Control 的 GML 文件加载节点，位于 `rust/src/ui/ui_gml_scene.rs`。设置 `gml_file` 属性即可加载 .gml 文件并显示为 Control 节点树。信号自动连接到 GdGmlScene 自身脚本，可创建继承 GdGmlScene 的 GDScript 定义回调方法。
+
+### 导出属性
+
+| 属性 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `gml_file` | String (FILE) | "" | GML 文件路径（编辑器中显示 .gml 文件选择器），设置后在 ready 时自动加载 |
+| `auto_connect` | bool | true | 是否自动连接 GML 中的信号到自身脚本 |
 
 ### 方法
 
@@ -838,6 +959,7 @@ GdGmlScene 是一个继承 Control 的 GML 文件加载节点，位于 `rust/src
 | `find_node(name: String) -> Control` | 按 name 查找内容中的子节点 |
 | `clear_content()` | 清除已加载的内容 |
 | `is_loaded() -> bool` | 是否已加载 |
+| `on_bean_data_changed(node_name: String, data: Variant)` | GdBean 响应式回调，属性变更时自动更新对应节点 |
 
 ### 信号
 
@@ -850,12 +972,16 @@ GdGmlScene 是一个继承 Control 的 GML 文件加载节点，位于 `rust/src
 
 ```gdscript
 # 方式1：在场景中添加 GmlScene 节点，设置 gml_file 属性
+# 创建继承 GdGmlScene 的脚本，在其中定义回调方法：
+#   extends GdGmlScene
+#   func _on_start_game(): ...
+# 将脚本挂载到 GmlScene 节点即可
 
 # 方式2：代码创建
 var gml = GmlScene.new()
 gml.gml_file = "res://example/ui/scene_title.gml"
 add_child(gml)
-# 信号自动连接到当前脚本
+# 信号自动连接到 GdGmlScene 自身脚本
 
 # 方式3：从字符串加载
 var gml = GmlScene.new()
@@ -969,3 +1095,32 @@ cargo build -p core --release
 | 2026-06-10 | example/ui/scene_title.gd | 简化：不再依赖popup_panel.gd，直接使用GML中的PopupPanel节点 |
 | 2026-06-10 | addons/gamecore/ui/popup_panel.gd | 删除：已被Rust实现的GdPopupPanel替代 |
 | 2026-06-10 | rust/src/ui/ui_gml_scene.rs | 新建GdGmlScene节点（继承Control），设置gml_file属性即可加载.gml文件并显示为Control节点树，支持自动信号连接 |
+| 2026-06-11 | rust/src/ui/ui_gml_scene.rs | 优化：gml_file属性改为文件引用类型（PropertyHint::FILE + *.gml过滤）；auto_connect改为连接信号到自身脚本而非父节点 |
+| 2026-06-11 | example/ui/scene_title_gml.gd | 新建继承GdGmlScene的GDScript，将事件回调函数从scene_title.gd移入 |
+| 2026-06-11 | example/ui/scene_title.gd | 简化：移除已迁移到scene_title_gml.gd的回调函数 |
+| 2026-06-11 | example/ui/scene_title.tscn | 更新：GmlScene节点挂载scene_title_gml.gd脚本，父节点移除脚本 |
+| 2026-06-11 | addons/gamecore/gml_import_plugin.gd | 删除：改用 EditorSettings textfile_extensions 方式注册 .gml 扩展名 |
+| 2026-06-11 | addons/gamecore/core.gd | 更新：改用 _register_gml_extension() 将 .gml 添加到编辑器文本文件扩展名列表 |
+| 2026-06-11 | rust/src/ui/ui_tooltip.rs | 新建GdUITooltip鼠标跟随提示框节点（继承Control），支持延迟显示、自动位置调整、标题+内容布局，GML标签<Tooltip> |
+| 2026-06-11 | rust/src/ui/ui_drawer.rs | 新建GdUIDrawer抽屉面板节点（继承Control），从屏幕边缘滑入/滑出，支持动画过渡、模态遮罩、内容区域，GML标签<Drawer> |
+| 2026-06-11 | rust/src/ui/mod.rs | 添加ui_tooltip和ui_drawer模块 |
+| 2026-06-11 | rust/src/ui/builder.rs | 注册Tooltip/Drawer标签；处理Drawer/Tooltip子节点添加到内容区域；扩展内部信号绑定支持open:/close:动作；新增Tooltip属性（tooltip_title/tooltip_content/delay/offset_x/offset_y/max_width）和Drawer属性（direction/slide_width/animation_duration/drawer_title） |
+| 2026-06-11 | example/ui/scene_main.gml | 新建游戏主界面GML布局，包含底部装备栏（UIHList）、Tooltip提示框、右侧Drawer抽屉面板（含UIGrid） |
+| 2026-06-11 | rust/src/ui/ui_hlist.rs | 更新：添加 s_mouse_enter_item / s_mouse_exit_item 信号，绑定 mouse_entered/mouse_exited 事件到子节点 |
+| 2026-06-11 | example/ui/scene_main_gml.gd | 新建游戏主界面GML控制器脚本，定义装备栏/背包数据，通过 UIHList.update() 渲染，监听鼠标事件控制 Tooltip |
+| 2026-06-11 | rust/src/ui/builder.rs | 新增 `{{key}}` 模板语法检测：apply_attribute 开头检测 `{{...}}` 格式，记录 `__tpl_{key}` 和 `__tpl_keys` 元数据 |
+| 2026-06-11 | rust/src/ui/ui_list_helper.rs | 新增模板绑定解析：update_container 中分离简单 key 和路径 key，简单 key 通过 resolve_template_bindings_recursive 递归解析 |
+| 2026-06-11 | rust/src/ui/ui_hlist.rs | 新增 tooltip 属性和自动 Tooltip 绑定：鼠标进入/离开子节点时自动从 meta 读取 name/desc 显示提示框 |
+| 2026-06-11 | rust/src/ui/ui_grid.rs | 新增 tooltip 属性和自动 Tooltip 绑定（与 UIHList 一致） |
+| 2026-06-11 | rust/src/ui/ui_drawer.rs | 修复初始显示灰色全屏遮挡：ready() 中直接设置 visible=false 和 overlay 透明 |
+| 2026-06-11 | example/ui/scene_main_gml.gd | 简化数据定义：使用简单 key（icon/count/name/desc），移除手动 Tooltip 信号绑定代码 |
+| 2026-06-11 | rust/src/ui/ui_list_helper.rs | 修复 get_meta("__tpl_keys") 报错：添加 has_meta() 检查 |
+| 2026-06-11 | rust/src/ui/builder.rs | 新增 tooltip 属性处理（UIHList/UIVList/UIGrid）；新增 data 属性处理（存储为 __data_var 元数据）；列表容器子节点跳过 set_owner 修复 add_child 警告 |
+| 2026-06-11 | rust/src/ui/ui_gml_scene.rs | 新增数据自动绑定：auto_bind_data 递归扫描 __data_var 元数据，从脚本读取变量并调用 update() |
+| 2026-06-11 | example/ui/scene_main.gml | UIHList/UIGrid 添加 data 属性引用脚本变量名 |
+| 2026-06-11 | example/ui/scene_main_gml.gd | 数据内联定义，移除 _update_equip_bar/_update_inventory_grid 函数 |
+| 2026-06-11 | rust/src/state/bean.rs | get_bean_by_id 改为 pub(crate) fn，供 ui_gml_scene 模块调用 |
+| 2026-06-11 | rust/src/ui/ui_gml_scene.rs | 新增 GdBean 响应式数据绑定：data="bean:bean_id:property_key" 格式从 GdBean 读取数据并注册 watch 回调；新增 on_bean_data_changed 方法 |
+| 2026-06-11 | example/ui/scene_main_bean.gd | 新建游戏主界面数据 Bean（继承 GdBean），管理装备栏和背包数据 |
+| 2026-06-11 | example/ui/scene_main_gml.gd | 重构：移除内联数据，在 _ready() 中初始化 GdBean 并调用 load_gml() |
+| 2026-06-11 | example/ui/scene_main.gml | data 属性改为 bean:scene_main:equip_data 格式 |
