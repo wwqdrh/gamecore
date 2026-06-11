@@ -25,10 +25,6 @@ use crate::state::bean::{get_bean_by_id, get_all_bean_instances};
 pub struct GdGmlScene {
     base: Base<Control>,
 
-    /// GML 文件路径（如 res://ui/scene.gml，设置后自动加载）
-    #[export]
-    gml_file: GString,
-
     /// 是否在 ready 时自动连接信号到自身脚本
     #[export]
     auto_connect: bool,
@@ -43,25 +39,9 @@ impl IControl for GdGmlScene {
     fn init(base: Base<Control>) -> Self {
         Self {
             base,
-            gml_file: GString::new(),
             auto_connect: true,
             content_root: None,
             loaded: false,
-        }
-    }
-
-    fn on_notification(&mut self, what: ControlNotification) {
-        if what == ControlNotification::READY {
-            godot_print!("[GmlScene] READY notification, gml_file='{}'", self.gml_file);
-            if !self.gml_file.is_empty() {
-                // 延迟一帧加载，确保 GDScript 脚本变量已完全初始化
-                // gdext 的 Object::get() 在 READY 通知时无法读取 GDScript var 变量
-                godot_print!("[GmlScene] scheduling deferred load_gml");
-                self.base_mut().call_deferred(
-                    &StringName::from("load_gml"),
-                    &[],
-                );
-            }
         }
     }
 }
@@ -78,14 +58,8 @@ impl GdGmlScene {
 
     /// 手动加载当前 gml_file 指定的文件
     #[func]
-    fn load_gml(&mut self) {
-        godot_print!("[GmlScene] load_gml() called, gml_file='{}'", self.gml_file);
-        if self.gml_file.is_empty() {
-            godot_error!("[GmlScene] gml_file is empty");
-            return;
-        }
-
-        let path = self.gml_file.clone();
+    fn load_gml(&mut self, gml_file: GString) {
+        let path = gml_file.clone();
         let path_str = path.to_string();
 
         // 读取文件
@@ -102,6 +76,7 @@ impl GdGmlScene {
         let fa = unsafe { fa.unwrap_unchecked() };
         let content = fa.get_as_text();
 
+        self.clear_content();
         self.parse_and_build(&content.to_string());
     }
 
@@ -110,14 +85,6 @@ impl GdGmlScene {
     fn load_from_string(&mut self, gml_content: GString) {
         self.parse_and_build(&gml_content.to_string());
     }
-
-    /// 重新加载 GML 文件
-    #[func]
-    fn reload(&mut self) {
-        self.clear_content();
-        self.load_gml();
-    }
-
     /// 连接 GML 中定义的信号到目标对象
     #[func]
     fn connect_signals(&mut self, target: Gd<Object>) {
