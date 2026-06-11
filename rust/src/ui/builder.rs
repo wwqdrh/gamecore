@@ -26,6 +26,7 @@ use super::ui_grid::GdUIGrid;
 use super::ui_popup_panel::GdPopupPanel;
 use super::ui_tooltip::GdUITooltip;
 use super::ui_drawer::GdUIDrawer;
+use super::ui_nav_menu::GdUINavMenu;
 
 /// UI 构建器：将 AST 转换为 Godot Control 节点树
 pub struct UiBuilder {
@@ -114,6 +115,7 @@ impl UiBuilder {
 
         // PopupPanel/Drawer/Tooltip：属性设置完成后立即构建内部 UI
         // 这样 ContentContainer 在添加子节点前就已存在
+        // NavMenu 不在此处构建，因为需要先添加 NavItem 子节点再解析数据，由 ready() 处理
         if node.tag == "PopupPanel" || node.tag == "Drawer" || node.tag == "Tooltip" {
             control.call(&StringName::from("ensure_ui_built"), &[]);
         }
@@ -121,6 +123,12 @@ impl UiBuilder {
         // 递归构建子节点
         for child_node in &node.children {
             let mut child_control = self.build_node(child_node)?;
+
+            // NavItem：设置 meta 标记（NavMenu 和 NavItem 的子 NavItem 都需要标记）
+            if child_node.tag == "NavItem" {
+                child_control.set_meta(&StringName::from("__nav_item"), &true.to_variant());
+            }
+
             // PopupPanel 的子节点添加到内容区域
             if node.tag == "PopupPanel" || node.tag == "Drawer" || node.tag == "Tooltip" {
                 control.call(
@@ -185,6 +193,10 @@ impl UiBuilder {
             "Tooltip" => GdUITooltip::new_alloc().upcast(),
             // 抽屉面板
             "Drawer" => GdUIDrawer::new_alloc().upcast(),
+            // 导航菜单
+            "NavMenu" => GdUINavMenu::new_alloc().upcast(),
+            // 导航菜单项（递归嵌套，使用 Control 占位）
+            "NavItem" => Control::new_alloc(),
             // 列表扩展节点
             "UIHList" => GdUIHList::new_alloc().upcast(),
             "UIVList" => GdUIVList::new_alloc().upcast(),
@@ -322,6 +334,10 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
     match key {
         "text" => {
             match tag {
+                "NavItem" => {
+                    // NavItem 的 text 存储为 __nav_text meta
+                    control.set_meta(&StringName::from("__nav_text"), &value.to_variant());
+                }
                 "Label" => {
                     let mut lbl = control.cast::<Label>();
                     lbl.set_text(&GString::from(value));
@@ -732,7 +748,7 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
             }
         }
         "close_on_overlay" => {
-            if tag == "PopupPanel" || tag == "Drawer" {
+            if tag == "PopupPanel" || tag == "Drawer" || tag == "NavMenu" {
                 control.set(&StringName::from("close_on_overlay"), &(value == "true" || value == "1").to_variant());
             }
         }
@@ -786,6 +802,13 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
                     _ => 0,
                 };
                 control.set(&StringName::from("direction"), &dir.to_variant());
+            } else if tag == "NavMenu" {
+                let dir = match value {
+                    "left" => 0,
+                    "right" => 1,
+                    _ => 0,
+                };
+                control.set(&StringName::from("direction"), &dir.to_variant());
             }
         }
         // TabContainer 特有属性
@@ -812,8 +835,15 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
                 }
             }
         }
+        "menu_width" | "sub_menu_width" => {
+            if tag == "NavMenu" {
+                if let Ok(val) = value.parse::<i32>() {
+                    control.set(&StringName::from(key), &val.to_variant());
+                }
+            }
+        }
         "animation_duration" => {
-            if tag == "Drawer" {
+            if tag == "Drawer" || tag == "NavMenu" {
                 if let Ok(val) = value.parse::<f64>() {
                     control.set(&StringName::from("animation_duration"), &val.to_variant());
                 }

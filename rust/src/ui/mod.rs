@@ -13,4 +13,5 @@ mod ui_grid;
 mod ui_popup_panel;
 mod ui_tooltip;
 mod ui_drawer;
+mod ui_nav_menu;
 mod ui_gml_scene;

@@ -224,7 +224,7 @@
 - 方法：next, exec_response, is_registered_role, register_role_node, get_role_pos, initial, goto_stage, all_stages, has_next, stage_index
 
 ### [rust/src/ui/mod.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/mod.rs)
-- UI标记语言模块入口，导出parser/builder/gdui_builder/ui_popup_panel/ui_tooltip/ui_drawer/ui_gml_scene/ui_list_helper/ui_hlist/ui_vlist/ui_grid子模块
+- UI标记语言模块入口，导出parser/builder/gdui_builder/ui_popup_panel/ui_tooltip/ui_drawer/ui_nav_menu/ui_gml_scene/ui_list_helper/ui_hlist/ui_vlist/ui_grid子模块
 
 ### [rust/src/ui/parser.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/parser.rs)
 - **类HTML标记解析器**
@@ -236,7 +236,7 @@
 ### [rust/src/ui/builder.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/builder.rs)
 - **UI构建器**
 - 将AST转换为Godot Control节点树
-- 支持容器/控件实例化（VBox/HBox/Grid/Margin/Scroll/Tab/Center/PanelContainer/Tab + Label/Button/TextureButton/CheckButton/HSlider/ColorRect/OptionButton/Panel/TextureRect/RichTextLabel/LineEdit/ProgressBar/SpinBox/HSeparator/VSeparator/NinePatchRect/PopupPanel/Tooltip/Drawer）
+- 支持容器/控件实例化（VBox/HBox/Grid/Margin/Scroll/Tab/Center/PanelContainer/Tab + Label/Button/TextureButton/CheckButton/HSlider/ColorRect/OptionButton/Panel/TextureRect/RichTextLabel/LineEdit/ProgressBar/SpinBox/HSeparator/VSeparator/NinePatchRect/PopupPanel/Tooltip/Drawer/NavMenu/NavItem）
 - 属性设置：text/font_size/align/anchor/margin/size/bbcode/texture/texture_normal/texture_pressed/texture_hover/texture_disabled/stretch_mode/columns/visible/disabled/size_flags_horizontal/size_flags_vertical/color/toggle_mode/button_pressed/items/selected/popup_title/popup_width/close_on_overlay/tooltip_title/tooltip_content/delay/offset_x/offset_y/max_width/direction/slide_width/animation_duration/drawer_title/title/current_tab/tabs_visible等
 - 模板绑定：`{{key}}` 语法检测，记录 `__tpl_{key}`/`__tpl_keys`/`__tpl_attr` 元数据
 - StyleBoxFlat样式应用：background/border_radius/border_color/border_width/padding/color/texture
@@ -276,6 +276,15 @@
 - 属性：direction, slide_width, overlay_color, drawer_bg_color, drawer_border_color, corner_radius, animation_duration, close_on_overlay, drawer_title_text
 - 方法：open, close, toggle, is_drawer_open, set_drawer_title
 - 信号：s_drawer_opened, s_drawer_closed
+
+### [rust/src/ui/ui_nav_menu.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/ui_nav_menu.rs)
+- **GdUINavMenu** 类（继承 Control）
+- 导航菜单节点，支持多级级联菜单
+- 从屏幕左侧/右侧滑入，支持动画过渡（ease-out cubic）和模态遮罩
+- GML标签：`<NavMenu>`，子标签：`<NavItem>`（递归嵌套，支持多级菜单）
+- 属性：direction, menu_width, sub_menu_width, menu_bg_color, menu_border_color, overlay_color, corner_radius, animation_duration, close_on_overlay, item_font_size, item_color, item_hover_color, item_active_color, sub_item_font_size, sub_item_color, sub_item_hover_color
+- 方法：open, close, toggle, is_menu_open, ensure_ui_built
+- 信号：s_menu_opened, s_menu_closed, s_item_clicked(path: GString)
 
 ### [rust/src/ui/ui_gml_scene.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/ui_gml_scene.rs)
 - **GdGmlScene** 类（继承 Control）
@@ -457,6 +466,11 @@
 - 每个 Tab 页包含顶部描述文字 + UIGrid 网格列表
 - 数据通过脚本变量自动绑定（weapon_data/armor_data/item_data）
 
+### [example/ui/scene_setting.gd](file:///Users/dengronghui/project/gamekit/core/example/ui/scene_setting.gd)
+- 设置界面 GML 控制器（继承 GdGmlScene）
+- 居中按钮点击后左侧弹出 NavMenu 多级级联菜单
+- 一级菜单3项（Audio含三级/Display二级/Controls二级），NavItem递归嵌套
+
 ## 构建脚本
 
 ### [build.sh](file:///Users/dengronghui/project/gamekit/core/build.sh)
@@ -595,3 +609,7 @@
 | 2026-06-11 | example/ui/scene_gallery.gd | 新建图鉴界面 GML 控制器（继承 GdGmlScene），居中按钮 + PopupPanel + TabContainer（Weapons/Armor/Items 三个 Tab 页，每个含描述文字 + UIGrid） |
 | 2026-06-11 | rust/src/ui/builder.rs | 新增 TextureButton 标签支持：实例化、text 叠加 Label、texture/texture_normal/texture_pressed/texture_hover/texture_disabled 属性、样式 texture 属性、文字颜色子 Label 应用 |
 | 2026-06-11 | example/ui/scene_title.gd | 将菜单按钮从 Button 改为 TextureButton，menu-button 样式使用 texture 属性加载 btn_green.png |
+| 2026-06-11 | rust/src/ui/ui_nav_menu.rs | 新建GdUINavMenu导航菜单节点，GML标签<NavMenu>/<NavItem>（递归嵌套） |
+| 2026-06-11 | rust/src/ui/mod.rs | 添加ui_nav_menu模块 |
+| 2026-06-11 | rust/src/ui/builder.rs | 注册NavMenu/NavItem标签；新增NavMenu属性处理；移除NavSubItem标签 |
+| 2026-06-11 | example/ui/scene_setting.gd | 新建设置界面GML控制器，居中按钮+NavMenu多级级联菜单 |
