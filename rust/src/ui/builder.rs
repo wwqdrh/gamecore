@@ -10,7 +10,7 @@ use godot::classes::{
     Control, Label, Button, Panel, PanelContainer, BaseButton,
     VBoxContainer, HBoxContainer, GridContainer, MarginContainer,
     ScrollContainer, TabContainer, CenterContainer,
-    TextureRect, RichTextLabel, LineEdit, ProgressBar,
+    TextureRect, TextureButton, RichTextLabel, LineEdit, ProgressBar,
     SpinBox, HSeparator, VSeparator, NinePatchRect,
     StyleBoxFlat, ResourceLoader, Range, Texture2D,
     CheckButton, HSlider, ColorRect, OptionButton,
@@ -164,6 +164,7 @@ impl UiBuilder {
             // 控件
             "Label" => Label::new_alloc().upcast(),
             "Button" => Button::new_alloc().upcast(),
+            "TextureButton" => TextureButton::new_alloc().upcast(),
             "Panel" => Panel::new_alloc().upcast(),
             "TextureRect" => TextureRect::new_alloc().upcast(),
             "RichTextLabel" => RichTextLabel::new_alloc().upcast(),
@@ -246,6 +247,19 @@ impl UiBuilder {
                 }
             }
 
+            // 应用 texture 属性（纹理）到 TextureButton
+            if let Some(texture_path) = style_rule.properties.get("texture") {
+                if tag == "TextureButton" {
+                    let path = GString::from(texture_path);
+                    if let Some(res) = ResourceLoader::singleton().load(&path) {
+                        if let Ok(tex) = res.try_cast::<Texture2D>() {
+                            let mut tb = control.clone().cast::<TextureButton>();
+                            tb.set_texture_normal(&tex);
+                        }
+                    }
+                }
+            }
+
             // 将 StyleBox 应用到控件
             let stylebox_name = get_stylebox_name_for_tag(tag);
             control.add_theme_stylebox_override(
@@ -317,6 +331,28 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
                     let mut btn = control.cast::<Button>();
                     btn.set_text(&GString::from(value));
                     return btn.upcast();
+                }
+                "TextureButton" => {
+                    // TextureButton 不支持 text，叠加一个居中 Label 显示文字
+                    let mut lbl = Label::new_alloc();
+                    lbl.set_text(&GString::from(value));
+                    // 手动设置锚点和偏移，确保 Label 填满整个 TextureButton
+                    lbl.set_anchor(Side::LEFT, 0.0);
+                    lbl.set_anchor(Side::RIGHT, 1.0);
+                    lbl.set_anchor(Side::TOP, 0.0);
+                    lbl.set_anchor(Side::BOTTOM, 1.0);
+                    lbl.set_offset(Side::LEFT, 0.0);
+                    lbl.set_offset(Side::RIGHT, 0.0);
+                    lbl.set_offset(Side::TOP, 0.0);
+                    lbl.set_offset(Side::BOTTOM, 0.0);
+                    lbl.set_horizontal_alignment(godot::global::HorizontalAlignment::CENTER);
+                    lbl.set_vertical_alignment(godot::global::VerticalAlignment::CENTER);
+                    lbl.set_mouse_filter(godot::classes::control::MouseFilter::IGNORE);
+                    control.add_child(&lbl);
+                    lbl.set_owner(&control);
+                    // 存储文字到 meta，以便样式中的 color 属性能正确应用
+                    control.set_meta(&StringName::from("__has_text_label"), &true.to_variant());
+                    return control;
                 }
                 "RichTextLabel" => {
                     let mut rt = control.cast::<RichTextLabel>();
@@ -397,6 +433,63 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
                         let mut nr = control.cast::<NinePatchRect>();
                     nr.set_texture(&tex);
                         return nr.upcast();
+                    }
+                }
+            } else if tag == "TextureButton" {
+                let path = GString::from(value);
+                if let Some(res) = ResourceLoader::singleton().load(&path) {
+                    if let Ok(tex) = res.try_cast::<Texture2D>() {
+                        let mut tb = control.cast::<TextureButton>();
+                        tb.set_texture_normal(&tex);
+                        return tb.upcast();
+                    }
+                }
+            }
+        }
+        "texture_normal" => {
+            if tag == "TextureButton" {
+                let path = GString::from(value);
+                if let Some(res) = ResourceLoader::singleton().load(&path) {
+                    if let Ok(tex) = res.try_cast::<Texture2D>() {
+                        let mut tb = control.cast::<TextureButton>();
+                        tb.set_texture_normal(&tex);
+                        return tb.upcast();
+                    }
+                }
+            }
+        }
+        "texture_pressed" => {
+            if tag == "TextureButton" {
+                let path = GString::from(value);
+                if let Some(res) = ResourceLoader::singleton().load(&path) {
+                    if let Ok(tex) = res.try_cast::<Texture2D>() {
+                        let mut tb = control.cast::<TextureButton>();
+                        tb.set_texture_pressed(&tex);
+                        return tb.upcast();
+                    }
+                }
+            }
+        }
+        "texture_hover" => {
+            if tag == "TextureButton" {
+                let path = GString::from(value);
+                if let Some(res) = ResourceLoader::singleton().load(&path) {
+                    if let Ok(tex) = res.try_cast::<Texture2D>() {
+                        let mut tb = control.cast::<TextureButton>();
+                        tb.set_texture_hover(&tex);
+                        return tb.upcast();
+                    }
+                }
+            }
+        }
+        "texture_disabled" => {
+            if tag == "TextureButton" {
+                let path = GString::from(value);
+                if let Some(res) = ResourceLoader::singleton().load(&path) {
+                    if let Ok(tex) = res.try_cast::<Texture2D>() {
+                        let mut tb = control.cast::<TextureButton>();
+                        tb.set_texture_disabled(&tex);
+                        return tb.upcast();
                     }
                 }
             }
@@ -576,7 +669,7 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
             }
         }
         "toggle_mode" => {
-            if tag == "Button" || tag == "CheckButton" {
+            if tag == "Button" || tag == "CheckButton" || tag == "TextureButton" {
                 let result = control.try_cast::<BaseButton>();
                 match result {
                     Ok(mut base_btn) => {
@@ -590,7 +683,7 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
             }
         }
         "button_pressed" => {
-            if tag == "CheckButton" || tag == "Button" {
+            if tag == "CheckButton" || tag == "Button" || tag == "TextureButton" {
                 let result = control.try_cast::<BaseButton>();
                 match result {
                     Ok(mut base_btn) => {
@@ -747,6 +840,20 @@ fn apply_text_color(control: &mut Gd<Control>, tag: &str, color: Color) {
                 color,
             );
         }
+        "TextureButton" => {
+            // TextureButton 的文字在叠加的 Label 上，需要找到子 Label 设置颜色
+            for i in 0..control.get_child_count() {
+                if let Some(child) = control.get_child(i) {
+                    if let Ok(mut lbl) = child.try_cast::<Label>() {
+                        lbl.add_theme_color_override(
+                            &StringName::from("font_color"),
+                            color,
+                        );
+                        break;
+                    }
+                }
+            }
+        }
         "LineEdit" => {
             control.add_theme_color_override(
                 &StringName::from("font_color"),
@@ -883,7 +990,7 @@ fn parse_color(value: &str) -> Option<Color> {
 /// 获取标签对应的 StyleBox 名称
 fn get_stylebox_name_for_tag(tag: &str) -> &'static str {
     match tag {
-        "Button" | "CheckButton" => "normal",
+        "Button" | "CheckButton" | "TextureButton" => "normal",
         "Panel" => "panel",
         "LineEdit" => "normal",
         "OptionButton" => "normal",

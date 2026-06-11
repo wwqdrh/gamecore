@@ -236,10 +236,10 @@
 ### [rust/src/ui/builder.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/builder.rs)
 - **UI构建器**
 - 将AST转换为Godot Control节点树
-- 支持容器/控件实例化（VBox/HBox/Grid/Margin/Scroll/Tab/Center/PanelContainer/Tab + Label/Button/CheckButton/HSlider/ColorRect/OptionButton/Panel/TextureRect/RichTextLabel/LineEdit/ProgressBar/SpinBox/HSeparator/VSeparator/NinePatchRect/PopupPanel/Tooltip/Drawer）
-- 属性设置：text/font_size/align/anchor/margin/size/bbcode/texture/stretch_mode/columns/visible/disabled/size_flags_horizontal/size_flags_vertical/color/toggle_mode/button_pressed/items/selected/popup_title/popup_width/close_on_overlay/tooltip_title/tooltip_content/delay/offset_x/offset_y/max_width/direction/slide_width/animation_duration/drawer_title/title/current_tab/tabs_visible等
+- 支持容器/控件实例化（VBox/HBox/Grid/Margin/Scroll/Tab/Center/PanelContainer/Tab + Label/Button/TextureButton/CheckButton/HSlider/ColorRect/OptionButton/Panel/TextureRect/RichTextLabel/LineEdit/ProgressBar/SpinBox/HSeparator/VSeparator/NinePatchRect/PopupPanel/Tooltip/Drawer）
+- 属性设置：text/font_size/align/anchor/margin/size/bbcode/texture/texture_normal/texture_pressed/texture_hover/texture_disabled/stretch_mode/columns/visible/disabled/size_flags_horizontal/size_flags_vertical/color/toggle_mode/button_pressed/items/selected/popup_title/popup_width/close_on_overlay/tooltip_title/tooltip_content/delay/offset_x/offset_y/max_width/direction/slide_width/animation_duration/drawer_title/title/current_tab/tabs_visible等
 - 模板绑定：`{{key}}` 语法检测，记录 `__tpl_{key}`/`__tpl_keys`/`__tpl_attr` 元数据
-- StyleBoxFlat样式应用：background/border_radius/border_color/border_width/padding/color
+- StyleBoxFlat样式应用：background/border_radius/border_color/border_width/padding/color/texture
 - 信号绑定元数据：on_xxx属性存储为__signal_xxx元数据
 
 ### [rust/src/ui/gdui_builder.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/gdui_builder.rs)
@@ -593,3 +593,5 @@
 | 2026-06-11 | rust/src/ui/ui_gml_scene.rs | 修复 GdBean 响应式回调：新增 on_bean_data_changed_bound() 适配 callable.bind() 追加参数顺序，注册回调改用新函数 |
 | 2026-06-11 | rust/src/ui/builder.rs | 新增 Tab 标签支持（映射为 VBoxContainer）；新增 title 属性处理（Tab 标签的 title 覆盖节点名）；新增 current_tab/tabs_visible 属性处理（TabContainer） |
 | 2026-06-11 | example/ui/scene_gallery.gd | 新建图鉴界面 GML 控制器（继承 GdGmlScene），居中按钮 + PopupPanel + TabContainer（Weapons/Armor/Items 三个 Tab 页，每个含描述文字 + UIGrid） |
+| 2026-06-11 | rust/src/ui/builder.rs | 新增 TextureButton 标签支持：实例化、text 叠加 Label、texture/texture_normal/texture_pressed/texture_hover/texture_disabled 属性、样式 texture 属性、文字颜色子 Label 应用 |
+| 2026-06-11 | example/ui/scene_title.gd | 将菜单按钮从 Button 改为 TextureButton，menu-button 样式使用 texture 属性加载 btn_green.png |

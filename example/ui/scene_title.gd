@@ -13,11 +13,8 @@ var UI = """
       color: #aaaacc;
     }
     .menu-button {
-      background: #1a1a3e;
+      texture: res://example/ui/assets/btn_green.png;
       color: white;
-      border_radius: 6;
-      border_color: #3a3a6e;
-      border_width: 1;
       padding: 12;
     }
     .settings-btn {
@@ -71,9 +68,9 @@ var UI = """
     <!-- 居中按钮组 -->
     <CenterContainer>
 	  <VBoxContainer v_separation="12">
-		<Button name="StartBtn" text="Start Game" class="menu-button" custom_minimum_size="240,48" on_pressed="_on_start_game" mouse_default_cursor_shape="pointing_hand" />
-		<Button name="ContinueBtn" text="Continue" class="menu-button" custom_minimum_size="240,48" on_pressed="_on_continue_game" mouse_default_cursor_shape="pointing_hand" />
-		<Button name="QuitBtn" text="Quit" class="menu-button" custom_minimum_size="240,48" on_pressed="_on_quit_game" mouse_default_cursor_shape="pointing_hand" />
+		<TextureButton name="StartBtn" text="Start Game" class="menu-button" custom_minimum_size="240,48" on_pressed="_on_start_game" mouse_default_cursor_shape="pointing_hand" />
+		<TextureButton name="ContinueBtn" text="Continue" class="menu-button" custom_minimum_size="240,48" on_pressed="_on_continue_game" mouse_default_cursor_shape="pointing_hand" />
+		<TextureButton name="QuitBtn" text="Quit" class="menu-button" custom_minimum_size="240,48" on_pressed="_on_quit_game" mouse_default_cursor_shape="pointing_hand" />
       </VBoxContainer>
     </CenterContainer>
   </VBoxContainer>

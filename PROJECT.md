@@ -75,7 +75,7 @@ core 是一个基于 Rust 的 Godot 4 GDExtension 项目，使用 gdext 库与 G
     - 解析器：自写 HTML 子集解析器，支持标签/属性/样式块/自闭合标签/注释
     - 构建器：AST → Godot Control 节点树，支持容器/控件实例化、属性设置、StyleBoxFlat 样式、信号绑定
     - 支持的容器：VBoxContainer、HBoxContainer、GridContainer、MarginContainer、ScrollContainer、TabContainer、CenterContainer、PanelContainer、Tab
-    - 支持的控件：Label、Button、CheckButton、HSlider、ColorRect、OptionButton、Panel、TextureRect、RichTextLabel、LineEdit、ProgressBar、SpinBox、HSeparator、VSeparator、NinePatchRect、PopupPanel、Tooltip、Drawer
+    - 支持的控件：Label、Button、TextureButton、CheckButton、HSlider、ColorRect、OptionButton、Panel、TextureRect、RichTextLabel、LineEdit、ProgressBar、SpinBox、HSeparator、VSeparator、NinePatchRect、PopupPanel、Tooltip、Drawer
     - 样式系统：通过 `<style>` 块定义 CSS 类样式，映射到 Godot StyleBoxFlat
     - 信号绑定：通过 `on_xxx` 属性声明，`connect_signals()` 方法批量连接
     - 方法：parse_string、parse_file、connect_signals、validate
@@ -86,7 +86,8 @@ core 是一个基于 Rust 的 Godot 4 GDExtension 项目，使用 gdext 库与 G
       - GdListHelper：列表辅助工具（初始化/更新容器/节点值设置/信号批量绑定）
       - GdSlotHighlight/GdSlotFill：方形/圆形高亮和填充效果（Shader）
     - GML 标签：`<UIHList>`、`<UIVList>`、`<UIGrid>`、`<PopupPanel>`、`<Tooltip>`、`<Drawer>`、`<Tab>`
-    - 新增属性：size_flags_horizontal、size_flags_vertical、color（ColorRect）、toggle_mode、button_pressed、items（OptionButton）、selected、popup_title、popup_width、close_on_overlay、tooltip_title、tooltip_content、delay、offset_x、offset_y、max_width、direction、slide_width、animation_duration、drawer_title、title（Tab）、current_tab（TabContainer）、tabs_visible（TabContainer）
+    - 新增属性：size_flags_horizontal、size_flags_vertical、color（ColorRect）、toggle_mode、button_pressed、items（OptionButton）、selected、popup_title、popup_width、close_on_overlay、tooltip_title、tooltip_content、delay、offset_x、offset_y、max_width、direction、slide_width、animation_duration、drawer_title、title（Tab）、current_tab（TabContainer）、tabs_visible（TabContainer）、texture_normal/texture_pressed/texture_hover/texture_disabled（TextureButton）
+    - TextureButton 支持：GML 中使用 `<TextureButton>` 标签，text 属性自动叠加居中 Label，样式系统中 texture 属性加载纹理到 texture_normal，支持 texture_normal/texture_pressed/texture_hover/texture_disabled 属性直接指定纹理路径
     - 模板绑定语法：GML 属性值中使用 `{{key}}` 格式（如 `text="{{icon}}"`），builder 阶段记录绑定关系到 meta（`__tpl_{key}`、`__tpl_keys`、`__tpl_attr`），update 阶段 `resolve_template_bindings_recursive` 递归解析并设置值
     - Tooltip 自动绑定：UIHList/UIGrid 的 `tooltip` 属性指定 Tooltip 节点名，鼠标进入/离开子节点时自动从 item 的 meta 读取 name/desc 显示提示框，无需在 GDScript 中手动绑定信号
     - Drawer 初始隐藏：`ready()` 中直接设置 `visible=false` 和 overlay 透明，避免初始状态灰色全屏遮挡
@@ -710,15 +711,19 @@ GdUiBuilder 是一个继承 RefCounted 的 Godot 类，在 GDScript 中通过 `G
 | `class` | 应用 `<style>` 中定义的样式 |
 | `on_xxx` | 信号绑定（如 on_pressed="_on_click"） |
 | `bbcode` | RichTextLabel 的 BBCode 文本 |
-| `texture` | TextureRect/NinePatchRect 的纹理路径 |
+| `texture` | TextureRect/NinePatchRect/TextureButton 的纹理路径 |
+| `texture_normal` | TextureButton 的正常状态纹理路径 |
+| `texture_pressed` | TextureButton 的按下状态纹理路径 |
+| `texture_hover` | TextureButton 的悬停状态纹理路径 |
+| `texture_disabled` | TextureButton 的禁用状态纹理路径 |
 | `stretch_mode` | TextureRect 拉伸模式 |
 | `columns` | GridContainer 列数 |
 | `visible` | 是否可见 |
 | `disabled` | 是否禁用（Button 等） |
 | `size_flags_horizontal` | 水平尺寸标志（fill=1, expand=2, expand_fill=3, shrink=4, shrink_center=5, shrink_end=6） |
 | `size_flags_vertical` | 垂直尺寸标志（同上） |
-| `toggle_mode` | 是否切换模式（CheckButton/Button） |
-| `button_pressed` | 按钮是否按下（CheckButton/Button） |
+| `toggle_mode` | 是否切换模式（CheckButton/Button/TextureButton） |
+| `button_pressed` | 按钮是否按下（CheckButton/Button/TextureButton） |
 | `color` | 颜色（ColorRect 的填充颜色） |
 | `items` | 选项列表，逗号分隔（OptionButton） |
 | `selected` | 选中索引（OptionButton） |
@@ -739,6 +744,7 @@ GdUiBuilder 是一个继承 RefCounted 的 Godot 类，在 GDScript 中通过 `G
 | `border_color` | 边框颜色 |
 | `border_width` | 边框宽度 |
 | `padding` | 内边距 |
+| `texture` | 纹理路径（TextureButton 的 texture_normal） |
 
 ### GDScript 使用示例
 
@@ -1130,4 +1136,6 @@ cargo build -p core --release
 | 2026-06-11 | example/ui/scene_main_gml.gd | 重构：移除内联数据，在 _ready() 中初始化 GdBean 并调用 load_gml() |
 | 2026-06-11 | example/ui/scene_main.gml | data 属性改为 bean:scene_main:equip_data 格式 |
 | 2026-06-11 | rust/src/ui/builder.rs | 新增 Tab 标签支持（映射为 VBoxContainer）；新增 title 属性处理（Tab 标签的 title 覆盖节点名，TabContainer 用节点名作为 tab 标题）；新增 current_tab/tabs_visible 属性处理（TabContainer） |
-| 2026-06-11 | example/ui/scene_gallery.gd | 新建图鉴界面 GML 控制器（继承 GdGmlScene），居中按钮 + PopupPanel 弹窗 + TabContainer（Weapons/Armor/Items 三个 Tab 页，每个含描述文字 + UIGrid 网格列表） |
+| 2026-06-11 | example/ui/scene_gallery.gd | 新建图鉴界面 GML 控制器（继承 GdGmlScene），居中按钮 + PopupPanel + TabContainer（Weapons/Armor/Items 三个 Tab 页，每个含描述文字 + UIGrid） |
+| 2026-06-11 | rust/src/ui/builder.rs | 新增 TextureButton 标签支持：实例化、text 属性叠加 Label、texture/texture_normal/texture_pressed/texture_hover/texture_disabled 属性加载纹理、样式系统 texture 属性、文字颜色应用到子 Label、toggle_mode/button_pressed/disabled 属性支持 |
+| 2026-06-11 | example/ui/scene_title.gd | 将菜单按钮从 Button 改为 TextureButton，menu-button 样式使用 texture 属性加载 btn_green.png |
