@@ -666,6 +666,13 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
                 }
             }
         }
+        "max_height" => {
+            if tag == "Tooltip" {
+                if let Ok(val) = value.parse::<i32>() {
+                    control.set(&StringName::from("max_height"), &val.to_variant());
+                }
+            }
+        }
         // Drawer 特有属性
         "direction" => {
             if tag == "Drawer" {

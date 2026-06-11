@@ -261,9 +261,11 @@
 - **GdUITooltip** 类（继承 Control）
 - 鼠标跟随提示框节点，浮动面板跟随鼠标位置显示
 - 支持延迟显示、自动位置调整（避免超出屏幕）、标题+内容布局
+- 支持自定义子节点（GML 中定义 Label 等），通过 update_data 解析 {{key}} 模板绑定
+- 添加自定义子节点时自动移除内置 title/content/separator
 - GML标签：`<Tooltip>`
-- 属性：tooltip_title_text, tooltip_content_text, delay, offset_x, offset_y, max_width, bg_color, border_color, title_color, content_color, corner_radius
-- 方法：show_tooltip, hide_tooltip, set_tooltip_title, set_tooltip_content
+- 属性：tooltip_title_text, tooltip_content_text, delay, offset_x, offset_y, max_width, max_height, bg_color, border_color, title_color, content_color, corner_radius
+- 方法：show_tooltip, hide_tooltip, set_tooltip_title, set_tooltip_content, update_data, ensure_ui_built, add_content_child
 - 信号：s_tooltip_shown, s_tooltip_hidden
 
 ### [rust/src/ui/ui_drawer.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/ui_drawer.rs)
@@ -291,6 +293,7 @@
 - GdListHelper：list_initial/update_container/update_data_alias/update_node_value/allbind_signal/update_slot_fill
 - 模板绑定解析：update_container 中分离简单 key 和路径 key（含 `:` 或 `/` 的为路径 key），简单 key 通过 resolve_template_bindings_recursive 递归解析
 - 未被模板绑定使用的简单 key 自动存储为 meta（供 Tooltip 读取 name/desc）
+- 完整数据字典存储为 __item_data meta（供 Tooltip 的 update_data 方法使用）
 - GdSlotHighlight：create_square_highlight_node/create_circle_highlight_node（Shader高亮效果）
 - GdSlotFill：create_square_fill_node/create_circle_fill_node（Shader填充效果）
 
@@ -300,7 +303,7 @@
 - 属性：count, highlight_mode, highlight_color, fill_mode, fill_color, space_left, space_right, tooltip
 - 信号：s_click_item, s_mouse_enter_item, s_mouse_exit_item
 - 方法：initial, update, update_all, get_at, get_meta_value, set_width_times, allbind_signal
-- Tooltip 自动绑定：tooltip 属性指定 Tooltip 节点名，鼠标进入/离开子节点时自动从 meta 读取 name/desc 显示
+- Tooltip 自动绑定：tooltip 属性指定 Tooltip 节点名，鼠标进入/离开子节点时自动从 __item_data meta 读取完整数据字典调用 update_data，兼容内置 title/content label
 
 ### [rust/src/ui/ui_vlist.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/ui_vlist.rs)
 - **GdUIVList** 垂直列表节点（继承 VBoxContainer），翻译自C++ gmlc/ui_list_v
@@ -315,7 +318,7 @@
 - 属性：count, highlight_mode, highlight_color, fill_mode, fill_color, tooltip
 - 信号：s_click_item, s_mouse_enter_item, s_mouse_exit_item
 - 方法：initial, update, update_all, patch_item, get_at, get_meta_value, allbind_signal
-- Tooltip 自动绑定：tooltip 属性指定 Tooltip 节点名，鼠标进入/离开子节点时自动从 meta 读取 name/desc 显示
+- Tooltip 自动绑定：tooltip 属性指定 Tooltip 节点名，鼠标进入/离开子节点时自动从 __item_data meta 读取完整数据字典调用 update_data，兼容内置 title/content label
 
 ### [vendor/gamedialog/Cargo.toml](file:///Users/dengronghui/project/gamekit/core/vendor/gamedialog/Cargo.toml)
 - gamedialog crate 配置，纯 Rust 对话脚本引擎库
@@ -574,3 +577,8 @@
 | 2026-06-11 | example/ui/scene_main_bean.gd | 新建游戏主界面数据 Bean |
 | 2026-06-11 | example/ui/scene_main_gml.gd | 重构：移除内联数据，在 _ready() 中初始化 GdBean |
 | 2026-06-11 | example/ui/scene_main.gml | data 属性改为 bean: 前缀格式 |
+| 2026-06-11 | rust/src/ui/ui_tooltip.rs | 新增 max_height 属性、update_data 方法、自定义子节点支持（添加时移除内置label）、resolve_template_bindings 辅助方法 |
+| 2026-06-11 | rust/src/ui/ui_list_helper.rs | update_container 中存储完整数据字典为 __item_data meta |
+| 2026-06-11 | rust/src/ui/ui_hlist.rs | show_tooltip_for_item 优先读取 __item_data 调用 update_data，降级兼容旧格式 |
+| 2026-06-11 | rust/src/ui/ui_grid.rs | 同 UIHList，show_tooltip_for_item 优先读取 __item_data |
+| 2026-06-11 | rust/src/ui/builder.rs | 新增 max_height 属性解析 |

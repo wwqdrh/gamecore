@@ -363,6 +363,9 @@ pub fn update_container(target: &mut Gd<Control>, slot: &Gd<Control>, count: i32
                                 c.set_meta(&StringName::from(key.as_str()), val);
                             }
                         }
+
+                        // 存储完整数据字典为 __item_data meta，供 Tooltip 的 update_data 使用
+                        c.set_meta(&StringName::from("__item_data"), &spec.to_variant());
                     }
                 }
             }

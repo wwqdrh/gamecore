@@ -47,6 +47,7 @@ var ui = """
     <HBoxContainer anchor="top_wide">
       <Control size_flags_horizontal="expand_fill" />
       <Button name="DrawerBtn" text="Bag" class="drawer-btn" on_pressed="toggle:InventoryDrawer" mouse_default_cursor_shape="pointing_hand" />
+	  <Button name="AddEquipBtn" text="add equip" class="menu-button" custom_minimum_size="240,48" on_pressed="_add_equip" mouse_default_cursor_shape="pointing_hand" />
     </HBoxContainer>
 
     <!-- 底部居中装备栏，tooltip="EquipTooltip" 自动绑定提示框 -->
@@ -63,7 +64,10 @@ var ui = """
   </Control>
 
   <!-- 装备栏提示框 -->
-  <Tooltip name="EquipTooltip" delay="0.3" max_width="250" />
+  <Tooltip name="EquipTooltip" delay="0.3" max_width="250" max_height="100">
+	<Label text="{{name}}" font_size="14" />
+	<Label text="{{desc}}" font_size="12" />
+  </Tooltip>
 
   <!-- 右侧抽屉面板 -->
   <Drawer name="InventoryDrawer" direction="right" slide_width="360" drawer_title="Inventory" close_on_overlay="true" animation_duration="0.25">
@@ -83,3 +87,6 @@ var ui = """
 
 func _ready() -> void:
 	load_from_string(ui)
+
+func _add_equip():
+	scene_main.add_equip()

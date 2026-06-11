@@ -449,7 +449,32 @@ impl GdUIGrid {
             self.tooltip_node = self.find_tooltip_node();
         }
         if let Some(ref mut tooltip_ctrl) = self.tooltip_node {
-            // 从 item 的 meta 中读取 name 和 desc（安全获取，避免 nil 传入导致 panic）
+            // 从 item 的 __item_data meta 中读取完整数据字典
+            let item_data_key = StringName::from("__item_data");
+            if item.has_meta(&item_data_key) {
+                let item_data = item.get_meta(&item_data_key);
+                if item_data.get_type() == godot::builtin::VariantType::DICTIONARY {
+                    if let Ok(dict) = item_data.try_to::<Dictionary<Variant, Variant>>() {
+                        // 调用 update_data 解析自定义子节点的 {{key}} 模板绑定
+                        tooltip_ctrl.call(&StringName::from("update_data"), &[dict.to_variant()]);
+
+                        // 兼容内置 title/content label：从字典中读取 name/desc
+                        let name_val = dict.get(&"name".to_variant()).unwrap_or(Variant::nil());
+                        let name_str = name_val.to_string();
+                        if name_str.is_empty() {
+                            return;
+                        }
+                        let desc_val = dict.get(&"desc".to_variant()).unwrap_or(Variant::nil());
+                        let desc_str = desc_val.to_string();
+                        tooltip_ctrl.call(&StringName::from("set_tooltip_title"), &[GString::from(&name_str).to_variant()]);
+                        tooltip_ctrl.call(&StringName::from("set_tooltip_content"), &[GString::from(&desc_str).to_variant()]);
+                        tooltip_ctrl.call(&StringName::from("show_tooltip"), &[]);
+                        return;
+                    }
+                }
+            }
+
+            // 降级：从 item 的 meta 中读取 name 和 desc（兼容旧数据格式）
             let name_key = StringName::from("name");
             let desc_key = StringName::from("desc");
             if !item.has_meta(&name_key) {

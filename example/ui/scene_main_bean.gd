@@ -61,8 +61,17 @@ var inventory_data: Array = [
 	{"name": "", "desc": ""},
 ]
 
-static func ins() -> GdBean:
+static func ins() -> SUIMain:
 	var res = GdBean.bean("scene_main", func():
 		return SUIMain.new()
 	)
 	return res
+
+func add_equip():
+	equip_data.append({
+		"icon": "[Q]",
+		"count": "x2",
+		"name": "QQ Health Potion",
+		"desc": "QQ Restore 50 HP\nA red glowing potion.",
+	})
+	emit(["equip_data"])
