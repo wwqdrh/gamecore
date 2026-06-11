@@ -74,7 +74,7 @@ core 是一个基于 Rust 的 Godot 4 GDExtension 项目，使用 gdext 库与 G
     - GdUiBuilder：UI 构建器类（继承 RefCounted），暴露给 GDScript 的 API
     - 解析器：自写 HTML 子集解析器，支持标签/属性/样式块/自闭合标签/注释
     - 构建器：AST → Godot Control 节点树，支持容器/控件实例化、属性设置、StyleBoxFlat 样式、信号绑定
-    - 支持的容器：VBoxContainer、HBoxContainer、GridContainer、MarginContainer、ScrollContainer、TabContainer、CenterContainer、PanelContainer
+    - 支持的容器：VBoxContainer、HBoxContainer、GridContainer、MarginContainer、ScrollContainer、TabContainer、CenterContainer、PanelContainer、Tab
     - 支持的控件：Label、Button、CheckButton、HSlider、ColorRect、OptionButton、Panel、TextureRect、RichTextLabel、LineEdit、ProgressBar、SpinBox、HSeparator、VSeparator、NinePatchRect、PopupPanel、Tooltip、Drawer
     - 样式系统：通过 `<style>` 块定义 CSS 类样式，映射到 Godot StyleBoxFlat
     - 信号绑定：通过 `on_xxx` 属性声明，`connect_signals()` 方法批量连接
@@ -85,8 +85,8 @@ core 是一个基于 Rust 的 Godot 4 GDExtension 项目，使用 gdext 库与 G
       - GdUIGrid：网格列表（继承 GridContainer），同上 + 移动端触摸长按 + patch_item
       - GdListHelper：列表辅助工具（初始化/更新容器/节点值设置/信号批量绑定）
       - GdSlotHighlight/GdSlotFill：方形/圆形高亮和填充效果（Shader）
-    - GML 标签：`<UIHList>`、`<UIVList>`、`<UIGrid>`、`<PopupPanel>`、`<Tooltip>`、`<Drawer>`
-    - 新增属性：size_flags_horizontal、size_flags_vertical、color（ColorRect）、toggle_mode、button_pressed、items（OptionButton）、selected、popup_title、popup_width、close_on_overlay、tooltip_title、tooltip_content、delay、offset_x、offset_y、max_width、direction、slide_width、animation_duration、drawer_title
+    - GML 标签：`<UIHList>`、`<UIVList>`、`<UIGrid>`、`<PopupPanel>`、`<Tooltip>`、`<Drawer>`、`<Tab>`
+    - 新增属性：size_flags_horizontal、size_flags_vertical、color（ColorRect）、toggle_mode、button_pressed、items（OptionButton）、selected、popup_title、popup_width、close_on_overlay、tooltip_title、tooltip_content、delay、offset_x、offset_y、max_width、direction、slide_width、animation_duration、drawer_title、title（Tab）、current_tab（TabContainer）、tabs_visible（TabContainer）
     - 模板绑定语法：GML 属性值中使用 `{{key}}` 格式（如 `text="{{icon}}"`），builder 阶段记录绑定关系到 meta（`__tpl_{key}`、`__tpl_keys`、`__tpl_attr`），update 阶段 `resolve_template_bindings_recursive` 递归解析并设置值
     - Tooltip 自动绑定：UIHList/UIGrid 的 `tooltip` 属性指定 Tooltip 节点名，鼠标进入/离开子节点时自动从 item 的 meta 读取 name/desc 显示提示框，无需在 GDScript 中手动绑定信号
     - Drawer 初始隐藏：`ready()` 中直接设置 `visible=false` 和 overlay 透明，避免初始状态灰色全屏遮挡
@@ -94,7 +94,7 @@ core 是一个基于 Rust 的 Godot 4 GDExtension 项目，使用 gdext 库与 G
     - 数据自动绑定：UIHList/UIGrid 的 `data` 属性支持两种格式：
       - 简单变量名（如 `data="equip_data"`）：从 GDScript 脚本变量读取（受 gdext 限制可能返回 NIL）
       - GdBean 引用（如 `data="bean:scene_main:equip_data"`）：从 GdBean 实例读取属性值，支持响应式更新（bean 属性变更时自动更新绑定的 UI 节点）
-    - GdBean 响应式绑定：`data="bean:bean_id:property_key"` 格式通过 `get_bean_by_id()` 查找 GdBean 实例，调用 `get_value_by_key()` 获取数据，并通过 `bean.watch()` 注册回调，属性变更时自动调用 `on_bean_data_changed()` 更新节点
+    - GdBean 响应式绑定：`data="bean:bean_id:property_key"` 格式通过 `get_bean_by_id()` 查找 GdBean 实例，调用 `get_value_by_key()` 获取数据，并通过 `bean.watch()` 注册回调，属性变更时自动调用 `on_bean_data_changed_bound()` 更新节点。watch 回调延迟注册（call_deferred），避免 bean 立即触发回调时与 `parse_and_build` 的 `&mut self` 借用冲突
     - 内部信号绑定方法自动适配：Toggle/Show/Hide 动作通过 `has_method()` 检测目标节点方法，Drawer 使用 `toggle`/`open`/`close`，PopupPanel 使用 `toggle_popup`/`show_popup`/`hide_popup`
     - GDScript 继承 GdGmlScene 时需在 `_ready()` 中调用 `load_gml()` 加载 GML（gdext 的 `IControl::ready()` 不可从 GDScript `super._ready()` 调用）
     - 测试用例：12 个解析器测试（含列表标签、错误处理、深度嵌套等）
@@ -192,7 +192,8 @@ core/
 │       ├── scene_title.gd      # 游戏标题界面根节点脚本
 │       ├── scene_title_gml.gd  # 游戏标题界面GML控制器（继承GdGmlScene）
 │       ├── scene_title.gml     # 游戏标题界面GML布局
-│       └── scene_main.gml      # 游戏主界面GML布局（装备栏+Tooltip+Drawer）
+│       ├── scene_main.gml      # 游戏主界面GML布局（装备栏+Tooltip+Drawer）
+│       └── scene_gallery.gd    # 图鉴界面GML控制器（PopupPanel+TabContainer+UIGrid）
 ├── PROJECT.md              # 本文档
 └── FILES.md                # 文件功能索引
 ```
@@ -724,6 +725,9 @@ GdUiBuilder 是一个继承 RefCounted 的 Godot 类，在 GDScript 中通过 `G
 | `popup_title` | 弹窗标题（PopupPanel） |
 | `popup_width` | 弹窗宽度（PopupPanel） |
 | `close_on_overlay` | 点击遮罩关闭弹窗（PopupPanel，true/false） |
+| `title` | Tab 页标题（Tab 标签，TabContainer 用节点名作为 tab 标题） |
+| `current_tab` | 当前选中 tab 索引（TabContainer） |
+| `tabs_visible` | 是否显示 tab 栏（TabContainer，true/false） |
 
 ### 样式属性
 
@@ -960,6 +964,7 @@ GdGmlScene 是一个继承 Control 的 GML 文件加载节点，位于 `rust/src
 | `clear_content()` | 清除已加载的内容 |
 | `is_loaded() -> bool` | 是否已加载 |
 | `on_bean_data_changed(node_name: String, data: Variant)` | GdBean 响应式回调，属性变更时自动更新对应节点 |
+| `on_bean_data_changed_bound(data: Variant, _metas: Variant, node_name: String)` | GdBean 响应式回调（bind 版），通过 callable.bind() 注册时使用 |
 
 ### 信号
 
@@ -1124,3 +1129,5 @@ cargo build -p core --release
 | 2026-06-11 | example/ui/scene_main_bean.gd | 新建游戏主界面数据 Bean（继承 GdBean），管理装备栏和背包数据 |
 | 2026-06-11 | example/ui/scene_main_gml.gd | 重构：移除内联数据，在 _ready() 中初始化 GdBean 并调用 load_gml() |
 | 2026-06-11 | example/ui/scene_main.gml | data 属性改为 bean:scene_main:equip_data 格式 |
+| 2026-06-11 | rust/src/ui/builder.rs | 新增 Tab 标签支持（映射为 VBoxContainer）；新增 title 属性处理（Tab 标签的 title 覆盖节点名，TabContainer 用节点名作为 tab 标题）；新增 current_tab/tabs_visible 属性处理（TabContainer） |
+| 2026-06-11 | example/ui/scene_gallery.gd | 新建图鉴界面 GML 控制器（继承 GdGmlScene），居中按钮 + PopupPanel 弹窗 + TabContainer（Weapons/Armor/Items 三个 Tab 页，每个含描述文字 + UIGrid 网格列表） |

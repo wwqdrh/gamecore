@@ -236,8 +236,8 @@
 ### [rust/src/ui/builder.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/builder.rs)
 - **UI构建器**
 - 将AST转换为Godot Control节点树
-- 支持容器/控件实例化（VBox/HBox/Grid/Margin/Scroll/Tab/Center/PanelContainer + Label/Button/CheckButton/HSlider/ColorRect/OptionButton/Panel/TextureRect/RichTextLabel/LineEdit/ProgressBar/SpinBox/HSeparator/VSeparator/NinePatchRect/PopupPanel/Tooltip/Drawer）
-- 属性设置：text/font_size/align/anchor/margin/size/bbcode/texture/stretch_mode/columns/visible/disabled/size_flags_horizontal/size_flags_vertical/color/toggle_mode/button_pressed/items/selected/popup_title/popup_width/close_on_overlay/tooltip_title/tooltip_content/delay/offset_x/offset_y/max_width/direction/slide_width/animation_duration/drawer_title等
+- 支持容器/控件实例化（VBox/HBox/Grid/Margin/Scroll/Tab/Center/PanelContainer/Tab + Label/Button/CheckButton/HSlider/ColorRect/OptionButton/Panel/TextureRect/RichTextLabel/LineEdit/ProgressBar/SpinBox/HSeparator/VSeparator/NinePatchRect/PopupPanel/Tooltip/Drawer）
+- 属性设置：text/font_size/align/anchor/margin/size/bbcode/texture/stretch_mode/columns/visible/disabled/size_flags_horizontal/size_flags_vertical/color/toggle_mode/button_pressed/items/selected/popup_title/popup_width/close_on_overlay/tooltip_title/tooltip_content/delay/offset_x/offset_y/max_width/direction/slide_width/animation_duration/drawer_title/title/current_tab/tabs_visible等
 - 模板绑定：`{{key}}` 语法检测，记录 `__tpl_{key}`/`__tpl_keys`/`__tpl_attr` 元数据
 - StyleBoxFlat样式应用：background/border_radius/border_color/border_width/padding/color
 - 信号绑定元数据：on_xxx属性存储为__signal_xxx元数据
@@ -284,8 +284,8 @@
 - 数据自动绑定：加载后扫描 __data_var 元数据，支持两种格式：
   - 简单变量名（如 `data="equip_data"`）：从脚本对象读取变量
   - GdBean 引用（如 `data="bean:scene_main:equip_data"`）：从 GdBean 实例读取属性值，支持响应式更新
-- GdBean 响应式绑定：通过 bean.watch() 注册回调，属性变更时自动调用 on_bean_data_changed() 更新节点
-- 方法：load_gml, load_from_string, reload, connect_signals, get_content, find_node, clear_content, is_loaded, on_bean_data_changed
+- GdBean 响应式绑定：通过 bean.watch() 注册回调，属性变更时自动调用 on_bean_data_changed_bound() 更新节点
+- 方法：load_gml, load_from_string, reload, connect_signals, get_content, find_node, clear_content, is_loaded, on_bean_data_changed, on_bean_data_changed_bound
 - 信号：s_gml_loaded, s_gml_load_failed
 
 ### [rust/src/ui/ui_list_helper.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/ui_list_helper.rs)
@@ -450,6 +450,13 @@
 - 管理装备栏数据（equip_data）和背包数据（inventory_data）
 - 属性变更时自动触发 watch 回调，更新绑定的 UI 节点
 
+### [example/ui/scene_gallery.gd](file:///Users/dengronghui/project/gamekit/core/example/ui/scene_gallery.gd)
+- 图鉴界面 GML 控制器（继承 GdGmlScene）
+- 居中按钮点击打开 PopupPanel 弹窗
+- 弹窗内含 TabContainer（Weapons/Armor/Items 三个 Tab 页）
+- 每个 Tab 页包含顶部描述文字 + UIGrid 网格列表
+- 数据通过脚本变量自动绑定（weapon_data/armor_data/item_data）
+
 ## 构建脚本
 
 ### [build.sh](file:///Users/dengronghui/project/gamekit/core/build.sh)
@@ -582,3 +589,7 @@
 | 2026-06-11 | rust/src/ui/ui_hlist.rs | show_tooltip_for_item 优先读取 __item_data 调用 update_data，降级兼容旧格式 |
 | 2026-06-11 | rust/src/ui/ui_grid.rs | 同 UIHList，show_tooltip_for_item 优先读取 __item_data |
 | 2026-06-11 | rust/src/ui/builder.rs | 新增 max_height 属性解析 |
+| 2026-06-11 | rust/src/state/bean.rs | 修复 watch 回调参数：统一为 2 参数调用 (value, metas)，删除 1 参数调用，修复 Callable.bind() 追加参数导致类型转换错误 |
+| 2026-06-11 | rust/src/ui/ui_gml_scene.rs | 修复 GdBean 响应式回调：新增 on_bean_data_changed_bound() 适配 callable.bind() 追加参数顺序，注册回调改用新函数 |
+| 2026-06-11 | rust/src/ui/builder.rs | 新增 Tab 标签支持（映射为 VBoxContainer）；新增 title 属性处理（Tab 标签的 title 覆盖节点名）；新增 current_tab/tabs_visible 属性处理（TabContainer） |
+| 2026-06-11 | example/ui/scene_gallery.gd | 新建图鉴界面 GML 控制器（继承 GdGmlScene），居中按钮 + PopupPanel + TabContainer（Weapons/Armor/Items 三个 Tab 页，每个含描述文字 + UIGrid） |

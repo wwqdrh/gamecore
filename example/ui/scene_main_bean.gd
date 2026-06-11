@@ -65,6 +65,7 @@ static func ins() -> SUIMain:
 	var res = GdBean.bean("scene_main", func():
 		return SUIMain.new()
 	)
+	res.reinit([])
 	return res
 
 func add_equip():

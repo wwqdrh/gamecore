@@ -77,6 +77,12 @@ impl UiBuilder {
         if let Some(name) = node.attributes.iter().find(|(k, _)| k == "name") {
             control.set_name(&StringName::from(&name.1));
         }
+        // Tab 标签的 title 属性覆盖节点名（TabContainer 用节点名作为 tab 标题）
+        if node.tag == "Tab" {
+            if let Some(title) = node.attributes.iter().find(|(k, _)| k == "title") {
+                control.set_name(&StringName::from(&title.1));
+            }
+        }
 
         // 应用属性
         let mut class_name: Option<String> = None;
@@ -84,6 +90,7 @@ impl UiBuilder {
             match key.as_str() {
                 "class" => class_name = Some(value.clone()),
                 "name" => { /* 已处理 */ }
+                "title" => { /* Tab 标签的 title 已在上方处理（设置节点名） */ }
                 _ => {
                     if key.starts_with("on_") {
                         // 信号绑定延迟处理（需要节点在场景树中）
@@ -152,6 +159,8 @@ impl UiBuilder {
             "TabContainer" => TabContainer::new_alloc().upcast(),
             "CenterContainer" => CenterContainer::new_alloc().upcast(),
             "PanelContainer" => PanelContainer::new_alloc().upcast(),
+            // Tab 页容器（TabContainer 的子标签）
+            "Tab" => VBoxContainer::new_alloc().upcast(),
             // 控件
             "Label" => Label::new_alloc().upcast(),
             "Button" => Button::new_alloc().upcast(),
@@ -684,6 +693,23 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
                     _ => 0,
                 };
                 control.set(&StringName::from("direction"), &dir.to_variant());
+            }
+        }
+        // TabContainer 特有属性
+        "current_tab" => {
+            if tag == "TabContainer" {
+                if let Ok(idx) = value.parse::<i32>() {
+                    let mut tc = control.cast::<TabContainer>();
+                    tc.set_current_tab(idx);
+                    return tc.upcast();
+                }
+            }
+        }
+        "tabs_visible" => {
+            if tag == "TabContainer" {
+                let mut tc = control.cast::<TabContainer>();
+                tc.set_tabs_visible(value != "false" && value != "0");
+                return tc.upcast();
             }
         }
         "slide_width" => {

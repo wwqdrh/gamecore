@@ -660,7 +660,7 @@ impl GdBean {
     }
 
     #[func]
-    fn updates(&mut self, data: VarDictionary, metas: VarDictionary, force: bool) {
+    fn updates(&mut self, data: VarDictionary, metas: VarDictionary, #[opt(default = true)] force: bool) {
         let keys = data.keys_array();
         for i in 0..keys.len() {
             let Some(key) = keys.get(i) else { continue };
@@ -672,7 +672,7 @@ impl GdBean {
     }
 
     #[func]
-    fn update(&mut self, key: GString, value: Variant, metas: VarDictionary, force: bool) {
+    fn update(&mut self, key: GString, value: Variant, metas: VarDictionary, #[opt(default = true)] force: bool) {
         let key_str = key.to_string();
         let parts: Vec<&str> = key_str.split(';').collect();
         let label = parts[0];
@@ -761,8 +761,17 @@ impl GdBean {
         if let Some(callbacks) = self.callback_map.get_mut(&key_str) {
             callbacks.retain(|cb| cb.is_valid());
             for cb in callbacks.iter() {
-                cb.call(&[value.clone()]);
-                cb.call(&[value.clone(), metas.clone().to_variant()]);
+                // cb.call(&[value.clone(), metas.clone().to_variant()]);
+                // 获取回调期望的参数数量
+                let arg_count = cb.get_argument_count();
+                let args = if arg_count >= 2 {
+                    // 如果至少需要两个参数，则传递 value 和 metas
+                    vec![value.clone(), metas.clone().to_variant()]
+                } else {
+                    // 否则只传递 value
+                    vec![value.clone()]
+                };
+                cb.call(&args);
             }
         }
 
@@ -848,8 +857,16 @@ impl GdBean {
         self.registered_callback.insert(cbid, true);
 
         let val = self.get_value_by_key(key.clone());
-        callback.call(&[val.clone()]);
-        callback.call(&[val, VarDictionary::new().to_variant()]);
+        // callback.call(&[val, VarDictionary::new().to_variant()]);
+        let arg_count = callback.get_argument_count();
+        let args = if arg_count >= 2 {
+            // 如果至少需要两个参数，则传递 value 和 metas
+            vec![val.clone(), VarDictionary::new().to_variant()]
+        } else {
+            // 否则只传递 value
+            vec![val.clone()]
+        };
+        callback.call(&args);
     }
 
     #[func]
@@ -958,7 +975,6 @@ impl GdBean {
             if let Some(callbacks) = self.callback_map.get_mut(&key_str) {
                 callbacks.retain(|cb| cb.is_valid());
                 for cb in callbacks.iter() {
-                    cb.call(&[val.clone()]);
                     cb.call(&[val.clone(), VarDictionary::new().to_variant()]);
                 }
             }
