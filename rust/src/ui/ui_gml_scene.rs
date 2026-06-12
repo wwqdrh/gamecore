@@ -100,10 +100,12 @@ impl GdGmlScene {
     }
 
     /// 按 name 查找内容中的子节点
+    /// 使用 owned=false 以支持查找 PopupPanel/Drawer/Tooltip 内部内容区域的子节点
+    /// （这些子节点的 owner 被设为 content_container 而非场景根节点）
     #[func]
     fn find_node(&self, name: GString) -> Option<Gd<Control>> {
         if let Some(ref root) = self.content_root {
-            let found = root.find_child(&name);
+            let found = root.find_child_ex(&name).recursive(true).owned(false).done();
             if let Some(node) = found {
                 return node.try_cast::<Control>().ok();
             }
@@ -179,7 +181,7 @@ impl GdGmlScene {
     fn update_node_with_bean_data(&mut self, node_name: GString, data: Variant) {
         if data.get_type() == VariantType::ARRAY {
             if let Some(node) = self.find_node(node_name.clone()) {
-                godot_print!("[GmlScene] on_bean_data_changed: updating node='{}' with {} items", node_name, data.to::<Array<Variant>>().len());
+                // //godot_print!("[GmlScene] on_bean_data_changed: updating node='{}' with {} items", node_name, data.to::<Array<Variant>>().len());
                 let mut node_mut = node;
                 node_mut.call(
                     &StringName::from("update"),
@@ -301,7 +303,7 @@ impl GdGmlScene {
 fn auto_bind_data(&mut self, root: &Gd<Control>) {
     let all_beans = get_all_bean_instances();
     let bean_ids: Vec<String> = all_beans.iter().map(|(id, _)| id.clone()).collect();
-    godot_print!("[GmlScene] auto_bind_data: registered beans: {:?}", bean_ids);
+    //godot_print!("[GmlScene] auto_bind_data: registered beans: {:?}", bean_ids);
     let self_node = self.base().clone();
     let watch_registrations = Self::auto_bind_data_recursive(root, &self_node.upcast::<Object>());
 
@@ -321,7 +323,7 @@ fn auto_bind_data_recursive(node: &Gd<Control>, script_obj: &Gd<Object>) -> Arra
     // 检查当前节点是否有 __data_var 元数据
     if node.has_meta(&StringName::from("__data_var")) {
         let data_var_name = node.get_meta(&StringName::from("__data_var")).to_string();
-        godot_print!("[GmlScene] auto_bind_data: node='{}' has __data_var='{}'", node_name, data_var_name);
+        //godot_print!("[GmlScene] auto_bind_data: node='{}' has __data_var='{}'", node_name, data_var_name);
         if !data_var_name.is_empty() {
             // 检查是否为 bean:bean_id:property_key 格式
             if data_var_name.starts_with("bean:") {
@@ -331,14 +333,14 @@ fn auto_bind_data_recursive(node: &Gd<Control>, script_obj: &Gd<Object>) -> Arra
                     let prop_key = parts[1];
                     if let Some(mut bean) = get_bean_by_id(bean_id) {
                         let data = bean.call("get_value_by_key", &[GString::from(prop_key).to_variant()]);
-                        godot_print!("[GmlScene] auto_bind_data: bean '{}' key '{}' type={:?}", bean_id, prop_key, data.get_type());
+                        //godot_print!("[GmlScene] auto_bind_data: bean '{}' key '{}' type={:?}", bean_id, prop_key, data.get_type());
                         if data.get_type() == VariantType::ARRAY {
                             let arr = data.to::<Array<Variant>>();
-                            godot_print!("[GmlScene] auto_bind_data: calling update() on node='{}' with {} items", node_name, arr.len());
+                            //godot_print!("[GmlScene] auto_bind_data: calling update() on node='{}' with {} items", node_name, arr.len());
                             // 日志：打印前3个元素的内容
                             for i in 0..arr.len().min(3) {
                                 if let Some(item) = arr.get(i) {
-                                    godot_print!("[GmlScene] auto_bind_data: item[{}] type={:?} value={}", i, item.get_type(), item);
+                                    //godot_print!("[GmlScene] auto_bind_data: item[{}] type={:?} value={}", i, item.get_type(), item);
                                 }
                             }
                             let mut node_mut = node.clone();
@@ -360,7 +362,7 @@ fn auto_bind_data_recursive(node: &Gd<Control>, script_obj: &Gd<Object>) -> Arra
                             callable.to_variant(),
                         ]);
                         watch_registrations.push(&reg.to_variant());
-                        godot_print!("[GmlScene] auto_bind_data: will defer-register watch on bean '{}' key '{}' for node '{}'", bean_id, prop_key, node_name);
+                        //godot_print!("[GmlScene] auto_bind_data: will defer-register watch on bean '{}' key '{}' for node '{}'", bean_id, prop_key, node_name);
                     } else {
                         let all_beans = get_all_bean_instances();
                         let bean_ids: Vec<String> = all_beans.iter().map(|(id, _)| id.clone()).collect();
@@ -372,9 +374,9 @@ fn auto_bind_data_recursive(node: &Gd<Control>, script_obj: &Gd<Object>) -> Arra
             } else {
                 // 原有逻辑：从脚本对象读取变量
                 let data = script_obj.get(&StringName::from(data_var_name.as_str()));
-                godot_print!("[GmlScene] auto_bind_data: script_obj.get('{}') type={:?}", data_var_name, data.get_type());
+                //godot_print!("[GmlScene] auto_bind_data: script_obj.get('{}') type={:?}", data_var_name, data.get_type());
                 if data.get_type() == VariantType::ARRAY {
-                    godot_print!("[GmlScene] auto_bind_data: calling update() on node='{}' with {} items", node_name, data.to::<Array<Variant>>().len());
+                    //godot_print!("[GmlScene] auto_bind_data: calling update() on node='{}' with {} items", node_name, data.to::<Array<Variant>>().len());
                     let mut node_mut = node.clone();
                     node_mut.call(
                         &StringName::from("update"),

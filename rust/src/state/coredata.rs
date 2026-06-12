@@ -112,7 +112,7 @@ impl GdCoreData {
             }
         }
 
-        // godot_print!("make a coredata, with filestore");
+        // //godot_print!("make a coredata, with filestore");
 
         let filename_owned = filename_.to_string();
         let force_owned = self.initial_force;
@@ -124,13 +124,13 @@ impl GdCoreData {
             let file_in = FileAccess::open(&file_gstr, ModeFlags::READ);
             if file_in.is_none() || force_owned {
                 let new_data = format!("{{\"{}\": {}}}", scope_owned, data_owned);
-                // godot_print!(
+                // //godot_print!(
                 //     "coredata, do load_data, file: {} use default value",
                 //     filename_owned
                 // );
                 GJson::encrypt(&new_data)
             } else {
-                // godot_print!("coredata, do load_data, use value in file");
+                // //godot_print!("coredata, do load_data, use value in file");
                 let mut f = file_in.unwrap();
                 let file_len = f.get_length();
                 let content = f.get_buffer(file_len as i64);
@@ -144,7 +144,7 @@ impl GdCoreData {
             let file = FileAccess::open(&file_gstr, ModeFlags::WRITE);
             if let Some(mut f) = file {
                 f.store_buffer(&PackedByteArray::from(data.as_slice()));
-                // godot_print!("save success");
+                // //godot_print!("save success");
             } else {
                 godot_error!("Failed to save data to file");
             }

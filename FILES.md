@@ -471,6 +471,12 @@
 - 居中按钮点击后左侧弹出 NavMenu 多级级联菜单
 - 一级菜单3项（Audio含三级/Display二级/Controls二级），NavItem递归嵌套
 
+### [example/ui/scene_role.gd](file:///Users/dengronghui/project/gamekit/core/example/ui/scene_role.gd)
+- 角色界面 GML 控制器（继承 GdGmlScene）
+- 居中按钮点击弹出 PopupPanel 角色属性面板
+- 面板左：三列装备区（左侧装备列3槽+中间角色立绘面板+右侧装备列3槽），装备槽带 label 标注类型
+- 面板右：UIGrid 5x5 背包网格，支持分页（Prev/Next 按钮+页码显示）
+
 ## 构建脚本
 
 ### [build.sh](file:///Users/dengronghui/project/gamekit/core/build.sh)
@@ -613,3 +619,8 @@
 | 2026-06-11 | rust/src/ui/mod.rs | 添加ui_nav_menu模块 |
 | 2026-06-11 | rust/src/ui/builder.rs | 注册NavMenu/NavItem标签；新增NavMenu属性处理；移除NavSubItem标签 |
 | 2026-06-11 | example/ui/scene_setting.gd | 新建设置界面GML控制器，居中按钮+NavMenu多级级联菜单 |
+| 2026-06-12 | example/ui/scene_role.gd | 新建角色界面GML控制器，居中按钮+PopupPanel角色属性面板（面板左三列装备区+立绘，面板右UIGrid 5x5背包网格+分页） |
+| 2026-06-12 | rust/src/ui/ui_gml_scene.rs | 修复find_node无法查找PopupPanel/Drawer/Tooltip内部子节点bug：改用find_child_ex设置owned=false |
+| 2026-06-12 | rust/src/ui/builder.rs | 修复信号绑定中find_child无法查找PopupPanel内部节点bug：改用find_child_ex设置owned=false |
+| 2026-06-12 | rust/src/ui/ui_hlist.rs | 修复Tooltip查找中find_child的owned限制：改用find_child_ex设置owned=false |
+| 2026-06-12 | rust/src/ui/ui_grid.rs | 同ui_hlist.rs，修复Tooltip查找中find_child的owned限制 |

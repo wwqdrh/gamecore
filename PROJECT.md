@@ -1214,3 +1214,8 @@ cargo build -p core --release
 | 2026-06-11 | rust/src/ui/mod.rs | 添加ui_nav_menu模块 |
 | 2026-06-11 | rust/src/ui/builder.rs | 注册NavMenu/NavItem标签；NavItem的text属性存储为__nav_text meta；新增NavMenu属性（direction/menu_width/sub_menu_width/animation_duration/close_on_overlay）；移除NavSubItem标签 |
 | 2026-06-11 | example/ui/scene_setting.gd | 新建设置界面GML控制器（继承GdGmlScene），居中按钮+NavMenu多级级联菜单（Audio含三级/Display二级/Controls二级） |
+| 2026-06-12 | example/ui/scene_role.gd | 新建角色界面GML控制器（继承GdGmlScene），居中按钮+PopupPanel角色属性面板（面板左三列装备区+立绘，面板右UIGrid 5x5背包网格+分页） |
+| 2026-06-12 | rust/src/ui/ui_gml_scene.rs | 修复find_node无法查找PopupPanel/Drawer/Tooltip内部子节点的bug：改用find_child_ex设置owned=false |
+| 2026-06-12 | rust/src/ui/builder.rs | 修复信号绑定中find_child无法查找PopupPanel内部节点的bug：改用find_child_ex设置owned=false |
+| 2026-06-12 | rust/src/ui/ui_hlist.rs | 修复Tooltip查找中find_child的owned限制：改用find_child_ex设置owned=false |
+| 2026-06-12 | rust/src/ui/ui_grid.rs | 同ui_hlist.rs，修复Tooltip查找中find_child的owned限制 |

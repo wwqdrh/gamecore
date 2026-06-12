@@ -279,7 +279,7 @@ pub fn update_container(target: &mut Gd<Control>, slot: &Gd<Control>, count: i32
     let target_name = target.get_name().to_string();
     // slot 模板始终在 index 0，可见子节点从 index 1 开始
     let visible_count = target.get_child_count() - 1;
-    godot_print!("[ListHelper] update_container: node='{}', count={}, data_size={}, child_count={}, visible_count={}", target_name, count, data_size, target.get_child_count(), visible_count);
+    // //godot_print!("[ListHelper] update_container: node='{}', count={}, data_size={}, child_count={}, visible_count={}", target_name, count, data_size, target.get_child_count(), visible_count);
 
     // 动态调整可见子节点数量（不含 slot 模板）
     if count > 0 {
@@ -608,7 +608,7 @@ fn resolve_template_bindings_recursive(
         let tpl_keys_var = node.get_meta(&StringName::from("__tpl_keys"));
         if tpl_keys_var.get_type() == godot::builtin::VariantType::STRING {
             let keys_str = tpl_keys_var.to_string();
-            godot_print!("[ListHelper] resolve_template: node='{}' has __tpl_keys='{}', simple_keys={:?}", node_name, keys_str, simple_keys.iter().map(|(k, _)| k.as_str()).collect::<Vec<_>>());
+            // //godot_print!("[ListHelper] resolve_template: node='{}' has __tpl_keys='{}', simple_keys={:?}", node_name, keys_str, simple_keys.iter().map(|(k, _)| k.as_str()).collect::<Vec<_>>());
             for attr_name in keys_str.split(',') {
                 let attr_name = attr_name.trim();
                 if attr_name.is_empty() {
@@ -625,7 +625,7 @@ fn resolve_template_bindings_recursive(
                     // 在 simple_keys 中查找对应的值
                     for (key, val) in simple_keys {
                         if key == &data_key {
-                            godot_print!("[ListHelper] resolve_template: node='{}' set {} = {}", node_name, attr_name, val);
+                            //godot_print!("[ListHelper] resolve_template: node='{}' set {} = {}", node_name, attr_name, val);
                             node.set(&StringName::from(attr_name), val);
                             if !used_keys.contains(&data_key) {
                                 used_keys.push(data_key.clone());

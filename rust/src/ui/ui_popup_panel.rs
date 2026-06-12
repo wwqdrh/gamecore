@@ -174,7 +174,7 @@ impl GdPopupPanel {
     /// 确保内部 UI 已构建（供 builder 在添加子节点前调用）
     #[func]
     fn ensure_ui_built(&mut self) {
-        godot_print!("[PopupPanel] ensure_ui_built called, ui_built={}", self.ui_built);
+        //godot_print!("[PopupPanel] ensure_ui_built called, ui_built={}", self.ui_built);
         if !self.ui_built {
             self.build_ui();
         }
@@ -188,7 +188,7 @@ impl GdPopupPanel {
             return;
         }
         self.ui_built = true;
-        godot_print!("[PopupPanel] build_ui called, popup_title={}, popup_width={}", self.popup_title, self.popup_width);
+        //godot_print!("[PopupPanel] build_ui called, popup_title={}, popup_width={}", self.popup_title, self.popup_width);
 
         // 先读取属性值，避免借用冲突
         let overlay_color = self.overlay_color;

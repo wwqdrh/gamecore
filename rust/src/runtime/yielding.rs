@@ -69,7 +69,7 @@ impl WaitUntilFinished for SpireCoroutine {
 ///      node.start_coroutine(
 ///           #[coroutine] move || {
 ///                yield wait_for_signal_untyped(signal);
-///                godot_print!("Signal emitted! Resuming...");
+///                //godot_print!("Signal emitted! Resuming...");
 ///           });
 /// }
 ///
@@ -100,7 +100,7 @@ pub fn wait_for_signal_untyped(signal: Signal) -> SpireYield {
 ///           let node_cp = node.clone();
 ///           #[coroutine] move || {
 ///                yield wait_for_signal(&node_cp.signals().child_entered_tree());
-///                godot_print!("Signal emitted! Resuming...");
+///                //godot_print!("Signal emitted! Resuming...");
 ///           }
 ///     });
 /// }
@@ -134,7 +134,7 @@ where
 ///      node.start_coroutine(
 ///           #[coroutine] move || {
 ///                yield wait_while(move || message.load(Ordering::Relaxed));
-///                godot_print!("Message is no longer true! Resuming...");
+///                //godot_print!("Message is no longer true! Resuming...");
 ///           });
 /// }
 ///
@@ -160,7 +160,7 @@ pub fn wait_while(f: impl FnMut() -> bool + 'static) -> SpireYield { SpireYield:
 ///      node.start_coroutine(
 ///           #[coroutine] move || {
 ///                yield wait_until(move || message.load(Ordering::Relaxed));
-///                godot_print!("Message is true! Resuming...");
+///                //godot_print!("Message is true! Resuming...");
 ///           });
 /// }
 ///
@@ -184,7 +184,7 @@ pub fn wait_until(mut f: impl FnMut() -> bool + 'static) -> SpireYield { SpireYi
 ///      node.start_coroutine(
 ///           #[coroutine] move || {
 ///                yield frames(5);
-///                godot_print!("5 frames have passed! Resuming...");
+///                //godot_print!("5 frames have passed! Resuming...");
 ///           });
 /// }
 ///
@@ -211,7 +211,7 @@ pub const fn frames(frames: i64) -> SpireYield { SpireYield::Frames(frames) }
 ///      node.start_coroutine(
 ///           #[coroutine] move || {
 ///                yield seconds(7.5);
-///                godot_print!("7.5 seconds have passed! Resuming...");
+///                //godot_print!("7.5 seconds have passed! Resuming...");
 ///           });
 /// }
 ///

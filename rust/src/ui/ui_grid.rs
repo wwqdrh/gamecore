@@ -152,7 +152,7 @@ impl GdUIGrid {
 
     /// 更新列表数据
     #[func]
-    fn update(&mut self, data: Array<Variant>, force: bool) {
+    fn update(&mut self, data: Array<Variant>, #[opt(default = true)] force: bool) {
         let slot = self.get_slot();
         if slot.is_none() {
             return;
@@ -432,7 +432,7 @@ impl GdUIGrid {
         // 从直接父节点开始，逐级向上搜索
         let mut current = self.base().get_parent();
         while let Some(parent) = current {
-            if let Some(node) = parent.find_child(&tooltip_gstr) {
+            if let Some(node) = parent.find_child_ex(&tooltip_gstr).recursive(true).owned(false).done() {
                 return node.try_cast::<Control>().ok();
             }
             current = parent.get_parent();

@@ -299,7 +299,7 @@ impl GdConsole {
                     output.push_str(&lua_value_to_string(&arg));
                 }
                 CONSOLE_OUTPUT.lock().push(output.clone());
-                godot_print!("[GdConsole] {}", output);
+                //godot_print!("[GdConsole] {}", output);
                 Ok(())
             })
             .unwrap();

@@ -177,7 +177,7 @@ impl GdUITooltip {
     #[func]
     fn add_content_child(&mut self, mut child: Gd<godot::classes::Node>) {
         let child_name = child.get_name().to_string();
-        godot_print!("[UITooltip] add_content_child: name='{}', has_custom_content={}, panel={}", child_name, self.has_custom_content, self.panel.is_some());
+        //godot_print!("[UITooltip] add_content_child: name='{}', has_custom_content={}, panel={}", child_name, self.has_custom_content, self.panel.is_some());
         // 首次添加自定义子节点时，移除内置的 title/content/separator
         if !self.has_custom_content {
             self.has_custom_content = true;
@@ -195,7 +195,7 @@ impl GdUITooltip {
     /// 供 UIHList/UIGrid 的 show_tooltip_for_item 调用，传递列表项的完整数据
     #[func]
     fn update_data(&mut self, data: Dictionary<Variant, Variant>) {
-        godot_print!("[UITooltip] update_data called, vbox={}", self.vbox.is_some());
+        //godot_print!("[UITooltip] update_data called, vbox={}", self.vbox.is_some());
         if let Some(ref vbox) = self.vbox {
             let keys = data.keys_array();
             let simple_keys: Vec<(String, Variant)> = (0..keys.len())
@@ -208,7 +208,7 @@ impl GdUITooltip {
                 })
                 .collect();
 
-            godot_print!("[UITooltip] update_data: keys={:?}", simple_keys.iter().map(|(k, v)| format!("{}={}", k, v)).collect::<Vec<_>>());
+            //godot_print!("[UITooltip] update_data: keys={:?}", simple_keys.iter().map(|(k, v)| format!("{}={}", k, v)).collect::<Vec<_>>());
 
             let mut vbox = vbox.clone().upcast::<Control>();
             // 打印 vbox 子节点信息
@@ -221,7 +221,7 @@ impl GdUITooltip {
                     } else {
                         false
                     };
-                    godot_print!("[UITooltip] update_data: vbox child[{}] name='{}', has_tpl_keys={}", i, name, has_tpl);
+                    //godot_print!("[UITooltip] update_data: vbox child[{}] name='{}', has_tpl_keys={}", i, name, has_tpl);
                 }
             }
             self.resolve_template_bindings(&mut vbox, &simple_keys);
@@ -357,7 +357,7 @@ impl GdUITooltip {
             let tpl_keys_var = node.get_meta(&StringName::from("__tpl_keys"));
             if tpl_keys_var.get_type() == godot::builtin::VariantType::STRING {
                 let keys_str = tpl_keys_var.to_string();
-                godot_print!("[UITooltip] resolve_template: node='{}' has __tpl_keys='{}'", node_name, keys_str);
+                //godot_print!("[UITooltip] resolve_template: node='{}' has __tpl_keys='{}'", node_name, keys_str);
                 for attr_name in keys_str.split(',') {
                     let attr_name = attr_name.trim();
                     if attr_name.is_empty() {
@@ -373,7 +373,7 @@ impl GdUITooltip {
                         let data_key = data_key_var.to_string();
                         for (key, val) in simple_keys {
                             if key == &data_key {
-                                godot_print!("[UITooltip] resolve_template: node='{}' set {} = {} (data_key={})", node_name, attr_name, val, data_key);
+                                //godot_print!("[UITooltip] resolve_template: node='{}' set {} = {} (data_key={})", node_name, attr_name, val, data_key);
                                 node.set(&StringName::from(attr_name), val);
                                 break;
                             }

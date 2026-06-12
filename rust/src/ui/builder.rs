@@ -204,7 +204,7 @@ impl UiBuilder {
             // 通用 Control
             "Control" => Control::new_alloc(),
             _ => {
-                godot_print!("[UiBuilder] Unknown tag '{}', falling back to Control", tag);
+                // //godot_print!("[UiBuilder] Unknown tag '{}', falling back to Control", tag);
                 Control::new_alloc()
             }
         };
@@ -298,7 +298,7 @@ fn apply_root_attribute(control: &mut Gd<Control>, key: &str, value: &str) {
                 "size" => apply_size(control, value),
                 "visible" => control.set_visible(value != "false" && value != "0"),
                 _ => {
-                    godot_print!("[UiBuilder] Unhandled root attribute: {}='{}'", key, value);
+                    // //godot_print!("[UiBuilder] Unhandled root attribute: {}='{}'", key, value);
                 }
             }
         }
@@ -381,7 +381,7 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
                     return le.upcast();
                 }
                 _ => {
-                    godot_print!("[UiBuilder] Cannot set text on <{}>", tag);
+                    // //godot_print!("[UiBuilder] Cannot set text on <{}>", tag);
                 }
             }
         }
@@ -663,7 +663,7 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
         "data" => {
             if tag == "UIHList" || tag == "UIVList" || tag == "UIGrid" {
                 // 存储数据变量名，由 GdGmlScene 在加载后自动绑定
-                godot_print!("[UiBuilder] Setting __data_var='{}' on node '{}' (tag={})", value, control.get_name(), tag);
+                // //godot_print!("[UiBuilder] Setting __data_var='{}' on node '{}' (tag={})", value, control.get_name(), tag);
                 control.set_meta(&StringName::from("__data_var"), &value.to_variant());
             } else {
                 godot_warn!("[UiBuilder] 'data' attribute ignored on non-list tag '{}' (node='{}')", tag, control.get_name());
@@ -855,7 +855,7 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
             }
         }
         _ => {
-            godot_print!("[UiBuilder] Unhandled attribute: {}='{}' on <{}>", key, value, tag);
+            // //godot_print!("[UiBuilder] Unhandled attribute: {}='{}' on <{}>", key, value, tag);
         }
     }
     control
@@ -1095,7 +1095,7 @@ fn resolve_internal_signals_recursive(node: &mut Gd<Control>, root: &Gd<Control>
                 // 检查是否为内部动作绑定
                 if let Some((action, target_name)) = parse_internal_action(&method_value) {
                     // 在根节点树中查找目标节点
-                    if let Some(target) = root.find_child(&GString::from(target_name.as_str())) {
+                    if let Some(target) = root.find_child_ex(&GString::from(target_name.as_str())).recursive(true).owned(false).done() {
                         let target_obj = target.clone().upcast::<Object>();
                         let callable = match action {
                             InternalAction::Show => {

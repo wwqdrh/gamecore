@@ -796,7 +796,7 @@ impl GdBean {
         let label_var = GString::from(label).to_variant();
 
         if !self.propers.contains(&label_var) {
-            godot_print!("{} not in propers", label);
+            //godot_print!("{} not in propers", label);
             return Variant::nil();
         }
 

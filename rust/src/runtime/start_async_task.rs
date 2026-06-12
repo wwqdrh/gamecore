@@ -19,7 +19,7 @@ pub trait StartAsyncTask {
 	///     node.start_async_task({
     ///         async {
     ///             sig_future.await;
-    ///             godot_print!("Entered tree!");
+    ///             //godot_print!("Entered tree!");
     ///         }
     ///     });
 	/// }
@@ -50,7 +50,7 @@ pub trait StartAsyncTask {
     ///     node.start_async_task({
     ///         async {
     ///             sig_future.await;
-    ///             godot_print!("Entered tree!");
+    ///             //godot_print!("Entered tree!");
     ///         }
     ///     });
     /// }

@@ -384,7 +384,7 @@ impl GdUIHList {
         // 从直接父节点开始，逐级向上搜索
         let mut current = self.base().get_parent();
         while let Some(parent) = current {
-            if let Some(node) = parent.find_child(&tooltip_gstr) {
+            if let Some(node) = parent.find_child_ex(&tooltip_gstr).recursive(true).owned(false).done() {
                 return node.try_cast::<Control>().ok();
             }
             current = parent.get_parent();
@@ -404,13 +404,13 @@ impl GdUIHList {
         if let Some(ref mut tooltip_ctrl) = self.tooltip_node {
             // 从 item 的 __item_data meta 中读取完整数据字典
             let item_data_key = StringName::from("__item_data");
-            godot_print!("[UIHList] show_tooltip_for_item: has_item_data={}", item.has_meta(&item_data_key));
+            //godot_print!("[UIHList] show_tooltip_for_item: has_item_data={}", item.has_meta(&item_data_key));
             if item.has_meta(&item_data_key) {
                 let item_data = item.get_meta(&item_data_key);
-                godot_print!("[UIHList] show_tooltip_for_item: item_data type={:?}", item_data.get_type());
+                //godot_print!("[UIHList] show_tooltip_for_item: item_data type={:?}", item_data.get_type());
                 if item_data.get_type() == godot::builtin::VariantType::DICTIONARY {
                     if let Ok(dict) = item_data.try_to::<Dictionary<Variant, Variant>>() {
-                        godot_print!("[UIHList] show_tooltip_for_item: dict keys={:?}", (0..dict.keys_array().len()).filter_map(|i| dict.keys_array().get(i).map(|v| v.to_string())).collect::<Vec<_>>());
+                        //godot_print!("[UIHList] show_tooltip_for_item: dict keys={:?}", (0..dict.keys_array().len()).filter_map(|i| dict.keys_array().get(i).map(|v| v.to_string())).collect::<Vec<_>>());
                         // 调用 update_data 解析自定义子节点的 {{key}} 模板绑定
                         tooltip_ctrl.call(&StringName::from("update_data"), &[dict.to_variant()]);
 

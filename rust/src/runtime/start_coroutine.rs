@@ -19,7 +19,7 @@ pub trait StartCoroutine {
 	///     node.start_coroutine(
 	///         #[coroutine] || {
 	///             yield frames(5);
-	///             godot_print!("5 frames passed!");
+	///             //godot_print!("5 frames passed!");
 	///         });
 	/// }
 	/// ```
@@ -51,9 +51,9 @@ pub trait StartCoroutine {
 	/// fn showcase_coroutine(node: Gd<Node2D>) {
 	///     node.coroutine(
 	///         #[coroutine] || {
-	///             godot_print!("This is a customized coroutine!");
+	///             //godot_print!("This is a customized coroutine!");
 	///             yield seconds(2.0);
-	///             godot_print!("2 seconds passed!");
+	///             //godot_print!("2 seconds passed!");
 	///         })
 	///         .auto_start(false)
 	///         .process_mode(ProcessMode::WHEN_PAUSED)
