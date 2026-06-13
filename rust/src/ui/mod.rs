@@ -6,6 +6,7 @@
 mod parser;
 mod builder;
 mod gdui_builder;
+mod ui_theme;
 mod ui_list_helper;
 mod ui_hlist;
 mod ui_vlist;

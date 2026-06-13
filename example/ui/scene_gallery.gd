@@ -5,47 +5,47 @@
 extends GdGmlScene
 
 var UI = """
-<ui>
+<ui theme="light">
   <style>
     .gallery-btn {
-      background: #1a1a3e;
-      color: white;
+      background: $bg_primary;
+      color: $text_white;
       border_radius: 6;
-      border_color: #3a3a6e;
+      border_color: $border_default;
       border_width: 1;
       padding: 12;
     }
     .tab-desc {
-      color: #aaaacc;
+      color: $text_secondary;
     }
     .grid-item {
-      background: #1a1a3e;
+      background: $bg_primary;
       border_radius: 4;
-      border_color: #3a3a6e;
+      border_color: $border_default;
       border_width: 1;
       padding: 8;
     }
     .grid-item-name {
-      color: #ccccee;
+      color: $text_primary;
     }
     .grid-item-desc {
-      color: #888899;
+      color: $text_secondary;
     }
   </style>
   <VBoxContainer anchor="full">
     <!-- 居中按钮 -->
     <CenterContainer>
-	  <Button name="GalleryBtn" text="Open Gallery" class="gallery-btn" custom_minimum_size="240,48" on_pressed="show:GalleryPopup" mouse_default_cursor_shape="pointing_hand" />
+	  <Button name="GalleryBtn" text="Open Gallery" class="gallery-btn" custom_minimum_size="30%,6%" on_pressed="show:GalleryPopup" mouse_default_cursor_shape="pointing_hand" />
     </CenterContainer>
   </VBoxContainer>
 
   <!-- 图鉴弹窗 -->
-  <PopupPanel name="GalleryPopup" popup_title="Gallery" popup_width="560" close_on_overlay="true">
-	<TabContainer name="GalleryTabs" custom_minimum_size="500,400">
+  <PopupPanel name="GalleryPopup" popup_title="Gallery" width="65%" height="70%" close_on_overlay="true">
+	<TabContainer name="GalleryTabs" size_flags_horizontal="expand_fill" size_flags_vertical="expand_fill">
 	  <Tab title="Weapons">
 		<Label text="Weapon collection - choose your weapon" class="tab-desc" />
 		<UIGrid name="WeaponGrid" count="6" columns="3" highlight_mode="1" highlight_color="#ffffff30" data="weapon_data">
-		  <MarginContainer class="grid-item" custom_minimum_size="96,96">
+		  <MarginContainer class="grid-item" custom_minimum_size="12%,12%">
             <VBoxContainer>
 			  <Label text="{{name}}" class="grid-item-name" align="center" font_size="12" />
 			  <Label text="{{desc}}" class="grid-item-desc" align="center" font_size="10" />
@@ -56,7 +56,7 @@ var UI = """
 	  <Tab title="Armor">
 		<Label text="Armor collection - protect yourself" class="tab-desc" />
 		<UIGrid name="ArmorGrid" count="6" columns="3" highlight_mode="1" highlight_color="#ffffff30" data="armor_data">
-		  <MarginContainer class="grid-item" custom_minimum_size="96,96">
+		  <MarginContainer class="grid-item" custom_minimum_size="12%,12%">
             <VBoxContainer>
 			  <Label text="{{name}}" class="grid-item-name" align="center" font_size="12" />
 			  <Label text="{{desc}}" class="grid-item-desc" align="center" font_size="10" />
@@ -67,7 +67,7 @@ var UI = """
 	  <Tab title="Items">
 		<Label text="Item collection - useful items" class="tab-desc" />
 		<UIGrid name="ItemGrid" count="6" columns="3" highlight_mode="1" highlight_color="#ffffff30" data="item_data">
-		  <MarginContainer class="grid-item" custom_minimum_size="96,96">
+		  <MarginContainer class="grid-item" custom_minimum_size="12%,12%">
             <VBoxContainer>
 			  <Label text="{{name}}" class="grid-item-name" align="center" font_size="12" />
 			  <Label text="{{desc}}" class="grid-item-desc" align="center" font_size="10" />

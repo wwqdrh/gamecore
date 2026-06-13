@@ -10,61 +10,61 @@ var total_pages = 1
 var bag_data = []
 
 var UI = """
-<ui>
+<ui theme="dark">
   <style>
     .role-btn {
-      background: #2a4a2e;
-      color: #cceecc;
+      background: $bg_button_primary;
+      color: $text_primary;
       border_radius: 6;
-      border_color: #4a8a4e;
+      border_color: $border_highlight;
       border_width: 1;
       padding: 12 24;
     }
     .panel-section {
-      background: #12122a;
+      background: $bg_secondary;
       border_radius: 6;
-      border_color: #3a3a6e;
+      border_color: $border_default;
       border_width: 1;
       padding: 8;
     }
     .equip-slot {
-      background: #1a1a3e;
+      background: $bg_primary;
       border_radius: 4;
-      border_color: #3a3a6e;
+      border_color: $border_default;
       border_width: 1;
       padding: 4;
     }
     .equip-label {
-      color: #8888aa;
+      color: $text_muted;
     }
     .portrait-panel {
-      background: #0e1a2e;
+      background: $bg_panel;
       border_radius: 6;
-      border_color: #2a5a8e;
+      border_color: $border_accent;
       border_width: 2;
       padding: 8;
     }
     .portrait-text {
-      color: #4488cc;
+      color: $text_title;
     }
     .grid-item {
-      background: #1a1a3e;
+      background: $bg_primary;
       border_radius: 4;
-      border_color: #3a3a6e;
+      border_color: $border_default;
       border_width: 1;
       padding: 4;
     }
     .grid-item-name {
-      color: #ccccee;
+      color: $text_primary;
     }
     .page-btn {
-      background: #2a2a4e;
-      color: #ccccee;
+      background: $bg_button;
+      color: $text_primary;
       border_radius: 4;
       padding: 6 16;
     }
     .page-info {
-      color: #8888aa;
+      color: $text_muted;
     }
   </style>
   <Control anchor="full">
@@ -75,7 +75,7 @@ var UI = """
   </Control>
 
   <!-- 角色属性弹窗 -->
-  <PopupPanel name="RolePopup" popup_title="Character" popup_width="900" close_on_overlay="true">
+  <PopupPanel name="RolePopup" popup_title="Character" width="80%" height="80%" close_on_overlay="true">
     <HBoxContainer margin="8" h_separation="12">
       <!-- 面板左：装备区 -->
       <VBoxContainer size_flags_horizontal="expand_fill" h_separation="0" v_separation="4">
@@ -83,37 +83,37 @@ var UI = """
         <HBoxContainer h_separation="8">
           <!-- 左侧装备列 -->
           <VBoxContainer h_separation="0" v_separation="6">
-            <VBoxContainer class="equip-slot" custom_minimum_size="80,80">
+            <VBoxContainer class="equip-slot" custom_minimum_size="10%,10%">
               <Label text="Helmet" class="equip-label" font_size="10" align="center" />
               <Control size_flags_vertical="expand_fill" />
             </VBoxContainer>
-            <VBoxContainer class="equip-slot" custom_minimum_size="80,80">
+            <VBoxContainer class="equip-slot" custom_minimum_size="10%,10%">
               <Label text="Weapon" class="equip-label" font_size="10" align="center" />
               <Control size_flags_vertical="expand_fill" />
             </VBoxContainer>
-            <VBoxContainer class="equip-slot" custom_minimum_size="80,80">
+            <VBoxContainer class="equip-slot" custom_minimum_size="10%,10%">
               <Label text="Ring" class="equip-label" font_size="10" align="center" />
               <Control size_flags_vertical="expand_fill" />
             </VBoxContainer>
           </VBoxContainer>
 
           <!-- 中间角色立绘面板 -->
-          <VBoxContainer class="portrait-panel" custom_minimum_size="200,0" size_flags_horizontal="expand_fill" size_flags_vertical="expand_fill">
+          <VBoxContainer class="portrait-panel" custom_minimum_size="25%,0" size_flags_horizontal="expand_fill" size_flags_vertical="expand_fill">
             <Label text="Portrait" class="portrait-text" font_size="14" align="center" />
             <Control size_flags_vertical="expand_fill" />
           </VBoxContainer>
 
           <!-- 右侧装备列 -->
           <VBoxContainer h_separation="0" v_separation="6">
-            <VBoxContainer class="equip-slot" custom_minimum_size="80,80">
+            <VBoxContainer class="equip-slot" custom_minimum_size="10%,10%">
               <Label text="Armor" class="equip-label" font_size="10" align="center" />
               <Control size_flags_vertical="expand_fill" />
             </VBoxContainer>
-            <VBoxContainer class="equip-slot" custom_minimum_size="80,80">
+            <VBoxContainer class="equip-slot" custom_minimum_size="10%,10%">
               <Label text="Shield" class="equip-label" font_size="10" align="center" />
               <Control size_flags_vertical="expand_fill" />
             </VBoxContainer>
-            <VBoxContainer class="equip-slot" custom_minimum_size="80,80">
+            <VBoxContainer class="equip-slot" custom_minimum_size="10%,10%">
               <Label text="Boots" class="equip-label" font_size="10" align="center" />
               <Control size_flags_vertical="expand_fill" />
             </VBoxContainer>
@@ -125,7 +125,7 @@ var UI = """
       <VBoxContainer size_flags_horizontal="expand_fill" h_separation="0" v_separation="4">
         <Label text="Backpack" font_size="16" class="equip-label" />
         <UIGrid name="BagGrid" count="25" columns="5" highlight_mode="1" highlight_color="#ffffff30" data="current_bag_data">
-          <MarginContainer class="grid-item" custom_minimum_size="56,56">
+          <MarginContainer class="grid-item" custom_minimum_size="7%,7%">
             <VBoxContainer>
               <Label text="{{name}}" class="grid-item-name" align="center" font_size="10" />
             </VBoxContainer>

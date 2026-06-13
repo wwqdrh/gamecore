@@ -24,13 +24,17 @@ pub struct StyleRule {
     pub properties: HashMap<String, String>,
 }
 
-/// 解析结果：包含根节点和样式规则
+/// 解析结果：包含根节点、样式规则和主题变量
 #[derive(Debug, Clone)]
 pub struct ParseResult {
     /// 根节点
     pub root: UiNode,
     /// 样式规则列表
     pub styles: Vec<StyleRule>,
+    /// 主题变量（来自 <theme> 块和内置主题）
+    pub theme_vars: HashMap<String, String>,
+    /// 主题名称（来自 <ui theme="xxx">）
+    pub theme_name: Option<String>,
 }
 
 /// 解析错误
@@ -63,6 +67,8 @@ impl UiParser {
     /// 解析完整的 UI 标记文本
     pub fn parse(&mut self) -> Result<ParseResult, ParseError> {
         let mut styles = Vec::new();
+        let mut theme_vars = HashMap::new();
+        let mut theme_name: Option<String> = None;
         let mut root_children = Vec::new();
 
         self.skip_whitespace_and_comments();
@@ -77,6 +83,13 @@ impl UiParser {
 
         // 解析 <ui> 的属性
         let ui_attrs = self.parse_attributes()?;
+
+        // 提取 theme 属性
+        for (key, value) in &ui_attrs {
+            if key == "theme" {
+                theme_name = Some(value.clone());
+            }
+        }
 
         self.skip_whitespace();
 
@@ -110,6 +123,21 @@ impl UiParser {
                 break;
             }
 
+            // 检查 <theme> 块
+            if self.expect_str("<theme") {
+                self.skip_whitespace();
+                if !self.expect_char('>') {
+                    return Err(ParseError {
+                        message: "Expected '>' after <theme".to_string(),
+                        position: self.pos,
+                    });
+                }
+                let theme_content = self.read_until_close_tag("theme")?;
+                let parsed_vars = crate::ui::ui_theme::parse_theme_block(&theme_content);
+                theme_vars.extend(parsed_vars);
+                continue;
+            }
+
             // 检查 <style> 块
             if self.expect_str("<style") {
                 self.skip_whitespace();
@@ -136,7 +164,7 @@ impl UiParser {
             children: root_children,
         };
 
-        Ok(ParseResult { root, styles })
+        Ok(ParseResult { root, styles, theme_vars, theme_name })
     }
 
     /// 解析一个节点（标签 + 属性 + 子节点）
@@ -703,5 +731,21 @@ mod tests {
         </ui>"#;
         let result = UiParser::new(input).parse().unwrap();
         assert_eq!(result.root.attributes[0], ("theme".to_string(), "dark".to_string()));
+        assert_eq!(result.theme_name, Some("dark".to_string()));
+    }
+
+    #[test]
+    fn test_parse_theme_block() {
+        let input = r#"<ui theme="dark">
+            <theme>
+                bg_primary: #1a1a3e;
+                text_primary: #ccccee;
+            </theme>
+            <Label text="test" />
+        </ui>"#;
+        let result = UiParser::new(input).parse().unwrap();
+        assert_eq!(result.theme_name, Some("dark".to_string()));
+        assert_eq!(result.theme_vars.get("bg_primary").unwrap(), "#1a1a3e");
+        assert_eq!(result.theme_vars.get("text_primary").unwrap(), "#ccccee");
     }
 }

@@ -3,11 +3,11 @@
 extends GdGmlScene
 
 var UI = """
-<ui>
+<ui theme="dark">
   <style>
     .setting-btn {
-      background: #2a2a4e;
-      color: #ccccee;
+      background: $bg_button;
+      color: $text_primary;
       border_radius: 6;
       padding: 12 24;
     }
@@ -20,7 +20,7 @@ var UI = """
   </Control>
 
   <!-- 导航菜单：左侧弹出，NavItem 递归嵌套支持多级菜单 -->
-  <NavMenu name="NavMenu" direction="left" menu_width="160" sub_menu_width="200" close_on_overlay="true" animation_duration="0.2">
+  <NavMenu name="NavMenu" direction="left" menu_width="15%" sub_menu_width="20%" close_on_overlay="true" animation_duration="0.2">
 	<NavItem text="Audio">
 	  <NavItem text="Volume">
 		<NavItem text="Master" />

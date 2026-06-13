@@ -27,18 +27,27 @@ use super::ui_popup_panel::GdPopupPanel;
 use super::ui_tooltip::GdUITooltip;
 use super::ui_drawer::GdUIDrawer;
 use super::ui_nav_menu::GdUINavMenu;
+use super::ui_theme::{ThemeVars, get_builtin_theme, get_theme_color, resolve_theme_vars};
 
 /// UI 构建器：将 AST 转换为 Godot Control 节点树
 pub struct UiBuilder {
     /// 样式规则表：class_name -> StyleRule
     styles: HashMap<String, StyleRule>,
+    /// 主题变量表
+    theme_vars: ThemeVars,
 }
 
 impl UiBuilder {
     pub fn new() -> Self {
         Self {
             styles: HashMap::new(),
+            theme_vars: ThemeVars::new(),
         }
+    }
+
+    /// 设置主题变量表
+    pub fn set_theme_vars(&mut self, vars: ThemeVars) {
+        self.theme_vars = vars;
     }
 
     /// 从解析结果构建 Control 节点树
@@ -46,6 +55,19 @@ impl UiBuilder {
         // 构建样式索引
         for style in &parse_result.styles {
             self.styles.insert(style.class_name.clone(), style.clone());
+        }
+
+        // 构建主题变量：先加载内置主题，再用 <theme> 块覆盖
+        if let Some(ref theme_name) = parse_result.theme_name {
+            if let Some(builtin_vars) = get_builtin_theme(theme_name) {
+                for (key, value) in builtin_vars {
+                    self.theme_vars.entry(key).or_insert(value);
+                }
+            }
+        }
+        // <theme> 块中的变量覆盖内置主题
+        for (key, value) in &parse_result.theme_vars {
+            self.theme_vars.insert(key.clone(), value.clone());
         }
 
         // 创建根 Control 节点
@@ -107,6 +129,9 @@ impl UiBuilder {
                 }
             }
         }
+
+        // 应用主题默认颜色（在 class 样式之前，class 可覆盖）
+        self.apply_theme_defaults(&mut control, &node.tag);
 
         // 应用 class 样式
         if let Some(ref cn) = class_name {
@@ -216,51 +241,57 @@ impl UiBuilder {
         if let Some(style_rule) = self.styles.get(class_name) {
             // 创建 StyleBoxFlat 并应用样式属性
             let mut style_box = StyleBoxFlat::new_gd();
-            let bg_color_key = if style_rule.properties.contains_key("background") {
+
+            // 解析样式属性值，替换主题变量
+            let resolved_props: HashMap<String, String> = style_rule.properties.iter()
+                .map(|(k, v)| (k.clone(), resolve_theme_vars(v, &self.theme_vars)))
+                .collect();
+
+            let bg_color_key = if resolved_props.contains_key("background") {
                 "background"
-            } else if style_rule.properties.contains_key("bg_color") {
+            } else if resolved_props.contains_key("bg_color") {
                 "bg_color"
             } else {
                 ""
             };
 
             if !bg_color_key.is_empty() {
-                if let Some(color) = parse_color(style_rule.properties.get(bg_color_key).unwrap()) {
+                if let Some(color) = parse_color(resolved_props.get(bg_color_key).unwrap()) {
                     style_box.set_bg_color(color);
                 }
             }
 
-            if let Some(border_radius) = style_rule.properties.get("border_radius") {
+            if let Some(border_radius) = resolved_props.get("border_radius") {
                 if let Ok(r) = border_radius.parse::<i32>() {
                     style_box.set_corner_radius_all(r);
                 }
             }
 
-            if let Some(border_color) = style_rule.properties.get("border_color") {
+            if let Some(border_color) = resolved_props.get("border_color") {
                 if let Some(color) = parse_color(border_color) {
                     style_box.set_border_color(color);
-                    let border_width = style_rule.properties.get("border_width")
+                    let border_width = resolved_props.get("border_width")
                         .and_then(|v| v.parse::<i32>().ok())
                         .unwrap_or(1);
                     style_box.set_border_width_all(border_width);
                 }
             }
 
-            if let Some(padding) = style_rule.properties.get("padding") {
+            if let Some(padding) = resolved_props.get("padding") {
                 if let Ok(p) = padding.parse::<i32>() {
                     style_box.set_content_margin_all(p as f32);
                 }
             }
 
             // 应用 color 属性（文字颜色）到控件
-            if let Some(color_str) = style_rule.properties.get("color") {
+            if let Some(color_str) = resolved_props.get("color") {
                 if let Some(color) = parse_color(color_str) {
                     apply_text_color(control, tag, color);
                 }
             }
 
             // 应用 texture 属性（纹理）到 TextureButton
-            if let Some(texture_path) = style_rule.properties.get("texture") {
+            if let Some(texture_path) = resolved_props.get("texture") {
                 if tag == "TextureButton" {
                     let path = GString::from(texture_path);
                     if let Some(res) = ResourceLoader::singleton().load(&path) {
@@ -280,13 +311,239 @@ impl UiBuilder {
             );
         }
     }
+
+    /// 根据组件类型自动应用主题默认颜色
+    /// 在 class 样式之前调用，class 样式可覆盖这些默认值
+    fn apply_theme_defaults(&self, control: &mut Gd<Control>, tag: &str) {
+        if self.theme_vars.is_empty() {
+            return;
+        }
+
+        match tag {
+            // Panel：设置面板背景色
+            "Panel" => {
+                if let Some(color) = get_theme_color(&self.theme_vars, "panel_bg") {
+                    let mut style_box = StyleBoxFlat::new_gd();
+                    style_box.set_bg_color(color);
+                    control.add_theme_stylebox_override(
+                        &StringName::from("panel"),
+                        &style_box,
+                    );
+                }
+            }
+            // Button / CheckButton：设置按钮背景色和文字色
+            "Button" | "CheckButton" => {
+                if let Some(color) = get_theme_color(&self.theme_vars, "button_bg") {
+                    let mut style_box = StyleBoxFlat::new_gd();
+                    style_box.set_bg_color(color);
+                    style_box.set_corner_radius_all(4);
+                    control.add_theme_stylebox_override(
+                        &StringName::from("normal"),
+                        &style_box,
+                    );
+                    // hover 状态稍亮
+                    let mut hover_box = StyleBoxFlat::new_gd();
+                    hover_box.set_bg_color(Color::from_rgba(
+                        (color.r + 0.08).min(1.0),
+                        (color.g + 0.08).min(1.0),
+                        (color.b + 0.08).min(1.0),
+                        color.a,
+                    ));
+                    hover_box.set_corner_radius_all(4);
+                    control.add_theme_stylebox_override(
+                        &StringName::from("hover"),
+                        &hover_box,
+                    );
+                    // pressed 状态稍暗
+                    let mut pressed_box = StyleBoxFlat::new_gd();
+                    pressed_box.set_bg_color(Color::from_rgba(
+                        (color.r - 0.05).max(0.0),
+                        (color.g - 0.05).max(0.0),
+                        (color.b - 0.05).max(0.0),
+                        color.a,
+                    ));
+                    pressed_box.set_corner_radius_all(4);
+                    control.add_theme_stylebox_override(
+                        &StringName::from("pressed"),
+                        &pressed_box,
+                    );
+                }
+                if let Some(color) = get_theme_color(&self.theme_vars, "button_font_color") {
+                    control.add_theme_color_override(
+                        &StringName::from("font_color"),
+                        color,
+                    );
+                    control.add_theme_color_override(
+                        &StringName::from("font_hover_color"),
+                        Color::from_rgba(
+                            (color.r + 0.1).min(1.0),
+                            (color.g + 0.1).min(1.0),
+                            (color.b + 0.1).min(1.0),
+                            color.a,
+                        ),
+                    );
+                }
+            }
+            // Label：设置文字色
+            "Label" => {
+                if let Some(color) = get_theme_color(&self.theme_vars, "label_font_color") {
+                    control.add_theme_color_override(
+                        &StringName::from("font_color"),
+                        color,
+                    );
+                }
+            }
+            // LineEdit：设置输入框背景色和文字色
+            "LineEdit" => {
+                if let Some(color) = get_theme_color(&self.theme_vars, "input_bg") {
+                    let mut style_box = StyleBoxFlat::new_gd();
+                    style_box.set_bg_color(color);
+                    style_box.set_corner_radius_all(4);
+                    control.add_theme_stylebox_override(
+                        &StringName::from("normal"),
+                        &style_box,
+                    );
+                }
+                if let Some(color) = get_theme_color(&self.theme_vars, "input_font_color") {
+                    control.add_theme_color_override(
+                        &StringName::from("font_color"),
+                        color,
+                    );
+                }
+            }
+            // OptionButton：设置背景色和文字色
+            "OptionButton" => {
+                if let Some(color) = get_theme_color(&self.theme_vars, "optionbutton_bg") {
+                    let mut style_box = StyleBoxFlat::new_gd();
+                    style_box.set_bg_color(color);
+                    style_box.set_corner_radius_all(4);
+                    control.add_theme_stylebox_override(
+                        &StringName::from("normal"),
+                        &style_box,
+                    );
+                }
+                if let Some(color) = get_theme_color(&self.theme_vars, "optionbutton_font_color") {
+                    control.add_theme_color_override(
+                        &StringName::from("font_color"),
+                        color,
+                    );
+                }
+            }
+            // HSeparator / VSeparator：设置分隔线颜色
+            "HSeparator" | "VSeparator" => {
+                if let Some(color) = get_theme_color(&self.theme_vars, "separator_color") {
+                    control.add_theme_color_override(
+                        &StringName::from("color"),
+                        color,
+                    );
+                }
+            }
+            // TabContainer：设置标签页颜色
+            "TabContainer" => {
+                if let Some(color) = get_theme_color(&self.theme_vars, "tab_bg") {
+                    let mut style_box = StyleBoxFlat::new_gd();
+                    style_box.set_bg_color(color);
+                    control.add_theme_stylebox_override(
+                        &StringName::from("panel"),
+                        &style_box,
+                    );
+                }
+            }
+            // PopupPanel：设置弹窗默认颜色
+            "PopupPanel" => {
+                if let Some(color) = get_theme_color(&self.theme_vars, "popup_bg") {
+                    control.set(&StringName::from("popup_bg_color"), &color.to_variant());
+                }
+                if let Some(color) = get_theme_color(&self.theme_vars, "popup_border") {
+                    control.set(&StringName::from("popup_border_color"), &color.to_variant());
+                }
+                if let Some(color) = get_theme_color(&self.theme_vars, "overlay") {
+                    control.set(&StringName::from("overlay_color"), &color.to_variant());
+                }
+                if let Some(color) = get_theme_color(&self.theme_vars, "popup_title_color") {
+                    control.set(&StringName::from("title_color"), &color.to_variant());
+                }
+            }
+            // Drawer：设置抽屉默认颜色
+            "Drawer" => {
+                if let Some(color) = get_theme_color(&self.theme_vars, "popup_bg") {
+                    control.set(&StringName::from("drawer_bg_color"), &color.to_variant());
+                }
+                if let Some(color) = get_theme_color(&self.theme_vars, "popup_border") {
+                    control.set(&StringName::from("drawer_border_color"), &color.to_variant());
+                }
+                if let Some(color) = get_theme_color(&self.theme_vars, "overlay") {
+                    control.set(&StringName::from("overlay_color"), &color.to_variant());
+                }
+            }
+            // Tooltip：设置提示框默认颜色
+            "Tooltip" => {
+                if let Some(color) = get_theme_color(&self.theme_vars, "popup_bg") {
+                    control.set(&StringName::from("bg_color"), &color.to_variant());
+                }
+                if let Some(color) = get_theme_color(&self.theme_vars, "popup_border") {
+                    control.set(&StringName::from("border_color"), &color.to_variant());
+                }
+                if let Some(color) = get_theme_color(&self.theme_vars, "tooltip_title_color") {
+                    control.set(&StringName::from("title_color"), &color.to_variant());
+                }
+                if let Some(color) = get_theme_color(&self.theme_vars, "tooltip_content_color") {
+                    control.set(&StringName::from("content_color"), &color.to_variant());
+                }
+            }
+            // NavMenu：设置导航菜单默认颜色
+            "NavMenu" => {
+                if let Some(color) = get_theme_color(&self.theme_vars, "popup_bg") {
+                    control.set(&StringName::from("menu_bg_color"), &color.to_variant());
+                }
+                if let Some(color) = get_theme_color(&self.theme_vars, "popup_border") {
+                    control.set(&StringName::from("menu_border_color"), &color.to_variant());
+                }
+                if let Some(color) = get_theme_color(&self.theme_vars, "overlay") {
+                    control.set(&StringName::from("overlay_color"), &color.to_variant());
+                }
+                if let Some(color) = get_theme_color(&self.theme_vars, "nav_item_color") {
+                    control.set(&StringName::from("item_color"), &color.to_variant());
+                }
+                if let Some(color) = get_theme_color(&self.theme_vars, "nav_item_hover_color") {
+                    control.set(&StringName::from("item_hover_color"), &color.to_variant());
+                }
+                if let Some(color) = get_theme_color(&self.theme_vars, "nav_item_active_color") {
+                    control.set(&StringName::from("item_active_color"), &color.to_variant());
+                }
+            }
+            // TextureButton：设置文字色（如果有叠加 Label）
+            "TextureButton" => {
+                if let Some(color) = get_theme_color(&self.theme_vars, "button_font_color") {
+                    // TextureButton 的文字在叠加的 Label 上
+                    for i in 0..control.get_child_count() {
+                        if let Some(child) = control.get_child(i) {
+                            if let Ok(mut lbl) = child.try_cast::<Label>() {
+                                lbl.add_theme_color_override(
+                                    &StringName::from("font_color"),
+                                    color,
+                                );
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
 }
 
 /// 应用根节点属性
 fn apply_root_attribute(control: &mut Gd<Control>, key: &str, value: &str) {
     match key {
         "theme" => {
-            // 主题名称，暂不实现主题加载
+            // 主题名称，已由 UiBuilder::build() 处理
+            // 此处存储为 meta 供 GdGmlScene 读取
+            control.set_meta(
+                &StringName::from("__theme_name"),
+                &GString::from(value).to_variant(),
+            );
         }
         "anchor" => {
             apply_anchor(control, value);
@@ -740,10 +997,27 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
                 control.set(&StringName::from("popup_title"), &value.to_variant());
             }
         }
-        "popup_width" => {
+        "width" => {
             if tag == "PopupPanel" {
-                if let Ok(w) = value.parse::<i32>() {
+                if let Some(pct) = parse_percent(value) {
+                    control.set_meta(
+                        &StringName::from("__pct_popup_width"),
+                        &pct.to_variant(),
+                    );
+                } else if let Ok(w) = value.parse::<i32>() {
                     control.set(&StringName::from("popup_width"), &w.to_variant());
+                }
+            }
+        }
+        "height" => {
+            if tag == "PopupPanel" {
+                if let Some(pct) = parse_percent(value) {
+                    control.set_meta(
+                        &StringName::from("__pct_popup_height"),
+                        &pct.to_variant(),
+                    );
+                } else if let Ok(h) = value.parse::<i32>() {
+                    control.set(&StringName::from("popup_height"), &h.to_variant());
                 }
             }
         }
@@ -830,14 +1104,25 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
         }
         "slide_width" => {
             if tag == "Drawer" {
-                if let Ok(val) = value.parse::<i32>() {
+                if let Some(pct) = parse_percent(value) {
+                    control.set_meta(
+                        &StringName::from("__pct_slide_width"),
+                        &pct.to_variant(),
+                    );
+                } else if let Ok(val) = value.parse::<i32>() {
                     control.set(&StringName::from("slide_width"), &val.to_variant());
                 }
             }
         }
         "menu_width" | "sub_menu_width" => {
             if tag == "NavMenu" {
-                if let Ok(val) = value.parse::<i32>() {
+                let meta_key = format!("__pct_{}", key);
+                if let Some(pct) = parse_percent(value) {
+                    control.set_meta(
+                        &StringName::from(meta_key.as_str()),
+                        &pct.to_variant(),
+                    );
+                } else if let Ok(val) = value.parse::<i32>() {
                     control.set(&StringName::from(key), &val.to_variant());
                 }
             }
@@ -928,55 +1213,155 @@ fn apply_anchor(control: &mut Gd<Control>, value: &str) {
 
 /// 应用边距
 /// 支持格式: "12" (四边相同), "10 20" (水平 垂直), "10 20 30 40" (左 上 右 下)
+/// 支持百分比: "5%" (四边相同), "5% 3%" (水平 垂直), "5% 3% 5% 3%" (左 上 右 下)
 /// 通过设置 offset 属性实现（Side 枚举在 gdext 0.5 中未公开导出）
+/// 百分比基于父容器大小，存为 meta 延迟计算
 fn apply_margin(control: &mut Gd<Control>, value: &str) {
     let parts: Vec<&str> = value.split_whitespace().collect();
-    let (left, top, right, bottom) = match parts.len() {
-        1 => {
-            let v = parts[0].parse::<f32>().unwrap_or(0.0);
-            (v, v, v, v)
-        }
-        2 => {
-            let h = parts[0].parse::<f32>().unwrap_or(0.0);
-            let v = parts[1].parse::<f32>().unwrap_or(0.0);
-            (h, v, h, v)
-        }
-        4 => {
-            let l = parts[0].parse::<f32>().unwrap_or(0.0);
-            let t = parts[1].parse::<f32>().unwrap_or(0.0);
-            let r = parts[2].parse::<f32>().unwrap_or(0.0);
-            let b = parts[3].parse::<f32>().unwrap_or(0.0);
-            (l, t, r, b)
-        }
-        _ => return,
-    };
-    // 使用 set_offset 配合 Side 值（0=LEFT, 1=TOP, 2=RIGHT, 3=BOTTOM）
-    // Side 枚举未公开导出，使用 call 方式设置
-    control.set_offset(Side::LEFT, left);
-    control.set_offset(Side::TOP, top);
-    control.set_offset(Side::RIGHT, -right);
-    control.set_offset(Side::BOTTOM, -bottom);
+
+    // 检查是否有百分比
+    let has_pct = parts.iter().any(|p| parse_percent(p).is_some());
+
+    if has_pct {
+        // 存储百分比信息为 meta，延迟计算
+        control.set_meta(
+            &StringName::from("__pct_margin"),
+            &GString::from(value).to_variant(),
+        );
+        // 先用像素值设置非百分比部分
+        let (left, top, right, bottom) = match parts.len() {
+            1 => {
+                let (v, is_pct, _) = parse_size_value(parts[0]);
+                let val = if is_pct { 0.0 } else { v };
+                (val, val, val, val)
+            }
+            2 => {
+                let (h, h_pct, _) = parse_size_value(parts[0]);
+                let (v, v_pct, _) = parse_size_value(parts[1]);
+                let hval = if h_pct { 0.0 } else { h };
+                let vval = if v_pct { 0.0 } else { v };
+                (hval, vval, hval, vval)
+            }
+            4 => {
+                let (l, l_pct, _) = parse_size_value(parts[0]);
+                let (t, t_pct, _) = parse_size_value(parts[1]);
+                let (r, r_pct, _) = parse_size_value(parts[2]);
+                let (b, b_pct, _) = parse_size_value(parts[3]);
+                (
+                    if l_pct { 0.0 } else { l },
+                    if t_pct { 0.0 } else { t },
+                    if r_pct { 0.0 } else { r },
+                    if b_pct { 0.0 } else { b },
+                )
+            }
+            _ => return,
+        };
+        control.set_offset(Side::LEFT, left);
+        control.set_offset(Side::TOP, top);
+        control.set_offset(Side::RIGHT, -right);
+        control.set_offset(Side::BOTTOM, -bottom);
+    } else {
+        // 纯像素值，直接设置
+        let (left, top, right, bottom) = match parts.len() {
+            1 => {
+                let v = parts[0].parse::<f32>().unwrap_or(0.0);
+                (v, v, v, v)
+            }
+            2 => {
+                let h = parts[0].parse::<f32>().unwrap_or(0.0);
+                let v = parts[1].parse::<f32>().unwrap_or(0.0);
+                (h, v, h, v)
+            }
+            4 => {
+                let l = parts[0].parse::<f32>().unwrap_or(0.0);
+                let t = parts[1].parse::<f32>().unwrap_or(0.0);
+                let r = parts[2].parse::<f32>().unwrap_or(0.0);
+                let b = parts[3].parse::<f32>().unwrap_or(0.0);
+                (l, t, r, b)
+            }
+            _ => return,
+        };
+        control.set_offset(Side::LEFT, left);
+        control.set_offset(Side::TOP, top);
+        control.set_offset(Side::RIGHT, -right);
+        control.set_offset(Side::BOTTOM, -bottom);
+    }
+}
+
+/// 解析百分比字符串，返回百分比值（0.0~1.0）
+/// 支持 "80%" 格式，纯数字返回 None
+pub(crate) fn parse_percent(value: &str) -> Option<f32> {
+    let v = value.trim();
+    if v.ends_with('%') {
+        let num_str = &v[..v.len() - 1];
+        num_str.trim().parse::<f32>().ok().map(|p| p / 100.0)
+    } else {
+        None
+    }
+}
+
+/// 解析尺寸值，支持百分比和像素混合
+/// 返回 (像素值, 是否百分比, 百分比值)
+/// "80%" -> (0.0, true, 0.8)
+/// "400" -> (400.0, false, 0.0)
+pub(crate) fn parse_size_value(value: &str) -> (f32, bool, f32) {
+    if let Some(pct) = parse_percent(value) {
+        (0.0, true, pct)
+    } else {
+        let px = value.trim().parse::<f32>().unwrap_or(0.0);
+        (px, false, 0.0)
+    }
 }
 
 /// 应用大小
-/// 格式: "width,height"
+/// 格式: "width,height"，支持百分比如 "80%,50%" 或混合 "80%,400"
+/// 百分比基于父容器大小，存为 meta 延迟计算
 fn apply_size(control: &mut Gd<Control>, value: &str) {
     let parts: Vec<&str> = value.split(',').collect();
     if parts.len() == 2 {
-        let w = parts[0].trim().parse::<f32>().unwrap_or(0.0);
-        let h = parts[1].trim().parse::<f32>().unwrap_or(0.0);
-        control.set_custom_minimum_size(Vector2::new(w, h));
-        control.set_size(Vector2::new(w, h));
+        let (w_px, w_pct, w_pct_val) = parse_size_value(parts[0].trim());
+        let (h_px, h_pct, h_pct_val) = parse_size_value(parts[1].trim());
+
+        if w_pct || h_pct {
+            // 存储百分比信息为 meta，延迟计算
+            control.set_meta(
+                &StringName::from("__pct_size"),
+                &GString::from(value).to_variant(),
+            );
+            // 先设置像素值（非百分比部分）
+            let w = if w_pct { 0.0 } else { w_px };
+            let h = if h_pct { 0.0 } else { h_px };
+            control.set_custom_minimum_size(Vector2::new(w, h));
+            control.set_size(Vector2::new(w, h));
+        } else {
+            control.set_custom_minimum_size(Vector2::new(w_px, h_px));
+            control.set_size(Vector2::new(w_px, h_px));
+        }
     }
 }
 
 /// 应用自定义最小尺寸
+/// 格式: "width,height"，支持百分比如 "80%,50%"
+/// 百分比基于父容器大小，存为 meta 延迟计算
 fn apply_custom_minimum_size(control: &mut Gd<Control>, value: &str) {
     let parts: Vec<&str> = value.split(',').collect();
     if parts.len() == 2 {
-        let w = parts[0].trim().parse::<f32>().unwrap_or(0.0);
-        let h = parts[1].trim().parse::<f32>().unwrap_or(0.0);
-        control.set_custom_minimum_size(Vector2::new(w, h));
+        let (w_px, w_pct, _) = parse_size_value(parts[0].trim());
+        let (h_px, h_pct, _) = parse_size_value(parts[1].trim());
+
+        if w_pct || h_pct {
+            // 存储百分比信息为 meta，延迟计算
+            control.set_meta(
+                &StringName::from("__pct_min_size"),
+                &GString::from(value).to_variant(),
+            );
+            // 先设置像素值（非百分比部分）
+            let w = if w_pct { 0.0 } else { w_px };
+            let h = if h_pct { 0.0 } else { h_px };
+            control.set_custom_minimum_size(Vector2::new(w, h));
+        } else {
+            control.set_custom_minimum_size(Vector2::new(w_px, h_px));
+        }
     }
 }
 

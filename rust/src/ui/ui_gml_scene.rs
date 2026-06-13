@@ -7,7 +7,7 @@
 //   可创建继承 GdGmlScene 的 GDScript，在其中定义回调方法
 
 use godot::prelude::*;
-use godot::builtin::{GString, StringName, Variant, VariantType, Array};
+use godot::builtin::{GString, StringName, Variant, VariantType, Array, Vector2, Side, PackedStringArray};
 use godot::classes::{
     IControl, Control, FileAccess, Node,
 };
@@ -16,8 +16,9 @@ use godot::classes::notify::ControlNotification;
 use godot::obj::WithBaseField;
 
 use super::parser::UiParser;
-use super::builder::UiBuilder;
+use super::builder::{UiBuilder, parse_size_value};
 use super::gdui_builder::connect_signals_recursive;
+use super::ui_theme::{ThemeVars, get_builtin_theme, builtin_theme_names, resolve_theme_vars};
 use crate::state::bean::{get_bean_by_id, get_all_bean_instances};
 
 #[derive(GodotClass)]
@@ -42,6 +43,15 @@ impl IControl for GdGmlScene {
             auto_connect: true,
             content_root: None,
             loaded: false,
+        }
+    }
+
+    fn on_notification(&mut self, what: ControlNotification) {
+        if what == ControlNotification::RESIZED {
+            // 窗口/父容器大小变化时，重新计算百分比布局
+            if self.loaded {
+                self.refresh_percent_layouts();
+            }
         }
     }
 }
@@ -129,12 +139,58 @@ impl GdGmlScene {
         self.loaded
     }
 
+    /// 切换主题并重新加载（最简单的主题切换方式）
+    /// 传入内置主题名称（dark/light/forest/ocean），自动修改 GML 中的 theme 属性并重新加载
+    #[func]
+    fn apply_theme(&mut self, theme_name: GString) {
+        if !self.loaded {
+            return;
+        }
+        if let Some(ref root) = self.content_root {
+            if root.has_meta(&StringName::from("__gml_content")) {
+                let gml_content: GString = root.get_meta(&StringName::from("__gml_content")).to();
+                let mut content = gml_content.to_string();
+                // 替换 <ui theme="xxx"> 中的 theme 属性值
+                let new_theme = theme_name.to_string();
+                let re = regex_lite::Regex::new(r#"<ui\s+theme="[^"]*""#).unwrap();
+                if re.is_match(&content) {
+                    content = re.replace_all(&content, format!(r#"<ui theme="{}""#, new_theme)).to_string();
+                } else {
+                    // 没有 theme 属性，添加一个
+                    content = content.replacen("<ui", &format!("<ui theme=\"{}\"", new_theme), 1);
+                }
+                self.parse_and_build(&content);
+            }
+        }
+    }
+
+    /// 获取所有内置主题名称
+    #[func]
+    fn get_builtin_themes(&self) -> PackedStringArray {
+        let names: Vec<GString> = builtin_theme_names().iter()
+            .map(|s| GString::from(*s))
+            .collect();
+        PackedStringArray::from(names.as_slice())
+    }
+
     /// 延迟重新应用所有带 __anchor meta 的节点的 anchor preset
     /// 节点加入场景树后父容器大小已计算完成，此时 anchor offsets 才能正确设置
+    /// 同时刷新百分比布局
     #[func]
     fn refresh_anchors(&mut self) {
         if let Some(ref root) = self.content_root {
+            let root_size = root.get_size();
             Self::refresh_anchors_recursive(root);
+            Self::refresh_percent_layouts_recursive(root, root_size);
+        }
+    }
+
+    /// 刷新所有百分比布局（窗口大小变化时调用）
+    #[func]
+    fn refresh_percent_layouts(&mut self) {
+        if let Some(ref root) = self.content_root {
+            let root_size = root.get_size();
+            Self::refresh_percent_layouts_recursive(root, root_size);
         }
     }
 
@@ -172,6 +228,139 @@ impl GdGmlScene {
             if let Some(child_var) = children.get(i) {
                 if let Ok(child) = child_var.clone().try_cast::<Control>() {
                     Self::refresh_anchors_recursive(&child);
+                }
+            }
+        }
+    }
+
+    /// 递归刷新百分比布局
+    /// 所有百分比基于根容器（GmlContent）大小计算，避免嵌套容器中的循环依赖
+    /// 处理 __pct_size、__pct_min_size、__pct_margin、__pct_popup_width、__pct_popup_height、__pct_slide_width、__pct_menu_width、__pct_sub_menu_width
+    fn refresh_percent_layouts_recursive(node: &Gd<Control>, root_size: Vector2) {
+        // 处理 __pct_size: size 属性中的百分比
+        if node.has_meta(&StringName::from("__pct_size")) {
+            let pct_str: GString = node.get_meta(&StringName::from("__pct_size")).to();
+            let pct_string = pct_str.to_string();
+            let parts: Vec<&str> = pct_string.split(',').collect();
+            if parts.len() == 2 {
+                let (w_px, w_pct, w_pct_val) = parse_size_value(parts[0].trim());
+                let (h_px, h_pct, h_pct_val) = parse_size_value(parts[1].trim());
+                let w = if w_pct { root_size.x * w_pct_val } else { w_px };
+                let h = if h_pct { root_size.y * h_pct_val } else { h_px };
+                let mut node_mut = node.clone();
+                node_mut.set_custom_minimum_size(Vector2::new(w, h));
+                node_mut.set_size(Vector2::new(w, h));
+            }
+        }
+
+        // 处理 __pct_min_size: custom_minimum_size 属性中的百分比
+        if node.has_meta(&StringName::from("__pct_min_size")) {
+            let pct_str: GString = node.get_meta(&StringName::from("__pct_min_size")).to();
+            let pct_string = pct_str.to_string();
+            let parts: Vec<&str> = pct_string.split(',').collect();
+            if parts.len() == 2 {
+                let (w_px, w_pct, w_pct_val) = parse_size_value(parts[0].trim());
+                let (h_px, h_pct, h_pct_val) = parse_size_value(parts[1].trim());
+                let w = if w_pct { root_size.x * w_pct_val } else { w_px };
+                let h = if h_pct { root_size.y * h_pct_val } else { h_px };
+                let mut node_mut = node.clone();
+                node_mut.set_custom_minimum_size(Vector2::new(w, h));
+            }
+        }
+
+        // 处理 __pct_margin: margin 属性中的百分比
+        if node.has_meta(&StringName::from("__pct_margin")) {
+            let pct_str: GString = node.get_meta(&StringName::from("__pct_margin")).to();
+            let pct_string = pct_str.to_string();
+            let parts: Vec<&str> = pct_string.split_whitespace().collect();
+            let (left, top, right, bottom) = match parts.len() {
+                1 => {
+                    let (v, is_pct, pct_val) = parse_size_value(parts[0]);
+                    let val = if is_pct { root_size.x * pct_val } else { v };
+                    (val, val, val, val)
+                }
+                2 => {
+                    let (h, h_pct, h_pct_val) = parse_size_value(parts[0]);
+                    let (v, v_pct, v_pct_val) = parse_size_value(parts[1]);
+                    let hval = if h_pct { root_size.x * h_pct_val } else { h };
+                    let vval = if v_pct { root_size.y * v_pct_val } else { v };
+                    (hval, vval, hval, vval)
+                }
+                4 => {
+                    let (l, l_pct, l_pct_val) = parse_size_value(parts[0]);
+                    let (t, t_pct, t_pct_val) = parse_size_value(parts[1]);
+                    let (r, r_pct, r_pct_val) = parse_size_value(parts[2]);
+                    let (b, b_pct, b_pct_val) = parse_size_value(parts[3]);
+                    (
+                        if l_pct { root_size.x * l_pct_val } else { l },
+                        if t_pct { root_size.y * t_pct_val } else { t },
+                        if r_pct { root_size.x * r_pct_val } else { r },
+                        if b_pct { root_size.y * b_pct_val } else { b },
+                    )
+                }
+                _ => (0.0, 0.0, 0.0, 0.0),
+            };
+            let mut node_mut = node.clone();
+            node_mut.set_offset(Side::LEFT, left);
+            node_mut.set_offset(Side::TOP, top);
+            node_mut.set_offset(Side::RIGHT, -right);
+            node_mut.set_offset(Side::BOTTOM, -bottom);
+        }
+
+        // 处理 __pct_popup_width: PopupPanel 弹窗宽度的百分比
+        if node.has_meta(&StringName::from("__pct_popup_width")) {
+            let pct: f32 = node.get_meta(&StringName::from("__pct_popup_width")).to();
+            let width = (root_size.x * pct) as i32;
+            let mut node_mut = node.clone();
+            node_mut.set(&StringName::from("popup_width"), &width.to_variant());
+            node_mut.call(&StringName::from("update_layout"), &[]);
+        }
+
+        // 处理 __pct_popup_height: PopupPanel 弹窗高度的百分比
+        if node.has_meta(&StringName::from("__pct_popup_height")) {
+            let pct: f32 = node.get_meta(&StringName::from("__pct_popup_height")).to();
+            let height = (root_size.y * pct) as i32;
+            let mut node_mut = node.clone();
+            node_mut.set(&StringName::from("popup_height"), &height.to_variant());
+            node_mut.call(&StringName::from("update_layout"), &[]);
+        }
+
+        // 处理 __pct_slide_width: Drawer 抽屉宽度的百分比
+        if node.has_meta(&StringName::from("__pct_slide_width")) {
+            let pct: f32 = node.get_meta(&StringName::from("__pct_slide_width")).to();
+            let width = (root_size.x * pct) as i32;
+            let mut node_mut = node.clone();
+            node_mut.set(&StringName::from("slide_width"), &width.to_variant());
+            // 调用 update_layout 重新计算 DrawerPanel 位置
+            node_mut.call(&StringName::from("update_layout"), &[]);
+        }
+
+        // 处理 __pct_menu_width: NavMenu 菜单宽度的百分比
+        if node.has_meta(&StringName::from("__pct_menu_width")) {
+            let pct: f32 = node.get_meta(&StringName::from("__pct_menu_width")).to();
+            let width = (root_size.x * pct) as i32;
+            let mut node_mut = node.clone();
+            node_mut.set(&StringName::from("menu_width"), &width.to_variant());
+            // 调用 update_layout 重新计算面板位置
+            node_mut.call(&StringName::from("update_layout"), &[]);
+        }
+
+        // 处理 __pct_sub_menu_width: NavMenu 子菜单宽度的百分比
+        if node.has_meta(&StringName::from("__pct_sub_menu_width")) {
+            let pct: f32 = node.get_meta(&StringName::from("__pct_sub_menu_width")).to();
+            let width = (root_size.x * pct) as i32;
+            let mut node_mut = node.clone();
+            node_mut.set(&StringName::from("sub_menu_width"), &width.to_variant());
+            // 调用 update_layout 重新计算面板位置
+            node_mut.call(&StringName::from("update_layout"), &[]);
+        }
+
+        // 递归处理子节点
+        let children = node.get_children();
+        for i in 0..children.len() {
+            if let Some(child_var) = children.get(i) {
+                if let Ok(child) = child_var.clone().try_cast::<Control>() {
+                    Self::refresh_percent_layouts_recursive(&child, root_size);
                 }
             }
         }
@@ -239,8 +428,34 @@ impl GdGmlScene {
         match parser.parse() {
             Ok(parse_result) => {
                 let mut builder = UiBuilder::new();
+
+                // 注入主题变量：根据 GML 中 <ui theme="xxx"> 属性加载内置主题
+                if let Some(ref gml_theme) = parse_result.theme_name {
+                    if let Some(builtin_vars) = get_builtin_theme(gml_theme) {
+                        let mut theme_vars = builtin_vars;
+                        // <theme> 块中的变量覆盖内置主题
+                        for (key, value) in &parse_result.theme_vars {
+                            theme_vars.insert(key.clone(), value.clone());
+                        }
+                        builder.set_theme_vars(theme_vars);
+                    }
+                } else if !parse_result.theme_vars.is_empty() {
+                    // 没有 theme 属性，但有 <theme> 块
+                    let mut theme_vars = ThemeVars::new();
+                    for (key, value) in &parse_result.theme_vars {
+                        theme_vars.insert(key.clone(), value.clone());
+                    }
+                    builder.set_theme_vars(theme_vars);
+                }
+
                 match builder.build(&parse_result) {
                     Ok(mut control) => {
+                        // 存储 GML 内容到 meta，供 apply_theme 重新加载
+                        control.set_meta(
+                            &StringName::from("__gml_content"),
+                            &GString::from(content).to_variant(),
+                        );
+
                         // 设置内容根节点占满 GmlScene
                         control.set_anchors_and_offsets_preset(
                             godot::classes::control::LayoutPreset::FULL_RECT,

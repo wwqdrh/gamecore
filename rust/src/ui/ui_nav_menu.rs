@@ -278,6 +278,38 @@ impl GdUINavMenu {
         }
     }
 
+    /// 重新计算菜单布局（menu_width/sub_menu_width 变化后调用）
+    /// 更新所有面板的锚点偏移使其匹配新的宽度
+    #[func]
+    fn update_layout(&mut self) {
+        let menu_width = self.menu_width;
+        let sub_menu_width = self.sub_menu_width;
+        let direction = self.direction;
+
+        for (level, panel_info) in self.panels.iter().enumerate() {
+            let mut panel = panel_info.panel.clone();
+            let (left_offset, right_offset) = if level == 0 {
+                (0.0, menu_width as f32)
+            } else {
+                let l = (menu_width + sub_menu_width * (level as i32 - 1)) as f32;
+                let r = (menu_width + sub_menu_width * level as i32) as f32;
+                (l, r)
+            };
+
+            match direction {
+                DIR_LEFT => {
+                    panel.set_anchor_and_offset(Side::LEFT, 0.0, left_offset);
+                    panel.set_anchor_and_offset(Side::RIGHT, 0.0, right_offset);
+                }
+                DIR_RIGHT => {
+                    panel.set_anchor_and_offset(Side::LEFT, 1.0, -right_offset);
+                    panel.set_anchor_and_offset(Side::RIGHT, 1.0, -left_offset);
+                }
+                _ => {}
+            }
+        }
+    }
+
     /// 处理遮罩点击
     #[func]
     fn _on_overlay_gui_input(&mut self, event: Gd<InputEvent>) {

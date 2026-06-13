@@ -248,6 +248,38 @@ impl GdUIDrawer {
             self.build_ui();
         }
     }
+
+    /// 重新计算抽屉布局（slide_width 变化后调用）
+    /// 更新 DrawerPanel 的锚点偏移使其匹配新的宽度
+    #[func]
+    fn update_layout(&mut self) {
+        if let Some(ref panel) = self.drawer_panel {
+            let mut p = panel.clone();
+            let sw = self.slide_width as f32;
+            match self.direction {
+                DIR_RIGHT => {
+                    p.set_anchor_and_offset(Side::LEFT, 1.0, -sw);
+                    p.set_anchor_and_offset(Side::RIGHT, 1.0, 0.0);
+                }
+                DIR_LEFT => {
+                    p.set_anchor_and_offset(Side::LEFT, 0.0, 0.0);
+                    p.set_anchor_and_offset(Side::RIGHT, 0.0, sw);
+                }
+                DIR_TOP => {
+                    p.set_anchor_and_offset(Side::TOP, 0.0, 0.0);
+                    p.set_anchor_and_offset(Side::BOTTOM, 0.0, sw);
+                }
+                DIR_BOTTOM => {
+                    p.set_anchor_and_offset(Side::TOP, 1.0, -sw);
+                    p.set_anchor_and_offset(Side::BOTTOM, 1.0, 0.0);
+                }
+                _ => {
+                    p.set_anchor_and_offset(Side::LEFT, 1.0, -sw);
+                    p.set_anchor_and_offset(Side::RIGHT, 1.0, 0.0);
+                }
+            }
+        }
+    }
 }
 
 impl GdUIDrawer {

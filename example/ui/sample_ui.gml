@@ -1,23 +1,23 @@
-<ui>
+<ui theme="dark">
   <style>
     .main-bg {
-      background: #1a1a2e;
+      background: $bg_secondary;
       border_radius: 12;
       padding: 20;
     }
     .action-button {
-      background: #e94560;
-      color: white;
+      background: $bg_button_danger;
+      color: $text_white;
       border_radius: 6;
     }
     .info-label {
-      color: #eaeaea;
+      color: $text_primary;
     }
   </style>
-  <VBoxContainer anchor="full" margin="20">
+  <VBoxContainer anchor="full" margin="2%">
     <Label text="从 .gml 文件加载的 UI" font_size="28" align="center" class="info-label" />
     <HSeparator />
-    <Panel class="main-bg" size="400,200">
+    <Panel class="main-bg" size="60%,30%">
       <MarginContainer margin="all:20">
         <VBoxContainer>
           <Label text="这是一个从外部文件加载的 UI 布局" class="info-label" />
@@ -32,12 +32,12 @@
     <HSeparator />
     <Label text="水平列表" class="info-label" font_size="18" />
     <UIHList count="4" highlight_mode="1" highlight_color="#ffff00">
-      <Button text="Slot" custom_minimum_size="80,36" />
+      <Button text="Slot" custom_minimum_size="10%,5%" />
     </UIHList>
     <HSeparator />
     <Label text="网格列表" class="info-label" font_size="18" />
     <UIGrid count="6" columns="3" highlight_mode="1" highlight_color="#ff8800">
-      <Panel custom_minimum_size="70,70">
+      <Panel custom_minimum_size="10%,10%">
         <MarginContainer margin="5">
           <Label name="GLabel" text="Grid" />
         </MarginContainer>

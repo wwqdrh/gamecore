@@ -24,6 +24,8 @@ pub struct GdPopupPanel {
     #[export]
     popup_width: i32,
     #[export]
+    popup_height: i32,
+    #[export]
     popup_bg_color: Color,
     #[export]
     popup_border_color: Color,
@@ -54,6 +56,7 @@ impl IControl for GdPopupPanel {
             base,
             popup_title: GString::from("Popup"),
             popup_width: 400,
+            popup_height: 400,
             popup_bg_color: Color::from_rgba(0.08, 0.08, 0.14, 0.95),
             popup_border_color: Color::from_rgb(0.35, 0.4, 0.55),
             overlay_color: Color::from_rgba(0.0, 0.0, 0.0, 0.5),
@@ -179,6 +182,21 @@ impl GdPopupPanel {
             self.build_ui();
         }
     }
+
+    /// 重新计算弹窗布局（popup_width 变化后调用）
+    /// 更新 PanelContainer 的 offset 使其居中并匹配新的宽度
+    #[func]
+    fn update_layout(&mut self) {
+        if let Some(ref panel) = self.popup_panel {
+            let half_w = self.popup_width as f32 / 2.0;
+            let half_h = self.popup_height as f32 / 2.0;
+            let mut p = panel.clone();
+            p.set_offset(Side::LEFT, -half_w);
+            p.set_offset(Side::RIGHT, half_w);
+            p.set_offset(Side::TOP, -half_h);
+            p.set_offset(Side::BOTTOM, half_h);
+        }
+    }
 }
 
 impl GdPopupPanel {
@@ -193,6 +211,7 @@ impl GdPopupPanel {
         // 先读取属性值，避免借用冲突
         let overlay_color = self.overlay_color;
         let popup_width = self.popup_width;
+        let popup_height = self.popup_height;
         let popup_bg_color = self.popup_bg_color;
         let popup_border_color = self.popup_border_color;
         let corner_radius = self.corner_radius;
@@ -229,10 +248,11 @@ impl GdPopupPanel {
             panel.set_name("PopupContainer");
             panel.set_anchors_and_offsets_preset(LayoutPreset::CENTER);
             let half_w = popup_width as f32 / 2.0;
+            let half_h = popup_height as f32 / 2.0;
             panel.set_offset(Side::LEFT, -half_w);
             panel.set_offset(Side::RIGHT, half_w);
-            panel.set_offset(Side::TOP, -200.0);
-            panel.set_offset(Side::BOTTOM, 200.0);
+            panel.set_offset(Side::TOP, -half_h);
+            panel.set_offset(Side::BOTTOM, half_h);
             let mut style = StyleBoxFlat::new_gd();
             style.set_bg_color(popup_bg_color);
             style.set_border_color(popup_border_color);

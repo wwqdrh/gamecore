@@ -1,28 +1,39 @@
 // GdUiBuilder - UI 标记语言构建器
 // 暴露给 GDScript 的 API，支持解析类 HTML 标记字符串/文件并生成 Godot Control 节点树
+// 支持主题切换：通过 set_theme() 设置内置主题名称，重新解析时自动应用主题变量
 // 用法：
 //   var builder = GdUiBuilder.new()
-//   var ui = builder.parse_string("<ui><Label text='Hello' /></ui>")
+//   builder.set_theme("dark")  # 设置主题（可选，默认无主题）
+//   var ui = builder.parse_string("<ui theme='dark'><Label text='Hello' /></ui>")
 //   add_child(ui)
 //   builder.connect_signals(ui, self)  # 连接信号到脚本方法
 
 use godot::prelude::*;
-use godot::builtin::{GString, StringName};
+use godot::builtin::{GString, StringName, PackedStringArray};
 use godot::classes::{IRefCounted, Control, FileAccess};
 
 use super::parser::UiParser;
 use super::builder::UiBuilder;
+use super::ui_theme::{ThemeVars, get_builtin_theme, builtin_theme_names};
 
 #[derive(GodotClass)]
 #[class(base = RefCounted)]
 pub struct GdUiBuilder {
     base: Base<RefCounted>,
+    /// 当前主题名称（None 表示不使用主题）
+    theme_name: Option<String>,
+    /// 自定义主题变量（通过 set_theme_var 设置）
+    custom_theme_vars: ThemeVars,
 }
 
 #[godot_api]
 impl IRefCounted for GdUiBuilder {
     fn init(base: Base<RefCounted>) -> Self {
-        Self { base }
+        Self {
+            base,
+            theme_name: None,
+            custom_theme_vars: ThemeVars::new(),
+        }
     }
 }
 
@@ -30,6 +41,7 @@ impl IRefCounted for GdUiBuilder {
 impl GdUiBuilder {
     /// 解析标记字符串，返回 Control 节点树
     /// 标记格式参考 docs/类html设计稿.md
+    /// 如果设置了 theme_name，会自动注入内置主题变量
     #[func]
     fn parse_string(&self, markup: GString) -> Gd<Control> {
         let input = markup.to_string();
@@ -38,6 +50,19 @@ impl GdUiBuilder {
         match parser.parse() {
             Ok(parse_result) => {
                 let mut builder = UiBuilder::new();
+
+                // 注入主题变量：先设置内置主题，再设置自定义变量
+                let mut theme_vars = ThemeVars::new();
+                if let Some(ref name) = self.theme_name {
+                    if let Some(builtin) = get_builtin_theme(name) {
+                        theme_vars.extend(builtin);
+                    }
+                }
+                theme_vars.extend(self.custom_theme_vars.clone());
+                if !theme_vars.is_empty() {
+                    builder.set_theme_vars(theme_vars);
+                }
+
                 match builder.build(&parse_result) {
                     Ok(control) => control,
                     Err(e) => {
@@ -88,6 +113,52 @@ impl GdUiBuilder {
             Ok(_) => GString::new(),
             Err(e) => GString::from(e.to_string().as_str()),
         }
+    }
+
+    /// 设置内置主题名称（dark/light/forest/ocean）
+    /// 设置后，下次 parse_string/parse_file 时自动注入主题变量
+    /// GML 中使用 $var_name 引用主题变量
+    #[func]
+    fn set_theme(&mut self, theme_name: GString) {
+        let name = theme_name.to_string();
+        if name.is_empty() {
+            self.theme_name = None;
+        } else if get_builtin_theme(&name).is_some() {
+            self.theme_name = Some(name);
+        } else {
+            godot_warn!("[GdUiBuilder] Unknown theme '{}', available: {:?}", name, builtin_theme_names());
+        }
+    }
+
+    /// 获取当前主题名称
+    #[func]
+    fn get_theme(&self) -> GString {
+        match &self.theme_name {
+            Some(name) => GString::from(name.as_str()),
+            None => GString::new(),
+        }
+    }
+
+    /// 获取所有内置主题名称
+    #[func]
+    fn get_builtin_themes(&self) -> PackedStringArray {
+        let names: Vec<GString> = builtin_theme_names().iter()
+            .map(|s| GString::from(*s))
+            .collect();
+        PackedStringArray::from(names.as_slice())
+    }
+
+    /// 设置自定义主题变量（覆盖内置主题同名变量）
+    /// key: 变量名（不含 $ 前缀），value: 变量值（如 "#1a1a3e"）
+    #[func]
+    fn set_theme_var(&mut self, key: GString, value: GString) {
+        self.custom_theme_vars.insert(key.to_string(), value.to_string());
+    }
+
+    /// 清除所有自定义主题变量
+    #[func]
+    fn clear_custom_theme_vars(&mut self) {
+        self.custom_theme_vars.clear();
     }
 }
 

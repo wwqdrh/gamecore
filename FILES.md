@@ -224,14 +224,22 @@
 - 方法：next, exec_response, is_registered_role, register_role_node, get_role_pos, initial, goto_stage, all_stages, has_next, stage_index
 
 ### [rust/src/ui/mod.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/mod.rs)
-- UI标记语言模块入口，导出parser/builder/gdui_builder/ui_popup_panel/ui_tooltip/ui_drawer/ui_nav_menu/ui_gml_scene/ui_list_helper/ui_hlist/ui_vlist/ui_grid子模块
+- UI标记语言模块入口，导出parser/builder/gdui_builder/ui_theme/ui_popup_panel/ui_tooltip/ui_drawer/ui_nav_menu/ui_gml_scene/ui_list_helper/ui_hlist/ui_vlist/ui_grid子模块
+
+### [rust/src/ui/ui_theme.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/ui_theme.rs)
+- **UI 主题系统**
+- 内置配色方案：dark/light/forest/ocean
+- 主题变量定义（ThemeVars = HashMap<String, String>）
+- 变量替换：resolve_theme_vars() 将 $var_name 替换为变量值
+- 解析 <theme> 块：parse_theme_block() 解析自定义主题变量
+- 获取内置主题：get_builtin_theme() / builtin_theme_names()
 
 ### [rust/src/ui/parser.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/parser.rs)
 - **类HTML标记解析器**
 - 将标记文本解析为AST节点树（UiNode）
-- 支持标签/属性/样式块/自闭合标签/注释
+- 支持标签/属性/样式块/主题块/自闭合标签/注释
 - StyleRule：CSS类样式定义
-- ParseResult：包含根节点和样式规则
+- ParseResult：包含根节点、样式规则和主题变量
 
 ### [rust/src/ui/builder.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/builder.rs)
 - **UI构建器**
@@ -239,14 +247,16 @@
 - 支持容器/控件实例化（VBox/HBox/Grid/Margin/Scroll/Tab/Center/PanelContainer/Tab + Label/Button/TextureButton/CheckButton/HSlider/ColorRect/OptionButton/Panel/TextureRect/RichTextLabel/LineEdit/ProgressBar/SpinBox/HSeparator/VSeparator/NinePatchRect/PopupPanel/Tooltip/Drawer/NavMenu/NavItem）
 - 属性设置：text/font_size/align/anchor/margin/size/bbcode/texture/texture_normal/texture_pressed/texture_hover/texture_disabled/stretch_mode/columns/visible/disabled/size_flags_horizontal/size_flags_vertical/color/toggle_mode/button_pressed/items/selected/popup_title/popup_width/close_on_overlay/tooltip_title/tooltip_content/delay/offset_x/offset_y/max_width/direction/slide_width/animation_duration/drawer_title/title/current_tab/tabs_visible等
 - 模板绑定：`{{key}}` 语法检测，记录 `__tpl_{key}`/`__tpl_keys`/`__tpl_attr` 元数据
-- StyleBoxFlat样式应用：background/border_radius/border_color/border_width/padding/color/texture
+- StyleBoxFlat样式应用：background/border_radius/border_color/border_width/padding/color/texture，支持 `$var` 主题变量替换
 - 信号绑定元数据：on_xxx属性存储为__signal_xxx元数据
+- 主题变量：UiBuilder 持有 ThemeVars，构建时自动替换样式属性中的 $var 引用
 
 ### [rust/src/ui/gdui_builder.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/gdui_builder.rs)
 - **GdUiBuilder** 类（继承 RefCounted）
 - UI标记语言GDScript API
-- 方法：parse_string, parse_file, connect_signals, validate
+- 方法：parse_string, parse_file, connect_signals, validate, set_theme, get_theme, get_builtin_themes, set_theme_var, clear_custom_theme_vars
 - connect_signals：递归遍历节点树，将__signal_xxx元数据连接为信号
+- 主题支持：set_theme 设置内置主题，set_theme_var 设置自定义变量，parse 时自动注入
 
 ### [rust/src/ui/ui_popup_panel.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/ui_popup_panel.rs)
 - **GdPopupPanel** 类（继承 Control）
@@ -290,6 +300,8 @@
 - **GdGmlScene** 类（继承 Control）
 - GML 文件加载节点，设置 gml_file 属性即可加载 .gml 文件并显示为 Control 节点树
 - 属性：gml_file（GML文件路径，编辑器中显示 .gml 文件选择器）, auto_connect（自动连接信号到自身脚本）
+- 主题来源：由 GML 中 <ui theme="xxx"> 属性决定，不暴露 theme_name 导出属性
+- 主题切换：apply_theme() 修改 GML 中的 theme 属性并重新加载，get_builtin_themes() 获取内置主题列表
 - 数据自动绑定：加载后扫描 __data_var 元数据，支持两种格式：
   - 简单变量名（如 `data="equip_data"`）：从脚本对象读取变量
   - GdBean 引用（如 `data="bean:scene_main:equip_data"`）：从 GdBean 实例读取属性值，支持响应式更新
@@ -624,3 +636,19 @@
 | 2026-06-12 | rust/src/ui/builder.rs | 修复信号绑定中find_child无法查找PopupPanel内部节点bug：改用find_child_ex设置owned=false |
 | 2026-06-12 | rust/src/ui/ui_hlist.rs | 修复Tooltip查找中find_child的owned限制：改用find_child_ex设置owned=false |
 | 2026-06-12 | rust/src/ui/ui_grid.rs | 同ui_hlist.rs，修复Tooltip查找中find_child的owned限制 |
+| 2026-06-13 | rust/src/ui/builder.rs | 新增百分比自适应语法：parse_percent/parse_size_value辅助函数；apply_size/apply_custom_minimum_size/apply_margin支持百分比（如"80%,50%"、"5%"），百分比信息存为meta延迟计算；popup_width/slide_width/menu_width/sub_menu_width属性支持百分比 |
+| 2026-06-13 | rust/src/ui/ui_gml_scene.rs | 新增百分比布局刷新：refresh_percent_layouts/refresh_percent_layouts_recursive方法，处理__pct_size/__pct_min_size/__pct_margin/__pct_popup_width/__pct_slide_width/__pct_menu_width/__pct_sub_menu_width元数据；on_notification监听RESIZED事件自动刷新百分比布局；refresh_anchors同时刷新百分比布局 |
+| 2026-06-13 | example/ui/sample_ui.gml | 更新：margin改为"2%"，Panel size改为"60%,30%"，Button/Panel custom_minimum_size改为百分比 |
+| 2026-06-13 | example/ui/scene_title.gd | 更新：TextureButton custom_minimum_size改为"30%,6%"，PopupPanel popup_width改为"50%"，HSlider custom_minimum_size改为"15%,0"，Button custom_minimum_size改为"12%,5%" |
+| 2026-06-13 | example/ui/scene_gallery.gd | 更新：Button custom_minimum_size改为"30%,6%"，PopupPanel popup_width改为"65%"，TabContainer custom_minimum_size改为"90%,80%"，MarginContainer custom_minimum_size改为"12%,12%" |
+| 2026-06-13 | example/ui/scene_role.gd | 更新：PopupPanel popup_width改为"80%"，equip-slot custom_minimum_size改为"10%,10%"，portrait-panel custom_minimum_size改为"25%,0"，grid-item custom_minimum_size改为"7%,7%" |
+| 2026-06-13 | example/ui/scene_setting.gd | 更新：NavMenu menu_width改为"15%"，sub_menu_width改为"20%" |
+| 2026-06-13 | rust/src/ui/ui_theme.rs | 新建UI主题系统：内置配色方案（dark/light/forest/ocean），ThemeVars变量表，resolve_theme_vars变量替换，parse_theme_block解析<theme>块 |
+| 2026-06-13 | rust/Cargo.toml | 添加regex-lite依赖 |
+| 2026-06-13 | rust/src/ui/parser.rs | 新增<theme>块解析支持；ParseResult新增theme_vars和theme_name字段 |
+| 2026-06-13 | rust/src/ui/builder.rs | UiBuilder新增theme_vars字段和set_theme_vars方法；样式属性值替换$var主题变量 |
+| 2026-06-13 | rust/src/ui/gdui_builder.rs | GdUiBuilder新增set_theme/get_theme/get_builtin_themes/set_theme_var/clear_custom_theme_vars方法 |
+| 2026-06-13 | rust/src/ui/ui_gml_scene.rs | GdGmlScene新增theme_name属性和apply_theme/get_builtin_themes方法 |
+| 2026-06-13 | rust/src/ui/mod.rs | 添加ui_theme模块 |
+| 2026-06-13 | example/ui/*.gd/*.gml | 所有GML示例更新：添加theme="dark"属性，样式颜色值替换为$var主题变量引用 |
+| 2026-06-13 | example/ui/scene_main.gd | 更新：Button custom_minimum_size改为"30%,6%"，equip-slot custom_minimum_size改为"8%,8%"，Drawer slide_width改为"35%"，grid-item custom_minimum_size改为"12%,12%" |
