@@ -74,7 +74,7 @@ core 是一个基于 Rust 的 Godot 4 GDExtension 项目，使用 gdext 库与 G
     - GdUiBuilder：UI 构建器类（继承 RefCounted），暴露给 GDScript 的 API
     - 解析器：自写 HTML 子集解析器，支持标签/属性/样式块/自闭合标签/注释
     - 构建器：AST → Godot Control 节点树，支持容器/控件实例化、属性设置、StyleBoxFlat 样式、信号绑定
-    - 主题系统：内置配色方案（dark/light/forest/ocean），GML 中通过 `$var_name` 引用主题变量，GDScript 通过 `apply_theme("light")` 一键切换主题
+    - 主题系统：内置卡通风格配色方案（cartoon），GML 中通过 `$var_name` 引用主题变量，GDScript 通过 `apply_theme("cartoon")` 一键切换主题
     - 支持的容器：VBoxContainer、HBoxContainer、GridContainer、MarginContainer、ScrollContainer、TabContainer、CenterContainer、PanelContainer、Tab
     - 支持的控件：Label、Button、TextureButton、CheckButton、HSlider、ColorRect、OptionButton、Panel、TextureRect、RichTextLabel、LineEdit、ProgressBar、SpinBox、HSeparator、VSeparator、NinePatchRect、PopupPanel、Tooltip、Drawer、NavMenu
     - 样式系统：通过 `<style>` 块定义 CSS 类样式，映射到 Godot StyleBoxFlat，支持 `$var` 主题变量引用
@@ -682,7 +682,7 @@ GdUiBuilder 是一个继承 RefCounted 的 Godot 类，在 GDScript 中通过 `G
 | `parse_file(path: String) -> Control` | 解析 .gml 文件，返回 Control 节点树 |
 | `connect_signals(root: Control, target: Object)` | 递归连接 UI 节点树中的信号到目标脚本 |
 | `validate(markup: String) -> String` | 验证标记语法，返回错误信息（空字符串表示无错误） |
-| `set_theme(theme_name: String)` | 设置内置主题名称（dark/light/forest/ocean） |
+| `set_theme(theme_name: String)` | 设置内置主题名称（cartoon） |
 | `get_theme() -> String` | 获取当前主题名称 |
 | `get_builtin_themes() -> PackedStringArray` | 获取所有内置主题名称列表 |
 | `set_theme_var(key: String, value: String)` | 设置自定义主题变量（覆盖内置主题同名变量） |
@@ -691,12 +691,12 @@ GdUiBuilder 是一个继承 RefCounted 的 Godot 类，在 GDScript 中通过 `G
 ### 标记语言语法
 
 ```html
-<ui theme="dark">
+<ui theme="cartoon">
   <style>
     .button-primary {
         background: $bg_button_primary;
         color: $text_white;
-        border_radius: 4;
+        border_radius: 12;
     }
   </style>
   <VBoxContainer anchor="full" margin="12">
@@ -760,42 +760,42 @@ GdUiBuilder 是一个继承 RefCounted 的 Godot 类，在 GDScript 中通过 `G
 
 GML 支持通过主题变量引用颜色值，实现一键切换配色方案。
 
-**内置主题：** dark（默认）、light、forest、ocean
+**内置主题：** cartoon（卡通亮色风格，默认）
 
 **主题变量列表：**
 
-| 变量 | 说明 | dark 值 | light 值 |
-|------|------|---------|----------|
-| `$bg_primary` | 主背景色 | #1a1a3e | #f0f0f5 |
-| `$bg_secondary` | 次背景色 | #12122a | #e0e0e8 |
-| `$bg_panel` | 面板背景色 | #0e1a2e | #f5f5fa |
-| `$bg_button` | 按钮背景色 | #2a2a4e | #d0d0d8 |
-| `$bg_button_primary` | 主按钮背景色 | #2e7d32 | #4caf50 |
-| `$bg_button_danger` | 危险按钮背景色 | #c62828 | #e53935 |
-| `$border_default` | 默认边框色 | #3a3a6e | #b0b0c0 |
-| `$border_accent` | 强调边框色 | #2a5a8e | #88aacc |
-| `$border_highlight` | 高亮边框色 | #4a8a4e | #66bb6a |
-| `$text_primary` | 主文字色 | #ccccee | #1a1a2e |
-| `$text_secondary` | 次文字色 | #888899 | #555566 |
-| `$text_muted` | 弱化文字色 | #8888aa | #777788 |
-| `$text_accent` | 强调文字色 | #88aaff | #2266aa |
-| `$text_title` | 标题文字色 | #4488cc | #2266aa |
-| `$text_white` | 白色文字 | white | white |
-| `$overlay` | 遮罩色 | #00000080 | #00000040 |
-| `$popup_bg` | 弹窗背景色 | #141123f0 | #f8f8fcf0 |
-| `$popup_border` | 弹窗边框色 | #5a5a8e | #a0a0b8 |
-| `$highlight` | 高亮色 | #ffffff40 | #2266aa30 |
-| `$accent` | 强调色 | #4488cc | #2266aa |
+| 变量 | 说明 | cartoon 值 |
+|------|------|-----------|
+| `$bg_primary` | 主背景色 | #f8f4ff |
+| `$bg_secondary` | 次背景色 | #eee8f8 |
+| `$bg_panel` | 面板背景色 | #ffffff |
+| `$bg_button` | 按钮背景色 | #e8dff5 |
+| `$bg_button_primary` | 主按钮背景色 | #7c4dff |
+| `$bg_button_danger` | 危险按钮背景色 | #ff5252 |
+| `$border_default` | 默认边框色 | #c5b3e6 |
+| `$border_accent` | 强调边框色 | #7c4dff |
+| `$border_highlight` | 高亮边框色 | #ffab40 |
+| `$text_primary` | 主文字色 | #3a2d5c |
+| `$text_secondary` | 次文字色 | #7b6fa0 |
+| `$text_muted` | 弱化文字色 | #a99cc4 |
+| `$text_accent` | 强调文字色 | #7c4dff |
+| `$text_title` | 标题文字色 | #5c3dbd |
+| `$text_white` | 白色文字 | white |
+| `$overlay` | 遮罩色 | #3a2d5c60 |
+| `$popup_bg` | 弹窗背景色 | #fffffffa |
+| `$popup_border` | 弹窗边框色 | #c5b3e6 |
+| `$highlight` | 高亮色 | #7c4dff30 |
+| `$accent` | 强调色 | #7c4dff |
 
 **组件默认颜色变量（builder 自动应用，无需 GML 中显式声明）：**
 
-| 变量 | 说明 | dark 值 |
-|------|------|---------|
-| `$panel_bg` | Panel 背景色 | → $bg_primary |
+| 变量 | 说明 | cartoon 值 |
+|------|------|-----------|
+| `$panel_bg` | Panel 背景色 | → $bg_panel |
 | `$button_bg` | Button 背景色 | → $bg_button |
 | `$button_font_color` | Button 文字色 | → $text_primary |
 | `$label_font_color` | Label 文字色 | → $text_primary |
-| `$input_bg` | LineEdit 背景色 | #0a0a1e |
+| `$input_bg` | LineEdit 背景色 | #ffffff |
 | `$input_font_color` | LineEdit 文字色 | → $text_primary |
 | `$separator_color` | 分隔线颜色 | → $border_default |
 | `$tab_bg` | TabContainer 背景色 | → $bg_secondary |
@@ -805,20 +805,20 @@ GML 支持通过主题变量引用颜色值，实现一键切换配色方案。
 | `$progress_fill` | ProgressBar 填充色 | → $accent |
 | `$optionbutton_bg` | OptionButton 背景色 | → $bg_button |
 | `$optionbutton_font_color` | OptionButton 文字色 | → $text_primary |
-| `$popup_title_color` | PopupPanel 标题色 | → $text_accent |
-| `$drawer_title_color` | Drawer 标题色 | → $text_accent |
+| `$popup_title_color` | PopupPanel 标题色 | → $text_title |
+| `$drawer_title_color` | Drawer 标题色 | → $text_title |
 | `$tooltip_title_color` | Tooltip 标题色 | → $text_accent |
 | `$tooltip_content_color` | Tooltip 内容色 | → $text_primary |
 | `$nav_item_color` | NavMenu 项文字色 | → $text_primary |
-| `$nav_item_hover_color` | NavMenu 项悬停色 | → $text_white |
-| `$nav_item_active_color` | NavMenu 项激活色 | → $text_accent |
-| `$nav_item_hover_bg` | NavMenu 项悬停背景 | #ffffff14 |
-| `$nav_item_pressed_bg` | NavMenu 项按下背景 | #4488cc20 |
+| `$nav_item_hover_color` | NavMenu 项悬停色 | → $text_accent |
+| `$nav_item_active_color` | NavMenu 项激活色 | #ff6d00 |
+| `$nav_item_hover_bg` | NavMenu 项悬停背景 | #7c4dff18 |
+| `$nav_item_pressed_bg` | NavMenu 项按下背景 | #7c4dff28 |
 
 **GML 中使用主题变量：**
 
 ```html
-<ui theme="dark">
+<ui theme="cartoon">
   <style>
     .my-panel {
       background: $bg_primary;
@@ -835,9 +835,9 @@ GML 支持通过主题变量引用颜色值，实现一键切换配色方案。
 **GML 中自定义主题变量（覆盖内置主题）：**
 
 ```html
-<ui theme="dark">
+<ui theme="cartoon">
   <theme>
-    bg_primary: #2a1a3e;
+    bg_primary: #f0e6ff;
     my_custom_color: #ff8800;
   </theme>
   <style>
@@ -859,16 +859,16 @@ func _ready():
     load_from_string(UI)
 
 func _on_switch_theme():
-    apply_theme("light")  # 一键切换为 light 主题（自动修改 GML 中的 theme 属性并重新加载）
+    apply_theme("cartoon")  # 一键切换为 cartoon 主题（自动修改 GML 中的 theme 属性并重新加载）
 
 # 方式2：GdUiBuilder
 var builder = GdUiBuilder.new()
-builder.set_theme("forest")
+builder.set_theme("cartoon")
 var ui = builder.parse_string(gml_content)
 
 # 方式3：自定义变量覆盖
-builder.set_theme("dark")
-builder.set_theme_var("bg_primary", "#3a1a4e")  # 覆盖内置变量
+builder.set_theme("cartoon")
+builder.set_theme_var("bg_primary", "#f0e6ff")  # 覆盖内置变量
 builder.set_theme_var("my_color", "#ff8800")     # 新增自定义变量
 var ui = builder.parse_string(gml_content)
 ```
@@ -1359,3 +1359,9 @@ cargo build -p core --release
 | 2026-06-13 | rust/src/ui/ui_gml_scene.rs | GdGmlScene新增theme_name导出属性（默认"dark"）；新增apply_theme一键切换主题方法；新增get_builtin_themes方法；parse_and_build中注入主题变量并存储GML内容到meta |
 | 2026-06-13 | rust/src/ui/mod.rs | 添加ui_theme模块 |
 | 2026-06-13 | example/ui/*.gd/*.gml | 所有GML示例更新：添加theme="dark"属性，样式颜色值替换为$var主题变量引用 |
+| 2026-06-13 | rust/src/ui/ui_theme.rs | 重构主题系统：删除dark/light/forest/ocean四个旧主题，新增cartoon卡通亮色风格主题（淡紫白背景、鲜紫强调、活力橙激活） |
+| 2026-06-13 | rust/src/ui/builder.rs | apply_theme_defaults增强卡通风格：所有组件圆角从4提升到12、Panel/Button/LineEdit/OptionButton/TabContainer增加2px边框、Button hover使用accent边框、LineEdit增加focus状态、hover/pressed颜色变化更鲜明 |
+| 2026-06-13 | rust/src/ui/parser.rs | 测试用例中theme引用从dark更新为cartoon |
+| 2026-06-13 | rust/src/ui/gdui_builder.rs | 注释和文档中theme引用从dark更新为cartoon |
+| 2026-06-13 | rust/src/ui/ui_gml_scene.rs | 注释中theme引用从dark/light/forest/ocean更新为cartoon |
+| 2026-06-13 | example/ui/*.gd/*.gml | 所有GML示例theme属性从dark/light更新为cartoon |

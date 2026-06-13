@@ -3,8 +3,8 @@
 // 支持主题切换：通过 set_theme() 设置内置主题名称，重新解析时自动应用主题变量
 // 用法：
 //   var builder = GdUiBuilder.new()
-//   builder.set_theme("dark")  # 设置主题（可选，默认无主题）
-//   var ui = builder.parse_string("<ui theme='dark'><Label text='Hello' /></ui>")
+//   builder.set_theme("cartoon")  # 设置主题（可选，默认无主题）
+//   var ui = builder.parse_string("<ui theme='cartoon'><Label text='Hello' /></ui>")
 //   add_child(ui)
 //   builder.connect_signals(ui, self)  # 连接信号到脚本方法
 
@@ -115,7 +115,7 @@ impl GdUiBuilder {
         }
     }
 
-    /// 设置内置主题名称（dark/light/forest/ocean）
+    /// 设置内置主题名称（cartoon）
     /// 设置后，下次 parse_string/parse_file 时自动注入主题变量
     /// GML 中使用 $var_name 引用主题变量
     #[func]

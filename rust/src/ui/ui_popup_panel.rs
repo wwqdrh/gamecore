@@ -281,7 +281,32 @@ impl GdPopupPanel {
 
             let mut close_btn = Button::new_alloc();
             close_btn.set_text(&GString::from("X"));
-            close_btn.add_theme_font_size_override(&StringName::from("font_size"), title_font_size - 4);
+            close_btn.set_custom_minimum_size(Vector2::new(32.0, 32.0));
+            close_btn.add_theme_font_size_override(&StringName::from("font_size"), 18);
+            close_btn.add_theme_color_override(&StringName::from("font_color"), Color::from_rgb(1.0, 1.0, 1.0));
+            close_btn.add_theme_color_override(&StringName::from("font_hover_color"), Color::from_rgb(1.0, 1.0, 1.0));
+            close_btn.add_theme_color_override(&StringName::from("font_pressed_color"), Color::from_rgb(0.9, 0.9, 0.9));
+            // normal 状态：圆形红色
+            let mut close_normal = StyleBoxFlat::new_gd();
+            close_normal.set_bg_color(Color::from_rgb(0.96, 0.26, 0.26));
+            close_normal.set_corner_radius_all(16);
+            close_normal.set_content_margin_all(4.0);
+            close_normal.set_border_width_all(0);
+            close_btn.add_theme_stylebox_override(&StringName::from("normal"), &close_normal);
+            // hover 状态：稍亮红色
+            let mut close_hover = StyleBoxFlat::new_gd();
+            close_hover.set_bg_color(Color::from_rgb(1.0, 0.4, 0.4));
+            close_hover.set_corner_radius_all(16);
+            close_hover.set_content_margin_all(4.0);
+            close_hover.set_border_width_all(0);
+            close_btn.add_theme_stylebox_override(&StringName::from("hover"), &close_hover);
+            // pressed 状态：深红色
+            let mut close_pressed = StyleBoxFlat::new_gd();
+            close_pressed.set_bg_color(Color::from_rgb(0.8, 0.18, 0.18));
+            close_pressed.set_corner_radius_all(16);
+            close_pressed.set_content_margin_all(4.0);
+            close_pressed.set_border_width_all(0);
+            close_btn.add_theme_stylebox_override(&StringName::from("pressed"), &close_pressed);
             let close_cb = Callable::from_object_method(
                 &*base,
                 "_on_close_pressed",

@@ -1,4 +1,4 @@
-<ui theme="dark">
+<ui theme="cartoon">
   <style>
     .main-bg {
       background: $bg_secondary;

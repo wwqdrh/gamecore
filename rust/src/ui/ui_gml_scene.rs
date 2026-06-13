@@ -140,7 +140,7 @@ impl GdGmlScene {
     }
 
     /// 切换主题并重新加载（最简单的主题切换方式）
-    /// 传入内置主题名称（dark/light/forest/ocean），自动修改 GML 中的 theme 属性并重新加载
+    /// 传入内置主题名称（cartoon），自动修改 GML 中的 theme 属性并重新加载
     #[func]
     fn apply_theme(&mut self, theme_name: GString) {
         if !self.loaded {

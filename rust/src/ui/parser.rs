@@ -726,26 +726,26 @@ mod tests {
 
     #[test]
     fn test_parse_ui_attributes() {
-        let input = r#"<ui theme="dark">
+        let input = r#"<ui theme="cartoon">
             <Label text="test" />
         </ui>"#;
         let result = UiParser::new(input).parse().unwrap();
-        assert_eq!(result.root.attributes[0], ("theme".to_string(), "dark".to_string()));
-        assert_eq!(result.theme_name, Some("dark".to_string()));
+        assert_eq!(result.root.attributes[0], ("theme".to_string(), "cartoon".to_string()));
+        assert_eq!(result.theme_name, Some("cartoon".to_string()));
     }
 
     #[test]
     fn test_parse_theme_block() {
-        let input = r#"<ui theme="dark">
+        let input = r#"<ui theme="cartoon">
             <theme>
-                bg_primary: #1a1a3e;
-                text_primary: #ccccee;
+                bg_primary: #f8f4ff;
+                text_primary: #3a2d5c;
             </theme>
             <Label text="test" />
         </ui>"#;
         let result = UiParser::new(input).parse().unwrap();
-        assert_eq!(result.theme_name, Some("dark".to_string()));
-        assert_eq!(result.theme_vars.get("bg_primary").unwrap(), "#1a1a3e");
-        assert_eq!(result.theme_vars.get("text_primary").unwrap(), "#ccccee");
+        assert_eq!(result.theme_name, Some("cartoon".to_string()));
+        assert_eq!(result.theme_vars.get("bg_primary").unwrap(), "#f8f4ff");
+        assert_eq!(result.theme_vars.get("text_primary").unwrap(), "#3a2d5c");
     }
 }

@@ -10,15 +10,11 @@ var total_pages = 1
 var bag_data = []
 
 var UI = """
-<ui theme="dark">
+<ui theme="cartoon">
   <style>
     .role-btn {
       background: $bg_button_primary;
-      color: $text_primary;
-      border_radius: 6;
-      border_color: $border_highlight;
-      border_width: 1;
-      padding: 12 24;
+      color: $text_white;
     }
     .panel-section {
       background: $bg_secondary;
@@ -60,8 +56,6 @@ var UI = """
     .page-btn {
       background: $bg_button;
       color: $text_primary;
-      border_radius: 4;
-      padding: 6 16;
     }
     .page-info {
       color: $text_muted;
@@ -69,75 +63,75 @@ var UI = """
   </style>
   <Control anchor="full">
     <!-- 居中角色按钮 -->
-    <CenterContainer anchor="full">
-      <Button name="OpenRoleBtn" text="Character" class="role-btn" font_size="20" on_pressed="show:RolePopup" mouse_default_cursor_shape="pointing_hand" />
+	<CenterContainer anchor="full">
+	  <Button name="OpenRoleBtn" text="Character" class="role-btn" font_size="20" on_pressed="show:RolePopup" mouse_default_cursor_shape="pointing_hand" />
     </CenterContainer>
   </Control>
 
   <!-- 角色属性弹窗 -->
   <PopupPanel name="RolePopup" popup_title="Character" width="80%" height="80%" close_on_overlay="true">
-    <HBoxContainer margin="8" h_separation="12">
+	<HBoxContainer margin="8" h_separation="12">
       <!-- 面板左：装备区 -->
-      <VBoxContainer size_flags_horizontal="expand_fill" h_separation="0" v_separation="4">
-        <Label text="Equipment" font_size="16" class="equip-label" />
-        <HBoxContainer h_separation="8">
+	  <VBoxContainer size_flags_horizontal="expand_fill" h_separation="0" v_separation="4">
+		<Label text="Equipment" font_size="16" class="equip-label" />
+		<HBoxContainer h_separation="8">
           <!-- 左侧装备列 -->
-          <VBoxContainer h_separation="0" v_separation="6">
-            <VBoxContainer class="equip-slot" custom_minimum_size="10%,10%">
-              <Label text="Helmet" class="equip-label" font_size="10" align="center" />
-              <Control size_flags_vertical="expand_fill" />
+		  <VBoxContainer h_separation="0" v_separation="6">
+			<VBoxContainer class="equip-slot" custom_minimum_size="10%,10%">
+			  <Label text="Helmet" class="equip-label" font_size="10" align="center" />
+			  <Control size_flags_vertical="expand_fill" />
             </VBoxContainer>
-            <VBoxContainer class="equip-slot" custom_minimum_size="10%,10%">
-              <Label text="Weapon" class="equip-label" font_size="10" align="center" />
-              <Control size_flags_vertical="expand_fill" />
+			<VBoxContainer class="equip-slot" custom_minimum_size="10%,10%">
+			  <Label text="Weapon" class="equip-label" font_size="10" align="center" />
+			  <Control size_flags_vertical="expand_fill" />
             </VBoxContainer>
-            <VBoxContainer class="equip-slot" custom_minimum_size="10%,10%">
-              <Label text="Ring" class="equip-label" font_size="10" align="center" />
-              <Control size_flags_vertical="expand_fill" />
+			<VBoxContainer class="equip-slot" custom_minimum_size="10%,10%">
+			  <Label text="Ring" class="equip-label" font_size="10" align="center" />
+			  <Control size_flags_vertical="expand_fill" />
             </VBoxContainer>
           </VBoxContainer>
 
           <!-- 中间角色立绘面板 -->
-          <VBoxContainer class="portrait-panel" custom_minimum_size="25%,0" size_flags_horizontal="expand_fill" size_flags_vertical="expand_fill">
-            <Label text="Portrait" class="portrait-text" font_size="14" align="center" />
-            <Control size_flags_vertical="expand_fill" />
+		  <VBoxContainer class="portrait-panel" custom_minimum_size="25%,0" size_flags_horizontal="expand_fill" size_flags_vertical="expand_fill">
+			<Label text="Portrait" class="portrait-text" font_size="14" align="center" />
+			<Control size_flags_vertical="expand_fill" />
           </VBoxContainer>
 
           <!-- 右侧装备列 -->
-          <VBoxContainer h_separation="0" v_separation="6">
-            <VBoxContainer class="equip-slot" custom_minimum_size="10%,10%">
-              <Label text="Armor" class="equip-label" font_size="10" align="center" />
-              <Control size_flags_vertical="expand_fill" />
+		  <VBoxContainer h_separation="0" v_separation="6">
+			<VBoxContainer class="equip-slot" custom_minimum_size="10%,10%">
+			  <Label text="Armor" class="equip-label" font_size="10" align="center" />
+			  <Control size_flags_vertical="expand_fill" />
             </VBoxContainer>
-            <VBoxContainer class="equip-slot" custom_minimum_size="10%,10%">
-              <Label text="Shield" class="equip-label" font_size="10" align="center" />
-              <Control size_flags_vertical="expand_fill" />
+			<VBoxContainer class="equip-slot" custom_minimum_size="10%,10%">
+			  <Label text="Shield" class="equip-label" font_size="10" align="center" />
+			  <Control size_flags_vertical="expand_fill" />
             </VBoxContainer>
-            <VBoxContainer class="equip-slot" custom_minimum_size="10%,10%">
-              <Label text="Boots" class="equip-label" font_size="10" align="center" />
-              <Control size_flags_vertical="expand_fill" />
+			<VBoxContainer class="equip-slot" custom_minimum_size="10%,10%">
+			  <Label text="Boots" class="equip-label" font_size="10" align="center" />
+			  <Control size_flags_vertical="expand_fill" />
             </VBoxContainer>
           </VBoxContainer>
         </HBoxContainer>
       </VBoxContainer>
 
       <!-- 面板右：背包网格 -->
-      <VBoxContainer size_flags_horizontal="expand_fill" h_separation="0" v_separation="4">
-        <Label text="Backpack" font_size="16" class="equip-label" />
-        <UIGrid name="BagGrid" count="25" columns="5" highlight_mode="1" highlight_color="#ffffff30" data="current_bag_data">
-          <MarginContainer class="grid-item" custom_minimum_size="7%,7%">
+	  <VBoxContainer size_flags_horizontal="expand_fill" h_separation="0" v_separation="4">
+		<Label text="Backpack" font_size="16" class="equip-label" />
+		<UIGrid name="BagGrid" count="25" columns="5" highlight_mode="1" highlight_color="#ffffff30" data="current_bag_data">
+		  <MarginContainer class="grid-item" custom_minimum_size="7%,7%">
             <VBoxContainer>
-              <Label text="{{name}}" class="grid-item-name" align="center" font_size="10" />
+			  <Label text="{{name}}" class="grid-item-name" align="center" font_size="10" />
             </VBoxContainer>
           </MarginContainer>
         </UIGrid>
         <!-- 分页控制 -->
-        <HBoxContainer margin="4 0 0 0" h_separation="8">
-          <Button name="PrevPageBtn" text="< Prev" class="page-btn" on_pressed="_on_prev_page" mouse_default_cursor_shape="pointing_hand" />
-          <Control size_flags_horizontal="expand_fill" />
-          <Label name="PageInfo" text="1 / 1" class="page-info" font_size="14" align="center" />
-          <Control size_flags_horizontal="expand_fill" />
-          <Button name="NextPageBtn" text="Next >" class="page-btn" on_pressed="_on_next_page" mouse_default_cursor_shape="pointing_hand" />
+		<HBoxContainer margin="4 0 0 0" h_separation="8">
+		  <Button name="PrevPageBtn" text="< Prev" class="page-btn" on_pressed="_on_prev_page" mouse_default_cursor_shape="pointing_hand" />
+		  <Control size_flags_horizontal="expand_fill" />
+		  <Label name="PageInfo" text="1 / 1" class="page-info" font_size="14" align="center" />
+		  <Control size_flags_horizontal="expand_fill" />
+		  <Button name="NextPageBtn" text="Next >" class="page-btn" on_pressed="_on_next_page" mouse_default_cursor_shape="pointing_hand" />
         </HBoxContainer>
       </VBoxContainer>
     </HBoxContainer>

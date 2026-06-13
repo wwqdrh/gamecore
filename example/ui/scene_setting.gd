@@ -3,7 +3,7 @@
 extends GdGmlScene
 
 var UI = """
-<ui theme="dark">
+<ui theme="cartoon">
   <style>
     .setting-btn {
       background: $bg_button;

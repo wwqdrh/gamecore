@@ -1,6 +1,6 @@
 // UI 主题系统
-// 提供内置配色方案和变量替换机制
-// GML 中通过 <ui theme="dark"> 指定主题，样式属性值中使用 $var_name 引用主题变量
+// 提供内置卡通风格配色方案和变量替换机制
+// GML 中通过 <ui theme="cartoon"> 指定主题，样式属性值中使用 $var_name 引用主题变量
 // GDScript 中通过 GdUiBuilder.set_theme() / GdGmlScene.theme_name 切换主题
 // 组件默认颜色：builder 构建节点时自动从主题变量取值，无需 GML 中显式声明
 
@@ -11,17 +11,14 @@ pub type ThemeVars = HashMap<String, String>;
 
 /// 获取内置主题列表
 pub fn builtin_theme_names() -> Vec<&'static str> {
-    vec!["dark", "light", "forest", "ocean"]
+    vec!["cartoon"]
 }
 
 /// 根据名称获取内置主题变量表
 /// 返回 None 表示未找到对应内置主题
 pub fn get_builtin_theme(name: &str) -> Option<ThemeVars> {
     match name {
-        "dark" => Some(dark_theme()),
-        "light" => Some(light_theme()),
-        "forest" => Some(forest_theme()),
-        "ocean" => Some(ocean_theme()),
+        "cartoon" => Some(cartoon_theme()),
         _ => None,
     }
 }
@@ -128,92 +125,36 @@ fn parse_theme_color(value: &str) -> Option<godot::builtin::Color> {
 
 // === 内置主题定义 ===
 
-/// Dark 主题（默认，深色游戏风格）
-fn dark_theme() -> ThemeVars {
+/// Cartoon 主题（卡通亮色风格，圆角、鲜明色彩、活泼配色）
+fn cartoon_theme() -> ThemeVars {
     let mut vars = ThemeVars::new();
-    // 背景色
-    vars.insert("bg_primary".into(), "#1a1a3e".into());
-    vars.insert("bg_secondary".into(), "#12122a".into());
-    vars.insert("bg_panel".into(), "#0e1a2e".into());
-    vars.insert("bg_button".into(), "#2a2a4e".into());
-    vars.insert("bg_button_primary".into(), "#2e7d32".into());
-    vars.insert("bg_button_danger".into(), "#c62828".into());
-    // 边框色
-    vars.insert("border_default".into(), "#3a3a6e".into());
-    vars.insert("border_accent".into(), "#2a5a8e".into());
-    vars.insert("border_highlight".into(), "#4a8a4e".into());
-    // 文字色
-    vars.insert("text_primary".into(), "#ccccee".into());
-    vars.insert("text_secondary".into(), "#888899".into());
-    vars.insert("text_muted".into(), "#8888aa".into());
-    vars.insert("text_accent".into(), "#88aaff".into());
-    vars.insert("text_title".into(), "#4488cc".into());
-    vars.insert("text_white".into(), "white".into());
-    // 组件色
-    vars.insert("overlay".into(), "#00000080".into());
-    vars.insert("popup_bg".into(), "#141123f0".into());
-    vars.insert("popup_border".into(), "#5a5a8e".into());
-    vars.insert("highlight".into(), "#ffffff40".into());
-    vars.insert("highlight_strong".into(), "#ffff00".into());
-    vars.insert("accent".into(), "#4488cc".into());
+    // 背景色 - 柔和亮色
+    vars.insert("bg_primary".into(), "#f8f4ff".into());       // 淡紫白
+    vars.insert("bg_secondary".into(), "#eee8f8".into());     // 浅紫灰
+    vars.insert("bg_panel".into(), "#ffffff".into());          // 纯白面板
+    vars.insert("bg_button".into(), "#e8dff5".into());        // 淡紫按钮
+    vars.insert("bg_button_primary".into(), "#7c4dff".into()); // 鲜紫主按钮
+    vars.insert("bg_button_danger".into(), "#ff5252".into());  // 鲜红危险按钮
+    // 边框色 - 鲜明描边
+    vars.insert("border_default".into(), "#c5b3e6".into());   // 淡紫边框
+    vars.insert("border_accent".into(), "#7c4dff".into());    // 鲜紫强调边框
+    vars.insert("border_highlight".into(), "#ffab40".into()); // 橙黄高亮边框
+    // 文字色 - 深色为主，保证可读性
+    vars.insert("text_primary".into(), "#3a2d5c".into());     // 深紫文字
+    vars.insert("text_secondary".into(), "#7b6fa0".into());   // 紫灰次要文字
+    vars.insert("text_muted".into(), "#a99cc4".into());       // 淡紫弱化文字
+    vars.insert("text_accent".into(), "#7c4dff".into());      // 鲜紫强调文字
+    vars.insert("text_title".into(), "#5c3dbd".into());       // 深紫标题
+    vars.insert("text_white".into(), "white".into());         // 白色文字
+    // 功能色
+    vars.insert("overlay".into(), "#3a2d5c60".into());        // 半透明紫遮罩
+    vars.insert("popup_bg".into(), "#fffffffa".into());       // 白色弹窗背景
+    vars.insert("popup_border".into(), "#c5b3e6".into());     // 淡紫弹窗边框
+    vars.insert("highlight".into(), "#7c4dff30".into());      // 鲜紫高亮
+    vars.insert("highlight_strong".into(), "#ffab40".into()); // 橙黄强高亮
+    vars.insert("accent".into(), "#7c4dff".into());           // 鲜紫强调色
     // 组件默认颜色（builder 自动应用）
-    vars.insert("panel_bg".into(), "$bg_primary".into());
-    vars.insert("button_bg".into(), "$bg_button".into());
-    vars.insert("button_font_color".into(), "$text_primary".into());
-    vars.insert("label_font_color".into(), "$text_primary".into());
-    vars.insert("input_bg".into(), "#0a0a1e".into());
-    vars.insert("input_font_color".into(), "$text_primary".into());
-    vars.insert("separator_color".into(), "$border_default".into());
-    vars.insert("tab_bg".into(), "$bg_secondary".into());
-    vars.insert("tab_font_color".into(), "$text_secondary".into());
-    vars.insert("tab_selected_bg".into(), "$bg_primary".into());
-    vars.insert("tab_selected_font_color".into(), "$text_accent".into());
-    vars.insert("scrollbar_color".into(), "#3a3a5e".into());
-    vars.insert("progress_bg".into(), "$bg_button".into());
-    vars.insert("progress_fill".into(), "$accent".into());
-    vars.insert("checkbutton_bg".into(), "$bg_button".into());
-    vars.insert("slider_bg".into(), "$bg_button".into());
-    vars.insert("slider_fill".into(), "$accent".into());
-    vars.insert("optionbutton_bg".into(), "$bg_button".into());
-    vars.insert("optionbutton_font_color".into(), "$text_primary".into());
-    vars.insert("popup_title_color".into(), "$text_accent".into());
-    vars.insert("drawer_title_color".into(), "$text_accent".into());
-    vars.insert("tooltip_title_color".into(), "$text_accent".into());
-    vars.insert("tooltip_content_color".into(), "$text_primary".into());
-    vars.insert("nav_item_color".into(), "$text_primary".into());
-    vars.insert("nav_item_hover_color".into(), "$text_white".into());
-    vars.insert("nav_item_active_color".into(), "$text_accent".into());
-    vars.insert("nav_item_hover_bg".into(), "#ffffff14".into());
-    vars.insert("nav_item_pressed_bg".into(), "#4488cc20".into());
-    vars
-}
-
-/// Light 主题（浅色风格）
-fn light_theme() -> ThemeVars {
-    let mut vars = ThemeVars::new();
-    vars.insert("bg_primary".into(), "#f0f0f5".into());
-    vars.insert("bg_secondary".into(), "#e0e0e8".into());
-    vars.insert("bg_panel".into(), "#f5f5fa".into());
-    vars.insert("bg_button".into(), "#d0d0d8".into());
-    vars.insert("bg_button_primary".into(), "#4caf50".into());
-    vars.insert("bg_button_danger".into(), "#e53935".into());
-    vars.insert("border_default".into(), "#b0b0c0".into());
-    vars.insert("border_accent".into(), "#88aacc".into());
-    vars.insert("border_highlight".into(), "#66bb6a".into());
-    vars.insert("text_primary".into(), "#1a1a2e".into());
-    vars.insert("text_secondary".into(), "#555566".into());
-    vars.insert("text_muted".into(), "#777788".into());
-    vars.insert("text_accent".into(), "#2266aa".into());
-    vars.insert("text_title".into(), "#2266aa".into());
-    vars.insert("text_white".into(), "white".into());
-    vars.insert("overlay".into(), "#00000040".into());
-    vars.insert("popup_bg".into(), "#f8f8fcf0".into());
-    vars.insert("popup_border".into(), "#a0a0b8".into());
-    vars.insert("highlight".into(), "#2266aa30".into());
-    vars.insert("highlight_strong".into(), "#ff8800".into());
-    vars.insert("accent".into(), "#2266aa".into());
-    // 组件默认颜色
-    vars.insert("panel_bg".into(), "$bg_primary".into());
+    vars.insert("panel_bg".into(), "$bg_panel".into());
     vars.insert("button_bg".into(), "$bg_button".into());
     vars.insert("button_font_color".into(), "$text_primary".into());
     vars.insert("label_font_color".into(), "$text_primary".into());
@@ -222,9 +163,9 @@ fn light_theme() -> ThemeVars {
     vars.insert("separator_color".into(), "$border_default".into());
     vars.insert("tab_bg".into(), "$bg_secondary".into());
     vars.insert("tab_font_color".into(), "$text_secondary".into());
-    vars.insert("tab_selected_bg".into(), "$bg_primary".into());
+    vars.insert("tab_selected_bg".into(), "#ffffff".into());
     vars.insert("tab_selected_font_color".into(), "$text_accent".into());
-    vars.insert("scrollbar_color".into(), "#c0c0d0".into());
+    vars.insert("scrollbar_color".into(), "#c5b3e6".into());
     vars.insert("progress_bg".into(), "$bg_button".into());
     vars.insert("progress_fill".into(), "$accent".into());
     vars.insert("checkbutton_bg".into(), "$bg_button".into());
@@ -232,127 +173,15 @@ fn light_theme() -> ThemeVars {
     vars.insert("slider_fill".into(), "$accent".into());
     vars.insert("optionbutton_bg".into(), "$bg_button".into());
     vars.insert("optionbutton_font_color".into(), "$text_primary".into());
-    vars.insert("popup_title_color".into(), "$text_accent".into());
-    vars.insert("drawer_title_color".into(), "$text_accent".into());
+    vars.insert("popup_title_color".into(), "$text_title".into());
+    vars.insert("drawer_title_color".into(), "$text_title".into());
     vars.insert("tooltip_title_color".into(), "$text_accent".into());
     vars.insert("tooltip_content_color".into(), "$text_primary".into());
     vars.insert("nav_item_color".into(), "$text_primary".into());
-    vars.insert("nav_item_hover_color".into(), "#1a1a2e".into());
-    vars.insert("nav_item_active_color".into(), "$text_accent".into());
-    vars.insert("nav_item_hover_bg".into(), "#2266aa14".into());
-    vars.insert("nav_item_pressed_bg".into(), "#2266aa20".into());
-    vars
-}
-
-/// Forest 主题（森林绿色风格）
-fn forest_theme() -> ThemeVars {
-    let mut vars = ThemeVars::new();
-    vars.insert("bg_primary".into(), "#1a2e1a".into());
-    vars.insert("bg_secondary".into(), "#0e1e0e".into());
-    vars.insert("bg_panel".into(), "#122012".into());
-    vars.insert("bg_button".into(), "#2a4a2e".into());
-    vars.insert("bg_button_primary".into(), "#388e3c".into());
-    vars.insert("bg_button_danger".into(), "#b71c1c".into());
-    vars.insert("border_default".into(), "#2a5a2a".into());
-    vars.insert("border_accent".into(), "#4a8a4e".into());
-    vars.insert("border_highlight".into(), "#66bb6a".into());
-    vars.insert("text_primary".into(), "#cceecc".into());
-    vars.insert("text_secondary".into(), "#88aa88".into());
-    vars.insert("text_muted".into(), "#6a8a6a".into());
-    vars.insert("text_accent".into(), "#88ee88".into());
-    vars.insert("text_title".into(), "#44aa44".into());
-    vars.insert("text_white".into(), "white".into());
-    vars.insert("overlay".into(), "#00000060".into());
-    vars.insert("popup_bg".into(), "#0e1e0ef0".into());
-    vars.insert("popup_border".into(), "#4a8a4e".into());
-    vars.insert("highlight".into(), "#88ff8840".into());
-    vars.insert("highlight_strong".into(), "#ffcc00".into());
-    vars.insert("accent".into(), "#44aa44".into());
-    // 组件默认颜色
-    vars.insert("panel_bg".into(), "$bg_primary".into());
-    vars.insert("button_bg".into(), "$bg_button".into());
-    vars.insert("button_font_color".into(), "$text_primary".into());
-    vars.insert("label_font_color".into(), "$text_primary".into());
-    vars.insert("input_bg".into(), "#0a160a".into());
-    vars.insert("input_font_color".into(), "$text_primary".into());
-    vars.insert("separator_color".into(), "$border_default".into());
-    vars.insert("tab_bg".into(), "$bg_secondary".into());
-    vars.insert("tab_font_color".into(), "$text_secondary".into());
-    vars.insert("tab_selected_bg".into(), "$bg_primary".into());
-    vars.insert("tab_selected_font_color".into(), "$text_accent".into());
-    vars.insert("scrollbar_color".into(), "#2a4a2e".into());
-    vars.insert("progress_bg".into(), "$bg_button".into());
-    vars.insert("progress_fill".into(), "$accent".into());
-    vars.insert("checkbutton_bg".into(), "$bg_button".into());
-    vars.insert("slider_bg".into(), "$bg_button".into());
-    vars.insert("slider_fill".into(), "$accent".into());
-    vars.insert("optionbutton_bg".into(), "$bg_button".into());
-    vars.insert("optionbutton_font_color".into(), "$text_primary".into());
-    vars.insert("popup_title_color".into(), "$text_accent".into());
-    vars.insert("drawer_title_color".into(), "$text_accent".into());
-    vars.insert("tooltip_title_color".into(), "$text_accent".into());
-    vars.insert("tooltip_content_color".into(), "$text_primary".into());
-    vars.insert("nav_item_color".into(), "$text_primary".into());
-    vars.insert("nav_item_hover_color".into(), "$text_white".into());
-    vars.insert("nav_item_active_color".into(), "$text_accent".into());
-    vars.insert("nav_item_hover_bg".into(), "#88ff8814".into());
-    vars.insert("nav_item_pressed_bg".into(), "#44aa4420".into());
-    vars
-}
-
-/// Ocean 主题（海洋蓝色风格）
-fn ocean_theme() -> ThemeVars {
-    let mut vars = ThemeVars::new();
-    vars.insert("bg_primary".into(), "#0e1a2e".into());
-    vars.insert("bg_secondary".into(), "#0a1222".into());
-    vars.insert("bg_panel".into(), "#081420".into());
-    vars.insert("bg_button".into(), "#1a3a5e".into());
-    vars.insert("bg_button_primary".into(), "#0277bd".into());
-    vars.insert("bg_button_danger".into(), "#c62828".into());
-    vars.insert("border_default".into(), "#2a5a8e".into());
-    vars.insert("border_accent".into(), "#4488cc".into());
-    vars.insert("border_highlight".into(), "#42a5f5".into());
-    vars.insert("text_primary".into(), "#cceeee".into());
-    vars.insert("text_secondary".into(), "#88aacc".into());
-    vars.insert("text_muted".into(), "#6688aa".into());
-    vars.insert("text_accent".into(), "#88ddff".into());
-    vars.insert("text_title".into(), "#42a5f5".into());
-    vars.insert("text_white".into(), "white".into());
-    vars.insert("overlay".into(), "#00000050".into());
-    vars.insert("popup_bg".into(), "#0a1a2ef0".into());
-    vars.insert("popup_border".into(), "#4488cc".into());
-    vars.insert("highlight".into(), "#88ddff40".into());
-    vars.insert("highlight_strong".into(), "#ff8800".into());
-    vars.insert("accent".into(), "#42a5f5".into());
-    // 组件默认颜色
-    vars.insert("panel_bg".into(), "$bg_primary".into());
-    vars.insert("button_bg".into(), "$bg_button".into());
-    vars.insert("button_font_color".into(), "$text_primary".into());
-    vars.insert("label_font_color".into(), "$text_primary".into());
-    vars.insert("input_bg".into(), "#060e18".into());
-    vars.insert("input_font_color".into(), "$text_primary".into());
-    vars.insert("separator_color".into(), "$border_default".into());
-    vars.insert("tab_bg".into(), "$bg_secondary".into());
-    vars.insert("tab_font_color".into(), "$text_secondary".into());
-    vars.insert("tab_selected_bg".into(), "$bg_primary".into());
-    vars.insert("tab_selected_font_color".into(), "$text_accent".into());
-    vars.insert("scrollbar_color".into(), "#1a3a5e".into());
-    vars.insert("progress_bg".into(), "$bg_button".into());
-    vars.insert("progress_fill".into(), "$accent".into());
-    vars.insert("checkbutton_bg".into(), "$bg_button".into());
-    vars.insert("slider_bg".into(), "$bg_button".into());
-    vars.insert("slider_fill".into(), "$accent".into());
-    vars.insert("optionbutton_bg".into(), "$bg_button".into());
-    vars.insert("optionbutton_font_color".into(), "$text_primary".into());
-    vars.insert("popup_title_color".into(), "$text_accent".into());
-    vars.insert("drawer_title_color".into(), "$text_accent".into());
-    vars.insert("tooltip_title_color".into(), "$text_accent".into());
-    vars.insert("tooltip_content_color".into(), "$text_primary".into());
-    vars.insert("nav_item_color".into(), "$text_primary".into());
-    vars.insert("nav_item_hover_color".into(), "$text_white".into());
-    vars.insert("nav_item_active_color".into(), "$text_accent".into());
-    vars.insert("nav_item_hover_bg".into(), "#88ddff14".into());
-    vars.insert("nav_item_pressed_bg".into(), "#42a5f520".into());
+    vars.insert("nav_item_hover_color".into(), "$text_accent".into());
+    vars.insert("nav_item_active_color".into(), "#ff6d00".into());   // 活力橙激活
+    vars.insert("nav_item_hover_bg".into(), "#7c4dff18".into());
+    vars.insert("nav_item_pressed_bg".into(), "#7c4dff28".into());
     vars
 }
 
@@ -382,26 +211,26 @@ mod tests {
     fn test_parse_theme_block() {
         let content = r#"
             // 这是注释
-            bg_primary: #1a1a3e;
-            text_primary: #ccccee;
-            border_default: #3a3a6e
+            bg_primary: #f8f4ff;
+            text_primary: #3a2d5c;
+            border_default: #c5b3e6
         "#;
         let vars = parse_theme_block(content);
-        assert_eq!(vars.get("bg_primary").unwrap(), "#1a1a3e");
-        assert_eq!(vars.get("text_primary").unwrap(), "#ccccee");
-        assert_eq!(vars.get("border_default").unwrap(), "#3a3a6e");
+        assert_eq!(vars.get("bg_primary").unwrap(), "#f8f4ff");
+        assert_eq!(vars.get("text_primary").unwrap(), "#3a2d5c");
+        assert_eq!(vars.get("border_default").unwrap(), "#c5b3e6");
     }
 
     #[test]
     fn test_resolve_theme_vars() {
         let mut vars = ThemeVars::new();
-        vars.insert("bg_primary".into(), "#1a1a3e".into());
-        vars.insert("text_primary".into(), "#ccccee".into());
+        vars.insert("bg_primary".into(), "#f8f4ff".into());
+        vars.insert("text_primary".into(), "#3a2d5c".into());
 
         // 简单替换
-        assert_eq!(resolve_theme_vars("$bg_primary", &vars), "#1a1a3e");
+        assert_eq!(resolve_theme_vars("$bg_primary", &vars), "#f8f4ff");
         // 混合文本
-        assert_eq!(resolve_theme_vars("color: $text_primary;", &vars), "color: #ccccee;");
+        assert_eq!(resolve_theme_vars("color: $text_primary;", &vars), "color: #3a2d5c;");
         // 未找到变量保持原样
         assert_eq!(resolve_theme_vars("$unknown_var", &vars), "$unknown_var");
         // 无变量引用
@@ -410,21 +239,21 @@ mod tests {
 
     #[test]
     fn test_resolve_theme_vars_chained() {
-        // 测试变量引用链：panel_bg -> $bg_primary -> #1a1a3e
-        let vars = dark_theme();
+        // 测试变量引用链：panel_bg -> $bg_panel -> #ffffff
+        let vars = cartoon_theme();
         // resolve_theme_vars 只做一层替换
         let resolved = resolve_theme_vars("$panel_bg", &vars);
-        assert_eq!(resolved, "$bg_primary"); // 第一层替换
+        assert_eq!(resolved, "$bg_panel"); // 第一层替换
         let resolved2 = resolve_theme_vars(&resolved, &vars);
-        assert_eq!(resolved2, "#1a1a3e"); // 第二层替换
+        assert_eq!(resolved2, "#ffffff"); // 第二层替换
     }
 
     #[test]
     fn test_get_theme_color() {
-        let vars = dark_theme();
+        let vars = cartoon_theme();
         let color = get_theme_color(&vars, "bg_primary");
         assert!(color.is_some());
         let c = color.unwrap();
-        assert!((c.r - 0.102).abs() < 0.01);
+        assert!((c.r - 0.973).abs() < 0.01);
     }
 }

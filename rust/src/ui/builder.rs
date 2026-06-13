@@ -239,9 +239,6 @@ impl UiBuilder {
     /// 应用 class 样式到控件
     fn apply_class_style(&self, control: &mut Gd<Control>, tag: &str, class_name: &str) {
         if let Some(style_rule) = self.styles.get(class_name) {
-            // 创建 StyleBoxFlat 并应用样式属性
-            let mut style_box = StyleBoxFlat::new_gd();
-
             // 解析样式属性值，替换主题变量
             let resolved_props: HashMap<String, String> = style_rule.properties.iter()
                 .map(|(k, v)| (k.clone(), resolve_theme_vars(v, &self.theme_vars)))
@@ -255,32 +252,129 @@ impl UiBuilder {
                 ""
             };
 
-            if !bg_color_key.is_empty() {
+            // 对于按钮类组件，需要同时设置 normal/hover/pressed 三个状态
+            // 否则 class 只覆盖 normal 状态，hover/pressed 会跳回主题默认色
+            let is_button = matches!(tag, "Button" | "CheckButton" | "TextureButton" | "OptionButton");
+
+            if is_button && !bg_color_key.is_empty() {
                 if let Some(color) = parse_color(resolved_props.get(bg_color_key).unwrap()) {
-                    style_box.set_bg_color(color);
-                }
-            }
-
-            if let Some(border_radius) = resolved_props.get("border_radius") {
-                if let Ok(r) = border_radius.parse::<i32>() {
-                    style_box.set_corner_radius_all(r);
-                }
-            }
-
-            if let Some(border_color) = resolved_props.get("border_color") {
-                if let Some(color) = parse_color(border_color) {
-                    style_box.set_border_color(color);
+                    let border_color = resolved_props.get("border_color")
+                        .and_then(|v| parse_color(v))
+                        .or_else(|| get_theme_color(&self.theme_vars, "border_default"));
                     let border_width = resolved_props.get("border_width")
                         .and_then(|v| v.parse::<i32>().ok())
-                        .unwrap_or(1);
-                    style_box.set_border_width_all(border_width);
-                }
-            }
+                        .unwrap_or(2);
+                    let border_radius = resolved_props.get("border_radius")
+                        .and_then(|v| v.parse::<i32>().ok())
+                        .unwrap_or(12);
+                    let padding = resolved_props.get("padding")
+                        .and_then(|v| v.parse::<f32>().ok());
 
-            if let Some(padding) = resolved_props.get("padding") {
-                if let Ok(p) = padding.parse::<i32>() {
-                    style_box.set_content_margin_all(p as f32);
+                    // normal 状态
+                    let mut normal_box = StyleBoxFlat::new_gd();
+                    normal_box.set_bg_color(color);
+                    normal_box.set_corner_radius_all(border_radius);
+                    normal_box.set_content_margin_all(8.0);
+                    normal_box.set_content_margin(Side::LEFT, 16.0);
+                    normal_box.set_content_margin(Side::RIGHT, 16.0);
+                    if let Some(bc) = border_color {
+                        normal_box.set_border_color(bc);
+                        normal_box.set_border_width_all(border_width);
+                    }
+                    if let Some(p) = padding {
+                        normal_box.set_content_margin_all(p);
+                    }
+                    control.add_theme_stylebox_override(
+                        &StringName::from("normal"),
+                        &normal_box,
+                    );
+
+                    // hover 状态 - 变亮 + accent 边框
+                    let mut hover_box = StyleBoxFlat::new_gd();
+                    hover_box.set_bg_color(Color::from_rgba(
+                        (color.r + 0.12).min(1.0),
+                        (color.g + 0.12).min(1.0),
+                        (color.b + 0.12).min(1.0),
+                        color.a,
+                    ));
+                    hover_box.set_corner_radius_all(border_radius);
+                    hover_box.set_content_margin_all(8.0);
+                    hover_box.set_content_margin(Side::LEFT, 16.0);
+                    hover_box.set_content_margin(Side::RIGHT, 16.0);
+                    if let Some(bc) = get_theme_color(&self.theme_vars, "border_accent") {
+                        hover_box.set_border_color(bc);
+                        hover_box.set_border_width_all(border_width);
+                    }
+                    if let Some(p) = padding {
+                        hover_box.set_content_margin_all(p);
+                    }
+                    control.add_theme_stylebox_override(
+                        &StringName::from("hover"),
+                        &hover_box,
+                    );
+
+                    // pressed 状态 - 变暗
+                    let mut pressed_box = StyleBoxFlat::new_gd();
+                    pressed_box.set_bg_color(Color::from_rgba(
+                        (color.r - 0.1).max(0.0),
+                        (color.g - 0.1).max(0.0),
+                        (color.b - 0.1).max(0.0),
+                        color.a,
+                    ));
+                    pressed_box.set_corner_radius_all(border_radius);
+                    pressed_box.set_content_margin_all(8.0);
+                    pressed_box.set_content_margin(Side::LEFT, 16.0);
+                    pressed_box.set_content_margin(Side::RIGHT, 16.0);
+                    if let Some(bc) = border_color {
+                        pressed_box.set_border_color(bc);
+                        pressed_box.set_border_width_all(border_width);
+                    }
+                    if let Some(p) = padding {
+                        pressed_box.set_content_margin_all(p);
+                    }
+                    control.add_theme_stylebox_override(
+                        &StringName::from("pressed"),
+                        &pressed_box,
+                    );
                 }
+            } else {
+                // 非按钮组件，或按钮没有设置背景色的情况
+                let mut style_box = StyleBoxFlat::new_gd();
+
+                if !bg_color_key.is_empty() {
+                    if let Some(color) = parse_color(resolved_props.get(bg_color_key).unwrap()) {
+                        style_box.set_bg_color(color);
+                    }
+                }
+
+                if let Some(border_radius) = resolved_props.get("border_radius") {
+                    if let Ok(r) = border_radius.parse::<i32>() {
+                        style_box.set_corner_radius_all(r);
+                    }
+                }
+
+                if let Some(border_color) = resolved_props.get("border_color") {
+                    if let Some(color) = parse_color(border_color) {
+                        style_box.set_border_color(color);
+                        let border_width = resolved_props.get("border_width")
+                            .and_then(|v| v.parse::<i32>().ok())
+                            .unwrap_or(1);
+                        style_box.set_border_width_all(border_width);
+                    }
+                }
+
+                if let Some(padding) = resolved_props.get("padding") {
+                    if let Ok(p) = padding.parse::<f32>() {
+                        style_box.set_content_margin_all(p);
+                    }
+                }
+
+                // 将 StyleBox 应用到控件
+                let stylebox_name = get_stylebox_name_for_tag(tag);
+                control.add_theme_stylebox_override(
+                    &StringName::from(stylebox_name),
+                    &style_box,
+                );
             }
 
             // 应用 color 属性（文字颜色）到控件
@@ -302,17 +396,11 @@ impl UiBuilder {
                     }
                 }
             }
-
-            // 将 StyleBox 应用到控件
-            let stylebox_name = get_stylebox_name_for_tag(tag);
-            control.add_theme_stylebox_override(
-                &StringName::from(stylebox_name),
-                &style_box,
-            );
         }
     }
 
     /// 根据组件类型自动应用主题默认颜色
+    /// 卡通风格：大圆角(12px)、鲜明边框、活泼 hover/pressed 变化
     /// 在 class 样式之前调用，class 样式可覆盖这些默认值
     fn apply_theme_defaults(&self, control: &mut Gd<Control>, tag: &str) {
         if self.theme_vars.is_empty() {
@@ -320,49 +408,78 @@ impl UiBuilder {
         }
 
         match tag {
-            // Panel：设置面板背景色
+            // Panel：白色背景 + 紫色边框 + 大圆角 + 内边距
             "Panel" => {
                 if let Some(color) = get_theme_color(&self.theme_vars, "panel_bg") {
                     let mut style_box = StyleBoxFlat::new_gd();
                     style_box.set_bg_color(color);
+                    style_box.set_corner_radius_all(12);
+                    style_box.set_content_margin_all(8.0);
+                    if let Some(border_color) = get_theme_color(&self.theme_vars, "border_default") {
+                        style_box.set_border_color(border_color);
+                        style_box.set_border_width_all(2);
+                    }
                     control.add_theme_stylebox_override(
                         &StringName::from("panel"),
                         &style_box,
                     );
                 }
             }
-            // Button / CheckButton：设置按钮背景色和文字色
+            // Button / CheckButton：大圆角 + 边框 + 内边距 + 鲜明 hover/pressed
             "Button" | "CheckButton" => {
                 if let Some(color) = get_theme_color(&self.theme_vars, "button_bg") {
+                    let border_color = get_theme_color(&self.theme_vars, "border_default");
+                    // normal 状态
                     let mut style_box = StyleBoxFlat::new_gd();
                     style_box.set_bg_color(color);
-                    style_box.set_corner_radius_all(4);
+                    style_box.set_corner_radius_all(12);
+                    style_box.set_content_margin_all(8.0);
+                    style_box.set_content_margin(Side::LEFT, 16.0);
+                    style_box.set_content_margin(Side::RIGHT, 16.0);
+                    if let Some(bc) = border_color {
+                        style_box.set_border_color(bc);
+                        style_box.set_border_width_all(2);
+                    }
                     control.add_theme_stylebox_override(
                         &StringName::from("normal"),
                         &style_box,
                     );
-                    // hover 状态稍亮
+                    // hover 状态 - 明显变亮
                     let mut hover_box = StyleBoxFlat::new_gd();
                     hover_box.set_bg_color(Color::from_rgba(
-                        (color.r + 0.08).min(1.0),
-                        (color.g + 0.08).min(1.0),
-                        (color.b + 0.08).min(1.0),
+                        (color.r + 0.12).min(1.0),
+                        (color.g + 0.12).min(1.0),
+                        (color.b + 0.12).min(1.0),
                         color.a,
                     ));
-                    hover_box.set_corner_radius_all(4);
+                    hover_box.set_corner_radius_all(12);
+                    hover_box.set_content_margin_all(8.0);
+                    hover_box.set_content_margin(Side::LEFT, 16.0);
+                    hover_box.set_content_margin(Side::RIGHT, 16.0);
+                    if let Some(bc) = get_theme_color(&self.theme_vars, "border_accent") {
+                        hover_box.set_border_color(bc);
+                        hover_box.set_border_width_all(2);
+                    }
                     control.add_theme_stylebox_override(
                         &StringName::from("hover"),
                         &hover_box,
                     );
-                    // pressed 状态稍暗
+                    // pressed 状态 - 明显变暗
                     let mut pressed_box = StyleBoxFlat::new_gd();
                     pressed_box.set_bg_color(Color::from_rgba(
-                        (color.r - 0.05).max(0.0),
-                        (color.g - 0.05).max(0.0),
-                        (color.b - 0.05).max(0.0),
+                        (color.r - 0.1).max(0.0),
+                        (color.g - 0.1).max(0.0),
+                        (color.b - 0.1).max(0.0),
                         color.a,
                     ));
-                    pressed_box.set_corner_radius_all(4);
+                    pressed_box.set_corner_radius_all(12);
+                    pressed_box.set_content_margin_all(8.0);
+                    pressed_box.set_content_margin(Side::LEFT, 16.0);
+                    pressed_box.set_content_margin(Side::RIGHT, 16.0);
+                    if let Some(bc) = border_color {
+                        pressed_box.set_border_color(bc);
+                        pressed_box.set_border_width_all(2);
+                    }
                     control.add_theme_stylebox_override(
                         &StringName::from("pressed"),
                         &pressed_box,
@@ -376,15 +493,29 @@ impl UiBuilder {
                     control.add_theme_color_override(
                         &StringName::from("font_hover_color"),
                         Color::from_rgba(
-                            (color.r + 0.1).min(1.0),
-                            (color.g + 0.1).min(1.0),
-                            (color.b + 0.1).min(1.0),
+                            (color.r + 0.15).min(1.0),
+                            (color.g + 0.15).min(1.0),
+                            (color.b + 0.15).min(1.0),
+                            color.a,
+                        ),
+                    );
+                    control.add_theme_color_override(
+                        &StringName::from("font_pressed_color"),
+                        Color::from_rgba(
+                            (color.r - 0.1).max(0.0),
+                            (color.g - 0.1).max(0.0),
+                            (color.b - 0.1).max(0.0),
                             color.a,
                         ),
                     );
                 }
+                // 卡通风格按钮默认字号 16
+                control.add_theme_font_size_override(
+                    &StringName::from("font_size"),
+                    16,
+                );
             }
-            // Label：设置文字色
+            // Label：设置文字色 + 默认字号
             "Label" => {
                 if let Some(color) = get_theme_color(&self.theme_vars, "label_font_color") {
                     control.add_theme_color_override(
@@ -392,16 +523,43 @@ impl UiBuilder {
                         color,
                     );
                 }
+                // 卡通风格默认字号 16，确保可读性
+                control.add_theme_font_size_override(
+                    &StringName::from("font_size"),
+                    16,
+                );
             }
-            // LineEdit：设置输入框背景色和文字色
+            // LineEdit：白色背景 + 边框 + 大圆角 + 内边距
             "LineEdit" => {
                 if let Some(color) = get_theme_color(&self.theme_vars, "input_bg") {
                     let mut style_box = StyleBoxFlat::new_gd();
                     style_box.set_bg_color(color);
-                    style_box.set_corner_radius_all(4);
+                    style_box.set_corner_radius_all(12);
+                    style_box.set_content_margin_all(8.0);
+                    style_box.set_content_margin(Side::LEFT, 12.0);
+                    style_box.set_content_margin(Side::RIGHT, 12.0);
+                    if let Some(border_color) = get_theme_color(&self.theme_vars, "border_default") {
+                        style_box.set_border_color(border_color);
+                        style_box.set_border_width_all(2);
+                    }
                     control.add_theme_stylebox_override(
                         &StringName::from("normal"),
                         &style_box,
+                    );
+                    // focus 状态 - 强调边框
+                    let mut focus_box = StyleBoxFlat::new_gd();
+                    focus_box.set_bg_color(color);
+                    focus_box.set_corner_radius_all(12);
+                    focus_box.set_content_margin_all(8.0);
+                    focus_box.set_content_margin(Side::LEFT, 12.0);
+                    focus_box.set_content_margin(Side::RIGHT, 12.0);
+                    if let Some(border_color) = get_theme_color(&self.theme_vars, "border_accent") {
+                        focus_box.set_border_color(border_color);
+                        focus_box.set_border_width_all(2);
+                    }
+                    control.add_theme_stylebox_override(
+                        &StringName::from("focus"),
+                        &focus_box,
                     );
                 }
                 if let Some(color) = get_theme_color(&self.theme_vars, "input_font_color") {
@@ -411,15 +569,42 @@ impl UiBuilder {
                     );
                 }
             }
-            // OptionButton：设置背景色和文字色
+            // OptionButton：大圆角 + 边框 + 内边距
             "OptionButton" => {
                 if let Some(color) = get_theme_color(&self.theme_vars, "optionbutton_bg") {
                     let mut style_box = StyleBoxFlat::new_gd();
                     style_box.set_bg_color(color);
-                    style_box.set_corner_radius_all(4);
+                    style_box.set_corner_radius_all(12);
+                    style_box.set_content_margin_all(8.0);
+                    style_box.set_content_margin(Side::LEFT, 12.0);
+                    style_box.set_content_margin(Side::RIGHT, 12.0);
+                    if let Some(border_color) = get_theme_color(&self.theme_vars, "border_default") {
+                        style_box.set_border_color(border_color);
+                        style_box.set_border_width_all(2);
+                    }
                     control.add_theme_stylebox_override(
                         &StringName::from("normal"),
                         &style_box,
+                    );
+                    // hover 状态
+                    let mut hover_box = StyleBoxFlat::new_gd();
+                    hover_box.set_bg_color(Color::from_rgba(
+                        (color.r + 0.12).min(1.0),
+                        (color.g + 0.12).min(1.0),
+                        (color.b + 0.12).min(1.0),
+                        color.a,
+                    ));
+                    hover_box.set_corner_radius_all(12);
+                    hover_box.set_content_margin_all(8.0);
+                    hover_box.set_content_margin(Side::LEFT, 12.0);
+                    hover_box.set_content_margin(Side::RIGHT, 12.0);
+                    if let Some(bc) = get_theme_color(&self.theme_vars, "border_accent") {
+                        hover_box.set_border_color(bc);
+                        hover_box.set_border_width_all(2);
+                    }
+                    control.add_theme_stylebox_override(
+                        &StringName::from("hover"),
+                        &hover_box,
                     );
                 }
                 if let Some(color) = get_theme_color(&self.theme_vars, "optionbutton_font_color") {
@@ -438,16 +623,106 @@ impl UiBuilder {
                     );
                 }
             }
-            // TabContainer：设置标签页颜色
+            // TabContainer：卡通风格标签页
             "TabContainer" => {
+                // 内容区域面板
                 if let Some(color) = get_theme_color(&self.theme_vars, "tab_bg") {
                     let mut style_box = StyleBoxFlat::new_gd();
                     style_box.set_bg_color(color);
+                    style_box.set_corner_radius_all(12);
+                    style_box.set_content_margin_all(8.0);
+                    if let Some(border_color) = get_theme_color(&self.theme_vars, "border_default") {
+                        style_box.set_border_color(border_color);
+                        style_box.set_border_width_all(2);
+                    }
                     control.add_theme_stylebox_override(
                         &StringName::from("panel"),
                         &style_box,
                     );
                 }
+                // 标签栏背景
+                let tab_bar_bg = get_theme_color(&self.theme_vars, "bg_secondary")
+                    .unwrap_or(Color::from_rgba(0.93, 0.91, 0.97, 1.0));
+                let mut tab_bar_box = StyleBoxFlat::new_gd();
+                tab_bar_box.set_bg_color(tab_bar_bg);
+                tab_bar_box.set_corner_radius_all(8);
+                control.add_theme_stylebox_override(
+                    &StringName::from("tab_bar_background"),
+                    &tab_bar_box,
+                );
+                // 选中标签
+                if let Some(color) = get_theme_color(&self.theme_vars, "tab_selected_bg") {
+                    let mut selected_box = StyleBoxFlat::new_gd();
+                    selected_box.set_bg_color(color);
+                    selected_box.set_corner_radius_all(8);
+                    selected_box.set_content_margin_all(6.0);
+                    selected_box.set_content_margin(Side::LEFT, 12.0);
+                    selected_box.set_content_margin(Side::RIGHT, 12.0);
+                    if let Some(border_color) = get_theme_color(&self.theme_vars, "border_accent") {
+                        selected_box.set_border_color(border_color);
+                        selected_box.set_border_width_all(2);
+                    }
+                    control.add_theme_stylebox_override(
+                        &StringName::from("tab_selected"),
+                        &selected_box,
+                    );
+                }
+                // 未选中标签
+                let unselected_bg = get_theme_color(&self.theme_vars, "bg_button")
+                    .unwrap_or(Color::from_rgba(0.91, 0.87, 0.96, 1.0));
+                let mut unselected_box = StyleBoxFlat::new_gd();
+                unselected_box.set_bg_color(unselected_bg);
+                unselected_box.set_corner_radius_all(8);
+                unselected_box.set_content_margin_all(6.0);
+                unselected_box.set_content_margin(Side::LEFT, 12.0);
+                unselected_box.set_content_margin(Side::RIGHT, 12.0);
+                control.add_theme_stylebox_override(
+                    &StringName::from("tab_unselected"),
+                    &unselected_box,
+                );
+                // 悬停标签
+                let mut hovered_box = StyleBoxFlat::new_gd();
+                hovered_box.set_bg_color(Color::from_rgba(
+                    (unselected_bg.r + 0.08).min(1.0),
+                    (unselected_bg.g + 0.08).min(1.0),
+                    (unselected_bg.b + 0.08).min(1.0),
+                    unselected_bg.a,
+                ));
+                hovered_box.set_corner_radius_all(8);
+                hovered_box.set_content_margin_all(6.0);
+                hovered_box.set_content_margin(Side::LEFT, 12.0);
+                hovered_box.set_content_margin(Side::RIGHT, 12.0);
+                control.add_theme_stylebox_override(
+                    &StringName::from("tab_hovered"),
+                    &hovered_box,
+                );
+                // 标签文字颜色
+                if let Some(color) = get_theme_color(&self.theme_vars, "tab_selected_font_color") {
+                    control.add_theme_color_override(
+                        &StringName::from("font_selected_color"),
+                        color,
+                    );
+                }
+                if let Some(color) = get_theme_color(&self.theme_vars, "tab_font_color") {
+                    control.add_theme_color_override(
+                        &StringName::from("font_unselected_color"),
+                        color,
+                    );
+                    control.add_theme_color_override(
+                        &StringName::from("font_hovered_color"),
+                        Color::from_rgba(
+                            (color.r + 0.15).min(1.0),
+                            (color.g + 0.15).min(1.0),
+                            (color.b + 0.15).min(1.0),
+                            color.a,
+                        ),
+                    );
+                }
+                // 标签字号
+                control.add_theme_font_size_override(
+                    &StringName::from("font_size"),
+                    16,
+                );
             }
             // PopupPanel：设置弹窗默认颜色
             "PopupPanel" => {

@@ -7,7 +7,7 @@ extends GdGmlScene
 var scene_main = SUIMain.ins()
 
 var ui = """
-<ui theme="dark">
+<ui theme="cartoon">
   <style>
     .equip-slot {
       background: $bg_primary;

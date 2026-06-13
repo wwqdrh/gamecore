@@ -5,13 +5,11 @@
 extends GdGmlScene
 
 var UI = """
-<ui theme="light">
+<ui theme="cartoon">
   <style>
     .gallery-btn {
       background: $bg_primary;
-      color: $text_white;
       border_radius: 6;
-      border_color: $border_default;
       border_width: 1;
       padding: 12;
     }

@@ -4,7 +4,7 @@
 extends GdGmlScene
 
 var UI = """
-<ui theme="dark">
+<ui theme="cartoon">
   <style>
     .title-text {
       color: $text_white;
