@@ -176,7 +176,7 @@ impl GdUITooltip {
     /// 首次添加自定义子节点时，移除内置的 title/content/separator
     #[func]
     fn add_content_child(&mut self, mut child: Gd<godot::classes::Node>) {
-        let child_name = child.get_name().to_string();
+        let _child_name = child.get_name().to_string();
         //godot_print!("[UITooltip] add_content_child: name='{}', has_custom_content={}, panel={}", child_name, self.has_custom_content, self.panel.is_some());
         // 首次添加自定义子节点时，移除内置的 title/content/separator
         if !self.has_custom_content {
@@ -215,8 +215,8 @@ impl GdUITooltip {
             let child_count = vbox.get_child_count();
             for i in 0..child_count {
                 if let Some(c) = vbox.get_child(i) {
-                    let name = c.get_name().to_string();
-                    let has_tpl = if let Ok(ctrl) = c.clone().try_cast::<Control>() {
+                    let _name = c.get_name().to_string();
+                    let _has_tpl = if let Ok(ctrl) = c.clone().try_cast::<Control>() {
                         ctrl.has_meta(&StringName::from("__tpl_keys"))
                     } else {
                         false

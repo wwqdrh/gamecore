@@ -1,8 +1,3 @@
-#![feature(coroutines)]
-#![feature(coroutine_trait)]
-#![feature(stmt_expr_attributes)]
-#![feature(unboxed_closures)]
-
 #![allow(clippy::needless_return)]
 #![allow(clippy::useless_conversion)]
 #![allow(unused_doc_comments)]

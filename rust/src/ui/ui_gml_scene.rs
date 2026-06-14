@@ -18,7 +18,7 @@ use godot::obj::WithBaseField;
 use super::parser::UiParser;
 use super::builder::{UiBuilder, parse_size_value};
 use super::gdui_builder::connect_signals_recursive;
-use super::ui_theme::{ThemeVars, get_builtin_theme, builtin_theme_names, resolve_theme_vars};
+use super::ui_theme::{ThemeVars, get_builtin_theme, builtin_theme_names};
 use crate::state::bean::{get_bean_by_id, get_all_bean_instances};
 
 #[derive(GodotClass)]
@@ -517,7 +517,7 @@ impl GdGmlScene {
 /// watch 回调信息收集后延迟注册，避免与当前 &mut self 借用冲突
 fn auto_bind_data(&mut self, root: &Gd<Control>) {
     let all_beans = get_all_bean_instances();
-    let bean_ids: Vec<String> = all_beans.iter().map(|(id, _)| id.clone()).collect();
+    let _bean_ids: Vec<String> = all_beans.iter().map(|(id, _)| id.clone()).collect();
     //godot_print!("[GmlScene] auto_bind_data: registered beans: {:?}", bean_ids);
     let self_node = self.base().clone();
     let watch_registrations = Self::auto_bind_data_recursive(root, &self_node.upcast::<Object>());
@@ -554,7 +554,7 @@ fn auto_bind_data_recursive(node: &Gd<Control>, script_obj: &Gd<Object>) -> Arra
                             //godot_print!("[GmlScene] auto_bind_data: calling update() on node='{}' with {} items", node_name, arr.len());
                             // 日志：打印前3个元素的内容
                             for i in 0..arr.len().min(3) {
-                                if let Some(item) = arr.get(i) {
+                                if let Some(_item) = arr.get(i) {
                                     //godot_print!("[GmlScene] auto_bind_data: item[{}] type={:?} value={}", i, item.get_type(), item);
                                 }
                             }

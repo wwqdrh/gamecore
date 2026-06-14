@@ -1594,8 +1594,8 @@ pub(crate) fn parse_size_value(value: &str) -> (f32, bool, f32) {
 fn apply_size(control: &mut Gd<Control>, value: &str) {
     let parts: Vec<&str> = value.split(',').collect();
     if parts.len() == 2 {
-        let (w_px, w_pct, w_pct_val) = parse_size_value(parts[0].trim());
-        let (h_px, h_pct, h_pct_val) = parse_size_value(parts[1].trim());
+        let (w_px, w_pct, _w_pct_val) = parse_size_value(parts[0].trim());
+        let (h_px, h_pct, _h_pct_val) = parse_size_value(parts[1].trim());
 
         if w_pct || h_pct {
             // 存储百分比信息为 meta，延迟计算

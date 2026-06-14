@@ -276,7 +276,7 @@ pub fn update_data_alias(data: &Array<Variant>, slots: &Array<Variant>) -> Array
 pub fn update_container(target: &mut Gd<Control>, slot: &Gd<Control>, count: i32, data: &Array<Variant>) {
     let slot = slot.clone();
     let data_size = data.len() as i32;
-    let target_name = target.get_name().to_string();
+    let _target_name = target.get_name().to_string();
     // slot 模板始终在 index 0，可见子节点从 index 1 开始
     let visible_count = target.get_child_count() - 1;
     // //godot_print!("[ListHelper] update_container: node='{}', count={}, data_size={}, child_count={}, visible_count={}", target_name, count, data_size, target.get_child_count(), visible_count);

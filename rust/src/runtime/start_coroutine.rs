@@ -1,119 +1,119 @@
-use std::ops::Coroutine;
+// StartCoroutine trait - 为 Godot 节点提供启动协程的方法
+// 基于 Future 的实现，替代原来的 Coroutine trait
+
+use std::future::Future;
+
 use godot::meta::conv::ObjectToOwned;
 use godot::obj::WithBaseField;
 use godot::prelude::*;
-use crate::prelude::*;
-use crate::runtime::yielding::SpireYield;
+
+use crate::runtime::builder::CoroutineBuilder;
+use crate::runtime::coroutine::SpireCoroutine;
 
 pub trait StartCoroutine {
-	/// Spawns and starts a new coroutine with default settings.
-	///
-	/// # Example
-	///
-	/// ```no_run
-	/// #![feature(coroutines)]
-	/// use godot::prelude::*;
-	/// use gdext_coroutines::prelude::*;
-	///
-	/// fn showcase_start_coroutine(node: Gd<Node2D>) {
-	///     node.start_coroutine(
-	///         #[coroutine] || {
-	///             yield frames(5);
-	///             //godot_print!("5 frames passed!");
-	///         });
-	/// }
-	/// ```
-	/// 
-	/// # On Panics
-	/// If `f` panics, the SpireCoroutine will automatically self-destruct and the closure will be leaked
-	fn start_coroutine<R>(
-		&self,
-		f: impl 'static + Unpin + Coroutine<(), Yield = SpireYield, Return = R>,
-	) -> Gd<SpireCoroutine>
-		where
-			R: 'static + ToGodot,
-	{
-		self.coroutine(f).spawn()
-	}
+    /// 使用默认设置启动新协程
+    ///
+    /// # Example
+    ///
+    /// ```no_run
+    /// use godot::prelude::*;
+    /// use gamekit_core::prelude::*;
+    ///
+    /// fn showcase_start_coroutine(node: Gd<Node>) {
+    ///     node.start_coroutine(async {
+    ///         frames(5).await;
+    ///         // 5 帧后继续执行
+    ///     });
+    /// }
+    /// ```
+    ///
+    /// # 关于 Panic
+    /// 如果 Future panic，SpireCoroutine 会自动销毁
+    fn start_coroutine<R>(
+        &self,
+        f: impl Future<Output = R> + 'static,
+    ) -> Gd<SpireCoroutine>
+    where
+        R: 'static + ToGodot,
+    {
+        self.coroutine(f).spawn()
+    }
 
-	/// Creates a new coroutine builder with default settings.
-	///
-	/// The coroutine does not actually `spawn` until you call [CoroutineBuilder::spawn].
-	///
-	/// # Example
-	///
-	/// ```no_run
-	/// #![feature(coroutines)]
-	/// use godot::classes::node::ProcessMode;
-	/// use godot::prelude::*;
-	/// use gdext_coroutines::prelude::*;
-	///
-	/// fn showcase_coroutine(node: Gd<Node2D>) {
-	///     node.coroutine(
-	///         #[coroutine] || {
-	///             //godot_print!("This is a customized coroutine!");
-	///             yield seconds(2.0);
-	///             //godot_print!("2 seconds passed!");
-	///         })
-	///         .auto_start(false)
-	///         .process_mode(ProcessMode::WHEN_PAUSED)
-	///         .spawn();
-	/// }
-	/// ```
-	/// 
-	/// # On Panics
-	/// If `f` panics, the SpireCoroutine will automatically self-destruct and the closure will be leaked
-	fn coroutine<R>(
-		&self,
-		f: impl 'static + Unpin + Coroutine<(), Yield = SpireYield, Return = R>,
-	) -> CoroutineBuilder<R>
-		where
-			R: 'static + ToGodot;
+    /// 创建新的协程构建器
+    ///
+    /// 协程在调用 [CoroutineBuilder::spawn] 之前不会实际启动。
+    ///
+    /// # Example
+    ///
+    /// ```no_run
+    /// use godot::classes::node::ProcessMode;
+    /// use godot::prelude::*;
+    /// use gamekit_core::prelude::*;
+    ///
+    /// fn showcase_coroutine(node: Gd<Node>) {
+    ///     node.coroutine(async {
+    ///         seconds(2.0).await;
+    ///         // 2 秒后继续执行
+    ///     })
+    ///     .auto_start(false)
+    ///     .process_mode(ProcessMode::WHEN_PAUSED)
+    ///     .spawn();
+    /// }
+    /// ```
+    ///
+    /// # 关于 Panic
+    /// 如果 Future panic，SpireCoroutine 会自动销毁
+    fn coroutine<R>(
+        &self,
+        f: impl Future<Output = R> + 'static,
+    ) -> CoroutineBuilder<R>
+    where
+        R: 'static + ToGodot;
 }
 
 impl<TSelf> StartCoroutine for Gd<TSelf>
-	where
-		TSelf: GodotClass + Inherits<Node>,
+where
+    TSelf: GodotClass + Inherits<Node>,
 {
-	fn coroutine<R>(
-		&self,
-		f: impl 'static + Unpin + Coroutine<(), Yield = SpireYield, Return = R>,
-	) -> CoroutineBuilder<R>
-		where
-			R: 'static + ToGodot,
-	{
-		CoroutineBuilder::new_coroutine(self.clone().upcast(), f)
-	}
+    fn coroutine<R>(
+        &self,
+        f: impl Future<Output = R> + 'static,
+    ) -> CoroutineBuilder<R>
+    where
+        R: 'static + ToGodot,
+    {
+        CoroutineBuilder::new_coroutine(self.clone().upcast(), f)
+    }
 }
 
 impl<T> StartCoroutine for &T
-	where
-		T: WithBaseField + Inherits<Node>,
+where
+    T: WithBaseField + Inherits<Node>,
 {
-	fn coroutine<R>(
-		&self,
-		f: impl 'static + Unpin + Coroutine<(), Yield = SpireYield, Return = R>,
-	) -> CoroutineBuilder<R>
-		where
-			R: 'static + ToGodot,
-	{
-		let base = self.object_to_owned();
-		CoroutineBuilder::new_coroutine(base.upcast(), f)
-	}
+    fn coroutine<R>(
+        &self,
+        f: impl Future<Output = R> + 'static,
+    ) -> CoroutineBuilder<R>
+    where
+        R: 'static + ToGodot,
+    {
+        let base = self.object_to_owned();
+        CoroutineBuilder::new_coroutine(base.upcast(), f)
+    }
 }
 
 impl<T> StartCoroutine for &mut T
-	where
-		T: WithBaseField + Inherits<Node>,
+where
+    T: WithBaseField + Inherits<Node>,
 {
-	fn coroutine<R>(
-		&self,
-		f: impl 'static + Unpin + Coroutine<(), Yield = SpireYield, Return = R>,
-	) -> CoroutineBuilder<R>
-		where
-			R: 'static + ToGodot,
-	{
-		let base = self.object_to_owned();
-		CoroutineBuilder::new_coroutine(base.upcast(), f)
-	}
+    fn coroutine<R>(
+        &self,
+        f: impl Future<Output = R> + 'static,
+    ) -> CoroutineBuilder<R>
+    where
+        R: 'static + ToGodot,
+    {
+        let base = self.object_to_owned();
+        CoroutineBuilder::new_coroutine(base.upcast(), f)
+    }
 }

@@ -219,13 +219,13 @@ impl GJson {
         }
 
         if depth == len - 1 {
-            if let Value::Object(ref mut map) = data {
+            if let Value::Object(map) = data {
                 map.insert(part.to_string(), value);
             }
             return;
         }
 
-        if let Value::Object(ref mut map) = data {
+        if let Value::Object(map) = data {
             if !map.contains_key(part) {
                 map.insert(part.to_string(), Value::Object(serde_json::Map::new()));
             }
