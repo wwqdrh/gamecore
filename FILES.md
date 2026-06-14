@@ -219,6 +219,39 @@
 - 支持圆角矩形/胶囊/圆形（shape_type: 0/1/2）
 - 方法：refresh_style()
 
+### [rust/src/manager/mod.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/manager/mod.rs)
+- 场景管理模块入口，导出 gd_scene、gd_scene_root、config_manager 子模块
+
+### [rust/src/manager/gd_scene.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/manager/gd_scene.rs)
+- **GdScene** 类（继承 Control）
+- 场景页面节点，提供生命周期回调和状态管理
+- 生命周期：on_enter(data) → on_ready() → on_exit()
+- 独立模式：没有 GdSceneRoot 时自动搜索或创建默认实例，避免崩溃
+- 受管模式：on_ready 由 GdSceneRoot 在转场完成后调用
+- 属性：scene_id, current_state, init_data（均为 #[export]）
+- 信号：s_state_changed(state, data)
+- 方法：change_state, back_state, root_call_ready, get_manager, get_state_stack, get_state_init_data, change_scene, change_scene_with_state, change_scene_no_anim, back_scene, restart_scene
+
+### [rust/src/manager/gd_scene_root.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/manager/gd_scene_root.rs)
+- **GdSceneRoot** 类（继承 Node）
+- 场景管理器，负责场景注册、切换、转场动画
+- 转场动画：ColorRect 遮罩 + Tween 淡入淡出，通过 _process 驱动状态机
+- 防重入：is_changing 标志防止并发场景切换
+- 场景历史栈：支持 back_scene 回退和 restart_scene 重启
+- 从 GdConfigManager 自动加载 scenes 配置
+- 属性：trans_duration, manager_id
+- 信号：s_trans_closed, s_trans_opened
+- 方法：register_scene, register_scenes, change_scene, back_scene, restart_scene, get_current_scene, get_registered_scenes, get_scene_stack, is_changing_scene
+
+### [rust/src/manager/config_manager.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/manager/config_manager.rs)
+- **GdConfigManager** 类（继承 Node）
+- 通用配置管理器，启动时自动读取 res://game_config.json
+- 内置 scenes 属性（alias → PackedScene），支持自定义配置项
+- 通过 GDCORE 的 add_global_node 注册为全局节点（alias: "config"）
+- 在 GDCore 单例注册时自动创建并加载配置，确保 GdSceneRoot 能获取到配置
+- 属性：config_path（#[export]，默认 "res://game_config.json"）
+- 方法：get_config, set_config, get_scene, get_scene_aliases, get_config_data, reload_config
+
 ### [rust/src/rogue/mod.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/rogue/mod.rs)
 - 肉鸽引擎模块入口，导出 engine/card/card_pile 子模块
 
@@ -713,3 +746,13 @@
 | 2026-06-14 | example/ui/scene_title.gd | TextureButton 的 text 属性拆成子 Label 元素 |
 | 2026-06-14 | rust/src/ui/builder.rs | NinePatchRect 按钮模式：有 on_pressed 时添加不可见 Button 子节点处理点击；子 Label 自动配置；class style texture 支持；patch_margin 属性；主题默认颜色和文字颜色支持 |
 | 2026-06-14 | example/ui/scene_title.gd | TextureButton 改为 NinePatchRect 实现九宫格拉伸按钮 |
+| 2026-06-15 | rust/src/manager/mod.rs | 新建场景管理模块入口 |
+| 2026-06-15 | rust/src/manager/gd_scene.rs | 新建GdScene场景页面节点（继承Control），生命周期回调+状态管理+自动创建GdSceneRoot |
+| 2026-06-15 | rust/src/manager/gd_scene_root.rs | 新建GdSceneRoot场景管理器（继承Node），场景注册/切换/转场动画/历史栈 |
+| 2026-06-15 | rust/src/lib.rs | 添加manager模块 |
+| 2026-06-15 | rust/src/manager/gd_scene.rs | id→scene_id，属性改为#[export]，添加change_scene/back_scene/restart_scene便捷方法 |
+| 2026-06-15 | rust/src/manager/gd_scene.rs | 修复：ensure_manager使用call_deferred添加GdSceneRoot，get_tree→get_tree_or_null |
+| 2026-06-15 | rust/src/manager/gd_scene_root.rs | 修复：get_tree→get_tree_or_null避免不在场景树时panic |
+| 2026-06-15 | rust/src/state/gdcore.rs | 添加global_nodes字典和add_global_node/get_global_node/remove_global_node方法 |
+| 2026-06-15 | rust/src/manager/config_manager.rs | 新建GdConfigManager通用配置管理器，读取res://game_config.json，内置scenes属性，通过GDCORE注册 |
+| 2026-06-15 | rust/src/manager/gd_scene_root.rs | 添加load_scenes_from_config从GdConfigManager加载场景配置 |

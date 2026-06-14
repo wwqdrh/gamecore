@@ -7,7 +7,7 @@ use std::collections::HashMap;
 
 use godot::prelude::*;
 use godot::classes::{Engine, IRefCounted};
-use godot::builtin::StringName;
+use godot::builtin::{StringName, VarDictionary};
 
 use super::coredata::GdCoreData;
 use super::bean::GdBean;
@@ -17,6 +17,8 @@ use super::bean::GdBean;
 pub struct GDCore {
     save_id: GString,
     core_data_cache: HashMap<String, Gd<GdCoreData>>,
+    /// 全局节点映射 (alias -> Node)
+    global_nodes: VarDictionary,
     base: Base<RefCounted>,
 }
 
@@ -35,6 +37,7 @@ impl IRefCounted for GDCore {
         Self {
             save_id: GString::new(),
             core_data_cache,
+            global_nodes: VarDictionary::new(),
             base,
         }
     }
@@ -85,6 +88,31 @@ impl GDCore {
         if let Some(core) = new_core {
             Self::notify_beans_switch_core(&core);
         }
+    }
+
+    /// 注册全局对象（支持 Node 和 RefCounted）
+    #[func]
+    fn add_global_node(&mut self, alias: GString, obj: Variant) {
+        let key = alias.to_variant();
+        if self.global_nodes.contains_key(&key) {
+            godot_warn!("GDCORE: add_global_node alias '{}' already exists", alias);
+            return;
+        }
+        self.global_nodes.set(&key, &obj);
+    }
+
+    /// 获取全局节点
+    #[func]
+    fn get_global_node(&self, alias: GString) -> Variant {
+        let key = alias.to_variant();
+        self.global_nodes.get_or_nil(&key)
+    }
+
+    /// 移除全局节点
+    #[func]
+    fn remove_global_node(&mut self, alias: GString) {
+        let key = alias.to_variant();
+        self.global_nodes.erase(&key);
     }
 }
 

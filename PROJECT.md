@@ -45,7 +45,19 @@ core 是一个基于 Rust 的 Godot 4 GDExtension 项目，使用 gdext 库与 G
    - GdBean：数据绑定 Bean（继承 RefCounted），持有 GdCoreData 引用，支持属性监听、UI 绑定、表达式更新、存档管理
    - GDCore：全局核心单例（继承 RefCounted），注册为 Engine singleton "GDCORE"，支持存档 ID 管理（set_save_id/get_save_id），根据 save_id 切换不同存档文件（user://coredata_{id}.data），切换时自动通知所有 GdBean 实例更新数据
 
-7. **肉鸽引擎**（rogue 模块）
+7. **场景管理**（manager 模块）
+   - 场景切换、转场动画、状态管理功能
+   - GdScene：场景页面节点（继承 Control），提供生命周期回调（on_enter/on_ready/on_exit）和状态管理（change_state/back_state）
+   - GdSceneRoot：场景管理器（继承 Node），负责场景注册、切换、转场动画（ColorRect 遮罩 + Tween 淡入淡出）
+   - GdConfigManager：通用配置管理器（继承 Node），启动时自动读取 res://game_config.json，内置 scenes 属性（alias → PackedScene），支持自定义配置项，通过 GDCORE 的 add_global_node 注册为全局节点
+   - 防重入机制：is_changing 标志防止并发场景切换
+   - 场景历史栈：支持 back_scene 回退和 restart_scene 重启
+   - 自动创建 GdSceneRoot：当 GdScene 独立使用（没有 GdSceneRoot 管理）时，自动搜索或创建默认 GdSceneRoot 实例，避免 C++ 版本中的崩溃问题
+   - 转场状态机：通过 _process 驱动（FadingOut → FadingIn → Idle），淡出时暂停游戏树，淡入时恢复
+   - 信号：s_state_changed（GdScene 状态变更）、s_trans_closed/s_trans_opened（GdSceneRoot 转场动画完成）
+   - GDCore 扩展：add_global_node/get_global_node/remove_global_node 全局节点管理
+
+8. **肉鸽引擎**（rogue 模块）
    - 基于 gamealgo 库的肉鸽游戏核心算法 Godot 暴露层
    - RogueEngine：核心引擎类（继承 RefCounted），管理 RogueContext（种子/深度）和 EntityPool（实体模板池）
    - 支持 JSON 格式初始化实体模板和卡堆配置，GDScript 无需了解 Rust API 细节
@@ -158,6 +170,10 @@ core/
 │           ├── ui_button.rs # UiButton 按钮组件
 │           ├── ui_card.rs  # UiCard 卡片布局组件
 │           └── ui_panel.rs # UiPanel 面板组件
+│       └── manager/        # 场景管理模块
+│           ├── mod.rs      # 模块入口
+│           ├── gd_scene.rs # GdScene 场景页面节点
+│           └── gd_scene_root.rs # GdSceneRoot 场景管理器
 │       └── rogue/          # 肉鸽引擎模块
 │           ├── mod.rs      # 模块入口
 │           ├── engine.rs   # RogueEngine 核心引擎类

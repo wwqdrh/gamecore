@@ -1,0 +1,42 @@
+[gd_scene format=3 uid="uid://dn2q4bcr7xbe8"]
+
+[ext_resource type="Script" uid="uid://dh8jmngo5x38c" path="res://example/ui/tudouxiongdi/title.gd" id="1_h7txo"]
+
+[node name="Title" type="GdScene" unique_id=182432997]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_h7txo")
+
+[node name="Label" type="Label" parent="." unique_id=1747040685]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -11.5
+offset_right = 20.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "title"
+
+[node name="Button" type="Button" parent="." unique_id=1510608610]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -4.0
+offset_top = -8.0
+offset_right = 4.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "play"
+
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
