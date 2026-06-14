@@ -145,6 +145,54 @@ impl UiBuilder {
             control.call(&StringName::from("ensure_ui_built"), &[]);
         }
 
+        // NinePatchRect 作为按钮使用时（有 on_pressed 属性）：
+        // 添加不可见 Button 子节点处理点击事件，NinePatchRect 本身设为鼠标穿透
+        if node.tag == "NinePatchRect" {
+            let has_signal_pressed = node.attributes.iter().any(|(k, _)| k == "on_pressed");
+            if has_signal_pressed {
+                control.set_mouse_filter(godot::classes::control::MouseFilter::IGNORE);
+                let mut btn = Button::new_alloc();
+                btn.set_name(&StringName::from("__click_handler"));
+                btn.set_anchor(Side::LEFT, 0.0);
+                btn.set_anchor(Side::RIGHT, 1.0);
+                btn.set_anchor(Side::TOP, 0.0);
+                btn.set_anchor(Side::BOTTOM, 1.0);
+                btn.set_offset(Side::LEFT, 0.0);
+                btn.set_offset(Side::RIGHT, 0.0);
+                btn.set_offset(Side::TOP, 0.0);
+                btn.set_offset(Side::BOTTOM, 0.0);
+                // 透明样式：移除默认 StyleBox
+                let mut transparent_box = StyleBoxFlat::new_gd();
+                transparent_box.set_bg_color(Color::from_rgba(0.0, 0.0, 0.0, 0.0));
+                transparent_box.set_border_width_all(0);
+                transparent_box.set_content_margin_all(0.0);
+                btn.add_theme_stylebox_override(&StringName::from("normal"), &transparent_box.clone());
+                btn.add_theme_stylebox_override(&StringName::from("hover"), &transparent_box.clone());
+                btn.add_theme_stylebox_override(&StringName::from("pressed"), &transparent_box.clone());
+                // 转移鼠标光标形状
+                if let Some((_, shape)) = node.attributes.iter().find(|(k, _)| k == "mouse_default_cursor_shape") {
+                    use godot::classes::control::CursorShape;
+                    let cursor_shape = match shape.as_str() {
+                        "pointing_hand" => CursorShape::POINTING_HAND,
+                        "cross" => CursorShape::CROSS,
+                        "move" => CursorShape::MOVE,
+                        "forbidden" => CursorShape::FORBIDDEN,
+                        _ => CursorShape::ARROW,
+                    };
+                    btn.set_default_cursor_shape(cursor_shape);
+                }
+                // 转移 __signal_pressed meta 到 Button
+                let meta_key = StringName::from("__signal_pressed");
+                if control.has_meta(&meta_key) {
+                    let signal_value = control.get_meta(&meta_key);
+                    btn.set_meta(&meta_key, &signal_value);
+                    control.remove_meta(&meta_key);
+                }
+                control.add_child(&btn);
+                btn.set_owner(&control);
+            }
+        }
+
         // 递归构建子节点
         for child_node in &node.children {
             let mut child_control = self.build_node(child_node)?;
@@ -166,6 +214,40 @@ impl UiBuilder {
             // 列表容器的子节点（slot 模板）不设置 owner，避免运行时 duplicate 后的 owner 不一致警告
             if node.tag != "UIHList" && node.tag != "UIVList" && node.tag != "UIGrid" {
                 child_control.set_owner(&control);
+            }
+
+            // TextureButton 的子 Label：自动配置锚点填满父节点、文字居中、鼠标穿透
+            if node.tag == "TextureButton" && child_node.tag == "Label" {
+                if let Ok(mut lbl) = child_control.clone().try_cast::<Label>() {
+                    lbl.set_anchor(Side::LEFT, 0.0);
+                    lbl.set_anchor(Side::RIGHT, 1.0);
+                    lbl.set_anchor(Side::TOP, 0.0);
+                    lbl.set_anchor(Side::BOTTOM, 1.0);
+                    lbl.set_offset(Side::LEFT, 0.0);
+                    lbl.set_offset(Side::RIGHT, 0.0);
+                    lbl.set_offset(Side::TOP, 0.0);
+                    lbl.set_offset(Side::BOTTOM, 0.0);
+                    lbl.set_horizontal_alignment(godot::global::HorizontalAlignment::CENTER);
+                    lbl.set_vertical_alignment(godot::global::VerticalAlignment::CENTER);
+                    lbl.set_mouse_filter(godot::classes::control::MouseFilter::IGNORE);
+                }
+            }
+
+            // NinePatchRect 的子 Label：自动配置锚点填满父节点、文字居中、鼠标穿透
+            if node.tag == "NinePatchRect" && child_node.tag == "Label" {
+                if let Ok(mut lbl) = child_control.clone().try_cast::<Label>() {
+                    lbl.set_anchor(Side::LEFT, 0.0);
+                    lbl.set_anchor(Side::RIGHT, 1.0);
+                    lbl.set_anchor(Side::TOP, 0.0);
+                    lbl.set_anchor(Side::BOTTOM, 1.0);
+                    lbl.set_offset(Side::LEFT, 0.0);
+                    lbl.set_offset(Side::RIGHT, 0.0);
+                    lbl.set_offset(Side::TOP, 0.0);
+                    lbl.set_offset(Side::BOTTOM, 0.0);
+                    lbl.set_horizontal_alignment(godot::global::HorizontalAlignment::CENTER);
+                    lbl.set_vertical_alignment(godot::global::VerticalAlignment::CENTER);
+                    lbl.set_mouse_filter(godot::classes::control::MouseFilter::IGNORE);
+                }
             }
         }
 
@@ -384,7 +466,7 @@ impl UiBuilder {
                 }
             }
 
-            // 应用 texture 属性（纹理）到 TextureButton
+            // 应用 texture 属性（纹理）到 TextureButton / NinePatchRect
             if let Some(texture_path) = resolved_props.get("texture") {
                 if tag == "TextureButton" {
                     let path = GString::from(texture_path);
@@ -392,6 +474,14 @@ impl UiBuilder {
                         if let Ok(tex) = res.try_cast::<Texture2D>() {
                             let mut tb = control.clone().cast::<TextureButton>();
                             tb.set_texture_normal(&tex);
+                        }
+                    }
+                } else if tag == "NinePatchRect" {
+                    let path = GString::from(texture_path);
+                    if let Some(res) = ResourceLoader::singleton().load(&path) {
+                        if let Ok(tex) = res.try_cast::<Texture2D>() {
+                            let mut nr = control.clone().cast::<NinePatchRect>();
+                            nr.set_texture(&tex);
                         }
                     }
                 }
@@ -804,6 +894,22 @@ impl UiBuilder {
                     }
                 }
             }
+            // NinePatchRect（按钮模式）：设置子 Label 文字色
+            "NinePatchRect" => {
+                if let Some(color) = get_theme_color(&self.theme_vars, "button_font_color") {
+                    for i in 0..control.get_child_count() {
+                        if let Some(child) = control.get_child(i) {
+                            if let Ok(mut lbl) = child.try_cast::<Label>() {
+                                lbl.add_theme_color_override(
+                                    &StringName::from("font_color"),
+                                    color,
+                                );
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
             _ => {}
         }
     }
@@ -880,28 +986,7 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
                     btn.set_text(&GString::from(value));
                     return btn.upcast();
                 }
-                "TextureButton" => {
-                    // TextureButton 不支持 text，叠加一个居中 Label 显示文字
-                    let mut lbl = Label::new_alloc();
-                    lbl.set_text(&GString::from(value));
-                    // 手动设置锚点和偏移，确保 Label 填满整个 TextureButton
-                    lbl.set_anchor(Side::LEFT, 0.0);
-                    lbl.set_anchor(Side::RIGHT, 1.0);
-                    lbl.set_anchor(Side::TOP, 0.0);
-                    lbl.set_anchor(Side::BOTTOM, 1.0);
-                    lbl.set_offset(Side::LEFT, 0.0);
-                    lbl.set_offset(Side::RIGHT, 0.0);
-                    lbl.set_offset(Side::TOP, 0.0);
-                    lbl.set_offset(Side::BOTTOM, 0.0);
-                    lbl.set_horizontal_alignment(godot::global::HorizontalAlignment::CENTER);
-                    lbl.set_vertical_alignment(godot::global::VerticalAlignment::CENTER);
-                    lbl.set_mouse_filter(godot::classes::control::MouseFilter::IGNORE);
-                    control.add_child(&lbl);
-                    lbl.set_owner(&control);
-                    // 存储文字到 meta，以便样式中的 color 属性能正确应用
-                    control.set_meta(&StringName::from("__has_text_label"), &true.to_variant());
-                    return control;
-                }
+
                 "RichTextLabel" => {
                     let mut rt = control.cast::<RichTextLabel>();
                     rt.set_text(&GString::from(value));
@@ -1040,6 +1125,27 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
                         return tb.upcast();
                     }
                 }
+            }
+        }
+        "patch_margin" => {
+            if tag == "NinePatchRect" {
+                let mut nr = control.cast::<NinePatchRect>();
+                // 支持格式: "10" (四边相同) 或 "10 5 10 5" (left top right bottom)
+                let parts: Vec<i32> = value.split_whitespace()
+                    .filter_map(|s| s.parse().ok())
+                    .collect();
+                if parts.len() == 1 {
+                    nr.set_patch_margin(Side::LEFT, parts[0] as i32);
+                    nr.set_patch_margin(Side::TOP, parts[0] as i32);
+                    nr.set_patch_margin(Side::RIGHT, parts[0] as i32);
+                    nr.set_patch_margin(Side::BOTTOM, parts[0] as i32);
+                } else if parts.len() == 4 {
+                    nr.set_patch_margin(Side::LEFT, parts[0] as i32);
+                    nr.set_patch_margin(Side::TOP, parts[1] as i32);
+                    nr.set_patch_margin(Side::RIGHT, parts[2] as i32);
+                    nr.set_patch_margin(Side::BOTTOM, parts[3] as i32);
+                }
+                return nr.upcast();
             }
         }
         "bbcode" => {
@@ -1414,6 +1520,27 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
                 control.set(&StringName::from("drawer_title_text"), &value.to_variant());
             }
         }
+        // 动画属性：anim_enter/anim_hover/anim_click
+        // 存储为 meta，由 GdGmlScene.setup_animations() 在节点加入场景树后处理
+        "anim_enter" => {
+            // 值为方向：bottom/top/left/right，默认 bottom
+            control.set_meta(&StringName::from("__anim_enter"), &value.to_variant());
+        }
+        "anim_hover" => {
+            // 值为缩放倍数（如 "1.08"）或 "true"（默认 1.08）
+            let scale = if value == "true" {
+                1.08f32
+            } else if let Ok(s) = value.parse::<f32>() {
+                s
+            } else {
+                1.08f32
+            };
+            control.set_meta(&StringName::from("__anim_hover"), &scale.to_variant());
+        }
+        "anim_click" => {
+            // 值为 "true" 启用点击反馈
+            control.set_meta(&StringName::from("__anim_click"), &true.to_variant());
+        }
         _ => {
             // //godot_print!("[UiBuilder] Unhandled attribute: {}='{}' on <{}>", key, value, tag);
         }
@@ -1432,6 +1559,20 @@ fn apply_text_color(control: &mut Gd<Control>, tag: &str, color: Color) {
         }
         "TextureButton" => {
             // TextureButton 的文字在叠加的 Label 上，需要找到子 Label 设置颜色
+            for i in 0..control.get_child_count() {
+                if let Some(child) = control.get_child(i) {
+                    if let Ok(mut lbl) = child.try_cast::<Label>() {
+                        lbl.add_theme_color_override(
+                            &StringName::from("font_color"),
+                            color,
+                        );
+                        break;
+                    }
+                }
+            }
+        }
+        "NinePatchRect" => {
+            // NinePatchRect 的文字在子 Label 上
             for i in 0..control.get_child_count() {
                 if let Some(child) = control.get_child(i) {
                     if let Ok(mut lbl) = child.try_cast::<Label>() {

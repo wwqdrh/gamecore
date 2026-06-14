@@ -7,12 +7,14 @@
 //   可创建继承 GdGmlScene 的 GDScript，在其中定义回调方法
 
 use godot::prelude::*;
-use godot::builtin::{GString, StringName, Variant, VariantType, Array, Vector2, Side, PackedStringArray};
+use godot::builtin::{GString, StringName, Variant, VariantType, Array, Vector2, Color, NodePath, Side, PackedStringArray};
 use godot::classes::{
-    IControl, Control, FileAccess, Node,
+    IControl, Control, FileAccess, Node, Button, Tween,
 };
 use godot::classes::control::LayoutPreset;
 use godot::classes::notify::ControlNotification;
+use godot::classes::tween::TransitionType;
+use godot::classes::tween::EaseType;
 use godot::obj::WithBaseField;
 
 use super::parser::UiParser;
@@ -416,6 +418,14 @@ impl GdGmlScene {
             }
         }
     }
+
+    /// 延迟设置动画（由 call_deferred 调用，等待容器布局完成）
+    #[func]
+    fn setup_animations_deferred(&mut self) {
+        if let Some(ref root) = self.content_root {
+            Self::setup_animations_recursive(root, 0);
+        }
+    }
 }
 
 impl GdGmlScene {
@@ -487,6 +497,13 @@ impl GdGmlScene {
                         // 自动绑定数据：扫描带有 __data_var 元数据的节点，
                         // 从脚本中读取对应变量并调用 update()
                         self.auto_bind_data(&control);
+
+                        // 设置动画：延迟执行，等待容器布局完成后再读取节点位置
+                        // 否则 VBoxContainer 等容器子节点的 position 尚未计算，会导致重叠
+                        self.base_mut().call_deferred(
+                            &StringName::from("setup_animations_deferred"),
+                            &[],
+                        );
 
                         self.base_mut().emit_signal(
                             &StringName::from("s_gml_loaded"),
@@ -625,5 +642,252 @@ fn auto_bind_data_recursive(node: &Gd<Control>, script_obj: &Gd<Object>) -> Arra
     }
 
     watch_registrations
+}
+
+/// 设置动画：扫描节点树中带有 __anim_* 元数据的节点，配置入场/悬停/点击动画
+fn setup_animations(&mut self, root: &Gd<Control>) {
+    Self::setup_animations_recursive(root, 0);
+}
+
+/// 递归扫描节点树，为带有动画 meta 的节点设置动画
+/// enter_index: 同级兄弟中带 anim_enter 的节点序号，用于计算 stagger 延迟
+fn setup_animations_recursive(node: &Gd<Control>, enter_index: i32) {
+    let has_enter = node.has_meta(&StringName::from("__anim_enter"));
+    let has_hover = node.has_meta(&StringName::from("__anim_hover"));
+    let has_click = node.has_meta(&StringName::from("__anim_click"));
+
+    if has_enter || has_hover || has_click {
+        // 入场动画
+        if has_enter {
+            let direction: GString = node.get_meta(&StringName::from("__anim_enter")).to();
+            let dir_str = direction.to_string();
+            let stagger_delay: f64 = 0.15 * enter_index as f64;
+
+            // 根据方向设置缩放锚点，模拟方向感
+            // bottom: pivot 在底部 -> 从下方缩放进入
+            // top: pivot 在顶部 -> 从上方缩放进入
+            // left/right: pivot 在对应侧
+            let size = node.get_size();
+            let pivot = match dir_str.as_str() {
+                "top" => Vector2::new(size.x / 2.0, 0.0),
+                "bottom" => Vector2::new(size.x / 2.0, size.y),
+                "left" => Vector2::new(0.0, size.y / 2.0),
+                "right" => Vector2::new(size.x, size.y / 2.0),
+                _ => Vector2::new(size.x / 2.0, size.y), // 默认 bottom
+            };
+
+            // 设置初始状态：缩小 + 透明
+            let mut node_mut = node.clone();
+            node_mut.set_pivot_offset(pivot);
+            node_mut.set_scale(Vector2::new(0.7, 0.7));
+            node_mut.set_modulate(Color::from_rgba(1.0, 1.0, 1.0, 0.0));
+
+            // 创建入场 tween
+            let mut target = node_mut.clone().upcast::<Node>();
+            let mut tween = target.create_tween();
+            // 缩放动画
+            tween.tween_property(
+                &target,
+                &NodePath::from("scale"),
+                &Vector2::ONE.to_variant(),
+                0.5,
+            ).set_trans(TransitionType::BACK)
+             .set_ease(EaseType::OUT)
+             .set_delay(stagger_delay);
+            // 并行：淡入
+            tween.parallel().tween_property(
+                &target,
+                &NodePath::from("modulate:a"),
+                &1.0f32.to_variant(),
+                0.3,
+            ).set_delay(stagger_delay);
+
+            // 清理 meta
+            node_mut.remove_meta(&StringName::from("__anim_enter"));
+        }
+
+        // 悬停/点击动画需要缩放锚点在中心
+        if has_hover || has_click {
+            let size = node.get_size();
+            let mut node_mut = node.clone();
+            node_mut.set_pivot_offset(Vector2::new(size.x / 2.0, size.y / 2.0));
+        }
+
+        // 悬停动画
+        if has_hover {
+            let hover_scale: f32 = node.get_meta(&StringName::from("__anim_hover")).to();
+            let hover_scale_vec = Vector2::new(hover_scale, hover_scale);
+
+            // 查找可交互的子节点（NinePatchRect 的 __click_handler Button 或自身）
+            let interactive_node = Self::find_interactive_child(node);
+            if let Some(mut interactive) = interactive_node {
+                // mouse_entered -> 放大 + 提亮
+                let target = node.clone().upcast::<Node>();
+                let target2 = node.clone().upcast::<Node>();
+                interactive.connect(
+                    &StringName::from("mouse_entered"),
+                    &Callable::from_fn("anim_hover_enter", move |_args| {
+                        let mut t = target.clone();
+                        let mut tween = t.create_tween();
+                        tween.tween_property(
+                            &t,
+                            &NodePath::from("scale"),
+                            &hover_scale_vec.to_variant(),
+                            0.12,
+                        ).set_trans(TransitionType::BACK)
+                         .set_ease(EaseType::OUT);
+                        tween.parallel().tween_property(
+                            &t,
+                            &NodePath::from("modulate"),
+                            &Color::from_rgba(1.15, 1.15, 1.15, 1.0).to_variant(),
+                            0.12,
+                        );
+                        Variant::nil()
+                    }),
+                );
+                // mouse_exited -> 恢复
+                interactive.connect(
+                    &StringName::from("mouse_exited"),
+                    &Callable::from_fn("anim_hover_exit", move |_args| {
+                        let mut t = target2.clone();
+                        let mut tween = t.create_tween();
+                        tween.tween_property(
+                            &t,
+                            &NodePath::from("scale"),
+                            &Vector2::ONE.to_variant(),
+                            0.15,
+                        ).set_trans(TransitionType::SINE)
+                         .set_ease(EaseType::OUT);
+                        tween.parallel().tween_property(
+                            &t,
+                            &NodePath::from("modulate"),
+                            &Color::WHITE.to_variant(),
+                            0.15,
+                        );
+                        Variant::nil()
+                    }),
+                );
+
+                // 清理 meta
+                let mut node_mut = node.clone();
+                node_mut.remove_meta(&StringName::from("__anim_hover"));
+            } else {
+                // 没有交互子节点，直接在节点自身上连接
+                let target = node.clone().upcast::<Node>();
+                let target2 = node.clone().upcast::<Node>();
+                let mut node_mut = node.clone();
+                node_mut.connect(
+                    &StringName::from("mouse_entered"),
+                    &Callable::from_fn("anim_hover_enter", move |_args| {
+                        let mut t = target.clone();
+                        let mut tween = t.create_tween();
+                        tween.tween_property(
+                            &t,
+                            &NodePath::from("scale"),
+                            &hover_scale_vec.to_variant(),
+                            0.12,
+                        ).set_trans(TransitionType::BACK)
+                         .set_ease(EaseType::OUT);
+                        tween.parallel().tween_property(
+                            &t,
+                            &NodePath::from("modulate"),
+                            &Color::from_rgba(1.15, 1.15, 1.15, 1.0).to_variant(),
+                            0.12,
+                        );
+                        Variant::nil()
+                    }),
+                );
+                node_mut.connect(
+                    &StringName::from("mouse_exited"),
+                    &Callable::from_fn("anim_hover_exit", move |_args| {
+                        let mut t = target2.clone();
+                        let mut tween = t.create_tween();
+                        tween.tween_property(
+                            &t,
+                            &NodePath::from("scale"),
+                            &Vector2::ONE.to_variant(),
+                            0.15,
+                        ).set_trans(TransitionType::SINE)
+                         .set_ease(EaseType::OUT);
+                        tween.parallel().tween_property(
+                            &t,
+                            &NodePath::from("modulate"),
+                            &Color::WHITE.to_variant(),
+                            0.15,
+                        );
+                        Variant::nil()
+                    }),
+                );
+
+                // 清理 meta
+                node_mut.remove_meta(&StringName::from("__anim_hover"));
+            }
+        }
+
+        // 点击反馈动画
+        if has_click {
+            // 查找可交互的子节点
+            let interactive_node = Self::find_interactive_child(node);
+            if let Some(mut interactive) = interactive_node {
+                let target = node.clone().upcast::<Node>();
+                interactive.connect(
+                    &StringName::from("pressed"),
+                    &Callable::from_fn("anim_click_feedback", move |_args| {
+                        let mut t = target.clone();
+                        let mut tween = t.create_tween();
+                        // 缩小
+                        tween.tween_property(
+                            &t,
+                            &NodePath::from("scale"),
+                            &Vector2::new(0.9, 0.9).to_variant(),
+                            0.05,
+                        );
+                        // 弹回
+                        tween.tween_property(
+                            &t,
+                            &NodePath::from("scale"),
+                            &Vector2::ONE.to_variant(),
+                            0.15,
+                        ).set_trans(TransitionType::BACK)
+                         .set_ease(EaseType::OUT);
+                        Variant::nil()
+                    }),
+                );
+            }
+
+            // 清理 meta
+            let mut node_mut = node.clone();
+            node_mut.remove_meta(&StringName::from("__anim_click"));
+        }
+    }
+
+    // 递归处理子节点，统计同级中带 anim_enter 的节点序号
+    let children = node.get_children();
+    let mut enter_count = 0;
+    for i in 0..children.len() {
+        if let Some(child_var) = children.get(i) {
+            if let Ok(child) = child_var.clone().try_cast::<Control>() {
+                let child_enter = child.has_meta(&StringName::from("__anim_enter"));
+                Self::setup_animations_recursive(&child, if child_enter { enter_count } else { 0 });
+                if child_enter {
+                    enter_count += 1;
+                }
+            }
+        }
+    }
+}
+
+/// 查找节点中可交互的子节点（NinePatchRect 的 __click_handler Button）
+fn find_interactive_child(node: &Gd<Control>) -> Option<Gd<Button>> {
+    for i in 0..node.get_child_count() {
+        if let Some(child) = node.get_child(i) {
+            if let Ok(btn) = child.try_cast::<Button>() {
+                if btn.get_name().to_string() == "__click_handler" {
+                    return Some(btn);
+                }
+            }
+        }
+    }
+    None
 }
 }

@@ -14,6 +14,8 @@ use godot::classes::control::{LayoutPreset, MouseFilter, SizeFlags};
 use godot::global::MouseButton;
 use godot::obj::WithBaseField;
 
+use crate::anim::easing::ease_out_cubic;
+
 /// 抽屉方向
 const DIR_RIGHT: i32 = 0;
 const DIR_LEFT: i32 = 1;
@@ -471,9 +473,4 @@ impl GdUIDrawer {
             self.base_mut().emit_signal(&StringName::from("s_drawer_opened"), &[]);
         }
     }
-}
-
-/// 缓动函数：ease-out cubic
-fn ease_out_cubic(t: f32) -> f32 {
-    1.0 - (1.0 - t).powi(3)
 }

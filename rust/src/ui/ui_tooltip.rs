@@ -9,10 +9,10 @@
 //           </Tooltip>
 
 use godot::prelude::*;
-use godot::builtin::{GString, StringName, Color, Vector2, Dictionary, Variant};
+use godot::builtin::{GString, StringName, Color, Vector2, Dictionary, Variant, NodePath};
 use godot::classes::{
     IControl, Control, PanelContainer, VBoxContainer,
-    Label, HSeparator, StyleBoxFlat,
+    Label, HSeparator, StyleBoxFlat, Tween,
 };
 use godot::classes::control::{LayoutPreset, MouseFilter, SizeFlags};
 use godot::classes::text_server::AutowrapMode;
@@ -47,6 +47,8 @@ pub struct GdUITooltip {
     content_color: Color,
     #[export]
     corner_radius: i32,
+    #[export]
+    fade_duration: f64,
 
     // 内部节点引用
     panel: Option<Gd<PanelContainer>>,
@@ -57,6 +59,8 @@ pub struct GdUITooltip {
     delay_timer: f64,
     ui_built: bool,
     has_custom_content: bool,
+    // 动画状态
+    anim_tween: Option<Gd<Tween>>,
 }
 
 #[godot_api]
@@ -76,6 +80,7 @@ impl IControl for GdUITooltip {
             title_color: Color::from_rgb(0.5, 0.85, 1.0),
             content_color: Color::from_rgb(0.85, 0.85, 0.9),
             corner_radius: 6,
+            fade_duration: 0.15,
             panel: None,
             vbox: None,
             title_label: None,
@@ -84,6 +89,7 @@ impl IControl for GdUITooltip {
             delay_timer: 0.0,
             ui_built: false,
             has_custom_content: false,
+            anim_tween: None,
         }
     }
 
@@ -106,6 +112,7 @@ impl IControl for GdUITooltip {
             self.delay_timer += delta;
             if self.delay_timer >= self.delay {
                 self.base_mut().set_visible(true);
+                self.play_fade_in();
                 self.update_position();
             }
             return;
@@ -124,24 +131,24 @@ impl GdUITooltip {
     #[signal]
     fn s_tooltip_hidden();
 
-    /// 显示提示框（开始延迟计时）
+    /// 显示提示框（开始延迟计时，延迟后带淡入动画）
     #[func]
     fn show_tooltip(&mut self) {
         self.is_showing = true;
         self.delay_timer = 0.0;
         if self.delay <= 0.0 {
             self.base_mut().set_visible(true);
+            self.play_fade_in();
             self.update_position();
         }
     }
 
-    /// 隐藏提示框
+    /// 隐藏提示框（带淡出动画）
     #[func]
     fn hide_tooltip(&mut self) {
         self.is_showing = false;
         self.delay_timer = 0.0;
-        self.base_mut().set_visible(false);
-        self.base_mut().emit_signal(&StringName::from("s_tooltip_hidden"), &[]);
+        self.play_fade_out();
     }
 
     /// 设置提示框标题
@@ -225,6 +232,19 @@ impl GdUITooltip {
                 }
             }
             self.resolve_template_bindings(&mut vbox, &simple_keys);
+        }
+    }
+
+    /// 淡出动画完成后的回调
+    #[func]
+    fn _on_fade_out_finished(&mut self) {
+        self.base_mut().set_visible(false);
+        self.base_mut().emit_signal(&StringName::from("s_tooltip_hidden"), &[]);
+        // 恢复面板状态
+        if let Some(ref panel) = self.panel {
+            let mut p = panel.clone();
+            p.set_modulate(Color::from_rgba(1.0, 1.0, 1.0, 1.0));
+            p.set_scale(Vector2::new(1.0, 1.0));
         }
     }
 }
@@ -426,6 +446,90 @@ impl GdUITooltip {
 
         if let Some(ref mut panel) = self.panel {
             panel.set_position(Vector2::new(x, y));
+        }
+    }
+
+    /// 播放淡入动画
+    fn play_fade_in(&mut self) {
+        // 停止之前的动画
+        if let Some(ref mut tween) = self.anim_tween {
+            if tween.is_valid() {
+                tween.kill();
+            }
+        }
+
+        if let Some(ref panel) = self.panel {
+            let mut p = panel.clone();
+            // 设置初始状态
+            p.set_modulate(Color::from_rgba(1.0, 1.0, 1.0, 0.0));
+            p.set_scale(Vector2::new(0.95, 0.95));
+
+            let duration = self.fade_duration;
+            let mut tween = p.create_tween();
+
+            // 淡入
+            tween.tween_property(
+                &p,
+                &NodePath::from("modulate:a"),
+                &1.0_f32.to_variant(),
+                duration,
+            ).set_trans(godot::classes::tween::TransitionType::SINE)
+             .set_ease(godot::classes::tween::EaseType::OUT);
+
+            // 并行：缩放
+            let mut scale_tween = tween.parallel();
+            scale_tween.tween_property(
+                &p,
+                &NodePath::from("scale"),
+                &Vector2::new(1.0, 1.0).to_variant(),
+                duration,
+            ).set_trans(godot::classes::tween::TransitionType::BACK)
+             .set_ease(godot::classes::tween::EaseType::OUT);
+
+            self.anim_tween = Some(tween);
+        }
+    }
+
+    /// 播放淡出动画
+    fn play_fade_out(&mut self) {
+        // 停止之前的动画
+        if let Some(ref mut tween) = self.anim_tween {
+            if tween.is_valid() {
+                tween.kill();
+            }
+        }
+
+        if let Some(ref panel) = self.panel {
+            let mut p = panel.clone();
+            let base = self.base_mut().clone();
+
+            let duration = self.fade_duration;
+            let mut tween = p.create_tween();
+
+            // 淡出
+            tween.tween_property(
+                &p,
+                &NodePath::from("modulate:a"),
+                &0.0_f32.to_variant(),
+                duration,
+            ).set_trans(godot::classes::tween::TransitionType::SINE)
+             .set_ease(godot::classes::tween::EaseType::IN);
+
+            // 并行：缩放
+            let mut scale_tween = tween.parallel();
+            scale_tween.tween_property(
+                &p,
+                &NodePath::from("scale"),
+                &Vector2::new(0.95, 0.95).to_variant(),
+                duration,
+            ).set_trans(godot::classes::tween::TransitionType::SINE)
+             .set_ease(godot::classes::tween::EaseType::IN);
+
+            // 完成后隐藏
+            let cb = Callable::from_object_method(&base, "_on_fade_out_finished");
+            tween.tween_callback(&cb);
+
+            self.anim_tween = Some(tween);
         }
     }
 }

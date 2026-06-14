@@ -7,6 +7,7 @@ use godot::prelude::*;
 use godot::builtin::{GString, StringName, Color, Variant, Array, Dictionary, Vector2, Rect2, NodePath};
 use godot::classes::{
     IVBoxContainer, VBoxContainer, Control, InputEvent, InputEventMouseButton,
+    Tween,
 };
 use godot::global::MouseButton;
 use godot::obj::WithBaseField;
@@ -272,6 +273,8 @@ impl GdUIVList {
 
                         // 发射点击信号
                         if let Some(click_item) = self.get_at(item_index) {
+                            // 点击缩放反馈动画
+                            self.play_click_feedback(&click_item);
                             self.base_mut().emit_signal(
                                 &StringName::from("s_click_item"),
                                 &[click_item.to_variant()],
@@ -385,5 +388,27 @@ impl GdUIVList {
                 }
             }
         }
+    }
+
+    /// 点击缩放反馈动画
+    fn play_click_feedback(&self, item: &Gd<Control>) {
+        let original_scale = item.get_scale();
+        let mut item = item.clone();
+        let mut tween = item.create_tween();
+        // 缩小
+        tween.tween_property(
+            &item,
+            &NodePath::from("scale"),
+            &(original_scale * 0.9).to_variant(),
+            0.05,
+        );
+        // 弹回
+        tween.tween_property(
+            &item,
+            &NodePath::from("scale"),
+            &original_scale.to_variant(),
+            0.15,
+        ).set_trans(godot::classes::tween::TransitionType::BACK)
+         .set_ease(godot::classes::tween::EaseType::OUT);
     }
 }

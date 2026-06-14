@@ -68,9 +68,15 @@ var UI = """
     <!-- 居中按钮组 -->
     <CenterContainer>
 	  <VBoxContainer v_separation="12">
-		<TextureButton name="StartBtn" text="Start Game" class="menu-button" custom_minimum_size="30%,6%" on_pressed="_on_start_game" mouse_default_cursor_shape="pointing_hand" />
-		<TextureButton name="ContinueBtn" text="Continue" class="menu-button" custom_minimum_size="30%,6%" on_pressed="_on_continue_game" mouse_default_cursor_shape="pointing_hand" />
-		<TextureButton name="QuitBtn" text="Quit" class="menu-button" custom_minimum_size="30%,6%" on_pressed="_on_quit_game" mouse_default_cursor_shape="pointing_hand" />
+		<NinePatchRect name="StartBtn" class="menu-button" custom_minimum_size="30%,6%" on_pressed="_on_start_game" mouse_default_cursor_shape="pointing_hand" patch_margin="10" anim_enter="bottom" anim_hover="1.08" anim_click="true">
+		  <Label text="Start Game" />
+		</NinePatchRect>
+		<NinePatchRect name="ContinueBtn" class="menu-button" custom_minimum_size="30%,6%" on_pressed="_on_continue_game" mouse_default_cursor_shape="pointing_hand" patch_margin="10" anim_enter="bottom" anim_hover="1.08" anim_click="true">
+		  <Label text="Continue" />
+		</NinePatchRect>
+		<NinePatchRect name="QuitBtn" class="menu-button" custom_minimum_size="30%,6%" on_pressed="_on_quit_game" mouse_default_cursor_shape="pointing_hand" patch_margin="10" anim_enter="bottom" anim_hover="1.08" anim_click="true">
+		  <Label text="Quit" />
+		</NinePatchRect>
       </VBoxContainer>
     </CenterContainer>
   </VBoxContainer>

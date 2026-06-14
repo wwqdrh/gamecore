@@ -15,6 +15,7 @@ mod rogue;
 mod console;
 mod dialog;
 mod ui;
+mod anim;
 
 #[doc(hidden)]
 pub enum OnFinishCall {

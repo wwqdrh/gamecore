@@ -4,15 +4,17 @@
 // 支持通过 GML 子节点定义弹窗内容，支持显示/隐藏切换
 
 use godot::prelude::*;
-use godot::builtin::{GString, StringName, Color, Side};
+use godot::builtin::{GString, StringName, Color, NodePath, Side};
 use godot::classes::{
     IControl, Control, PanelContainer, VBoxContainer, HBoxContainer,
     Label, Button, MarginContainer, HSeparator, ColorRect, StyleBoxFlat,
-    InputEvent, InputEventMouseButton,
+    InputEvent, InputEventMouseButton, Tween,
 };
 use godot::classes::control::{LayoutPreset, MouseFilter, SizeFlags};
 use godot::global::MouseButton;
 use godot::obj::WithBaseField;
+
+use crate::anim::easing::ease_out_cubic;
 
 #[derive(GodotClass)]
 #[class(base = Control)]
@@ -39,6 +41,8 @@ pub struct GdPopupPanel {
     corner_radius: i32,
     #[export]
     close_on_overlay: bool,
+    #[export]
+    animation_duration: f64,
 
     // 内部节点引用
     overlay: Option<Gd<ColorRect>>,
@@ -47,6 +51,8 @@ pub struct GdPopupPanel {
     content_container: Option<Gd<MarginContainer>>,
     is_visible: bool,
     ui_built: bool,
+    // 动画状态
+    anim_tween: Option<Gd<Tween>>,
 }
 
 #[godot_api]
@@ -64,12 +70,14 @@ impl IControl for GdPopupPanel {
             title_color: Color::from_rgb(0.4, 0.8, 1.0),
             corner_radius: 8,
             close_on_overlay: true,
+            animation_duration: 0.25,
             overlay: None,
             popup_panel: None,
             title_label: None,
             content_container: None,
             is_visible: false,
             ui_built: false,
+            anim_tween: None,
         }
     }
 
@@ -90,22 +98,22 @@ impl GdPopupPanel {
     #[signal]
     fn s_popup_hidden();
 
-    /// 显示弹窗
+    /// 显示弹窗（带弹入动画）
     #[func]
     fn show_popup(&mut self) {
         self.is_visible = true;
-        // 显示整个 PopupPanel Control（同时显示所有子节点）
         self.base_mut().set_visible(true);
         self.base_mut().emit_signal(&StringName::from("s_popup_shown"), &[]);
+
+        // 弹入动画
+        self.play_enter_animation();
     }
 
-    /// 隐藏弹窗
+    /// 隐藏弹窗（带弹出动画）
     #[func]
     fn hide_popup(&mut self) {
-        self.is_visible = false;
-        // 隐藏整个 PopupPanel Control（同时隐藏所有子节点，不再拦截鼠标事件）
-        self.base_mut().set_visible(false);
-        self.base_mut().emit_signal(&StringName::from("s_popup_hidden"), &[]);
+        // 播放退出动画，动画结束后隐藏
+        self.play_exit_animation();
     }
 
     /// 弹窗是否可见
@@ -172,6 +180,19 @@ impl GdPopupPanel {
     #[func]
     fn _on_close_pressed(&mut self) {
         self.hide_popup();
+    }
+
+    /// 退出动画完成后的回调
+    #[func]
+    fn _on_exit_anim_finished(&mut self) {
+        self.base_mut().set_visible(false);
+        self.base_mut().emit_signal(&StringName::from("s_popup_hidden"), &[]);
+        // 恢复面板缩放和透明度
+        if let Some(ref panel) = self.popup_panel {
+            let mut p = panel.clone();
+            p.set_scale(Vector2::new(1.0, 1.0));
+            p.set_modulate(Color::from_rgba(1.0, 1.0, 1.0, 1.0));
+        }
     }
 
     /// 确保内部 UI 已构建（供 builder 在添加子节点前调用）
@@ -335,5 +356,121 @@ impl GdPopupPanel {
         self.popup_panel = panel_node;
         self.title_label = title_label_node;
         self.content_container = content_node;
+    }
+
+    /// 播放弹入动画
+    fn play_enter_animation(&mut self) {
+        // 停止之前的动画
+        if let Some(ref mut tween) = self.anim_tween {
+            if tween.is_valid() {
+                tween.kill();
+            }
+        }
+
+        let duration = self.animation_duration;
+
+        if let Some(ref panel) = self.popup_panel {
+            let mut p = panel.clone();
+            // 设置初始状态
+            p.set_scale(Vector2::new(0.85, 0.85));
+            p.set_modulate(Color::from_rgba(1.0, 1.0, 1.0, 0.0));
+
+            let mut tween = p.create_tween();
+
+            // 缩放动画
+            tween.tween_property(
+                &p,
+                &NodePath::from("scale"),
+                &Vector2::new(1.0, 1.0).to_variant(),
+                duration,
+            ).set_trans(godot::classes::tween::TransitionType::BACK)
+             .set_ease(godot::classes::tween::EaseType::OUT);
+
+            // 并行：淡入
+            let mut alpha_tween = tween.parallel();
+            alpha_tween.tween_property(
+                &p,
+                &NodePath::from("modulate:a"),
+                &1.0_f32.to_variant(),
+                duration * 0.6,
+            );
+
+            self.anim_tween = Some(tween);
+        }
+
+        // 遮罩淡入
+        if let Some(ref overlay) = self.overlay {
+            let mut o = overlay.clone();
+            o.set_color(Color::from_rgba(
+                self.overlay_color.r,
+                self.overlay_color.g,
+                self.overlay_color.b,
+                0.0,
+            ));
+            let mut tween = o.create_tween();
+            tween.tween_property(
+                &o,
+                &NodePath::from("color:a"),
+                &self.overlay_color.a.to_variant(),
+                duration * 0.6,
+            );
+        }
+    }
+
+    /// 播放弹出动画
+    fn play_exit_animation(&mut self) {
+        // 停止之前的动画
+        if let Some(ref mut tween) = self.anim_tween {
+            if tween.is_valid() {
+                tween.kill();
+            }
+        }
+
+        let duration = self.animation_duration * 0.6; // 退出更快
+
+        if let Some(ref panel) = self.popup_panel {
+            let mut p = panel.clone();
+
+            let mut tween = p.create_tween();
+
+            // 缩放动画
+            tween.tween_property(
+                &p,
+                &NodePath::from("scale"),
+                &Vector2::new(0.85, 0.85).to_variant(),
+                duration,
+            ).set_trans(godot::classes::tween::TransitionType::SINE)
+             .set_ease(godot::classes::tween::EaseType::IN);
+
+            // 并行：淡出
+            let mut alpha_tween = tween.parallel();
+            alpha_tween.tween_property(
+                &p,
+                &NodePath::from("modulate:a"),
+                &0.0_f32.to_variant(),
+                duration,
+            );
+
+            // 完成后隐藏（使用对象方法回调）
+            let base = self.base_mut().clone();
+            let cb = Callable::from_object_method(&base, "_on_exit_anim_finished");
+            tween.tween_callback(&cb);
+
+            self.anim_tween = Some(tween);
+        }
+
+        // 遮罩淡出
+        if let Some(ref overlay) = self.overlay {
+            let mut o = overlay.clone();
+            let mut tween = o.create_tween();
+            tween.tween_property(
+                &o,
+                &NodePath::from("color:a"),
+                &0.0_f32.to_variant(),
+                duration,
+            );
+        }
+
+        self.is_visible = false;
     }
 }

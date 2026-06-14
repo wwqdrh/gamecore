@@ -96,6 +96,47 @@
 - **test_routine**：异步任务测试，使用 async-compat 兼容层
 - **test_from_other_node**：静态方法，在其他节点上启动异步任务
 
+### [rust/src/anim/mod.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/anim/mod.rs)
+- 动画模块入口，导出 easing/juice/easy_move/transition 子模块
+- 公开导出：Easing 枚举、juice::* 所有动画函数、EaseMover、TransitionFade、FadeType
+
+### [rust/src/anim/easing.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/anim/easing.rs)
+- **Easing** 枚举（31种缓动类型）
+- 方法：get_progress(self, x: f32) -> f32
+- 变体：Linear, SineIn/Out/InOut, QuadIn/Out/InOut, CubicIn/Out/InOut, QuartIn/Out/InOut, QuintIn/Out/InOut, ExpoIn/Out/InOut, CircIn/Out/InOut, BackIn/Out/InOut, ElasticIn/Out/InOut, BounceIn/Out/InOut
+
+### [rust/src/anim/juice.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/anim/juice.rs)
+- **核心动画系统**，移植自 C++ juice/juice.h/cpp
+- 所有动画基于 Godot Tween 系统，使用 tween_property + 内置缓动类型（gdext 0.5 的 tween_method 不支持 Rust 闭包）
+- 防重入机制：check_is_handle/mark_handle/anim_handle_finished（基于 Godot meta）
+- 清理回调：make_cleanup_callable（使用 Callable::from_fn，因为 Gd<Node> 不是 Send）
+- Easing 映射：easing_to_trans（Easing→TransitionType）、easing_to_ease_type（Easing→EaseType）
+- 公开动画函数（简化签名，移除 Easing 参数，使用 Godot 内置缓动）：
+  - anim_wave_simple(target, wave_offset, duration)：波浪摆动（循环，SINE/IN_OUT）
+  - anim_rotate_circle_simple(target, duration)：360度旋转（循环，LINEAR）
+  - anim_shake_simple(target, duration)：左右抖动（循环，SINE/IN_OUT）
+  - anim_move_straight_simple(target, to_pos, duration, ease_type)：直线移动
+  - anim_bounce_simple(target, dire_pos, distance, duration)：弹跳（BACK/OUT）
+  - do_scale_simple(target, target_scale, duration)：缩放（BACK/OUT）
+  - anim_breath_simple(target, breath_factor, anim_span, duration)：呼吸缩放（循环，SINE/IN_OUT）
+  - anim_walk_simple(target, walk_span, duration)：走路摆动（循环，rotation+scale，SINE/IN_OUT）
+  - anim_enter(target, container, direction, duration, delay, mode)：入场动画（从界面外移入+透明度变化，按分组依次执行）
+  - anim_explosion(target, max_distance, duration)：爆炸散开+淡出（BACK/IN，子节点动画）
+  - anim_collect(target, target_position, is_global, duration)：收集汇聚（SINE/IN_OUT，子节点动画）
+  - hit_label(target, duration)：打击标签（缩放+颜色闪烁+上浮淡出）
+  - popup_enter(target: &Gd<Control>, duration)：弹窗弹入（BACK/OUT 缩放+淡入）
+  - popup_exit(target: &Gd<Control>, duration)：弹窗弹出（SINE/IN 缩放+淡出）
+  - click_feedback(target: &Gd<Control>)：点击缩放反馈（BACK/OUT 弹回）
+  - tooltip_fade_in(target: &Gd<Control>, duration)：Tooltip淡入（SINE/OUT 透明+BACK/OUT 缩放）
+  - tooltip_fade_out(target: &Gd<Control>, duration)：Tooltip淡出（SINE/IN 透明+缩放）
+
+### [rust/src/anim/easy_move.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/anim/easy_move.rs)
+- **EaseMover** 平滑移动工具
+
+### [rust/src/anim/transition.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/anim/transition.rs)
+- **TransitionFade** 过渡效果
+- **FadeType** 淡入淡出类型枚举
+
 ### [rust/src/anim_graph.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/anim_graph.rs)
 - **AnimGraph** 类（继承 Node）
 - **load_config**：从 JSON 字符串加载动画配置
@@ -245,7 +286,9 @@
 - **UI构建器**
 - 将AST转换为Godot Control节点树
 - 支持容器/控件实例化（VBox/HBox/Grid/Margin/Scroll/Tab/Center/PanelContainer/Tab + Label/Button/TextureButton/CheckButton/HSlider/ColorRect/OptionButton/Panel/TextureRect/RichTextLabel/LineEdit/ProgressBar/SpinBox/HSeparator/VSeparator/NinePatchRect/PopupPanel/Tooltip/Drawer/NavMenu/NavItem）
-- 属性设置：text/font_size/align/anchor/margin/size/bbcode/texture/texture_normal/texture_pressed/texture_hover/texture_disabled/stretch_mode/columns/visible/disabled/size_flags_horizontal/size_flags_vertical/color/toggle_mode/button_pressed/items/selected/popup_title/popup_width/close_on_overlay/tooltip_title/tooltip_content/delay/offset_x/offset_y/max_width/direction/slide_width/animation_duration/drawer_title/title/current_tab/tabs_visible等
+- 属性设置：text/font_size/align/anchor/margin/size/bbcode/texture/texture_normal/texture_pressed/texture_hover/texture_disabled/stretch_mode/columns/visible/disabled/size_flags_horizontal/size_flags_vertical/color/toggle_mode/button_pressed/items/selected/popup_title/popup_width/close_on_overlay/tooltip_title/tooltip_content/delay/offset_x/offset_y/max_width/direction/slide_width/animation_duration/drawer_title/title/current_tab/tabs_visible/patch_margin等
+- TextureButton 子 Label 自动配置：当 Label 作为 TextureButton 的子节点时，自动设置锚点填满父节点、文字居中、鼠标穿透
+- NinePatchRect 按钮模式：有 on_pressed 属性时自动添加不可见 Button 子节点处理点击事件；子 Label 自动配置锚点填满、文字居中、鼠标穿透；class style texture 属性设置纹理；patch_margin 属性设置九宫格边距
 - 模板绑定：`{{key}}` 语法检测，记录 `__tpl_{key}`/`__tpl_keys`/`__tpl_attr` 元数据
 - StyleBoxFlat样式应用：background/border_radius/border_color/border_width/padding/color/texture，支持 `$var` 主题变量替换
 - 信号绑定元数据：on_xxx属性存储为__signal_xxx元数据
@@ -306,6 +349,10 @@
   - 简单变量名（如 `data="equip_data"`）：从脚本对象读取变量
   - GdBean 引用（如 `data="bean:scene_main:equip_data"`）：从 GdBean 实例读取属性值，支持响应式更新
 - GdBean 响应式绑定：通过 bean.watch() 注册回调，属性变更时自动调用 on_bean_data_changed_bound() 更新节点
+- 动画自动配置：加载后扫描 __anim_enter/__anim_hover/__anim_click 元数据，自动设置入场/悬停/点击动画
+  - anim_enter：入场动画（滑入+淡入，方向 bottom/top/left/right，同级兄弟自动 stagger 递增延迟）
+  - anim_hover：悬停动画（鼠标进入放大+提亮，离开恢复，可配置缩放倍数）
+  - anim_click：点击反馈（缩小弹回，NinePatchRect 通过 __click_handler 子节点检测交互）
 - 方法：load_gml, load_from_string, reload, connect_signals, get_content, find_node, clear_content, is_loaded, on_bean_data_changed, on_bean_data_changed_bound
 - 信号：s_gml_loaded, s_gml_load_failed
 
@@ -445,8 +492,8 @@
 - 使用 CSS 类样式定义按钮外观
 
 ### [example/ui/scene_title.gd](file:///Users/dengronghui/project/gamekit/core/example/ui/scene_title.gd)
-- 游戏标题界面根节点脚本（继承 Control）
-- GML 加载和事件回调已移至 GmlScene 节点的脚本（scene_title_gml.gd）
+- 游戏标题界面 GML 控制器 - 继承 GdGmlScene，处理 GML 中的事件回调
+- 使用 NinePatchRect 替代 TextureButton 实现按钮背景九宫格拉伸
 
 ### [example/ui/scene_title_gml.gd](file:///Users/dengronghui/project/gamekit/core/example/ui/scene_title_gml.gd)
 - 游戏标题界面 GML 控制器（继承 GdGmlScene）
@@ -652,3 +699,17 @@
 | 2026-06-13 | rust/src/ui/mod.rs | 添加ui_theme模块 |
 | 2026-06-13 | example/ui/*.gd/*.gml | 所有GML示例更新：添加theme="dark"属性，样式颜色值替换为$var主题变量引用 |
 | 2026-06-13 | example/ui/scene_main.gd | 更新：Button custom_minimum_size改为"30%,6%"，equip-slot custom_minimum_size改为"8%,8%"，Drawer slide_width改为"35%"，grid-item custom_minimum_size改为"12%,12%" |
+| 2026-06-14 | rust/src/anim/juice.rs | 完全重写：移除所有 callable_from_fn（返回 Callable::invalid()）和 tween_method+闭包模式（gdext 0.5 不支持），改用 tween_property + Godot 内置 TransitionType/EaseType；移除大部分公开函数的 Easing 参数（简化签名）；新增 easing_to_trans/easing_to_ease_type 辅助映射函数；清理回调改用 Callable::from_fn（Gd<Node> 非 Send）；属性参数从 &StringName 改为 &NodePath，final_val 从 Variant 改为 &Variant |
+| 2026-06-14 | rust/src/anim/transition.rs | 修复 gdext 0.5 兼容：移除 tween.bind()，StringName→NodePath，添加缓动映射 |
+| 2026-06-14 | rust/src/anim/easy_move.rs | 新建 EaseMover 平滑移动工具，移植自 C++ juice/easy_move |
+| 2026-06-14 | rust/src/ui/ui_popup_panel.rs | 添加弹入/弹出动画（缩放+淡入淡出+遮罩动画） |
+| 2026-06-14 | rust/src/ui/ui_tooltip.rs | 添加淡入淡出动画（缩放+透明度） |
+| 2026-06-14 | rust/src/ui/ui_hlist.rs | 添加点击缩放反馈动画 |
+| 2026-06-14 | rust/src/ui/ui_vlist.rs | 添加点击缩放反馈动画 |
+| 2026-06-14 | rust/src/ui/ui_grid.rs | 添加点击缩放反馈动画 |
+| 2026-06-14 | rust/src/ui/ui_drawer.rs | 使用 anim 模块缓动函数替代手写 ease_out_cubic |
+| 2026-06-14 | rust/src/ui/ui_nav_menu.rs | 使用 anim 模块缓动函数替代手写 ease_out_cubic |
+| 2026-06-14 | rust/src/ui/builder.rs | 移除 TextureButton 的 text 属性处理，改为子 Label 自动配置（锚点填满、文字居中、鼠标穿透） |
+| 2026-06-14 | example/ui/scene_title.gd | TextureButton 的 text 属性拆成子 Label 元素 |
+| 2026-06-14 | rust/src/ui/builder.rs | NinePatchRect 按钮模式：有 on_pressed 时添加不可见 Button 子节点处理点击；子 Label 自动配置；class style texture 支持；patch_margin 属性；主题默认颜色和文字颜色支持 |
+| 2026-06-14 | example/ui/scene_title.gd | TextureButton 改为 NinePatchRect 实现九宫格拉伸按钮 |
