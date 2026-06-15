@@ -349,8 +349,7 @@ impl UiBuilder {
                     let border_radius = resolved_props.get("border_radius")
                         .and_then(|v| v.parse::<i32>().ok())
                         .unwrap_or(12);
-                    let padding = resolved_props.get("padding")
-                        .and_then(|v| v.parse::<f32>().ok());
+                    let padding_str = resolved_props.get("padding").map(|s| s.as_str());
 
                     // normal 状态
                     let mut normal_box = StyleBoxFlat::new_gd();
@@ -363,8 +362,8 @@ impl UiBuilder {
                         normal_box.set_border_color(bc);
                         normal_box.set_border_width_all(border_width);
                     }
-                    if let Some(p) = padding {
-                        normal_box.set_content_margin_all(p);
+                    if let Some(ps) = padding_str {
+                        apply_stylebox_padding(&mut normal_box, ps);
                     }
                     control.add_theme_stylebox_override(
                         &StringName::from("normal"),
@@ -387,8 +386,8 @@ impl UiBuilder {
                         hover_box.set_border_color(bc);
                         hover_box.set_border_width_all(border_width);
                     }
-                    if let Some(p) = padding {
-                        hover_box.set_content_margin_all(p);
+                    if let Some(ps) = padding_str {
+                        apply_stylebox_padding(&mut hover_box, ps);
                     }
                     control.add_theme_stylebox_override(
                         &StringName::from("hover"),
@@ -411,52 +410,89 @@ impl UiBuilder {
                         pressed_box.set_border_color(bc);
                         pressed_box.set_border_width_all(border_width);
                     }
-                    if let Some(p) = padding {
-                        pressed_box.set_content_margin_all(p);
+                    if let Some(ps) = padding_str {
+                        apply_stylebox_padding(&mut pressed_box, ps);
                     }
                     control.add_theme_stylebox_override(
                         &StringName::from("pressed"),
                         &pressed_box,
                     );
                 }
-            } else {
-                // 非按钮组件，或按钮没有设置背景色的情况
-                let mut style_box = StyleBoxFlat::new_gd();
+            } else if tag == "ProgressBar" {
+                // ProgressBar 特殊处理：background → fill（填充色），track → background（轨道色）
+                let border_radius = resolved_props.get("border_radius")
+                    .and_then(|v| v.parse::<i32>().ok())
+                    .unwrap_or(4);
 
+                // fill 样式（填充部分）
                 if !bg_color_key.is_empty() {
                     if let Some(color) = parse_color(resolved_props.get(bg_color_key).unwrap()) {
-                        style_box.set_bg_color(color);
+                        let mut fill_box = StyleBoxFlat::new_gd();
+                        fill_box.set_bg_color(color);
+                        fill_box.set_corner_radius_all(border_radius);
+                        control.add_theme_stylebox_override(
+                            &StringName::from("fill"),
+                            &fill_box,
+                        );
                     }
                 }
 
-                if let Some(border_radius) = resolved_props.get("border_radius") {
-                    if let Ok(r) = border_radius.parse::<i32>() {
-                        style_box.set_corner_radius_all(r);
-                    }
-                }
-
-                if let Some(border_color) = resolved_props.get("border_color") {
-                    if let Some(color) = parse_color(border_color) {
-                        style_box.set_border_color(color);
-                        let border_width = resolved_props.get("border_width")
-                            .and_then(|v| v.parse::<i32>().ok())
-                            .unwrap_or(1);
-                        style_box.set_border_width_all(border_width);
-                    }
-                }
-
-                if let Some(padding) = resolved_props.get("padding") {
-                    if let Ok(p) = padding.parse::<f32>() {
-                        style_box.set_content_margin_all(p);
-                    }
-                }
-
-                // 将 StyleBox 应用到控件
-                let stylebox_name = get_stylebox_name_for_tag(tag);
+                // track 样式（轨道背景）
+                let track_color = resolved_props.get("track")
+                    .and_then(|v| parse_color(v))
+                    .unwrap_or(Color::from_rgba(0.2, 0.2, 0.2, 1.0));
+                let mut bg_box = StyleBoxFlat::new_gd();
+                bg_box.set_bg_color(track_color);
+                bg_box.set_corner_radius_all(border_radius);
                 control.add_theme_stylebox_override(
-                    &StringName::from(stylebox_name),
-                    &style_box,
+                    &StringName::from("background"),
+                    &bg_box,
                 );
+            } else {
+                // 非按钮组件，或按钮没有设置背景色的情况
+                // 仅当有背景/边框/圆角/padding属性时才创建 StyleBoxFlat
+                let needs_stylebox = !bg_color_key.is_empty()
+                    || resolved_props.contains_key("border_radius")
+                    || resolved_props.contains_key("border_color")
+                    || resolved_props.contains_key("border_width")
+                    || resolved_props.contains_key("padding");
+
+                if needs_stylebox {
+                    let mut style_box = StyleBoxFlat::new_gd();
+
+                    if !bg_color_key.is_empty() {
+                        if let Some(color) = parse_color(resolved_props.get(bg_color_key).unwrap()) {
+                            style_box.set_bg_color(color);
+                        }
+                    }
+
+                    if let Some(border_radius) = resolved_props.get("border_radius") {
+                        if let Ok(r) = border_radius.parse::<i32>() {
+                            style_box.set_corner_radius_all(r);
+                        }
+                    }
+
+                    if let Some(border_color) = resolved_props.get("border_color") {
+                        if let Some(color) = parse_color(border_color) {
+                            style_box.set_border_color(color);
+                            let border_width = resolved_props.get("border_width")
+                                .and_then(|v| v.parse::<i32>().ok())
+                                .unwrap_or(1);
+                            style_box.set_border_width_all(border_width);
+                        }
+                    }
+
+                    if let Some(padding) = resolved_props.get("padding") {
+                        apply_stylebox_padding(&mut style_box, padding);
+                    }
+
+                    // 将 StyleBox 应用到控件
+                    let stylebox_name = get_stylebox_name_for_tag(tag);
+                    control.add_theme_stylebox_override(
+                        &StringName::from(stylebox_name),
+                        &style_box,
+                    );
+                }
             }
 
             // 应用 color 属性（文字颜色）到控件
@@ -710,6 +746,27 @@ impl UiBuilder {
                     control.add_theme_color_override(
                         &StringName::from("color"),
                         color,
+                    );
+                }
+            }
+            // ProgressBar：设置填充色和轨道色
+            "ProgressBar" => {
+                if let Some(color) = get_theme_color(&self.theme_vars, "progress_fill") {
+                    let mut fill_box = StyleBoxFlat::new_gd();
+                    fill_box.set_bg_color(color);
+                    fill_box.set_corner_radius_all(4);
+                    control.add_theme_stylebox_override(
+                        &StringName::from("fill"),
+                        &fill_box,
+                    );
+                }
+                if let Some(color) = get_theme_color(&self.theme_vars, "progress_bg") {
+                    let mut bg_box = StyleBoxFlat::new_gd();
+                    bg_box.set_bg_color(color);
+                    bg_box.set_corner_radius_all(4);
+                    control.add_theme_stylebox_override(
+                        &StringName::from("background"),
+                        &bg_box,
                     );
                 }
             }
@@ -1322,6 +1379,52 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
                 }
             }
         }
+        "valign" => {
+            use godot::global::VerticalAlignment;
+            let alignment = match value {
+                "top" => VerticalAlignment::TOP,
+                "center" => VerticalAlignment::CENTER,
+                "bottom" => VerticalAlignment::BOTTOM,
+                _ => VerticalAlignment::TOP,
+            };
+            match tag {
+                "Label" => {
+                    let mut lbl = control.cast::<Label>();
+                    lbl.set_vertical_alignment(alignment);
+                    return lbl.upcast();
+                }
+                _ => {}
+            }
+        }
+        "font_color" => {
+            if let Some(color) = parse_color(value) {
+                apply_text_color(&mut control, tag, color);
+            }
+        }
+        "anchor_left" | "anchor_right" | "anchor_top" | "anchor_bottom" => {
+            if let Ok(val) = value.parse::<f32>() {
+                let side = match key {
+                    "anchor_left" => Side::LEFT,
+                    "anchor_right" => Side::RIGHT,
+                    "anchor_top" => Side::TOP,
+                    "anchor_bottom" => Side::BOTTOM,
+                    _ => return control,
+                };
+                control.set_anchor(side, val);
+            }
+        }
+        "offset_left" | "offset_right" | "offset_top" | "offset_bottom" => {
+            if let Ok(val) = value.parse::<f32>() {
+                let side = match key {
+                    "offset_left" => Side::LEFT,
+                    "offset_right" => Side::RIGHT,
+                    "offset_top" => Side::TOP,
+                    "offset_bottom" => Side::BOTTOM,
+                    _ => return control,
+                };
+                control.set_offset(side, val);
+            }
+        }
         "toggle_mode" => {
             if tag == "Button" || tag == "CheckButton" || tag == "TextureButton" {
                 let result = control.try_cast::<BaseButton>();
@@ -1778,6 +1881,38 @@ fn apply_custom_minimum_size(control: &mut Gd<Control>, value: &str) {
         } else {
             control.set_custom_minimum_size(Vector2::new(w_px, h_px));
         }
+    }
+}
+
+/// 应用 padding 到 StyleBoxFlat
+/// 支持格式: "20" (四边相同), "20 12" (上下 左右), "10 20 10 20" (上 右 下 左)
+fn apply_stylebox_padding(style_box: &mut Gd<StyleBoxFlat>, value: &str) {
+    let parts: Vec<&str> = value.split_whitespace().collect();
+    match parts.len() {
+        1 => {
+            if let Ok(p) = parts[0].parse::<f32>() {
+                style_box.set_content_margin_all(p);
+            }
+        }
+        2 => {
+            let v = parts[0].parse::<f32>().unwrap_or(0.0);
+            let h = parts[1].parse::<f32>().unwrap_or(0.0);
+            style_box.set_content_margin(Side::TOP, v);
+            style_box.set_content_margin(Side::BOTTOM, v);
+            style_box.set_content_margin(Side::LEFT, h);
+            style_box.set_content_margin(Side::RIGHT, h);
+        }
+        4 => {
+            let t = parts[0].parse::<f32>().unwrap_or(0.0);
+            let r = parts[1].parse::<f32>().unwrap_or(0.0);
+            let b = parts[2].parse::<f32>().unwrap_or(0.0);
+            let l = parts[3].parse::<f32>().unwrap_or(0.0);
+            style_box.set_content_margin(Side::TOP, t);
+            style_box.set_content_margin(Side::RIGHT, r);
+            style_box.set_content_margin(Side::BOTTOM, b);
+            style_box.set_content_margin(Side::LEFT, l);
+        }
+        _ => {}
     }
 }
 

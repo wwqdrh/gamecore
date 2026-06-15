@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游戏第16关升级UI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", sans-serif;
+            color: #fff;
+        }
+        body {
+            background-color: #333333;
+            padding: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            position: relative;
+        }
+        /* 左上角状态栏区域 */
+        .status-left {
+            width: 260px;
+        }
+        .hp-bar-wrap {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .hp-bar {
+            flex: 1;
+            height: 40px;
+            background: #c91919;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 12px;
+            font-size: 22px;
+            font-weight: bold;
+        }
+        .exp-bar-wrap {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .exp-bar {
+            flex: 1;
+            height: 32px;
+            background: #24c442;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 12px;
+            font-size: 18px;
+        }
+        .coin-line {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 32px;
+            font-weight: bold;
+        }
+        .coin-icon {
+            width: 40px;
+            height: 40px;
+            background: #48d05e;
+            border-radius: 50%;
+        }
+        /* 顶部中间标题 */
+        .title-center {
+            text-align: center;
+            margin: -120px 0 60px;
+        }
+        .stage-text {
+            font-size: 42px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .upgrade-text {
+            font-size: 60px;
+            font-weight: bold;
+        }
+        /* 中间天赋三卡片区域 */
+        .talent-wrap {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        .talent-card {
+            width: 240px;
+            background: #000;
+            padding: 20px 12px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 10px;
+            background: #eee;
+            border-radius: 4px;
+        }
+        .card-icon.heart {
+            background: #48d05e;
+        }
+        .card-name {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        .card-desc {
+            font-size: 18px;
+            color: #48d05e;
+            margin-bottom: 16px;
+        }
+        .select-btn {
+            background: #fff;
+            color: #000;
+            border: none;
+            padding: 6px 24px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        /* 刷新按钮 */
+        .refresh-wrap {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        .refresh-btn {
+            background: #000;
+            border: none;
+            padding: 14px 40px;
+            font-size: 26px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0 auto;
+            border-radius: 6px;
+        }
+        .play-icon {
+            width: 26px;
+            height: 26px;
+            background: #fff;
+            border-radius: 4px;
+        }
+        /* 右侧属性面板 */
+        .attr-panel {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 240px;
+            background: #000;
+            padding: 20px 16px;
+            border-radius: 6px;
+        }
+        .panel-top-line {
+            font-size: 22px;
+            margin-bottom: 16px;
+            text-align: right;
+        }
+        .attr-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+            font-size: 18px;
+        }
+        .attr-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .attr-icon {
+            width: 22px;
+            height: 22px;
+            background: #666;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 左上角状态栏 -->
+        <div class="status-left">
+            <div class="hp-bar-wrap">
+                <div class="hp-bar">80/80</div>
+            </div>
+            <div class="exp-bar-wrap">
+                <div class="exp-bar">117/515</div>
+            </div>
+            <div class="coin-line">
+                <div class="coin-icon"></div>
+                <span>388</span>
+            </div>
+        </div>
+
+        <!-- 顶部中间标题 -->
+        <div class="title-center">
+            <div class="stage-text">第16关</div>
+            <div class="upgrade-text">升级!!!</div>
+        </div>
+
+        <!-- 右侧属性面板 -->
+        <div class="attr-panel">
+            <div class="panel-top-line">剩余升级点数: 1</div>
+            <div class="panel-top-line">目前等级 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 16</div>
+
+            <div class="attr-item">
+                <div class="attr-left">
+                    <div class="attr-icon"></div>
+                    <span>生命上限</span>
+                </div>
+                <span>80</span>
+            </div>
+            <div class="attr-item">
+                <div class="attr-left">
+                    <div class="attr-icon"></div>
+                    <span>伤害加成</span>
+                </div>
+                <span>13</span>
+            </div>
+            <div class="attr-item">
+                <div class="attr-left">
+                    <div class="attr-icon"></div>
+                    <span>移动速度</span>
+                </div>
+                <span>220</span>
+            </div>
+            <div class="attr-item">
+                <div class="attr-left">
+                    <div class="attr-icon"></div>
+                    <span>攻速加成</span>
+                </div>
+                <span>5</span>
+            </div>
+            <div class="attr-item">
+                <div class="attr-left">
+                    <div class="attr-icon"></div>
+                    <span>暴击率</span>
+                </div>
+                <span>4</span>
+            </div>
+            <div class="attr-item">
+                <div class="attr-left">
+                    <div class="attr-icon"></div>
+                    <span>闪避率</span>
+                </div>
+                <span>2</span>
+            </div>
+            <div class="attr-item">
+                <div class="attr-left">
+                    <div class="attr-icon"></div>
+                    <span>生命吸取</span>
+                </div>
+                <span>6</span>
+            </div>
+            <div class="attr-item">
+                <div class="attr-left">
+                    <div class="attr-icon"></div>
+                    <span>工程学</span>
+                </div>
+                <span>0</span>
+            </div>
+            <div class="attr-item">
+                <div class="attr-left">
+                    <div class="attr-icon"></div>
+                    <span>经济学</span>
+                </div>
+                <span>0</span>
+            </div>
+            <div class="attr-item">
+                <div class="attr-left">
+                    <div class="attr-icon"></div>
+                    <span>幸运值</span>
+                </div>
+                <span>0</span>
+            </div>
+            <div class="attr-item">
+                <div class="attr-left">
+                    <div class="attr-icon"></div>
+                    <span>经验加成</span>
+                </div>
+                <span>0</span>
+            </div>
+        </div>
+
+        <!-- 中间天赋三卡片 -->
+        <div class="talent-wrap">
+            <!-- 天赋1 智慧 -->
+            <div class="talent-card">
+                <div class="card-icon"></div>
+                <div class="card-name">智慧</div>
+                <div class="card-desc">经验获得 +5%</div>
+                <button class="select-btn">选择</button>
+            </div>
+            <!-- 天赋2 最大生命 -->
+            <div class="talent-card">
+                <div class="card-icon heart"></div>
+                <div class="card-name">最大生命</div>
+                <div class="card-desc">最大生命 +6</div>
+                <button class="select-btn">选择</button>
+            </div>
+            <!-- 天赋3 智慧 -->
+            <div class="talent-card">
+                <div class="card-icon"></div>
+                <div class="card-name">智慧</div>
+                <div class="card-desc">经验获得 +5%</div>
+                <button class="select-btn">选择</button>
+            </div>
+        </div>
+
+        <!-- 刷新按钮 -->
+        <div class="refresh-wrap">
+            <button class="refresh-btn">
+                <div class="play-icon"></div>
+                刷新
+            </button>
+        </div>
+    </div>
+</body>
+</html>

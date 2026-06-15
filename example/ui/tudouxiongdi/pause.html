@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>游戏结算面板</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", sans-serif;
+        }
+        body {
+            background: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .panel-wrap {
+            width: 1657px;
+            height: 960px;
+            background: #222222;
+            color: #fff;
+            position: relative;
+            padding-top: 40px;
+        }
+        .top-title {
+            text-align: center;
+            font-size: 36px;
+            margin-bottom: 30px;
+        }
+        .top-title span {
+            margin: 0 20px;
+        }
+        .main-content {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 20px;
+            padding: 0 20px;
+        }
+        /* 左侧属性栏 */
+        .attr-box {
+            background: #111;
+            padding: 20px 15px;
+        }
+        .box-title {
+            text-align: center;
+            font-size: 32px;
+            margin-bottom: 25px;
+        }
+        .attr-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 12px 0;
+            font-size: 18px;
+        }
+        .attr-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .val-green {
+            color: #4cd964;
+        }
+        .val-red {
+            color: #ff3b30;
+        }
+        /* 右侧武器+道具区域 */
+        .right-area {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        .weapon-section, .item-section {
+        }
+        .grid-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 15px;
+        }
+        .weapon-item {
+            width: 80px;
+            height: 80px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+        .weapon-red {
+            background: #702020;
+            border: 2px solid #a83232;
+        }
+        .weapon-purple {
+            background: #402060;
+            border: 2px solid #7838b8;
+        }
+        .item-card {
+            width: 72px;
+            height: 72px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            font-size: 28px;
+        }
+        .item-black { background: #1a1a1a; border: 2px solid #444; }
+        .item-purple { background: #2c1840; border: 2px solid #7038b0; }
+        .item-blue { background: #152840; border: 2px solid #3078c0; }
+        .item-gray { background: #333; border: 2px solid #777; }
+        .stack-tag {
+            position: absolute;
+            bottom: 2px;
+            right: 4px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        /* 底部按钮 */
+        .bottom-buttons {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .btn {
+            width: 320px;
+            height: 60px;
+            font-size: 26px;
+            border: none;
+            cursor: default;
+        }
+        .btn-dark { background: #111; color: #fff; }
+        .btn-light { background: #ddd; color: #111; }
+    </style>
+</head>
+<body>
+<div class="panel-wrap">
+    <div class="top-title">
+        <span>胜利</span>
+        <span>危险5</span>
+    </div>
+    <div class="main-content">
+        <!-- 左侧属性面板 -->
+        <div class="attr-box">
+            <div class="box-title">属性</div>
+            <div class="attr-item">
+                <div class="attr-label">💚 最大生命值</div>
+                <div class="val-green">77</div>
+            </div>
+            <div class="attr-item">
+                <div class="attr-label">💚 生命再生</div>
+                <div class="val-green">15</div>
+            </div>
+            <div class="attr-item">
+                <div class="attr-label">❤️ %生命窃取</div>
+                <div class="val-green">6</div>
+            </div>
+            <div class="attr-item">
+                <div class="attr-label">👊 %伤害</div>
+                <div class="val-green">85</div>
+            </div>
+            <div class="attr-item">
+                <div class="attr-label">⚔️ 近战伤害</div>
+                <div class="val-green">23</div>
+            </div>
+            <div class="attr-item">
+                <div class="attr-label">🏹 远程伤害</div>
+                <div class="val-red">-49</div>
+            </div>
+            <div class="attr-item">
+                <div class="attr-label">🔥 属性伤害</div>
+                <div class="val-red">-5</div>
+            </div>
+            <div class="attr-item">
+                <div class="attr-label">⏱️ %攻击速度</div>
+                <div class="val-red">-11</div>
+            </div>
+            <div class="attr-item">
+                <div class="attr-label">⭐ %暴击率</div>
+                <div class="val-red">-8</div>
+            </div>
+            <div class="attr-item">
+                <div class="attr-label">🔧 工程学</div>
+                <div class="val-red">-2</div>
+            </div>
+            <div class="attr-item">
+                <div class="attr-label">📡 范围</div>
+                <div class="val-red">-62</div>
+            </div>
+            <div class="attr-item">
+                <div class="attr-label">🛡️ 护甲</div>
+                <div class="val-green">32</div>
+            </div>
+            <div class="attr-item">
+                <div class="attr-label">💨 %闪避</div>
+                <div class="val-green">55</div>
+            </div>
+            <div class="attr-item">
+                <div class="attr-label">👟 %速度</div>
+                <div class="val-green">52</div>
+            </div>
+            <div class="attr-item">
+                <div class="attr-label">🍀 幸运</div>
+                <div class="val-green">26</div>
+            </div>
+            <div class="attr-item">
+                <div class="attr-label">💰 收获</div>
+                <div class="val-green">92</div>
+            </div>
+        </div>
+
+        <!-- 右侧武器+道具 -->
+        <div class="right-area">
+            <!-- 武器区域 -->
+            <div class="weapon-section">
+                <div class="box-title" style="text-align:left;">武器</div>
+                <div class="grid-row">
+                    <div class="weapon-item weapon-red">👊</div>
+                    <div class="weapon-item weapon-red">👊</div>
+                    <div class="weapon-item weapon-purple">👊</div>
+                    <div class="weapon-item weapon-red">👊</div>
+                    <div class="weapon-item weapon-purple">👊</div>
+                    <div class="weapon-item weapon-red">👊</div>
+                </div>
+            </div>
+
+            <!-- 道具区域 -->
+            <div class="item-section">
+                <div class="box-title" style="text-align:left;">道具</div>
+                <!-- 第一行道具 -->
+                <div class="grid-row">
+                    <div class="item-card item-black">👕</div>
+                    <div class="item-card item-purple">▶️</div>
+                    <div class="item-card item-purple">👾</div>
+                    <div class="item-card item-purple">🐗<span class="stack-tag">X2</span></div>
+                    <div class="item-card item-purple">🔫</div>
+                    <div class="item-card item-purple">🔺</div>
+                    <div class="item-card item-purple">🌾</div>
+                    <div class="item-card item-blue">💍<span class="stack-tag">X2</span></div>
+                    <div class="item-card item-black">🪽</div>
+                    <div class="item-card item-black">🎩<span class="stack-tag">X2</span></div>
+                </div>
+                <!-- 第二行道具 -->
+                <div class="grid-row" style="margin-top:10px;">
+                    <div class="item-card item-black">🌱</div>
+                    <div class="item-card item-black">🎩</div>
+                    <div class="item-card item-purple">🧙‍♂️</div>
+                    <div class="item-card item-purple">🐒</div>
+                    <div class="item-card item-blue">🦑</div>
+                    <div class="item-card item-blue">👞</div>
+                    <div class="item-card item-blue">🦴</div>
+                    <div class="item-card item-blue">🥾</div>
+                    <div class="item-card item-black">🍅</div>
+                    <div class="item-card item-black">🌙<span class="stack-tag">X3</span></div>
+                </div>
+                <!-- 第三行道具 -->
+                <div class="grid-row" style="margin-top:10px;">
+                    <div class="item-card item-blue">🥋</div>
+                    <div class="item-card item-blue">📜<span class="stack-tag">X3</span></div>
+                    <div class="item-card item-purple">🦋</div>
+                    <div class="item-card item-purple">🦎</div>
+                    <div class="item-card item-purple">👁️<span class="stack-tag">X2</span></div>
+                    <div class="item-card item-purple">🗡️<span class="stack-tag">X2</span></div>
+                    <div class="item-card item-blue">🥤</div>
+                    <div class="item-card item-black">💀</div>
+                    <div class="item-card item-gray">🥚</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部按钮 -->
+    <div class="bottom-buttons">
+        <button class="btn btn-dark">重试</button>
+        <button class="btn btn-light">新游戏</button>
+        <button class="btn btn-dark">返回主菜单</button>
+    </div>
+</div>
+</body>
+</html>

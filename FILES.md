@@ -569,6 +569,27 @@
 - 面板左：三列装备区（左侧装备列3槽+中间角色立绘面板+右侧装备列3槽），装备槽带 label 标注类型
 - 面板右：UIGrid 5x5 背包网格，支持分页（Prev/Next 按钮+页码显示）
 
+### [example/ui/tudouxiongdi/levelup.gd](file:///Users/dengronghui/project/gamekit/core/example/ui/tudouxiongdi/levelup.gd)
+- 土豆兄弟升级弹窗界面 GML 控制器（继承 GdGmlScene），严格匹配 levelup.html 设计稿
+- 2D像素风生存割草游戏升级选择界面，纯深灰背景(#333333)+扁平化极简黑色卡片UI
+- 左上角状态栏：红色HP进度条(#c91919,40px高,文字在条内右侧)、绿色经验进度条(#24c442,32px高)、绿色圆形金币图标(#48d05e)+数字388
+- 顶部居中：关卡标题"第16关"(42px)+"升级!!!"(60px)
+- 中部3个横向并排黑色圆角天赋卡片(240px宽,padding 20px)，卡片图标用Panel色块(白色#eee/绿色#48d05e,60x60)，描述文字绿色(#48d05e)，选择按钮白底黑字
+- 卡片下方刷新按钮：黑底白字+白色播放图标Panel(26x26)
+- 右侧竖版黑色属性面板(240px宽)：剩余升级点数+目前等级(右对齐22px)+11项属性列表(灰色图标#666 22x22+属性名+数值)
+- 右下角浅灰色"九游"水印
+- 使用 `<theme>` 块覆盖 cartoon 主题为暗色调配色，ProgressBar 使用 class 样式设置 fill/track 颜色
+
+### [example/ui/tudouxiongdi/pause.gd](file:///Users/dengronghui/project/gamekit/core/example/ui/tudouxiongdi/pause.gd)
+- 土豆兄弟暂停/结算面板 GML 控制器（继承 GdGmlScene），严格匹配 pause.html 设计稿
+- 1657x960px 暗色主题面板(#222222)，左侧属性栏(260px,#111111)+右侧武器/物品区+底部按钮
+- 顶部标题栏：居中"胜利"(36px,绿色#4cd964)+"危险5"(24px,红色#ff3b30)
+- 左侧属性面板(PanelContainer class="attr-box")：16项属性行(HBoxContainer)，标签+数值，绿色(#4cd964)/红色(#ff3b30)数值
+- 右侧武器区：6个80x80 Panel色块，红色(#ff3b30)/紫色(#af52cc)边框，emoji图标
+- 右侧物品区：3行HBoxContainer，每行10个72x72 Panel色块，黑/紫/蓝/灰色边框，部分带堆叠标签(X2/X3)
+- 底部3个按钮(320x60)：深色(#333333)/浅色(#555555)背景，白色文字
+- 堆叠标签定位：anchor_left/right/top/bottom + offset 实现右下角定位
+
 ## 构建脚本
 
 ### [build.sh](file:///Users/dengronghui/project/gamekit/core/build.sh)
@@ -756,3 +777,5 @@
 | 2026-06-15 | rust/src/state/gdcore.rs | 添加global_nodes字典和add_global_node/get_global_node/remove_global_node方法 |
 | 2026-06-15 | rust/src/manager/config_manager.rs | 新建GdConfigManager通用配置管理器，读取res://game_config.json，内置scenes属性，通过GDCORE注册 |
 | 2026-06-15 | rust/src/manager/gd_scene_root.rs | 添加load_scenes_from_config从GdConfigManager加载场景配置 |
+| 2026-06-15 | example/ui/tudouxiongdi/levelup.gd | 重写升级弹窗界面严格匹配HTML设计稿；builder.rs新增ProgressBar fill颜色支持(background→fill,track→background)和theme默认值 |
+| 2026-06-15 | example/ui/tudouxiongdi/pause.gd | 新建土豆兄弟暂停/结算面板GML控制器，严格匹配pause.html设计稿 |
