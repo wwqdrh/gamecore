@@ -1,0 +1,42 @@
+[gd_scene format=3 uid="uid://duc0tta3ay8qk"]
+
+[ext_resource type="Script" uid="uid://bd8dw113rk8n1" path="res://example/map/basic/index.gd" id="1_sy8ye"]
+[ext_resource type="PackedScene" uid="uid://dvhwwrsubb770" path="res://addons/gamecore/map/basic/index.tscn" id="2_n27g2"]
+
+[node name="Index" type="Node2D" unique_id=1702649595]
+script = ExtResource("1_sy8ye")
+
+[node name="Map" parent="." unique_id=423861288 instance=ExtResource("2_n27g2")]
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=1886750455]
+layer = 10
+
+[node name="MarginContainer" type="MarginContainer" parent="UI" unique_id=102376791]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/MarginContainer" unique_id=1852013560]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/MarginContainer/VBoxContainer" unique_id=980437235]
+layout_mode = 2
+
+[node name="BtnRegenerate" type="Button" parent="UI/MarginContainer/VBoxContainer/HBoxContainer" unique_id=887225342]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+text = "随机生成地图"
+
+[node name="BtnClear" type="Button" parent="UI/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1383538095]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "清除地图"
+
+[node name="SeedLabel" type="Label" parent="UI/MarginContainer/VBoxContainer" unique_id=1401108024]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Seed: 42"

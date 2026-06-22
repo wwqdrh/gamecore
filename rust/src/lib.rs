@@ -17,6 +17,7 @@ mod dialog;
 mod ui;
 mod anim;
 mod manager;
+mod map;
 
 #[doc(hidden)]
 pub enum OnFinishCall {

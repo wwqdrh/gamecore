@@ -421,6 +421,28 @@
 - 方法：initial, update, update_all, patch_item, get_at, get_meta_value, allbind_signal
 - Tooltip 自动绑定：tooltip 属性指定 Tooltip 节点名，鼠标进入/离开子节点时自动从 __item_data meta 读取完整数据字典调用 update_data，兼容内置 title/content label
 
+### [rust/src/map/mod.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/map/mod.rs)
+- 双网格地图模块入口，导出 dual_grid/gd_map_basic 子模块
+- 公开导出：TerrainType, TerrainThresholds, PropConfig, PropPlacement, DualGrid, place_props, GdMapBasic
+
+### [rust/src/map/dual_grid.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/map/dual_grid.rs)
+- **双网格算法核心逻辑**（纯 Rust，不依赖 Godot API）
+- TerrainType 枚举：Null/Grass/Dirt/Sand/Water
+- CornerState 枚举：Null/NotNull，用于四角组合
+- 16种四角组合查找表：build_tile_lookup()，映射 CornerKey → atlas_coord
+- DualGrid 结构体：世界网格存储、显示格子计算、受影响位置计算、噪声地形生成
+- TerrainThresholds 结构体：地形阈值配置（grass_max/dirt_max/sand_max/water_max），默认值 0.1/0.16/0.24/1.0
+- PropConfig 结构体：资源配置（名称/source_id/alternative_tile/概率/允许地形/噪声范围）
+- place_props 函数：根据噪声值和概率在地图上放置资源
+
+### [rust/src/map/gd_map_basic.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/map/gd_map_basic.rs)
+- **GdMapBasic** 类（继承 TileMapLayer）
+- 双网格地图节点，内部持有4个显示层 TileMapLayer 子节点和1个资源层子节点
+- 资源配置：通过 JSON 文件或字符串加载，支持地形 atlas_coord/source_id 和显示层 source_id
+- 方法：load_resource_config, load_resource_config_from_string, set_tile, set_terrain, erase_tile, get_terrain_type, generate_map, generate_map_with_resources, clear_map, set_thresholds, get_used_terrain_cells, refresh_display, get_terrain_name, add_terrain_config, add_prop_config, set_prop_tile_set
+- 噪声生成：内置 Perlin-like 噪声算法，支持种子可复现
+- 资源放置：根据噪声值和概率自动放置资源（Flower/Tree 等）
+
 ### [vendor/gamedialog/Cargo.toml](file:///Users/dengronghui/project/gamekit/core/vendor/gamedialog/Cargo.toml)
 - gamedialog crate 配置，纯 Rust 对话脚本引擎库
 

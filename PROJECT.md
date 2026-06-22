@@ -118,6 +118,17 @@ core 是一个基于 Rust 的 Godot 4 GDExtension 项目，使用 gdext 库与 G
     - GDScript 继承 GdGmlScene 时需在 `_ready()` 中调用 `load_gml()` 加载 GML（gdext 的 `IControl::ready()` 不可从 GDScript `super._ready()` 调用）
     - 测试用例：12 个解析器测试（含列表标签、错误处理、深度嵌套等）
 
+11. **双网格地图系统**（map 模块）
+    - 基于双网格算法的地形过渡地图系统，继承 TileMapLayer
+    - GdMapBasic：双网格地图节点（继承 TileMapLayer），内部持有4个显示层 TileMapLayer 子节点
+    - 双网格算法：世界网格存储逻辑地形类型，显示网格根据四角组合查表得到过渡贴图，支持16种四角组合
+    - 地形类型：Grass/Dirt/Sand/Water，支持自定义阈值
+    - 资源配置：通过 JSON 文件配置地形资源集，GDScript 侧可灵活指定 TileSet 中的 source_id 和 atlas_coord
+    - 动态修改：支持运行时动态添加地形配置和资源配置
+    - 噪声生成：内置 Perlin-like 噪声算法，支持种子可复现的随机地图生成
+    - 资源放置：根据噪声值和概率在地图上自动放置资源（Flower/Tree 等）
+    - 方法：load_resource_config、load_resource_config_from_string、set_tile、set_terrain、erase_tile、get_terrain_type、generate_map、generate_map_with_resources、clear_map、set_thresholds、refresh_display、add_terrain_config、add_prop_config、set_prop_tile_set
+
 ## 项目结构
 
 ```
@@ -199,6 +210,10 @@ core/
 │           ├── ui_hlist.rs # GdUIHList水平列表节点
 │           ├── ui_vlist.rs # GdUIVList垂直列表节点
 │           └── ui_grid.rs  # GdUIGrid网格列表节点
+│       └── map/              # 双网格地图模块
+│           ├── mod.rs      # 模块入口
+│           ├── dual_grid.rs # 双网格算法核心逻辑
+│           └── gd_map_basic.rs # GdMapBasic 地图节点
 ├── example/
 │   ├── test_from_gd_script.gd  # GDScript 测试脚本
 │   ├── fish_procedural_anim.gd # 鱼的程序化动画示例
@@ -1287,6 +1302,114 @@ gml.connect_signals(self)
 
 # 查找子节点
 var btn = gml.find_node("StartBtn")
+```
+
+## GdMapBasic API
+
+GdMapBasic 是一个继承 TileMapLayer 的 Godot 类，实现双网格地形过渡地图系统。在 GDScript 中通过 `GdMapBasic.new()` 创建实例并添加到场景树。
+
+### 导出属性
+
+| 属性 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `can_set_tile` | bool | true | 是否允许设置格子 |
+
+### 方法
+
+| 方法 | 说明 |
+|------|------|
+| `load_resource_config(json_path: String) -> bool` | 从 JSON 文件加载资源集配置 |
+| `load_resource_config_from_string(json_string: String) -> bool` | 从 JSON 字符串加载资源集配置 |
+| `set_tile(coords: Vector2i, atlas_coords: Vector2i)` | 设置世界格子（通过 atlas_coords）并自动更新显示层 |
+| `set_terrain(coords: Vector2i, terrain_type: int)` | 通过地形类型设置格子（1=Grass, 2=Dirt, 3=Sand, 4=Water） |
+| `erase_tile(coords: Vector2i)` | 擦除世界格子并更新显示层 |
+| `get_terrain_type(coords: Vector2i) -> int` | 获取指定坐标的地形类型 |
+| `generate_map(width: int, height: int, seed: int) -> void` | 使用噪声生成随机地图 |
+| `generate_map_with_resources(width: int, height: int, seed: int) -> void` | 生成带资源的随机地图 |
+| `clear_map()` | 清除整个地图 |
+| `set_thresholds(grass_max: float, dirt_max: float, sand_max: float, water_max: float)` | 设置地形阈值参数 |
+| `get_used_terrain_cells() -> PackedVector2Array` | 获取已使用的世界格子列表 |
+| `refresh_display()` | 刷新所有显示格子 |
+| `get_terrain_name(terrain_type: int) -> String` | 获取地形类型名称 |
+| `add_terrain_config(terrain_name: String, atlas_x: int, atlas_y: int, world_source_id: int, display_source_id: int)` | 动态添加地形配置 |
+| `add_prop_config(name: String, source_id: int, alternative_tile: int, probability: float, allowed_terrains: PackedStringArray, noise_min: float, noise_max: float)` | 动态添加资源配置 |
+| `set_prop_tile_set(tile_set: TileSet)` | 设置资源层 TileSet |
+
+### 资源配置 JSON 格式
+
+```json
+{
+  "terrains": {
+    "grass": { "atlas_coord": [0, 0], "source_id": 0 },
+    "dirt": { "atlas_coord": [1, 0], "source_id": 0 },
+    "sand": { "atlas_coord": [2, 0], "source_id": 0 },
+    "water": { "atlas_coord": [3, 0], "source_id": 0 }
+  },
+  "display_layers": {
+    "grass": { "source_id": 2 },
+    "dirt": { "source_id": 5 },
+    "sand": { "source_id": 3 },
+    "water": { "source_id": 4 }
+  },
+  "props": [
+    { "name": "flower1", "source_id": 1, "alternative_tile": 1,
+      "probability": 0.08, "allowed_terrains": ["grass"],
+      "noise_range": [-0.3, 0.0] },
+    { "name": "flower2", "source_id": 1, "alternative_tile": 2,
+      "probability": 0.08, "allowed_terrains": ["grass"],
+      "noise_range": [-0.3, 0.0] },
+    { "name": "tree", "source_id": 1, "alternative_tile": 3,
+      "probability": 0.05, "allowed_terrains": ["grass"],
+      "noise_range": [-0.3, 0.0] }
+  ]
+}
+```
+
+### GDScript 使用示例
+
+```gdscript
+# 创建 GdMapBasic 节点
+var map = GdMapBasic.new()
+add_child(map)
+
+# 加载资源配置
+map.load_resource_config("res://map_config.json")
+
+# 或从字符串加载
+var config_json = JSON.stringify({
+    "terrains": {
+        "grass": {"atlas_coord": [0, 0], "source_id": 0},
+        "dirt": {"atlas_coord": [1, 0], "source_id": 0}
+    },
+    "display_layers": {
+        "grass": {"source_id": 2},
+        "dirt": {"source_id": 5}
+    },
+    "props": [
+        {"name": "flower1", "source_id": 1, "alternative_tile": 1,
+         "probability": 0.08, "allowed_terrains": ["grass"],
+         "noise_range": [-0.3, 0.0]}
+    ]
+})
+map.load_resource_config_from_string(config_json)
+
+# 生成随机地图（64x64，种子42）
+map.generate_map_with_resources(64, 64, 42)
+
+# 设置地形
+map.set_terrain(Vector2i(5, 5), 1)  # 设置为草地
+
+# 查询地形
+var terrain = map.get_terrain_type(Vector2i(5, 5))
+
+# 动态添加地形配置
+map.add_terrain_config("snow", 4, 0, 0, 6)
+
+# 动态添加资源配置
+map.add_prop_config("rock", 1, 4, 0.03, PackedStringArray(["dirt", "sand"]), -0.3, 0.0)
+
+# 清除地图
+map.clear_map()
 ```
 
 ## 开发命令
