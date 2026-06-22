@@ -1,13 +1,12 @@
-// GdMapBasic - 双网格地图节点（继承 Node2D）
+// GdMapBasic - 双网格地图节点（继承 TileMapLayer）
 // 提供双网格地形过渡、噪声地图生成、资源配置等封装方法
 // 支持动态注册地形，不再硬编码地形类型
-// 内部结构：Node2D (GdMapBasic)
-//   ├── WorldLayer (TileMapLayer, 隐藏, 仅存储逻辑数据)
-//   ├── DisplayLayer_xxx (TileMapLayer, 半格偏移, 每种地形一个)
+// 内部结构：TileMapLayer (GdMapBasic, 自身即世界层, self_modulate 透明)
+//   ├── DisplayLayer_xxx (TileMapLayer, 半格偏移, 每种地形一个, 支持 priority 排序)
 //   └── PropLayer (TileMapLayer)
 
 use godot::prelude::*;
-use godot::classes::{INode2D, Node2D, TileMapLayer, TileSet};
+use godot::classes::{ITileMapLayer, TileMapLayer, TileSet};
 use godot::builtin::Vector2i;
 
 use std::collections::HashMap;
@@ -22,16 +21,25 @@ use super::dual_grid::{
 struct ResourceConfig {
     /// 地形配置：地形名 → (atlas_coord, source_id)
     terrain_atlas: HashMap<String, (Vector2i, i32)>,
-    /// 显示层配置：地形名 → source_id
-    display_source_ids: HashMap<String, i32>,
+    /// 显示层配置：地形名 → (source_id, priority)
+    display_layers: HashMap<String, DisplayLayerConfig>,
     /// 资源配置列表
     props: Vec<PropConfig>,
 }
 
+/// 显示层配置
+#[derive(Debug, Clone)]
+struct DisplayLayerConfig {
+    /// TileSet source_id
+    source_id: i32,
+    /// 渲染优先级，数值越大越在上面
+    priority: i32,
+}
+
 #[derive(GodotClass)]
-#[class(base = Node2D)]
+#[class(base = TileMapLayer)]
 pub struct GdMapBasic {
-    base: Base<Node2D>,
+    base: Base<TileMapLayer>,
 
     /// 双网格算法核心
     dual_grid: DualGrid,
@@ -41,9 +49,6 @@ pub struct GdMapBasic {
 
     /// 资源配置
     resource_config: Option<ResourceConfig>,
-
-    /// 世界层（隐藏，仅存储逻辑数据）
-    world_layer: Option<Gd<TileMapLayer>>,
 
     /// 显示层子节点引用
     display_layers: Vec<Gd<TileMapLayer>>,
@@ -60,14 +65,13 @@ pub struct GdMapBasic {
 }
 
 #[godot_api]
-impl INode2D for GdMapBasic {
-    fn init(base: Base<Node2D>) -> Self {
+impl ITileMapLayer for GdMapBasic {
+    fn init(base: Base<TileMapLayer>) -> Self {
         Self {
             base,
             dual_grid: DualGrid::new(),
             terrain_registry: TerrainRegistry::new(),
             resource_config: None,
-            world_layer: None,
             display_layers: Vec::new(),
             prop_layer: None,
             can_set_tile: true,
@@ -76,7 +80,9 @@ impl INode2D for GdMapBasic {
     }
 
     fn ready(&mut self) {
-        self.ensure_world_layer();
+        // 自身即世界层，设置 self_modulate 为透明（alpha=0），不使用 hide()
+        // 这样编辑器中仍然可以看到图集配置，且不影响子节点渲染
+        self.base_mut().set_self_modulate(Color::from_rgba(1.0, 1.0, 1.0, 0.0));
         self.ensure_display_layers();
     }
 }
@@ -179,15 +185,13 @@ impl GdMapBasic {
         let terrain = self.atlas_to_terrain(atlas);
         self.dual_grid.set_world_tile(pos, terrain);
 
-        // 设置世界层格子（隐藏层，仅存储逻辑数据）
+        // 设置世界层格子（自身即世界层，self_modulate 透明）
         let source_id = self.get_terrain_source_id(terrain);
-        if let Some(ref mut layer) = self.world_layer {
-            layer
-                .set_cell_ex(coords)
-                .source_id(source_id)
-                .atlas_coords(atlas_coords)
-                .done();
-        }
+        self.base_mut()
+            .set_cell_ex(coords)
+            .source_id(source_id)
+            .atlas_coords(atlas_coords)
+            .done();
 
         self.update_display_for_world_pos(pos);
     }
@@ -210,13 +214,11 @@ impl GdMapBasic {
         self.dual_grid.set_world_tile(pos, terrain);
 
         let (atlas, source_id) = self.get_terrain_atlas_and_source(&terrain);
-        if let Some(ref mut layer) = self.world_layer {
-            layer
-                .set_cell_ex(coords)
-                .source_id(source_id)
-                .atlas_coords(Vector2i::new(atlas.0, atlas.1))
-                .done();
-        }
+        self.base_mut()
+            .set_cell_ex(coords)
+            .source_id(source_id)
+            .atlas_coords(Vector2i::new(atlas.0, atlas.1))
+            .done();
 
         self.update_display_for_world_pos(pos);
     }
@@ -226,9 +228,7 @@ impl GdMapBasic {
     fn erase_tile(&mut self, coords: Vector2i) {
         let pos = (coords.x, coords.y);
         self.dual_grid.erase_world_tile(pos);
-        if let Some(ref mut layer) = self.world_layer {
-            layer.erase_cell(coords);
-        }
+        self.base_mut().erase_cell(coords);
         self.update_display_for_world_pos(pos);
     }
 
@@ -254,13 +254,11 @@ impl GdMapBasic {
         for (pos, terrain) in &terrains {
             self.dual_grid.set_world_tile(*pos, *terrain);
             let (atlas, source_id) = self.get_terrain_atlas_and_source(terrain);
-            if let Some(ref mut layer) = self.world_layer {
-                layer
-                    .set_cell_ex(Vector2i::new(pos.0, pos.1))
-                    .source_id(source_id)
-                    .atlas_coords(Vector2i::new(atlas.0, atlas.1))
-                    .done();
-            }
+            self.base_mut()
+                .set_cell_ex(Vector2i::new(pos.0, pos.1))
+                .source_id(source_id)
+                .atlas_coords(Vector2i::new(atlas.0, atlas.1))
+                .done();
         }
 
         self.refresh_all_display_tiles();
@@ -280,27 +278,67 @@ impl GdMapBasic {
         for (pos, terrain) in &terrains {
             self.dual_grid.set_world_tile(*pos, *terrain);
             let (atlas, source_id) = self.get_terrain_atlas_and_source(terrain);
-            if let Some(ref mut layer) = self.world_layer {
-                layer
-                    .set_cell_ex(Vector2i::new(pos.0, pos.1))
-                    .source_id(source_id)
-                    .atlas_coords(Vector2i::new(atlas.0, atlas.1))
-                    .done();
-            }
+            self.base_mut()
+                .set_cell_ex(Vector2i::new(pos.0, pos.1))
+                .source_id(source_id)
+                .atlas_coords(Vector2i::new(atlas.0, atlas.1))
+                .done();
         }
 
         self.refresh_all_display_tiles();
         self.place_props_from_config(&noise_values, &terrains, seed);
     }
 
+    /// 从自身 TileMapLayer 上已画的地块生成地图（编辑器手动绘制模式）
+    /// 读取自身已放置的格子，通过 atlas_coords 反查地形类型，填充双网格并刷新显示层
+    /// 同时根据噪声值和概率放置资源
+    #[func]
+    fn generate_map_from_tiles(&mut self) {
+        self.sync_tile_set_to_layers();
+
+        let used_cells: Array<Vector2i> = self.base().get_used_cells();
+
+        // 收集已画地块的地形信息
+        let mut terrains: HashMap<(i32, i32), TerrainType> = HashMap::new();
+        let mut max_x = 0i32;
+        let mut max_y = 0i32;
+
+        for cell in used_cells.iter_shared() {
+            let atlas_coords = self.base().get_cell_atlas_coords(cell);
+            let atlas = (atlas_coords.x, atlas_coords.y);
+            let terrain = self.atlas_to_terrain(atlas);
+
+            if terrain.is_null() {
+                continue;
+            }
+
+            let pos = (cell.x, cell.y);
+            self.dual_grid.set_world_tile(pos, terrain);
+            terrains.insert(pos, terrain);
+            max_x = max_x.max(cell.x);
+            max_y = max_y.max(cell.y);
+        }
+
+        self.refresh_all_display_tiles();
+
+        // 放置资源：根据地块范围生成噪声值
+        if !terrains.is_empty() {
+            let width = max_x + 1;
+            let height = max_y + 1;
+            let noise_values = self.generate_noise_values(width, height, 0);
+            self.place_props_from_config(&noise_values, &terrains, 0);
+        }
+    }
+
     /// 清除整个地图
     #[func]
     fn clear_map(&mut self) {
-        // 清除世界层
-        if let Some(ref mut layer) = self.world_layer {
-            let used: Array<Vector2i> = layer.get_used_cells();
+        // 清除世界层（自身）
+        {
+            let mut base = self.base_mut();
+            let used: Array<Vector2i> = base.get_used_cells();
             for cell in used.iter_shared() {
-                layer.erase_cell(cell);
+                base.erase_cell(cell);
             }
         }
 
@@ -369,6 +407,7 @@ impl GdMapBasic {
         atlas_y: i32,
         world_source_id: i32,
         display_source_id: i32,
+        priority: i32,
     ) {
         // 确保地形已注册
         self.terrain_registry.register(&terrain_name);
@@ -376,7 +415,7 @@ impl GdMapBasic {
         if self.resource_config.is_none() {
             self.resource_config = Some(ResourceConfig {
                 terrain_atlas: HashMap::new(),
-                display_source_ids: HashMap::new(),
+                display_layers: HashMap::new(),
                 props: Vec::new(),
             });
         }
@@ -386,7 +425,10 @@ impl GdMapBasic {
                 terrain_name.clone(),
                 (Vector2i::new(atlas_x, atlas_y), world_source_id),
             );
-            config.display_source_ids.insert(terrain_name, display_source_id);
+            config.display_layers.insert(terrain_name, DisplayLayerConfig {
+                source_id: display_source_id,
+                priority,
+            });
         }
 
         self.ensure_display_layers();
@@ -407,7 +449,7 @@ impl GdMapBasic {
         if self.resource_config.is_none() {
             self.resource_config = Some(ResourceConfig {
                 terrain_atlas: HashMap::new(),
-                display_source_ids: HashMap::new(),
+                display_layers: HashMap::new(),
                 props: Vec::new(),
             });
         }
@@ -432,13 +474,10 @@ impl GdMapBasic {
         }
     }
 
-    /// 设置 TileSet（世界层和显示层共用）
+    /// 设置 TileSet（自身即世界层，和显示层共用）
     #[func]
     fn set_tile_set(&mut self, tile_set: Gd<TileSet>) {
-        self.ensure_world_layer();
-        if let Some(ref mut layer) = self.world_layer {
-            layer.set_tile_set(&tile_set);
-        }
+        self.base_mut().set_tile_set(&tile_set);
         self.sync_tile_set_to_layers();
     }
 }
@@ -451,7 +490,7 @@ impl GdMapBasic {
         registry: &mut TerrainRegistry,
     ) -> Result<ResourceConfig, String> {
         let mut terrain_atlas = HashMap::new();
-        let mut display_source_ids = HashMap::new();
+        let mut display_layers = HashMap::new();
         let mut props = Vec::new();
 
         // 解析 terrains
@@ -480,14 +519,21 @@ impl GdMapBasic {
             }
         }
 
-        // 解析 display_layers
+        // 解析 display_layers（支持 priority 字段）
         if let Some(layers) = json.get("display_layers").and_then(|l| l.as_object()) {
             for (name, value) in layers {
                 let source_id = value
                     .get("source_id")
                     .and_then(|v| v.as_i64())
                     .unwrap_or(0) as i32;
-                display_source_ids.insert(name.clone(), source_id);
+                let priority = value
+                    .get("priority")
+                    .and_then(|v| v.as_i64())
+                    .unwrap_or(0) as i32;
+                display_layers.insert(name.clone(), DisplayLayerConfig {
+                    source_id,
+                    priority,
+                });
             }
         }
 
@@ -546,47 +592,51 @@ impl GdMapBasic {
 
         Ok(ResourceConfig {
             terrain_atlas,
-            display_source_ids,
+            display_layers,
             props,
         })
     }
 
-    /// 确保世界层子节点已创建（隐藏，仅存储逻辑数据）
-    fn ensure_world_layer(&mut self) {
-        if self.world_layer.is_some() {
-            return;
-        }
-
-        let mut layer = TileMapLayer::new_alloc();
-        layer.set_name("WorldLayer");
-        layer.set_z_index(-1);
-        layer.set_visible(false);
-        self.base_mut().add_child(&layer);
-        self.world_layer = Some(layer);
-    }
-
-    /// 确保显示层子节点已创建
+    /// 确保显示层子节点已创建（按 priority 排序，低 priority 在下）
     fn ensure_display_layers(&mut self) {
-        let terrain_names: Vec<String> = if let Some(ref config) = self.resource_config {
-            config.display_source_ids.keys().cloned().collect()
+        // 收集显示层配置并按 priority 排序
+        let sorted_layers: Vec<(String, DisplayLayerConfig)> = if let Some(ref config) = self.resource_config {
+            let mut entries: Vec<(String, DisplayLayerConfig)> = config.display_layers
+                .iter()
+                .map(|(name, cfg)| (name.clone(), cfg.clone()))
+                .collect();
+            entries.sort_by_key(|(_, cfg)| cfg.priority);
+            entries
         } else {
             self.terrain_registry.get_all_names()
+                .into_iter()
+                .enumerate()
+                .map(|(i, name)| (name, DisplayLayerConfig {
+                    source_id: 0,
+                    priority: i as i32,
+                }))
+                .collect()
         };
 
         let existing_count = self.display_layers.len();
-        if existing_count >= terrain_names.len() {
+        if existing_count >= sorted_layers.len() {
+            // 即使数量足够，也需要更新 z_index
+            for (i, layer) in self.display_layers.iter().enumerate() {
+                let mut layer = layer.clone();
+                layer.set_z_index(i as i32);
+            }
             return;
         }
 
         // 收集需要创建的层信息，避免借用冲突
-        let new_layers: Vec<(usize, String)> = terrain_names
+        let new_layers: Vec<(usize, String, i32)> = sorted_layers
             .iter()
             .enumerate()
             .skip(existing_count)
-            .map(|(i, name)| (i, name.clone()))
+            .map(|(i, (name, cfg))| (i, name.clone(), cfg.priority))
             .collect();
 
-        for (i, name) in new_layers {
+        for (i, name, _priority) in new_layers {
             let mut layer = TileMapLayer::new_alloc();
             layer.set_name(&format!("DisplayLayer_{}", name));
             layer.set_z_index(i as i32);
@@ -614,10 +664,10 @@ impl GdMapBasic {
         self.sync_tile_set_to_layers();
     }
 
-    /// 将世界层的 TileSet 同步到所有显示层和资源层
+    /// 将自身的 TileSet 同步到所有显示层和资源层
     /// 同时设置显示层的半格偏移（双网格系统中显示格子在四个世界格子的交叉点上）
     fn sync_tile_set_to_layers(&mut self) {
-        let tile_set = self.world_layer.as_ref().and_then(|l| l.get_tile_set());
+        let tile_set = self.base().get_tile_set();
         if let Some(ref ts) = tile_set {
             let tile_size = ts.get_tile_size();
             let half_x = tile_size.x as f32 / 2.0;
@@ -679,7 +729,7 @@ impl GdMapBasic {
     fn get_display_source_id(&self, terrain: TerrainType) -> i32 {
         if let Some(ref config) = self.resource_config {
             if let Some(name) = self.terrain_registry.get_name(terrain) {
-                return config.display_source_ids.get(name).copied().unwrap_or(0);
+                return config.display_layers.get(name).map(|cfg| cfg.source_id).unwrap_or(0);
             }
         }
         0
@@ -694,27 +744,67 @@ impl GdMapBasic {
     }
 
     /// 更新单个显示格子
+    /// 低优先级图层（z_index 较小）在边界处额外渲染1格邻居，避免连接处露出背景
     fn update_single_display_tile(&mut self, display_pos: (i32, i32)) {
-        let terrain_names = self.terrain_registry.get_all_names();
+        let sorted_layers = self.get_sorted_display_layer_info();
 
-        for (i, name) in terrain_names.iter().enumerate() {
-            if i >= self.display_layers.len() {
+        for (i, _name, is_low_priority) in &sorted_layers {
+            if *i >= self.display_layers.len() {
                 break;
             }
 
             let terrain_id = self.terrain_registry
-                .get_id(name)
+                .get_id(_name)
                 .unwrap_or(TerrainType::NULL);
 
-            let atlas = self.dual_grid.calculate_display_tile(display_pos, terrain_id);
             let source_id = self.get_display_source_id(terrain_id);
 
-            let mut layer = self.display_layers[i].clone();
+            // 渲染主格子
+            let atlas = self.dual_grid.calculate_display_tile(display_pos, terrain_id);
+            let mut layer = self.display_layers[*i].clone();
             layer
                 .set_cell_ex(Vector2i::new(display_pos.0, display_pos.1))
                 .source_id(source_id)
                 .atlas_coords(Vector2i::new(atlas.0, atlas.1))
                 .done();
+
+            // 低优先级图层额外渲染周围1格邻居，避免边界漏出背景
+            if *is_low_priority {
+                for neighbor in &[(0, -1), (0, 1), (-1, 0), (1, 0)] {
+                    let neighbor_pos = (display_pos.0 + neighbor.0, display_pos.1 + neighbor.1);
+                    let neighbor_atlas = self.dual_grid.calculate_display_tile(neighbor_pos, terrain_id);
+                    layer
+                        .set_cell_ex(Vector2i::new(neighbor_pos.0, neighbor_pos.1))
+                        .source_id(source_id)
+                        .atlas_coords(Vector2i::new(neighbor_atlas.0, neighbor_atlas.1))
+                        .done();
+                }
+            }
+        }
+    }
+
+    /// 获取按 priority 排序的显示层信息：(display_layers索引, 地形名, 是否低优先级)
+    /// 低优先级定义：priority 低于最高 priority 的图层
+    fn get_sorted_display_layer_info(&self) -> Vec<(usize, String, bool)> {
+        if let Some(ref config) = self.resource_config {
+            let mut entries: Vec<(String, i32)> = config.display_layers
+                .iter()
+                .map(|(name, cfg)| (name.clone(), cfg.priority))
+                .collect();
+            entries.sort_by_key(|(_, p)| *p);
+
+            let max_priority = entries.iter().map(|(_, p)| *p).max().unwrap_or(0);
+
+            entries.into_iter()
+                .enumerate()
+                .map(|(i, (name, priority))| (i, name, priority < max_priority))
+                .collect()
+        } else {
+            self.terrain_registry.get_all_names()
+                .into_iter()
+                .enumerate()
+                .map(|(i, name)| (i, name, i > 0)) // 无配置时，第一个最低，其余低优先级
+                .collect()
         }
     }
 

@@ -119,15 +119,17 @@ core 是一个基于 Rust 的 Godot 4 GDExtension 项目，使用 gdext 库与 G
     - 测试用例：12 个解析器测试（含列表标签、错误处理、深度嵌套等）
 
 11. **双网格地图系统**（map 模块）
-    - 基于双网格算法的地形过渡地图系统，继承 TileMapLayer
-    - GdMapBasic：双网格地图节点（继承 TileMapLayer），内部持有4个显示层 TileMapLayer 子节点
+    - 基于双网格算法的地形过渡地图系统，GdMapBasic 继承 TileMapLayer（自身即世界层，通过 self_modulate 透明隐藏）
+    - GdMapBasic：双网格地图节点（继承 TileMapLayer），自身存储逻辑数据（self_modulate alpha=0 透明），内部持有显示层 TileMapLayer 子节点
     - 双网格算法：世界网格存储逻辑地形类型，显示网格根据四角组合查表得到过渡贴图，支持16种四角组合
-    - 地形类型：Grass/Dirt/Sand/Water，支持自定义阈值
+    - 地形类型：动态注册，支持自定义阈值
     - 资源配置：通过 JSON 文件配置地形资源集，GDScript 侧可灵活指定 TileSet 中的 source_id 和 atlas_coord
+    - 显示层优先级：display_layers 配置中支持 priority 字段，控制渲染层级（数值越大越在上面），低优先级图层在边界处额外渲染1格邻居避免露出背景
     - 动态修改：支持运行时动态添加地形配置和资源配置
     - 噪声生成：内置 Perlin-like 噪声算法，支持种子可复现的随机地图生成
     - 资源放置：根据噪声值和概率在地图上自动放置资源（Flower/Tree 等）
-    - 方法：load_resource_config、load_resource_config_from_string、set_tile、set_terrain、erase_tile、get_terrain_type、generate_map、generate_map_with_resources、clear_map、set_thresholds、refresh_display、add_terrain_config、add_prop_config、set_prop_tile_set
+    - 编辑器支持：继承 TileMapLayer 后可在编辑器中直接配置 TileSet 图集
+    - 方法：load_resource_config、load_resource_config_from_string、set_tile、set_terrain、erase_tile、get_terrain_type、generate_map、generate_map_with_resources、clear_map、set_thresholds、refresh_display、add_terrain_config、add_prop_config、set_tile_set
 
 ## 项目结构
 
@@ -1306,7 +1308,7 @@ var btn = gml.find_node("StartBtn")
 
 ## GdMapBasic API
 
-GdMapBasic 是一个继承 TileMapLayer 的 Godot 类，实现双网格地形过渡地图系统。在 GDScript 中通过 `GdMapBasic.new()` 创建实例并添加到场景树。
+GdMapBasic 是一个继承 TileMapLayer 的 Godot 类，实现双网格地形过渡地图系统。自身即世界层（通过 self_modulate alpha=0 透明隐藏），在 GDScript 中通过 `GdMapBasic.new()` 创建实例并添加到场景树。编辑器中可直接在节点上配置 TileSet 图集。
 
 ### 导出属性
 
@@ -1321,19 +1323,18 @@ GdMapBasic 是一个继承 TileMapLayer 的 Godot 类，实现双网格地形过
 | `load_resource_config(json_path: String) -> bool` | 从 JSON 文件加载资源集配置 |
 | `load_resource_config_from_string(json_string: String) -> bool` | 从 JSON 字符串加载资源集配置 |
 | `set_tile(coords: Vector2i, atlas_coords: Vector2i)` | 设置世界格子（通过 atlas_coords）并自动更新显示层 |
-| `set_terrain(coords: Vector2i, terrain_type: int)` | 通过地形类型设置格子（1=Grass, 2=Dirt, 3=Sand, 4=Water） |
+| `set_terrain(coords: Vector2i, terrain_type: int)` | 通过地形类型设置格子 |
 | `erase_tile(coords: Vector2i)` | 擦除世界格子并更新显示层 |
 | `get_terrain_type(coords: Vector2i) -> int` | 获取指定坐标的地形类型 |
 | `generate_map(width: int, height: int, seed: int) -> void` | 使用噪声生成随机地图 |
 | `generate_map_with_resources(width: int, height: int, seed: int) -> void` | 生成带资源的随机地图 |
 | `clear_map()` | 清除整个地图 |
-| `set_thresholds(grass_max: float, dirt_max: float, sand_max: float, water_max: float)` | 设置地形阈值参数 |
+| `set_thresholds(terrain_names: PackedStringArray, threshold_maxs: PackedFloat64Array)` | 设置地形阈值参数 |
 | `get_used_terrain_cells() -> PackedVector2Array` | 获取已使用的世界格子列表 |
 | `refresh_display()` | 刷新所有显示格子 |
-| `get_terrain_name(terrain_type: int) -> String` | 获取地形类型名称 |
-| `add_terrain_config(terrain_name: String, atlas_x: int, atlas_y: int, world_source_id: int, display_source_id: int)` | 动态添加地形配置 |
+| `add_terrain_config(terrain_name: String, atlas_x: int, atlas_y: int, world_source_id: int, display_source_id: int, priority: int)` | 动态添加地形配置（priority 控制显示层级） |
 | `add_prop_config(name: String, source_id: int, alternative_tile: int, probability: float, allowed_terrains: PackedStringArray, noise_min: float, noise_max: float)` | 动态添加资源配置 |
-| `set_prop_tile_set(tile_set: TileSet)` | 设置资源层 TileSet |
+| `set_tile_set(tile_set: TileSet)` | 设置 TileSet（自身和显示层共用） |
 
 ### 资源配置 JSON 格式
 
@@ -1346,10 +1347,10 @@ GdMapBasic 是一个继承 TileMapLayer 的 Godot 类，实现双网格地形过
     "water": { "atlas_coord": [3, 0], "source_id": 0 }
   },
   "display_layers": {
-    "grass": { "source_id": 2 },
-    "dirt": { "source_id": 5 },
-    "sand": { "source_id": 3 },
-    "water": { "source_id": 4 }
+    "grass": { "source_id": 2, "priority": 0 },
+    "dirt": { "source_id": 5, "priority": 1 },
+    "sand": { "source_id": 3, "priority": 2 },
+    "water": { "source_id": 4, "priority": 3 }
   },
   "props": [
     { "name": "flower1", "source_id": 1, "alternative_tile": 1,
@@ -1368,7 +1369,7 @@ GdMapBasic 是一个继承 TileMapLayer 的 Godot 类，实现双网格地形过
 ### GDScript 使用示例
 
 ```gdscript
-# 创建 GdMapBasic 节点
+# 创建 GdMapBasic 节点（继承 TileMapLayer，编辑器中可直接配置 TileSet）
 var map = GdMapBasic.new()
 add_child(map)
 
@@ -1382,8 +1383,8 @@ var config_json = JSON.stringify({
         "dirt": {"atlas_coord": [1, 0], "source_id": 0}
     },
     "display_layers": {
-        "grass": {"source_id": 2},
-        "dirt": {"source_id": 5}
+        "grass": {"source_id": 2, "priority": 0},
+        "dirt": {"source_id": 5, "priority": 1}
     },
     "props": [
         {"name": "flower1", "source_id": 1, "alternative_tile": 1,
@@ -1402,8 +1403,8 @@ map.set_terrain(Vector2i(5, 5), 1)  # 设置为草地
 # 查询地形
 var terrain = map.get_terrain_type(Vector2i(5, 5))
 
-# 动态添加地形配置
-map.add_terrain_config("snow", 4, 0, 0, 6)
+# 动态添加地形配置（priority 控制显示层级，数值越大越在上面）
+map.add_terrain_config("snow", 4, 0, 0, 6, 4)
 
 # 动态添加资源配置
 map.add_prop_config("rock", 1, 4, 0.03, PackedStringArray(["dirt", "sand"]), -0.3, 0.0)

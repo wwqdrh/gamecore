@@ -18,6 +18,8 @@ extends Resource
 ## 噪声阈值上限（噪声值 < 此值时为该地形，按 terrains 数组顺序匹配）
 @export var threshold_max: float = 1.0
 
+@export var priority: int = 1
+
 static func build(data: Dictionary) -> TerrainConfig:
 	var res = TerrainConfig.new()
 	

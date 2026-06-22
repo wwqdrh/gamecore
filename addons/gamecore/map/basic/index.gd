@@ -6,9 +6,6 @@ extends GdMapBasic
 @export var map_height: int = 64
 ## 随机种子（0 为随机）
 @export var map_seed: int = 42
-
-## TileSet 资源（优先使用此字段）
-@export var tile_set: TileSet = null
 ## 外部 TileSet 资源路径（tile_set 为空时使用此路径加载）
 @export var external_tile_set_path: String = ""
 
@@ -20,19 +17,20 @@ extends GdMapBasic
 
 func _ready() -> void:
 	# 加载 TileSet：优先使用直接引用，否则从外部路径加载
-	var ts := _resolve_tile_set()
-	if ts == null:
-		push_error("GdMapBasicDefault: 无法获取 TileSet，请配置 tile_set 或 external_tile_set_path")
-		return
-	set_tile_set(ts)
+	#var ts := _resolve_tile_set()
+	#if ts == null:
+		#push_error("GdMapBasicDefault: 无法获取 TileSet，请配置 tile_set 或 external_tile_set_path")
+		#return
+	#set_tile_set(ts)
 
 	# 注册地形并配置资源
 	_setup_terrains()
 	_setup_props()
 	_setup_thresholds()
 
-	# 生成带资源的随机地图
-	_generate_map()
+	generate_map_from_tiles()
+	## 生成带资源的随机地图
+	#_generate_map()
 
 
 func generate_map_with_seed(new_seed: int) -> void:
@@ -56,7 +54,6 @@ func _resolve_tile_set() -> TileSet:
 		push_warning("GdMapBasicDefault: 无法从路径加载 TileSet: %s" % external_tile_set_path)
 	return null
 
-
 ## 遍历 terrains 数组，注册地形并添加配置
 func _setup_terrains() -> void:
 	for terrain: TerrainConfig in terrains:
@@ -69,6 +66,7 @@ func _setup_terrains() -> void:
 			terrain.atlas_coord.y,
 			terrain.source_id,
 			terrain.display_source_id,
+			terrain.priority
 		)
 
 

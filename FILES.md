@@ -437,9 +437,10 @@
 
 ### [rust/src/map/gd_map_basic.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/map/gd_map_basic.rs)
 - **GdMapBasic** 类（继承 TileMapLayer）
-- 双网格地图节点，内部持有4个显示层 TileMapLayer 子节点和1个资源层子节点
-- 资源配置：通过 JSON 文件或字符串加载，支持地形 atlas_coord/source_id 和显示层 source_id
-- 方法：load_resource_config, load_resource_config_from_string, set_tile, set_terrain, erase_tile, get_terrain_type, generate_map, generate_map_with_resources, clear_map, set_thresholds, get_used_terrain_cells, refresh_display, get_terrain_name, add_terrain_config, add_prop_config, set_prop_tile_set
+- 双网格地图节点，自身即世界层（self_modulate alpha=0 透明隐藏），内部持有显示层 TileMapLayer 子节点和1个资源层子节点
+- 显示层支持 priority 优先级配置，低优先级图层在边界处额外渲染1格邻居避免露出背景
+- 资源配置：通过 JSON 文件或字符串加载，支持地形 atlas_coord/source_id 和显示层 source_id/priority
+- 方法：load_resource_config, load_resource_config_from_string, set_tile, set_terrain, erase_tile, get_terrain_type, generate_map, generate_map_with_resources, clear_map, set_thresholds, get_used_terrain_cells, refresh_display, get_terrain_name, add_terrain_config, add_prop_config, set_tile_set
 - 噪声生成：内置 Perlin-like 噪声算法，支持种子可复现
 - 资源放置：根据噪声值和概率自动放置资源（Flower/Tree 等）
 

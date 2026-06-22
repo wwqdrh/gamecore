@@ -10,6 +10,7 @@ script = ExtResource("3_wguvv")
 terrain_name = "grass"
 display_source_id = 2
 threshold_max = 0.1
+priority = 2
 metadata/_custom_type_script = "uid://b1px5ydnq5w6b"
 
 [sub_resource type="Resource" id="Resource_wguvv"]
@@ -23,16 +24,18 @@ metadata/_custom_type_script = "uid://b1px5ydnq5w6b"
 [sub_resource type="Resource" id="Resource_amkqc"]
 script = ExtResource("3_wguvv")
 terrain_name = "sand"
-atlas_coord = Vector2i(2, 0)
+atlas_coord = Vector2i(3, 0)
 display_source_id = 3
 threshold_max = 0.24
+priority = 3
 metadata/_custom_type_script = "uid://b1px5ydnq5w6b"
 
 [sub_resource type="Resource" id="Resource_i84jq"]
 script = ExtResource("3_wguvv")
 terrain_name = "water"
-atlas_coord = Vector2i(3, 0)
+atlas_coord = Vector2i(2, 0)
 display_source_id = 4
+priority = 4
 metadata/_custom_type_script = "uid://b1px5ydnq5w6b"
 
 [sub_resource type="Resource" id="Resource_qmnnp"]
@@ -41,7 +44,6 @@ prop_name = "flower1"
 source_id = 1
 alternative_tile = 1
 probability = 0.08
-allowed_terrains = ["grass"]
 metadata/_custom_type_script = "uid://ylu6d2kviumd"
 
 [sub_resource type="Resource" id="Resource_qhc1f"]
@@ -50,7 +52,6 @@ prop_name = "flower2"
 source_id = 1
 alternative_tile = 2
 probability = 0.08
-allowed_terrains = ["grass"]
 metadata/_custom_type_script = "uid://ylu6d2kviumd"
 
 [sub_resource type="Resource" id="Resource_abxxe"]
@@ -59,11 +60,10 @@ prop_name = "tree"
 source_id = 1
 alternative_tile = 2
 probability = 0.08
-allowed_terrains = ["grass"]
 metadata/_custom_type_script = "uid://ylu6d2kviumd"
 
 [node name="Index" type="GdMapBasic" unique_id=423861288]
-script = ExtResource("1_4eou8")
 tile_set = ExtResource("2_ghwsg")
-terrains = Array[Object]([SubResource("Resource_e703n"), SubResource("Resource_wguvv"), SubResource("Resource_amkqc"), SubResource("Resource_i84jq")])
-props = Array[Object]([SubResource("Resource_qmnnp"), SubResource("Resource_qhc1f"), SubResource("Resource_abxxe")])
+script = ExtResource("1_4eou8")
+terrains = Array[ExtResource("3_wguvv")]([SubResource("Resource_e703n"), SubResource("Resource_wguvv"), SubResource("Resource_amkqc"), SubResource("Resource_i84jq")])
+props = Array[ExtResource("4_e703n")]([SubResource("Resource_qmnnp"), SubResource("Resource_qhc1f"), SubResource("Resource_abxxe")])
