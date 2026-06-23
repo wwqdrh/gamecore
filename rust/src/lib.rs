@@ -18,7 +18,6 @@ mod ui;
 mod anim;
 mod manager;
 mod map;
-mod tilemap;
 
 #[doc(hidden)]
 pub enum OnFinishCall {

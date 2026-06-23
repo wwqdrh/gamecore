@@ -1693,3 +1693,6 @@ cargo build -p core --release
 | 2026-06-14 | rust/src/ui/builder.rs | 新增 GML 动画属性：anim_enter（入场方向 bottom/top/left/right）、anim_hover（悬停缩放倍数）、anim_click（点击反馈），存为 __anim_* 元数据 |
 | 2026-06-14 | rust/src/ui/ui_gml_scene.rs | 新增 setup_animations 方法：构建完成后扫描 __anim_* 元数据，自动配置入场动画（滑入+淡入，同级兄弟自动 stagger）、悬停动画（放大+提亮）、点击反馈（缩小弹回）；NinePatchRect 按钮通过 __click_handler 子节点检测交互 |
 | 2026-06-14 | example/ui/scene_title.gd | 菜单按钮使用 GML 动画属性 anim_enter/anim_hover/anim_click，移除 GDScript 动画代码 |
+| 2026-06-24 | rust/src/tilemap/display_layer.rs | 修复重入 panic：update_properties 移除 parent.call("get_display_material")，改为接收 material 参数；setup/setup_public/update_properties_public 签名同步更新 |
+| 2026-06-24 | rust/src/tilemap/display.rs | 新增 display_material 字段和 set_display_material_public 方法；setup/setup_public 接收 material 参数；create_layers/update_properties 向 DisplayLayer 传递材质 |
+| 2026-06-24 | rust/src/tilemap/tile_map_dual.rs | ready 传入 display_material 到 Display::setup_public；update_cells/_changed 调用 update_public 前通过 set_display_material_public 同步材质 |

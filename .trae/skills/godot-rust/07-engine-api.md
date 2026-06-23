@@ -66,6 +66,29 @@ let local_pos = self.base().map_to_local(cell);
 let global_pos = self.base().to_global(local_pos);
 ```
 
+## 内部子节点（InternalMode）
+
+在编辑器中，`add_child` 添加的子节点默认会被保存到场景文件，重新加载场景时会出现重复节点。使用 `INTERNAL_MODE_BACK` 可以避免此问题。
+
+```rust
+use godot::classes::node::InternalMode;
+
+// 添加内部子节点（不会被保存到场景文件，也不会出现在编辑器节点树中）
+self.base_mut().add_child_ex(&child_node)
+    .internal(InternalMode::BACK)
+    .done();
+
+// 获取包含内部子节点的子节点列表
+let children = self.base().get_children_ex()
+    .include_internal(true)
+    .done();
+```
+
+**易错点**：
+- `get_children()` 默认不包含内部子节点，需要用 `get_children_ex().include_internal(true).done()` 获取
+- `InternalMode::BACK` 将子节点添加到子节点列表末尾，`InternalMode::FRONT` 添加到开头
+- 内部子节点不会随父节点被复制（duplicate），适合用于工具脚本中动态创建的辅助节点
+
 ## set_process 控制
 
 ```rust

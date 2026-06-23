@@ -83,6 +83,77 @@ impl ITileMapLayer for TileMapDual {
 
 **易错点**：`#[func]` 方法定义的是自定义方法（向 Godot 暴露但不自动调用），虚方法必须在 trait impl 块中重写才能被引擎自动调用。
 
+## update_cells 虚方法与编辑器实时更新
+
+**重要**：`update_cells` 虚方法在 gdext 0.5.3 中**可以正常被引擎调用**（编辑器放置图块、undo/redo 时触发）。如果编辑器中无法实时显示，通常是以下原因：
+
+1. **初始化时序问题**：`call_deferred` 在子节点完全 ready 前执行，导致初始更新失败
+2. **子节点未使用 INTERNAL_MODE**：动态创建的子节点被保存到场景文件，重新加载时出现重复节点
+
+**解决方案**：
+
+1. 使用标志位 + `process` 实现下一帧初始更新（等价于 `await get_tree().process_frame`）
+2. 动态创建的子节点使用 `INTERNAL_MODE_BACK` 避免保存到场景文件
+3. 作为 fallback，编辑器模式下可启用双检查模式主动检测变化
+
+```rust
+// 双检查模式作为 fallback（不依赖 update_cells）
+let is_editor = Engine::singleton().is_editor_hint();
+let should_double_check = self.godot_4_3_compatibility || is_editor;
+
+if should_double_check && self.base().get_tile_set().is_some() {
+    let mut current_cells = TileCache::new();
+    let used_cells = self.base().get_used_cells();
+    current_cells.bind_mut().update_edited_public(self.base_mut().clone(), used_cells);
+    updated_cells = current_cells.bind().xor_public(self.get_cached_cells());
+}
+```
+
+**关键点**：
+- `update_cells` 虚方法在编辑器中正常工作，传入变化的格子坐标
+- 双检查模式作为 fallback，通过 `TileCache::xor` 主动发现变化
+- 初始化时序和 INTERNAL_MODE 是编辑器实时更新的关键
+
+## 编辑器实时更新模式
+
+GDScript 中 `await get_tree().process_frame` 在 gdext 中无法直接使用。替代方案：
+
+```rust
+// 方案：使用标志位在下一帧 process 中执行初始更新
+struct MyLayer {
+    needs_initial_update: bool,
+    // ...
+}
+
+impl ITileMapLayer for MyLayer {
+    fn ready(&mut self) {
+        // ...
+        if Engine::singleton().is_editor_hint() {
+            self.base_mut().set_process(true);
+            self.needs_initial_update = true;  // 标记需要初始更新
+        } else {
+            self.base_mut().set_process(false);
+            self.base_mut().call_deferred("_changed", &[]);  // 运行时直接延迟调用
+        }
+    }
+
+    fn process(&mut self, delta: f64) {
+        // 下一帧执行初始更新（对应 await get_tree().process_frame）
+        if self.needs_initial_update {
+            self.needs_initial_update = false;
+            self.base_mut().call_deferred("_changed", &[]);
+            return;
+        }
+        // ... 正常的 process 逻辑
+    }
+}
+```
+
+**关键点**：
+- `call_deferred` 在当前帧末尾执行，可能过早（子节点未完全初始化）
+- 使用标志位 + `process` 可以确保在下一帧执行，等价于 `await get_tree().process_frame`
+- 编辑器模式下 `set_process(true)` 是必须的，否则 `process` 不会被调用
+
 ## 属性复制模式
 
 从父节点复制属性到子节点的常见模式：

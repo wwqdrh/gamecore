@@ -62,3 +62,72 @@ fn ready(&mut self) {
 TileMapDual 使用两种机制协同工作：
 1. **虚方法 `update_cells`**：引擎在格子变化时自动调用，传入变化的坐标
 2. **`_process` 轮询 → `_changed`**：编辑器中定期更新 TileSetWatcher 和属性
+
+## 引用循环处理（RefCounted 对象）
+
+### 问题
+
+两个 RefCounted 对象互相持有 `Gd` 强引用会导致引用循环，Drop 时崩溃：
+
+```rust
+// ❌ 危险：循环引用
+struct TileSetWatcher {
+    cached_sids: HashMap<i32, Gd<AtlasWatcher>>,  // 持有 AtlasWatcher
+}
+struct AtlasWatcher {
+    parent: Option<Gd<TileSetWatcher>>,  // 持有 TileSetWatcher → 循环！
+}
+```
+
+Drop 时的崩溃栈：
+```
+drop_in_place<TileSetWatcher>
+→ drop_in_place<HashMap<i32, Gd<AtlasWatcher>>>
+→ drop_in_place<Gd<AtlasWatcher>>  // 崩溃：use-after-free
+```
+
+### 解决方案：使用 InstanceId 弱引用
+
+```rust
+use godot::obj::InstanceId;
+
+struct AtlasWatcher {
+    // ✅ 使用 InstanceId 代替 Gd<TileSetWatcher>，打破循环
+    parent_id: Option<InstanceId>,
+}
+
+impl AtlasWatcher {
+    fn setup(&mut self, parent: Gd<TileSetWatcher>, ...) {
+        self.parent_id = Some(parent.instance_id());  // 只存 ID，不增加引用计数
+    }
+
+    /// 需要时通过 ID 查找父级（如果父级已释放则返回 None）
+    fn get_parent(&self) -> Option<Gd<TileSetWatcher>> {
+        let id = self.parent_id?;
+        Gd::try_from_instance_id(id).ok()
+    }
+}
+```
+
+**关键点**：
+- `Gd<T>` 会增加引用计数，`InstanceId` 不会
+- `Gd::try_from_instance_id(id)` 在对象已释放时返回 `None`
+- GDScript 的 GC 可以处理循环引用，但 Rust 的引用计数不行，必须手动打破
+
+## 编辑器渲染要求
+
+**所有需要在编辑器中显示的节点类必须添加 `tool` 属性**：
+
+```rust
+// ❌ 编辑器中不渲染
+#[derive(GodotClass)]
+#[class(base = TileMapLayer)]
+pub struct DisplayLayer { ... }
+
+// ✅ 编辑器中正常渲染
+#[derive(GodotClass)]
+#[class(base = TileMapLayer, tool)]
+pub struct DisplayLayer { ... }
+```
+
+**易错点**：父类有 `tool` 但子类没有，子类在编辑器中不会渲染。所有动态创建的显示节点都需要 `tool`。

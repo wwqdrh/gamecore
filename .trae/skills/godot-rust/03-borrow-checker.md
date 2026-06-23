@@ -78,3 +78,42 @@ fn update_properties(&mut self, mut parent: Gd<TileMapLayer>) {
     let material_var = parent.call("get_display_material", &[]);
 }
 ```
+
+## 虚方法/#[func] 重入 panic（重要！）
+
+当引擎调用虚方法（如 `update_cells`、`ready`）或 `#[func]` 方法时，godot-rust 会 `bind_mut()` 当前对象。如果在此方法内部通过 `call()` 调用同一对象的另一个 `#[func]` 方法，会触发 `Gd<T>::bind() failed, already bound` panic。
+
+```rust
+// 场景：TileMapDual 的虚方法 update_cells 被引擎调用（对象已被 bind_mut）
+fn update_cells(&mut self, coords: Array<Vector2i>, _forced: bool) {
+    // ... 内部调用 DisplayLayer::update_properties
+    // DisplayLayer 通过 parent.call("get_display_material") 调用 TileMapDual 的 #[func] 方法
+    // → 尝试再次 bind() TileMapDual → panic!
+}
+
+// 错误：在已绑定的对象上通过 call() 调用 #[func] getter
+fn update_properties(&mut self, mut parent: Gd<TileMapLayer>) {
+    // parent 实际是 TileMapDual，get_display_material 是其 #[func] 方法
+    let material_var = parent.call("get_display_material", &[]); // 重入 panic!
+}
+
+// 正确：通过参数传递数据，避免 call() 跨绑定边界
+fn update_properties(&mut self, mut parent: Gd<TileMapLayer>, material: Option<Gd<Material>>) {
+    // material 由调用方在 bind 作用域内直接读取字段后传入
+    base.call("set_material", &[material.to_variant()]);
+}
+
+// 调用方在 &mut self 作用域内直接读取字段并传递
+fn update_cells(&mut self, coords: Array<Vector2i>, _forced: bool) {
+    let Some(mut display) = self.display.clone() else { return };
+    // 直接读 self 字段，无需 call()
+    display.bind_mut().set_display_material_public(self.display_material.clone());
+    display.bind_mut().update_public(variants);
+}
+```
+
+**规则**：在虚方法或 `#[func]` 方法内部，不要通过 `call()` 调用同一 GodotClass 的其他 `#[func]` 方法。改为：
+1. 直接读取 `self` 字段（在同一 bind 作用域内安全）
+2. 通过参数将数据传递给子节点/其他对象
+
+**注意**：`base.get_xxx()` / `base.set_xxx()` 等引擎内置方法不经过 Rust bind，可以安全调用。只有自定义 `#[func]` 方法通过 `call()` 调用时会触发 bind。
