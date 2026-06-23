@@ -353,10 +353,12 @@ pub fn place_props(
             }
 
             for prop in prop_configs {
-                // 检查该坐标的任一地形是否允许放置此资源
-                let terrain_allowed = coord_terrains
-                    .iter()
-                    .any(|t| prop.allowed_terrains.contains(t));
+                // 检查该坐标的所有地形是否都允许放置此资源
+                // 若坐标有多个地形，任一地形不在 allowed_terrains 中则不放置
+                let terrain_allowed = !coord_terrains.is_empty()
+                    && coord_terrains
+                        .iter()
+                        .all(|t| prop.allowed_terrains.contains(t));
                 if !terrain_allowed {
                     continue;
                 }
