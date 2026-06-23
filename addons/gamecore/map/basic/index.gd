@@ -16,21 +16,12 @@ extends GdMapBasic
 @export var props: Array[MapPropConfig] = []
 
 func _ready() -> void:
-	# 加载 TileSet：优先使用直接引用，否则从外部路径加载
-	#var ts := _resolve_tile_set()
-	#if ts == null:
-		#push_error("GdMapBasicDefault: 无法获取 TileSet，请配置 tile_set 或 external_tile_set_path")
-		#return
-	#set_tile_set(ts)
-
 	# 注册地形并配置资源
 	_setup_terrains()
 	_setup_props()
 	_setup_thresholds()
 
 	generate_map_from_tiles()
-	## 生成带资源的随机地图
-	#_generate_map()
 
 
 func generate_map_with_seed(new_seed: int) -> void:
@@ -62,11 +53,7 @@ func _setup_terrains() -> void:
 		register_terrain(terrain.terrain_name)
 		add_terrain_config(
 			terrain.terrain_name,
-			terrain.atlas_coord.x,
-			terrain.atlas_coord.y,
-			terrain.source_id,
-			terrain.display_source_id,
-			terrain.priority
+			terrain.display_source_id
 		)
 
 

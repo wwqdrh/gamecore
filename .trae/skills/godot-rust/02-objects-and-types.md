@@ -32,6 +32,62 @@ for c in child.iter_shared() {
 }
 ```
 
+## 扫描子节点并按名称分类（Node2D 管理子节点模式）
+
+当 Node2D 类需要管理场景文件中预定义的子节点时，通过 `get_children()` + `try_cast()` + 节点名匹配：
+
+```rust
+fn scan_child_layers(&mut self) {
+    self.display_layers.clear();
+    self.prop_layer = None;
+
+    let children = self.base().get_children();
+    for child in children.iter_shared() {
+        if let Ok(layer) = child.clone().try_cast::<TileMapLayer>() {
+            let name = layer.get_name().to_string();
+            if name == "PropLayer" {
+                self.prop_layer = Some(layer);
+            } else {
+                self.display_layers.push(layer);
+            }
+        }
+    }
+}
+```
+
+**关键点**：
+- `self.base().get_children()` 返回 `Array<Node>`，需通过 `iter_shared()` 遍历
+- `try_cast::<T>()` 消费所有权，必须先 `clone()` 子节点引用
+- `get_name()` 返回 `StringName`，需 `.to_string()` 转为 Rust `String`
+- 此模式适用于"场景文件定义子节点 + Rust 代码管理"的架构
+
+## 批量同步属性到子节点（call() + Variant clone）
+
+当需要将一个属性同步到多个子节点时，注意 `Variant` 在循环中会被 move：
+
+```rust
+fn sync_tile_set_to_layers(&mut self) {
+    let Some(ref ts) = self.tile_set else { return };
+    let ts_var = ts.to_variant();
+
+    for layer in &self.display_layers {
+        let mut layer = layer.clone();
+        // ts_var 在循环中被 move，需要 clone
+        layer.call("set_tile_set", &[ts_var.clone()]);
+    }
+
+    if let Some(ref mut layer) = self.prop_layer {
+        // 最后一次使用，无需 clone
+        layer.call("set_tile_set", &[ts_var]);
+    }
+}
+```
+
+**关键点**：
+- `Variant` 不是 `Copy`，在循环中重复使用需要 `.clone()`
+- 最后一次使用时无需 clone
+- `call("set_tile_set", &[variant])` 用于绕过 ByValue/ByOption 类型不匹配（见下方）
+
 ## call() 动态调用
 
 ```rust

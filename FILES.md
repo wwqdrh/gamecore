@@ -436,11 +436,12 @@
 - place_props 函数：根据噪声值和概率在地图上放置资源
 
 ### [rust/src/map/gd_map_basic.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/map/gd_map_basic.rs)
-- **GdMapBasic** 类（继承 TileMapLayer）
-- 双网格地图节点，自身即世界层（self_modulate alpha=0 透明隐藏），内部持有显示层 TileMapLayer 子节点和1个资源层子节点
-- 显示层支持 priority 优先级配置，低优先级图层在边界处额外渲染1格邻居避免露出背景
-- 资源配置：通过 JSON 文件或字符串加载，支持地形 atlas_coord/source_id 和显示层 source_id/priority
-- 方法：load_resource_config, load_resource_config_from_string, set_tile, set_terrain, erase_tile, get_terrain_type, generate_map, generate_map_with_resources, clear_map, set_thresholds, get_used_terrain_cells, refresh_display, get_terrain_name, add_terrain_config, add_prop_config, set_tile_set
+- **GdMapBasic** 类（继承 Node2D）
+- 双网格地图节点，通过导出属性 tile_set 配置 TileSet，场景文件中直接定义子 TileMapLayer 节点作为显示层（节点名对应地形名）和资源层（PropLayer）
+- 渲染顺序由子节点顺序决定（自下而上），无 priority 概念
+- 子层在编辑器中位于 (0,0) 可直接绘制占位符，运行时 generate_map_from_tiles 清除占位符、应用半格偏移并绘制过渡贴图
+- 资源配置：通过 JSON 文件或字符串加载，仅配置 display source_id（无 atlas_coord/world source_id/priority）
+- 方法：load_resource_config, load_resource_config_from_string, set_terrain, erase_tile, get_terrain_type, generate_map, generate_map_with_resources, generate_map_from_tiles, clear_map, set_thresholds, get_used_terrain_cells, refresh_display, add_terrain_config, add_prop_config, register_terrain, get_terrain_id, get_terrain_name, get_all_terrain_names
 - 噪声生成：内置 Perlin-like 噪声算法，支持种子可复现
 - 资源放置：根据噪声值和概率自动放置资源（Flower/Tree 等）
 
@@ -911,3 +912,9 @@
 | 2026-06-24 | PROJECT.md | 添加tilemap模块说明（第12节）和项目结构中的tilemap目录 |
 | 2026-06-24 | FILES.md | 添加tilemap模块文件索引和变更记录 |
 | 2026-06-24 | API.md | 新建API使用手册，包含TileMapDual模块API文档 |
+| 2026-06-24 | rust/src/map/gd_map_basic.rs | 重构 GdMapBasic：继承 Node2D，新增 tile_set 导出属性，移除世界层/priority/set_tile，新增 generate_map_from_tiles，add_terrain_config 签名简化 |
+| 2026-06-24 | addons/gamecore/map/basic/terrain_config.gd | 移除 atlas_coord/source_id/priority 字段 |
+| 2026-06-24 | addons/gamecore/map/basic/index.gd | 适配新 add_terrain_config 签名，tile_set 从 GdMapBasic 属性获取 |
+| 2026-06-24 | addons/gamecore/map/basic/index.tscn | 新增 5 个子 TileMapLayer 节点（dirt/grass/sand/water/PropLayer） |
+| 2026-06-24 | example/map/basic.tscn | 移除 tile_map_data（Node2D 不支持） |
+| 2026-06-24 | FILES.md | 更新 GdMapBasic 文件描述（Node2D 架构、新方法列表） |

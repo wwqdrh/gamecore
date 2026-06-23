@@ -81,6 +81,50 @@ fn get_value(&self) -> i32 { self.value }
 fn set_value(&mut self, v: i32) { self.value = v; }
 ```
 
+### 自定义 getter/setter（Option<Gd<T>> 类型）
+
+当属性是 `Option<Gd<T>>` 且需要在 setter 中触发副作用（如同步到子节点）时，使用 `#[var(get = ..., set = ...)]`：
+
+```rust
+#[derive(GodotClass)]
+#[class(base = Node2D, tool)]
+pub struct MapNode {
+    #[var(get = get_tile_set, set = set_tile_set)]
+    tile_set: Option<Gd<TileSet>>,
+    base: Base<Node2D>,
+}
+
+#[godot_api]
+impl INode2D for MapNode {
+    fn init(base: Base<Node2D>) -> Self {
+        Self {
+            base,
+            tile_set: None,
+        }
+    }
+}
+
+#[godot_api]
+impl MapNode {
+    #[func]
+    fn get_tile_set(&self) -> Option<Gd<TileSet>> {
+        self.tile_set.clone()  // Gd<T> 需要 clone
+    }
+
+    #[func]
+    fn set_tile_set(&mut self, value: Option<Gd<TileSet>>) {
+        self.tile_set = value;
+        // 触发副作用：同步到子节点
+        self.sync_tile_set_to_layers();
+    }
+}
+```
+
+**关键点**：
+- getter 返回 `Option<Gd<T>>` 时需要 `.clone()`（`Gd<T>` 是引用计数，clone 开销小）
+- setter 接收 `Option<Gd<TileSet>>`（ByOption 类型），可在其中触发副作用
+- `#[func]` 标注的 getter/setter 在 GDScript 中表现为普通属性访问
+
 ### 可选类型属性
 
 ```rust

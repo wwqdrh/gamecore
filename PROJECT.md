@@ -120,18 +120,18 @@ core 是一个基于 Rust 的 Godot 4 GDExtension 项目，使用 gdext 库与 G
 
 11. **双网格地图系统**（map 模块）
     - 基于双网格算法的地形过渡地图系统，支持方形网格和等距（Isometric）网格两种实现
-    - GdMapBasic：方形双网格地图节点（继承 TileMapLayer），自身存储逻辑数据（self_modulate alpha=0 透明），内部持有显示层 TileMapLayer 子节点
+    - GdMapBasic：方形双网格地图节点（继承 Node2D），通过导出属性 tile_set 配置 TileSet，场景文件中直接定义子 TileMapLayer 节点作为显示层和资源层（节点名对应地形名，如 dirt/grass/sand/water，PropLayer 为资源层）
     - GdMapIsometric：等距双网格地图节点（继承 TileMapLayer），显示层偏移为 (0, -0.5)*tile_size，启用 Y 排序，四角邻域为上/右/左/下方向
     - 双网格算法：世界网格存储逻辑地形类型，显示网格根据四角组合查表得到过渡贴图，支持16种四角组合
     - 等距与方形差异：等距网格的显示层偏移 (0,-0.5) vs 方形 (-0.5,-0.5)；等距四角方向 [top,right,left,bottom] vs 方形 [top_left,top_right,bottom_left,bottom_right]
     - 地形类型：动态注册，支持自定义阈值
-    - 资源配置：通过 JSON 文件配置地形资源集，GDScript 侧可灵活指定 TileSet 中的 source_id 和 atlas_coord
-    - 显示层优先级：display_layers 配置中支持 priority 字段，控制渲染层级（数值越大越在上面），低优先级图层在边界处额外渲染1格邻居避免露出背景
+    - 资源配置：通过 JSON 文件配置地形资源集，GDScript 侧指定 TileSet 中的 display source_id
+    - 显示层顺序：由场景文件中子节点顺序决定（自下而上渲染），无 priority 概念
+    - 编辑器绘制流程：子层在编辑器中位于 (0,0) 可直接绘制占位符，运行时调用 generate_map_from_tiles 清除占位符并应用半格偏移后绘制过渡贴图
     - 动态修改：支持运行时动态添加地形配置和资源配置
     - 噪声生成：内置 Perlin-like 噪声算法，支持种子可复现的随机地图生成
     - 资源放置：根据噪声值和概率在地图上自动放置资源（Flower/Tree 等）
-    - 编辑器支持：继承 TileMapLayer 后可在编辑器中直接配置 TileSet 图集
-    - 方法：load_resource_config、load_resource_config_from_string、set_tile、set_terrain、erase_tile、get_terrain_type、generate_map、generate_map_with_resources、clear_map、set_thresholds、refresh_display、add_terrain_config、add_prop_config、set_tile_set
+    - 方法：load_resource_config、load_resource_config_from_string、set_terrain、erase_tile、get_terrain_type、generate_map、generate_map_with_resources、generate_map_from_tiles、clear_map、set_thresholds、refresh_display、add_terrain_config、add_prop_config、register_terrain、get_terrain_id、get_terrain_name、get_all_terrain_names
 
 12. **TileMapDual 双网格地形过渡系统**（tilemap 模块）
     - 移植自 GDScript TileMapDual 插件 v5.0.2，保持 API 和属性与原版一致
@@ -1343,12 +1343,13 @@ var btn = gml.find_node("StartBtn")
 
 ## GdMapBasic API
 
-GdMapBasic 是一个继承 TileMapLayer 的 Godot 类，实现双网格地形过渡地图系统。自身即世界层（通过 self_modulate alpha=0 透明隐藏），在 GDScript 中通过 `GdMapBasic.new()` 创建实例并添加到场景树。编辑器中可直接在节点上配置 TileSet 图集。
+GdMapBasic 是一个继承 Node2D 的 Godot 类，实现双网格地形过渡地图系统。通过导出属性 `tile_set` 配置 TileSet，场景文件中直接定义子 TileMapLayer 节点作为显示层（节点名对应地形名）和资源层（节点名 `PropLayer`）。渲染顺序由子节点顺序决定（自下而上）。子层在编辑器中位于 (0,0) 可直接绘制占位符，运行时调用 `generate_map_from_tiles` 清除占位符、应用半格偏移并绘制过渡贴图。
 
 ### 导出属性
 
 | 属性 | 类型 | 默认值 | 说明 |
 |------|------|--------|------|
+| `tile_set` | TileSet | null | TileSet 资源，自动同步到所有子 TileMapLayer |
 | `can_set_tile` | bool | true | 是否允许设置格子 |
 
 ### 方法
@@ -1357,35 +1358,38 @@ GdMapBasic 是一个继承 TileMapLayer 的 Godot 类，实现双网格地形过
 |------|------|
 | `load_resource_config(json_path: String) -> bool` | 从 JSON 文件加载资源集配置 |
 | `load_resource_config_from_string(json_string: String) -> bool` | 从 JSON 字符串加载资源集配置 |
-| `set_tile(coords: Vector2i, atlas_coords: Vector2i)` | 设置世界格子（通过 atlas_coords）并自动更新显示层 |
-| `set_terrain(coords: Vector2i, terrain_type: int)` | 通过地形类型设置格子 |
+| `set_terrain(coords: Vector2i, terrain_type: int)` | 通过地形类型设置格子（更新 DualGrid + 刷新显示贴图） |
 | `erase_tile(coords: Vector2i)` | 擦除世界格子并更新显示层 |
 | `get_terrain_type(coords: Vector2i) -> int` | 获取指定坐标的地形类型 |
 | `generate_map(width: int, height: int, seed: int) -> void` | 使用噪声生成随机地图 |
 | `generate_map_with_resources(width: int, height: int, seed: int) -> void` | 生成带资源的随机地图 |
-| `clear_map()` | 清除整个地图 |
+| `generate_map_from_tiles() -> void` | 从子层占位符生成地图（清除占位符 + 应用半格偏移 + 绘制过渡贴图 + 放置资源） |
+| `clear_map()` | 清除整个地图（子层 + DualGrid 数据） |
 | `set_thresholds(terrain_names: PackedStringArray, threshold_maxs: PackedFloat64Array)` | 设置地形阈值参数 |
-| `get_used_terrain_cells() -> PackedVector2Array` | 获取已使用的世界格子列表 |
+| `get_used_terrain_cells() -> Array[Vector2i]` | 获取已使用的世界格子列表 |
 | `refresh_display()` | 刷新所有显示格子 |
-| `add_terrain_config(terrain_name: String, atlas_x: int, atlas_y: int, world_source_id: int, display_source_id: int, priority: int)` | 动态添加地形配置（priority 控制显示层级） |
+| `add_terrain_config(terrain_name: String, display_source_id: int)` | 动态添加地形配置（terrain_name 需与子层节点名一致） |
 | `add_prop_config(name: String, source_id: int, alternative_tile: int, probability: float, allowed_terrains: PackedStringArray, noise_min: float, noise_max: float)` | 动态添加资源配置 |
-| `set_tile_set(tile_set: TileSet)` | 设置 TileSet（自身和显示层共用） |
+| `register_terrain(name: String) -> int` | 注册地形类型，返回分配的 ID |
+| `get_terrain_id(name: String) -> int` | 通过名称获取地形 ID |
+| `get_terrain_name(terrain_id: int) -> String` | 通过 ID 获取地形名称 |
+| `get_all_terrain_names() -> PackedStringArray` | 获取所有已注册地形名称列表 |
 
 ### 资源配置 JSON 格式
 
 ```json
 {
   "terrains": {
-    "grass": { "atlas_coord": [0, 0], "source_id": 0 },
-    "dirt": { "atlas_coord": [1, 0], "source_id": 0 },
-    "sand": { "atlas_coord": [2, 0], "source_id": 0 },
-    "water": { "atlas_coord": [3, 0], "source_id": 0 }
+    "grass": {},
+    "dirt": {},
+    "sand": {},
+    "water": {}
   },
   "display_layers": {
-    "grass": { "source_id": 2, "priority": 0 },
-    "dirt": { "source_id": 5, "priority": 1 },
-    "sand": { "source_id": 3, "priority": 2 },
-    "water": { "source_id": 4, "priority": 3 }
+    "grass": { "source_id": 2 },
+    "dirt": { "source_id": 5 },
+    "sand": { "source_id": 3 },
+    "water": { "source_id": 4 }
   },
   "props": [
     { "name": "flower1", "source_id": 1, "alternative_tile": 1,
@@ -1401,12 +1405,29 @@ GdMapBasic 是一个继承 TileMapLayer 的 Godot 类，实现双网格地形过
 }
 ```
 
+**说明**：
+- `terrains` 仅注册地形名称（无 atlas_coord/source_id，世界层概念已移除）
+- `display_layers` 仅配置 source_id（无 priority，渲染顺序由场景子节点顺序决定）
+- 子层节点名需与 `terrains`/`display_layers` 的 key 一致
+
+### 场景文件结构
+
+GdMapBasic 节点下需包含以下子 TileMapLayer 节点（顺序自下而上渲染）：
+
+```
+GdMapBasic (Node2D)
+├── dirt (TileMapLayer)       # 底层
+├── grass (TileMapLayer)
+├── sand (TileMapLayer)
+├── water (TileMapLayer)
+└── PropLayer (TileMapLayer)  # 顶层（资源层，节点名固定）
+```
+
 ### GDScript 使用示例
 
 ```gdscript
-# 创建 GdMapBasic 节点（继承 TileMapLayer，编辑器中可直接配置 TileSet）
-var map = GdMapBasic.new()
-add_child(map)
+# GdMapBasic 节点需在场景文件中配置子 TileMapLayer 节点
+# 通过 tile_set 导出属性配置 TileSet（自动同步到所有子层）
 
 # 加载资源配置
 map.load_resource_config("res://map_config.json")
@@ -1414,12 +1435,12 @@ map.load_resource_config("res://map_config.json")
 # 或从字符串加载
 var config_json = JSON.stringify({
     "terrains": {
-        "grass": {"atlas_coord": [0, 0], "source_id": 0},
-        "dirt": {"atlas_coord": [1, 0], "source_id": 0}
+        "grass": {},
+        "dirt": {}
     },
     "display_layers": {
-        "grass": {"source_id": 2, "priority": 0},
-        "dirt": {"source_id": 5, "priority": 1}
+        "grass": {"source_id": 2},
+        "dirt": {"source_id": 5}
     },
     "props": [
         {"name": "flower1", "source_id": 1, "alternative_tile": 1,
@@ -1429,7 +1450,10 @@ var config_json = JSON.stringify({
 })
 map.load_resource_config_from_string(config_json)
 
-# 生成随机地图（64x64，种子42）
+# 方式1：从子层占位符生成地图（编辑器中手动绘制占位符后调用）
+map.generate_map_from_tiles()
+
+# 方式2：使用噪声生成随机地图（64x64，种子42）
 map.generate_map_with_resources(64, 64, 42)
 
 # 设置地形
@@ -1438,8 +1462,8 @@ map.set_terrain(Vector2i(5, 5), 1)  # 设置为草地
 # 查询地形
 var terrain = map.get_terrain_type(Vector2i(5, 5))
 
-# 动态添加地形配置（priority 控制显示层级，数值越大越在上面）
-map.add_terrain_config("snow", 4, 0, 0, 6, 4)
+# 动态添加地形配置（terrain_name 需与子层节点名一致）
+map.add_terrain_config("snow", 6)
 
 # 动态添加资源配置
 map.add_prop_config("rock", 1, 4, 0.03, PackedStringArray(["dirt", "sand"]), -0.3, 0.0)
@@ -1696,3 +1720,10 @@ cargo build -p core --release
 | 2026-06-24 | rust/src/tilemap/display_layer.rs | 修复重入 panic：update_properties 移除 parent.call("get_display_material")，改为接收 material 参数；setup/setup_public/update_properties_public 签名同步更新 |
 | 2026-06-24 | rust/src/tilemap/display.rs | 新增 display_material 字段和 set_display_material_public 方法；setup/setup_public 接收 material 参数；create_layers/update_properties 向 DisplayLayer 传递材质 |
 | 2026-06-24 | rust/src/tilemap/tile_map_dual.rs | ready 传入 display_material 到 Display::setup_public；update_cells/_changed 调用 update_public 前通过 set_display_material_public 同步材质 |
+| 2026-06-24 | rust/src/map/gd_map_basic.rs | 重构 GdMapBasic：继承 TileMapLayer 改为继承 Node2D；新增 tile_set 导出属性；移除世界层/priority/set_tile 概念；改为从场景文件子 TileMapLayer 节点读取（scan_child_layers）；新增 generate_map_from_tiles 方法（清除占位符+应用半格偏移+绘制过渡贴图）；add_terrain_config 签名简化为 (terrain_name, display_source_id) |
+| 2026-06-24 | addons/gamecore/map/basic/terrain_config.gd | 移除 atlas_coord/source_id（世界层）/priority 字段，仅保留 terrain_name/display_source_id/threshold_max |
+| 2026-06-24 | addons/gamecore/map/basic/index.gd | _setup_terrains 调用 add_terrain_config 移除 atlas_x/atlas_y/world_source_id/priority 参数；_resolve_tile_set 访问 GdMapBasic 的 tile_set 属性 |
+| 2026-06-24 | addons/gamecore/map/basic/index.tscn | 新增 5 个子 TileMapLayer 节点（dirt/grass/sand/water/PropLayer）；TerrainConfig 移除废弃字段；terrains 数组顺序匹配子节点顺序 |
+| 2026-06-24 | example/map/basic.tscn | 移除 tile_map_data（Node2D 不支持） |
+| 2026-06-24 | PROJECT.md | 更新第11节双网格地图系统说明和 GdMapBasic API 文档（Node2D 架构、新方法签名、场景文件结构） |
+| 2026-06-24 | FILES.md | 更新 GdMapBasic 文件描述（Node2D 架构、新方法列表） |

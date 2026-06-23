@@ -43,6 +43,32 @@ let tile_set = self.base().get_tile_set();
 watcher.bind_mut().update(tile_set);
 ```
 
+## 克隆 Vec<Gd<T>> 避免循环中的借用冲突
+
+当需要在循环中遍历 `self` 的 `Vec<Gd<T>>` 字段，同时访问 `self` 的其他字段时，先克隆整个 Vec：
+
+```rust
+// 错误：循环中借用 self.display_layers，同时访问 self.terrain_registry 和 self.dual_grid
+for layer in &self.display_layers {
+    let name = layer.get_name().to_string();
+    let terrain = self.terrain_registry.get_id(&name).unwrap(); // 借用冲突！
+    self.dual_grid.set_world_tile(pos, terrain); // 借用冲突！
+}
+
+// 正确：先克隆 Vec<Gd<T>>，再在循环中访问 self 的其他字段
+let layers: Vec<Gd<TileMapLayer>> = self.display_layers.iter().cloned().collect();
+for layer in &layers {
+    let name = layer.get_name().to_string();
+    let terrain = self.terrain_registry.get_id(&name).unwrap(); // 安全
+    self.dual_grid.set_world_tile(pos, terrain); // 安全
+}
+```
+
+**关键点**：
+- `Gd<T>` 是引用计数类型，`clone()` 开销小（仅增加引用计数）
+- `Vec<Gd<T>>::iter().cloned().collect()` 克隆整个 Vec
+- 此模式适用于"遍历子节点集合 + 读写 self 其他字段"的场景
+
 ## let-else 模式提前返回
 
 ```rust
