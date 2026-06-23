@@ -119,9 +119,11 @@ core 是一个基于 Rust 的 Godot 4 GDExtension 项目，使用 gdext 库与 G
     - 测试用例：12 个解析器测试（含列表标签、错误处理、深度嵌套等）
 
 11. **双网格地图系统**（map 模块）
-    - 基于双网格算法的地形过渡地图系统，GdMapBasic 继承 TileMapLayer（自身即世界层，通过 self_modulate 透明隐藏）
-    - GdMapBasic：双网格地图节点（继承 TileMapLayer），自身存储逻辑数据（self_modulate alpha=0 透明），内部持有显示层 TileMapLayer 子节点
+    - 基于双网格算法的地形过渡地图系统，支持方形网格和等距（Isometric）网格两种实现
+    - GdMapBasic：方形双网格地图节点（继承 TileMapLayer），自身存储逻辑数据（self_modulate alpha=0 透明），内部持有显示层 TileMapLayer 子节点
+    - GdMapIsometric：等距双网格地图节点（继承 TileMapLayer），显示层偏移为 (0, -0.5)*tile_size，启用 Y 排序，四角邻域为上/右/左/下方向
     - 双网格算法：世界网格存储逻辑地形类型，显示网格根据四角组合查表得到过渡贴图，支持16种四角组合
+    - 等距与方形差异：等距网格的显示层偏移 (0,-0.5) vs 方形 (-0.5,-0.5)；等距四角方向 [top,right,left,bottom] vs 方形 [top_left,top_right,bottom_left,bottom_right]
     - 地形类型：动态注册，支持自定义阈值
     - 资源配置：通过 JSON 文件配置地形资源集，GDScript 侧可灵活指定 TileSet 中的 source_id 和 atlas_coord
     - 显示层优先级：display_layers 配置中支持 priority 字段，控制渲染层级（数值越大越在上面），低优先级图层在边界处额外渲染1格邻居避免露出背景
@@ -214,8 +216,10 @@ core/
 │           └── ui_grid.rs  # GdUIGrid网格列表节点
 │       └── map/              # 双网格地图模块
 │           ├── mod.rs      # 模块入口
-│           ├── dual_grid.rs # 双网格算法核心逻辑
-│           └── gd_map_basic.rs # GdMapBasic 地图节点
+│           ├── dual_grid.rs # 方形双网格算法核心逻辑
+│           ├── dual_grid_iso.rs # 等距双网格算法核心逻辑
+│           ├── gd_map_basic.rs # GdMapBasic 方形地图节点
+│           └── gd_map_isometric.rs # GdMapIsometric 等距地图节点
 ├── example/
 │   ├── test_from_gd_script.gd  # GDScript 测试脚本
 │   ├── fish_procedural_anim.gd # 鱼的程序化动画示例
@@ -1412,6 +1416,74 @@ map.add_prop_config("rock", 1, 4, 0.03, PackedStringArray(["dirt", "sand"]), -0.
 # 清除地图
 map.clear_map()
 ```
+
+## GdMapIsometric API
+
+GdMapIsometric 是一个继承 TileMapLayer 的 Godot 类，实现等距（Isometric）双网格地形过渡地图系统。与 GdMapBasic 的核心区别：显示层偏移为 (0, -0.5)*tile_size（等距网格），四角邻域方向为上/右/左/下。自身即世界层（通过 self_modulate alpha=0 透明隐藏），启用 Y 排序确保正确的绘制顺序。
+
+### 导出属性
+
+| 属性 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `can_set_tile` | bool | true | 是否允许设置格子 |
+
+### 方法
+
+| 方法 | 说明 |
+|------|------|
+| `register_terrain(name: String) -> int` | 注册地形类型，返回分配的 ID |
+| `get_terrain_id(name: String) -> int` | 通过名称获取地形 ID |
+| `get_terrain_name(terrain_id: int) -> String` | 通过 ID 获取地形名称 |
+| `get_all_terrain_names() -> PackedStringArray` | 获取所有已注册地形名称列表 |
+| `load_resource_config(json_path: String) -> bool` | 从 JSON 文件加载资源集配置 |
+| `load_resource_config_from_string(json_string: String) -> bool` | 从 JSON 字符串加载资源集配置 |
+| `set_tile(coords: Vector2i, atlas_coords: Vector2i)` | 设置世界格子（通过 atlas_coords）并自动更新显示层 |
+| `set_terrain(coords: Vector2i, terrain_type: int)` | 通过地形类型设置格子 |
+| `erase_tile(coords: Vector2i)` | 擦除世界格子并更新显示层 |
+| `get_terrain_type(coords: Vector2i) -> int` | 获取指定坐标的地形类型 |
+| `generate_map(width: int, height: int, seed: int) -> void` | 使用噪声生成随机地图 |
+| `generate_map_with_resources(width: int, height: int, seed: int) -> void` | 生成带资源的随机地图 |
+| `generate_map_from_tiles()` | 从编辑器手动绘制的地块生成地图 |
+| `clear_map()` | 清除整个地图 |
+| `set_thresholds(terrain_names: PackedStringArray, threshold_maxs: PackedFloat64Array)` | 设置地形阈值参数 |
+| `get_used_terrain_cells() -> PackedVector2Array` | 获取已使用的世界格子列表 |
+| `refresh_display()` | 刷新所有显示格子 |
+| `add_terrain_config(terrain_name: String, atlas_x: int, atlas_y: int, world_source_id: int, display_source_id: int, priority: int)` | 动态添加地形配置 |
+| `add_prop_config(name: String, source_id: int, alternative_tile: int, probability: float, allowed_terrains: PackedStringArray, noise_min: float, noise_max: float)` | 动态添加资源配置 |
+| `set_tile_set(tile_set: TileSet)` | 设置 TileSet（自身和显示层共用） |
+
+### 资源配置 JSON 格式
+
+与 GdMapBasic 相同，参见上方 JSON 格式说明。
+
+### GDScript 使用示例
+
+```gdscript
+# 创建 GdMapIsometric 节点（等距双网格地图）
+var map = GdMapIsometric.new()
+add_child(map)
+
+# 加载资源配置
+map.load_resource_config("res://iso_map_config.json")
+
+# 生成随机地图（64x64，种子42）
+map.generate_map_with_resources(64, 64, 42)
+
+# 设置地形
+map.set_terrain(Vector2i(5, 5), 1)
+
+# 查询地形
+var terrain = map.get_terrain_type(Vector2i(5, 5))
+```
+
+### 等距与方形网格差异
+
+| 特性 | GdMapBasic（方形） | GdMapIsometric（等距） |
+|------|-------------------|----------------------|
+| 显示层偏移 | (-0.5, -0.5) * tile_size | (0, -0.5) * tile_size |
+| 四角邻域方向 | 左上/右上/左下/右下 | 上/右/左/下 |
+| Y 排序 | 不启用 | 启用 |
+| TileSet 形状 | TILE_SHAPE_SQUARE | TILE_SHAPE_ISOMETRIC |
 
 ## 开发命令
 

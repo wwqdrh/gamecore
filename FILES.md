@@ -422,11 +422,11 @@
 - Tooltip 自动绑定：tooltip 属性指定 Tooltip 节点名，鼠标进入/离开子节点时自动从 __item_data meta 读取完整数据字典调用 update_data，兼容内置 title/content label
 
 ### [rust/src/map/mod.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/map/mod.rs)
-- 双网格地图模块入口，导出 dual_grid/gd_map_basic 子模块
-- 公开导出：TerrainType, TerrainThresholds, PropConfig, PropPlacement, DualGrid, place_props, GdMapBasic
+- 双网格地图模块入口，导出 dual_grid/dual_grid_iso/gd_map_basic/gd_map_isometric 子模块
+- 公开导出：TerrainType, TerrainThresholds, PropConfig, PropPlacement, DualGrid, place_props, GdMapBasic, IsoTerrainType, IsoTerrainThresholds, IsoPropConfig, IsoPropPlacement, DualGridIso, iso_place_props, GdMapIsometric
 
 ### [rust/src/map/dual_grid.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/map/dual_grid.rs)
-- **双网格算法核心逻辑**（纯 Rust，不依赖 Godot API）
+- **方形双网格算法核心逻辑**（纯 Rust，不依赖 Godot API）
 - TerrainType 枚举：Null/Grass/Dirt/Sand/Water
 - CornerState 枚举：Null/NotNull，用于四角组合
 - 16种四角组合查找表：build_tile_lookup()，映射 CornerKey → atlas_coord
@@ -443,6 +443,28 @@
 - 方法：load_resource_config, load_resource_config_from_string, set_tile, set_terrain, erase_tile, get_terrain_type, generate_map, generate_map_with_resources, clear_map, set_thresholds, get_used_terrain_cells, refresh_display, get_terrain_name, add_terrain_config, add_prop_config, set_tile_set
 - 噪声生成：内置 Perlin-like 噪声算法，支持种子可复现
 - 资源放置：根据噪声值和概率自动放置资源（Flower/Tree 等）
+
+### [rust/src/map/dual_grid_iso.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/map/dual_grid_iso.rs)
+- **等距双网格算法核心逻辑**（纯 Rust，不依赖 Godot API）
+- IsoTerrainType 枚举：动态 ID，0 = Null，1+ = 用户注册
+- IsoCornerState 枚举：Null/NotNull，用于等距四角组合
+- 16种等距四角组合查找表：build_iso_tile_lookup()，四角顺序 [top, right, left, bottom]
+- DualGridIso 结构体：等距世界网格存储、显示格子计算（等距邻域映射）、受影响位置计算、噪声地形生成
+- 等距邻域映射：top=(x-1,y-1), right=(x,y-1), left=(x-1,y), bottom=(x,y)
+- IsoTerrainThresholds 结构体：等距地形阈值配置
+- IsoTerrainRegistry 结构体：等距地形注册表（name ↔ id 双向映射）
+- IsoPropConfig 结构体：等距资源配置
+- iso_place_props 函数：根据噪声值和概率在等距地图上放置资源
+
+### [rust/src/map/gd_map_isometric.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/map/gd_map_isometric.rs)
+- **GdMapIsometric** 类（继承 TileMapLayer）
+- 等距双网格地图节点，自身即世界层（self_modulate alpha=0 透明隐藏），内部持有显示层 TileMapLayer 子节点和1个资源层子节点
+- 显示层偏移为 (0, -0.5)*tile_size（等距网格），启用 Y 排序
+- 显示层支持 priority 优先级配置，低优先级图层在边界处额外渲染1格邻居避免露出背景
+- 资源配置：通过 JSON 文件或字符串加载，支持地形 atlas_coord/source_id 和显示层 source_id/priority
+- 方法：register_terrain, get_terrain_id, get_terrain_name, get_all_terrain_names, load_resource_config, load_resource_config_from_string, set_tile, set_terrain, erase_tile, get_terrain_type, generate_map, generate_map_with_resources, generate_map_from_tiles, clear_map, set_thresholds, get_used_terrain_cells, refresh_display, add_terrain_config, add_prop_config, set_tile_set
+- 噪声生成：内置 Perlin-like 噪声算法，支持种子可复现
+- 资源放置：根据噪声值和概率自动放置资源
 
 ### [vendor/gamedialog/Cargo.toml](file:///Users/dengronghui/project/gamekit/core/vendor/gamedialog/Cargo.toml)
 - gamedialog crate 配置，纯 Rust 对话脚本引擎库
@@ -802,3 +824,4 @@
 | 2026-06-15 | rust/src/manager/gd_scene_root.rs | 添加load_scenes_from_config从GdConfigManager加载场景配置 |
 | 2026-06-15 | example/ui/tudouxiongdi/levelup.gd | 重写升级弹窗界面严格匹配HTML设计稿；builder.rs新增ProgressBar fill颜色支持(background→fill,track→background)和theme默认值 |
 | 2026-06-15 | example/ui/tudouxiongdi/pause.gd | 新建土豆兄弟暂停/结算面板GML控制器，严格匹配pause.html设计稿 |
+| 2026-06-23 | rust/src/map/dual_grid_iso.rs | 修复等距双网格偏移量Bug：calculate_display_tile中top=(0,-1)→(-1,-1), right=(1,-1)→(0,-1), left=(-1,-1)→(-1,0)；ISO_FOUR_CELLS从[(0,0),(-1,1),(0,1),(1,1)]修正为[(0,0),(1,1),(0,1),(1,0)]；更新相关注释 |
