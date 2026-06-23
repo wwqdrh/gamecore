@@ -15,8 +15,9 @@ extends Resource
 ## 放置概率 (0.0 ~ 1.0)
 @export var probability: float = 0.05
 
-## 可放置的地形名称列表
-@export var allowed_terrains: PackedStringArray = []
+## 允许放置的地形名称列表
+@export var allowed_terrains: Array[String] = []
 
-## 噪声值范围 (x = min, y = max)
-@export var noise_range: Vector2 = Vector2(-0.3, 0.0)
+## 噪声值范围 (x = min, y = max)，噪声已归一化到 [0, 1]
+## 资源只放置在噪声值属于 [min, max) 的坐标上
+@export var noise_range: Vector2 = Vector2(0.0, 0.1)

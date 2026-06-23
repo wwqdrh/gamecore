@@ -9,5 +9,10 @@ extends Resource
 ## 显示层 source_id（过渡贴图所在的 TileSet source）
 @export var display_source_id: int = 0
 
-## 噪声阈值上限（噪声值 < 此值时为该地形，按 terrains 数组顺序匹配）
+## 噪声阈值下限（噪声值 >= 此值时该地形存在）
+@export var threshold_min: float = 0.0
+
+## 噪声阈值上限（噪声值 < 此值时该地形存在）
+## 噪声值在 [threshold_min, threshold_max) 范围内时该坐标属于此地形
+## 一个坐标可属于多个地形（不同地形的范围可重叠）
 @export var threshold_max: float = 1.0

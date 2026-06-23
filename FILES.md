@@ -427,22 +427,25 @@
 
 ### [rust/src/map/dual_grid.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/map/dual_grid.rs)
 - **方形双网格算法核心逻辑**（纯 Rust，不依赖 Godot API）
-- TerrainType 枚举：Null/Grass/Dirt/Sand/Water
+- TerrainType 枚举：动态 ID，0 = Null，1+ = 用户注册
 - CornerState 枚举：Null/NotNull，用于四角组合
 - 16种四角组合查找表：build_tile_lookup()，映射 CornerKey → atlas_coord
-- DualGrid 结构体：世界网格存储、显示格子计算、受影响位置计算、噪声地形生成
-- TerrainThresholds 结构体：地形阈值配置（grass_max/dirt_max/sand_max/water_max），默认值 0.1/0.16/0.24/1.0
+- DualGrid 结构体：世界网格按地形层存储坐标集合（HashMap<TerrainType, HashSet<(i32,i32)>>，同一坐标可属于多个地形），显示格子计算、受影响位置计算、噪声地形生成
+- TerrainThresholdEntry 结构体：地形阈值条目（terrain_id/min_value/max_value），每地形独立范围 [min, max)
+- TerrainThresholds 结构体：地形阈值配置，每地形独立判断（非互斥）
+- TerrainRegistry 结构体：地形注册表，维护 name ↔ id 双向映射
 - PropConfig 结构体：资源配置（名称/source_id/alternative_tile/概率/允许地形/噪声范围）
-- place_props 函数：根据噪声值和概率在地图上放置资源
+- place_props 函数：根据噪声值和概率在地图上放置资源（支持同一坐标多个地形）
 
 ### [rust/src/map/gd_map_basic.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/map/gd_map_basic.rs)
 - **GdMapBasic** 类（继承 Node2D）
-- 双网格地图节点，通过导出属性 tile_set 配置 TileSet，场景文件中直接定义子 TileMapLayer 节点作为显示层（节点名对应地形名）和资源层（PropLayer）
+- 双网格地图节点，通过导出属性 tile_set 配置 TileSet，场景文件中定义子 TileMapLayer 显示层（节点名对应地形名），PropLayer 资源层由 Rust 动态创建（ensure_prop_layer）
+- 世界网格支持同一坐标属于多个地形（按地形层存储坐标集合）
 - 渲染顺序由子节点顺序决定（自下而上），无 priority 概念
 - 子层在编辑器中位于 (0,0) 可直接绘制占位符，运行时 generate_map_from_tiles 清除占位符、应用半格偏移并绘制过渡贴图
 - 资源配置：通过 JSON 文件或字符串加载，仅配置 display source_id（无 atlas_coord/world source_id/priority）
-- 方法：load_resource_config, load_resource_config_from_string, set_terrain, erase_tile, get_terrain_type, generate_map, generate_map_with_resources, generate_map_from_tiles, clear_map, set_thresholds, get_used_terrain_cells, refresh_display, add_terrain_config, add_prop_config, register_terrain, get_terrain_id, get_terrain_name, get_all_terrain_names
-- 噪声生成：内置 Perlin-like 噪声算法，支持种子可复现
+- 方法：load_resource_config, load_resource_config_from_string, set_terrain, erase_tile, has_terrain, get_terrains_at, generate_map, generate_map_with_resources, generate_map_from_tiles, clear_map, set_thresholds, get_used_terrain_cells, refresh_display, add_terrain_config, add_prop_config, register_terrain, get_terrain_id, get_terrain_name, get_all_terrain_names
+- 噪声生成：内置 Perlin-like 噪声算法，支持种子可复现，每地形独立范围判断
 - 资源放置：根据噪声值和概率自动放置资源（Flower/Tree 等）
 
 ### [rust/src/map/dual_grid_iso.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/map/dual_grid_iso.rs)
@@ -918,3 +921,12 @@
 | 2026-06-24 | addons/gamecore/map/basic/index.tscn | 新增 5 个子 TileMapLayer 节点（dirt/grass/sand/water/PropLayer） |
 | 2026-06-24 | example/map/basic.tscn | 移除 tile_map_data（Node2D 不支持） |
 | 2026-06-24 | FILES.md | 更新 GdMapBasic 文件描述（Node2D 架构、新方法列表） |
+| 2026-06-24 | rust/src/map/gd_map_basic.rs | PropLayer 改为动态创建：新增 ensure_prop_layer()，scan_child_layers 不再扫描 PropLayer |
+| 2026-06-24 | addons/gamecore/map/basic/index.tscn | 移除 PropLayer 子节点（改为 Rust 动态创建） |
+| 2026-06-24 | FILES.md | 更新 GdMapBasic 文件描述（PropLayer 动态创建） |
+| 2026-06-24 | rust/src/map/dual_grid.rs | 重构世界网格为多层结构（HashMap<TerrainType, HashSet>），支持同一坐标多地形 |
+| 2026-06-24 | rust/src/map/gd_map_basic.rs | 适配多层世界网格：erase_tile 增加 terrain_type，新增 has_terrain/get_terrains_at，set_thresholds 增加 min 参数 |
+| 2026-06-24 | addons/gamecore/map/basic/terrain_config.gd | 新增 threshold_min 属性 |
+| 2026-06-24 | addons/gamecore/map/basic/index.gd | _setup_thresholds 适配新签名 |
+| 2026-06-24 | addons/gamecore/map/basic/index.tscn | TerrainConfig 添加 threshold_min 值 |
+| 2026-06-24 | FILES.md | 更新 dual_grid.rs 和 gd_map_basic.rs 文件描述 |

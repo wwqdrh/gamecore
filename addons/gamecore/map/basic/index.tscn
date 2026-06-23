@@ -5,6 +5,14 @@
 [ext_resource type="Script" uid="uid://b1px5ydnq5w6b" path="res://addons/gamecore/map/basic/terrain_config.gd" id="3_wguvv"]
 [ext_resource type="Script" uid="uid://ylu6d2kviumd" path="res://addons/gamecore/map/basic/prop_config.gd" id="4_e703n"]
 
+[sub_resource type="Resource" id="Resource_wguvv"]
+script = ExtResource("3_wguvv")
+terrain_name = "dirt"
+display_source_id = 5
+threshold_min = 0.1
+threshold_max = 0.3
+metadata/_custom_type_script = "uid://b1px5ydnq5w6b"
+
 [sub_resource type="Resource" id="Resource_e703n"]
 script = ExtResource("3_wguvv")
 terrain_name = "grass"
@@ -12,24 +20,20 @@ display_source_id = 2
 threshold_max = 0.1
 metadata/_custom_type_script = "uid://b1px5ydnq5w6b"
 
-[sub_resource type="Resource" id="Resource_wguvv"]
-script = ExtResource("3_wguvv")
-terrain_name = "dirt"
-display_source_id = 5
-threshold_max = 0.16
-metadata/_custom_type_script = "uid://b1px5ydnq5w6b"
-
 [sub_resource type="Resource" id="Resource_amkqc"]
 script = ExtResource("3_wguvv")
 terrain_name = "sand"
 display_source_id = 3
-threshold_max = 0.24
+threshold_min = 0.1
+threshold_max = 0.7
 metadata/_custom_type_script = "uid://b1px5ydnq5w6b"
 
 [sub_resource type="Resource" id="Resource_i84jq"]
 script = ExtResource("3_wguvv")
 terrain_name = "water"
 display_source_id = 4
+threshold_min = 0.1
+threshold_max = 0.24
 metadata/_custom_type_script = "uid://b1px5ydnq5w6b"
 
 [sub_resource type="Resource" id="Resource_qmnnp"]
@@ -38,6 +42,8 @@ prop_name = "flower1"
 source_id = 1
 alternative_tile = 1
 probability = 0.08
+allowed_terrains = Array[String](["grass"])
+noise_range = Vector2(0, 1)
 metadata/_custom_type_script = "uid://ylu6d2kviumd"
 
 [sub_resource type="Resource" id="Resource_qhc1f"]
@@ -46,6 +52,8 @@ prop_name = "flower2"
 source_id = 1
 alternative_tile = 2
 probability = 0.08
+allowed_terrains = Array[String](["grass"])
+noise_range = Vector2(0, 1)
 metadata/_custom_type_script = "uid://ylu6d2kviumd"
 
 [sub_resource type="Resource" id="Resource_abxxe"]
@@ -54,25 +62,24 @@ prop_name = "tree"
 source_id = 1
 alternative_tile = 2
 probability = 0.08
+allowed_terrains = Array[String](["grass"])
+noise_range = Vector2(0, 1)
 metadata/_custom_type_script = "uid://ylu6d2kviumd"
 
-[node name="Index" type="GdMapBasic" unique_id=423861288]
+[node name="Index" type="GdMapBasic" unique_id=1354011267]
 tile_set = ExtResource("2_ghwsg")
 script = ExtResource("1_4eou8")
 terrains = Array[ExtResource("3_wguvv")]([SubResource("Resource_wguvv"), SubResource("Resource_e703n"), SubResource("Resource_amkqc"), SubResource("Resource_i84jq")])
 props = Array[ExtResource("4_e703n")]([SubResource("Resource_qmnnp"), SubResource("Resource_qhc1f"), SubResource("Resource_abxxe")])
 
-[node name="dirt" type="TileMapLayer" parent="."]
+[node name="dirt" type="TileMapLayer" parent="." unique_id=814927560]
 tile_set = ExtResource("2_ghwsg")
 
-[node name="grass" type="TileMapLayer" parent="."]
+[node name="grass" type="TileMapLayer" parent="." unique_id=2056667909]
 tile_set = ExtResource("2_ghwsg")
 
-[node name="sand" type="TileMapLayer" parent="."]
+[node name="sand" type="TileMapLayer" parent="." unique_id=423392471]
 tile_set = ExtResource("2_ghwsg")
 
-[node name="water" type="TileMapLayer" parent="."]
-tile_set = ExtResource("2_ghwsg")
-
-[node name="PropLayer" type="TileMapLayer" parent="."]
+[node name="water" type="TileMapLayer" parent="." unique_id=2073771055]
 tile_set = ExtResource("2_ghwsg")

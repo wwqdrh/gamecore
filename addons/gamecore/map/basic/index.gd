@@ -62,6 +62,12 @@ func _setup_props() -> void:
 	for prop: MapPropConfig in props:
 		if prop.prop_name == "":
 			continue
+		print("[GDScript] _setup_props: name='%s', allowed_terrains=%s (size=%d), noise_range=%s" % [
+			prop.prop_name,
+			prop.allowed_terrains,
+			prop.allowed_terrains.size(),
+			prop.noise_range,
+		])
 		add_prop_config(
 			prop.prop_name,
 			prop.source_id,
@@ -73,13 +79,16 @@ func _setup_props() -> void:
 		)
 
 
-## 根据 terrains 数组的 threshold_max 设置阈值
+## 根据 terrains 数组的 threshold_min/threshold_max 设置阈值
+## 每地形独立范围 [min, max)，一个坐标可属于多个地形
 func _setup_thresholds() -> void:
 	var terrain_names := PackedStringArray()
+	var threshold_mins := PackedFloat64Array()
 	var threshold_maxs := PackedFloat64Array()
 	for terrain: TerrainConfig in terrains:
 		if terrain.terrain_name == "":
 			continue
 		terrain_names.append(terrain.terrain_name)
+		threshold_mins.append(terrain.threshold_min)
 		threshold_maxs.append(terrain.threshold_max)
-	set_thresholds(terrain_names, threshold_maxs)
+	set_thresholds(terrain_names, threshold_mins, threshold_maxs)

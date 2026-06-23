@@ -88,6 +88,56 @@ fn sync_tile_set_to_layers(&mut self) {
 - 最后一次使用时无需 clone
 - `call("set_tile_set", &[variant])` 用于绕过 ByValue/ByOption 类型不匹配（见下方）
 
+## 动态创建子节点并添加到场景树
+
+当 Node2D 类需要动态创建子节点（而非从场景文件获取）时，使用 `new_alloc()` 创建 + `add_child()` 添加：
+
+```rust
+use godot::obj::NewGd;
+
+fn ensure_prop_layer(&mut self) {
+    if self.prop_layer.is_some() {
+        return;
+    }
+
+    // 检查是否已存在同名子节点（避免重复创建）
+    let children = self.base().get_children();
+    for child in children.iter_shared() {
+        if let Ok(layer) = child.clone().try_cast::<TileMapLayer>() {
+            if layer.get_name().to_string() == "PropLayer" {
+                self.prop_layer = Some(layer);
+                return;
+            }
+        }
+    }
+
+    // 动态创建
+    let mut prop_layer = TileMapLayer::new_alloc();
+    prop_layer.set_name("PropLayer");
+
+    // 同步 tile_set（使用 call 绕过类型不匹配）
+    if let Some(ref ts) = self.tile_set {
+        prop_layer.call("set_tile_set", &[ts.to_variant()]);
+    }
+
+    // 添加为子节点
+    self.base_mut().add_child(&prop_layer);
+
+    // 设置 owner 为场景根节点（编辑器中可见）
+    if let Some(owner) = self.base().get_owner() {
+        prop_layer.set_owner(&owner);
+    }
+
+    self.prop_layer = Some(prop_layer);
+}
+```
+
+**关键点**：
+- `new_alloc()` 创建堆分配的 Godot 对象（Node 类型必须用 `new_alloc`，不能用 `new_gd`）
+- `add_child()` 后对象所有权转移给场景树，但 `Gd<T>` 引用仍可用
+- `set_owner()` 使节点在编辑器场景树中可见（运行时非必须）
+- 创建前应检查是否已存在同名子节点，避免重复创建
+
 ## call() 动态调用
 
 ```rust

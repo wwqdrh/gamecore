@@ -51,7 +51,14 @@ impl ITileMapLayer for MyNode {
 | Resource | IResource | `fn init(base: Base<Resource>) -> Self` |
 | RefCounted | IRefCounted | `fn init(base: Base<RefCounted>) -> Self` |
 
-## 属性（#[var]）
+## 属性（#[var]）vs 导出属性（#[export]）
+
+**关键区别**（gdext 0.5.x）：
+- `#[var]` = 注册属性到 Godot，GDScript 可通过 `obj.field` 访问，但**不会**在编辑器 Inspector 中显示
+- `#[export]` = 导出属性到编辑器，**会**在 Inspector 中显示，可被用户编辑
+- 对应 GDScript 中：`var x` (property) vs `@export var x` (export)
+
+如果属性需要在编辑器 Inspector 中可见（如 TileSet 资源槽），必须使用 `#[export]`。
 
 ### `#[var]` vs `#[var(pub)]`
 
@@ -77,19 +84,23 @@ pub struct MyClass {
 #[var(get = get_value, set = set_value)]
 value: i32,
 
+#[func]  // #[func] 是必须的，让函数对 Godot 可见
 fn get_value(&self) -> i32 { self.value }
+#[func]
 fn set_value(&mut self, v: i32) { self.value = v; }
 ```
 
-### 自定义 getter/setter（Option<Gd<T>> 类型）
+### 自定义 getter/setter（Option<Gd<T>> 类型，需在编辑器可见）
 
-当属性是 `Option<Gd<T>>` 且需要在 setter 中触发副作用（如同步到子节点）时，使用 `#[var(get = ..., set = ...)]`：
+当属性是 `Option<Gd<T>>` 且需要在编辑器 Inspector 中显示 + setter 中触发副作用时，
+需要同时使用 `#[export]` 和 `#[var(get = ..., set = ...)]`：
 
 ```rust
 #[derive(GodotClass)]
 #[class(base = Node2D, tool)]
 pub struct MapNode {
-    #[var(get = get_tile_set, set = set_tile_set)]
+    #[export]  // 让属性在编辑器 Inspector 中可见
+    #[var(get = get_tile_set, set = set_tile_set)]  // 自定义 getter/setter
     tile_set: Option<Gd<TileSet>>,
     base: Base<Node2D>,
 }
@@ -121,9 +132,13 @@ impl MapNode {
 ```
 
 **关键点**：
+- `#[export]` 让属性在编辑器 Inspector 中可见（`#[var]` 单独不会）
+- `#[var(get = ..., set = ...)]` 指定自定义 getter/setter 函数名
+- `#[func]` 在 getter/setter 函数上是**必须的**，让 Godot 能调用这些函数
 - getter 返回 `Option<Gd<T>>` 时需要 `.clone()`（`Gd<T>` 是引用计数，clone 开销小）
 - setter 接收 `Option<Gd<TileSet>>`（ByOption 类型），可在其中触发副作用
-- `#[func]` 标注的 getter/setter 在 GDScript 中表现为普通属性访问
+- `Option<Gd<T>>` 实现了 `Export` trait，可直接用 `#[export]`
+- `#[export]` 和 `#[var]` 可同时使用，不互斥
 
 ### 可选类型属性
 

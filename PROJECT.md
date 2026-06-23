@@ -120,9 +120,9 @@ core 是一个基于 Rust 的 Godot 4 GDExtension 项目，使用 gdext 库与 G
 
 11. **双网格地图系统**（map 模块）
     - 基于双网格算法的地形过渡地图系统，支持方形网格和等距（Isometric）网格两种实现
-    - GdMapBasic：方形双网格地图节点（继承 Node2D），通过导出属性 tile_set 配置 TileSet，场景文件中直接定义子 TileMapLayer 节点作为显示层和资源层（节点名对应地形名，如 dirt/grass/sand/water，PropLayer 为资源层）
+    - GdMapBasic：方形双网格地图节点（继承 Node2D），通过导出属性 tile_set 配置 TileSet，场景文件中定义子 TileMapLayer 显示层（节点名对应地形名，如 dirt/grass/sand/water），PropLayer 资源层由 Rust 代码动态创建
     - GdMapIsometric：等距双网格地图节点（继承 TileMapLayer），显示层偏移为 (0, -0.5)*tile_size，启用 Y 排序，四角邻域为上/右/左/下方向
-    - 双网格算法：世界网格存储逻辑地形类型，显示网格根据四角组合查表得到过渡贴图，支持16种四角组合
+    - 双网格算法：世界网格按地形层存储坐标集合（同一坐标可属于多个地形），显示网格根据四角组合查表得到过渡贴图，支持16种四角组合
     - 等距与方形差异：等距网格的显示层偏移 (0,-0.5) vs 方形 (-0.5,-0.5)；等距四角方向 [top,right,left,bottom] vs 方形 [top_left,top_right,bottom_left,bottom_right]
     - 地形类型：动态注册，支持自定义阈值
     - 资源配置：通过 JSON 文件配置地形资源集，GDScript 侧指定 TileSet 中的 display source_id
@@ -1343,7 +1343,7 @@ var btn = gml.find_node("StartBtn")
 
 ## GdMapBasic API
 
-GdMapBasic 是一个继承 Node2D 的 Godot 类，实现双网格地形过渡地图系统。通过导出属性 `tile_set` 配置 TileSet，场景文件中直接定义子 TileMapLayer 节点作为显示层（节点名对应地形名）和资源层（节点名 `PropLayer`）。渲染顺序由子节点顺序决定（自下而上）。子层在编辑器中位于 (0,0) 可直接绘制占位符，运行时调用 `generate_map_from_tiles` 清除占位符、应用半格偏移并绘制过渡贴图。
+GdMapBasic 是一个继承 Node2D 的 Godot 类，实现双网格地形过渡地图系统。通过导出属性 `tile_set` 配置 TileSet，场景文件中定义子 TileMapLayer 节点作为显示层（节点名对应地形名）。PropLayer 资源层由 Rust 代码动态创建（`ensure_prop_layer()`），位置 (0,0) 对齐世界坐标。渲染顺序由子节点顺序决定（自下而上）。子层在编辑器中位于 (0,0) 可直接绘制占位符，运行时调用 `generate_map_from_tiles` 清除占位符、应用半格偏移并绘制过渡贴图。
 
 ### 导出属性
 
@@ -1358,14 +1358,15 @@ GdMapBasic 是一个继承 Node2D 的 Godot 类，实现双网格地形过渡地
 |------|------|
 | `load_resource_config(json_path: String) -> bool` | 从 JSON 文件加载资源集配置 |
 | `load_resource_config_from_string(json_string: String) -> bool` | 从 JSON 字符串加载资源集配置 |
-| `set_terrain(coords: Vector2i, terrain_type: int)` | 通过地形类型设置格子（更新 DualGrid + 刷新显示贴图） |
-| `erase_tile(coords: Vector2i)` | 擦除世界格子并更新显示层 |
-| `get_terrain_type(coords: Vector2i) -> int` | 获取指定坐标的地形类型 |
+| `set_terrain(coords: Vector2i, terrain_type: int)` | 将坐标添加到对应地形层（更新 DualGrid + 刷新显示贴图） |
+| `erase_tile(coords: Vector2i, terrain_type: int)` | 擦除指定地形层的格子并更新显示层 |
+| `has_terrain(coords: Vector2i, terrain_type: int) -> bool` | 查询某坐标是否属于指定地形 |
+| `get_terrains_at(coords: Vector2i) -> PackedInt32Array` | 获取某坐标的所有地形 ID 列表 |
 | `generate_map(width: int, height: int, seed: int) -> void` | 使用噪声生成随机地图 |
 | `generate_map_with_resources(width: int, height: int, seed: int) -> void` | 生成带资源的随机地图 |
 | `generate_map_from_tiles() -> void` | 从子层占位符生成地图（清除占位符 + 应用半格偏移 + 绘制过渡贴图 + 放置资源） |
 | `clear_map()` | 清除整个地图（子层 + DualGrid 数据） |
-| `set_thresholds(terrain_names: PackedStringArray, threshold_maxs: PackedFloat64Array)` | 设置地形阈值参数 |
+| `set_thresholds(terrain_names: PackedStringArray, threshold_mins: PackedFloat64Array, threshold_maxs: PackedFloat64Array)` | 设置地形阈值参数（每地形独立范围 [min, max)，一坐标可属多地形） |
 | `get_used_terrain_cells() -> Array[Vector2i]` | 获取已使用的世界格子列表 |
 | `refresh_display()` | 刷新所有显示格子 |
 | `add_terrain_config(terrain_name: String, display_source_id: int)` | 动态添加地形配置（terrain_name 需与子层节点名一致） |
@@ -1412,7 +1413,7 @@ GdMapBasic 是一个继承 Node2D 的 Godot 类，实现双网格地形过渡地
 
 ### 场景文件结构
 
-GdMapBasic 节点下需包含以下子 TileMapLayer 节点（顺序自下而上渲染）：
+GdMapBasic 节点下需包含以下子 TileMapLayer 显示层节点（顺序自下而上渲染）。PropLayer 资源层由 Rust 代码动态创建，无需在场景文件中定义：
 
 ```
 GdMapBasic (Node2D)
@@ -1420,7 +1421,7 @@ GdMapBasic (Node2D)
 ├── grass (TileMapLayer)
 ├── sand (TileMapLayer)
 ├── water (TileMapLayer)
-└── PropLayer (TileMapLayer)  # 顶层（资源层，节点名固定）
+└── PropLayer (TileMapLayer)  # 顶层（资源层，Rust 动态创建，位置 (0,0)）
 ```
 
 ### GDScript 使用示例
@@ -1456,11 +1457,15 @@ map.generate_map_from_tiles()
 # 方式2：使用噪声生成随机地图（64x64，种子42）
 map.generate_map_with_resources(64, 64, 42)
 
-# 设置地形
+# 设置地形（将坐标添加到对应地形层，同一坐标可属于多个地形）
 map.set_terrain(Vector2i(5, 5), 1)  # 设置为草地
 
 # 查询地形
-var terrain = map.get_terrain_type(Vector2i(5, 5))
+var has_grass = map.has_terrain(Vector2i(5, 5), 1)  # 该坐标是否是草地
+var all_terrains = map.get_terrains_at(Vector2i(5, 5))  # 该坐标的所有地形 ID
+
+# 擦除指定地形层的格子
+map.erase_tile(Vector2i(5, 5), 1)  # 仅擦除草地的格子
 
 # 动态添加地形配置（terrain_name 需与子层节点名一致）
 map.add_terrain_config("snow", 6)
@@ -1727,3 +1732,14 @@ cargo build -p core --release
 | 2026-06-24 | example/map/basic.tscn | 移除 tile_map_data（Node2D 不支持） |
 | 2026-06-24 | PROJECT.md | 更新第11节双网格地图系统说明和 GdMapBasic API 文档（Node2D 架构、新方法签名、场景文件结构） |
 | 2026-06-24 | FILES.md | 更新 GdMapBasic 文件描述（Node2D 架构、新方法列表） |
+| 2026-06-24 | rust/src/map/gd_map_basic.rs | PropLayer 改为动态创建：新增 ensure_prop_layer() 方法；scan_child_layers 不再扫描 PropLayer；ready 和各 generate 方法调用 ensure_prop_layer |
+| 2026-06-24 | addons/gamecore/map/basic/index.tscn | 移除 PropLayer 子节点（改为 Rust 动态创建） |
+| 2026-06-24 | PROJECT.md | 更新 GdMapBasic API 文档和场景文件结构说明（PropLayer 动态创建） |
+| 2026-06-24 | FILES.md | 更新 GdMapBasic 文件描述（PropLayer 动态创建） |
+| 2026-06-24 | rust/src/map/dual_grid.rs | 重构世界网格：world_tiles 从 HashMap<(i32,i32), TerrainType> 改为 HashMap<TerrainType, HashSet<(i32,i32)>>，支持同一坐标属于多个地形；TerrainThresholdEntry 增加 min_value；generate_terrain_from_noise 改为每地形独立判断；移除 get_world_tile/classify，新增 has_terrain_at/get_terrains_at/erase_coord/get_cells_for_terrain；place_props 适配新地形数据格式 |
+| 2026-06-24 | rust/src/map/gd_map_basic.rs | 适配多层世界网格：erase_tile 增加 terrain_type 参数；移除 get_terrain_type；新增 has_terrain/get_terrains_at；set_thresholds 增加 threshold_mins 参数；generate_map/generate_map_with_resources/generate_map_from_tiles 适配新地形数据格式 |
+| 2026-06-24 | addons/gamecore/map/basic/terrain_config.gd | 新增 threshold_min 属性 |
+| 2026-06-24 | addons/gamecore/map/basic/index.gd | _setup_thresholds 适配新 set_thresholds 签名（增加 threshold_mins） |
+| 2026-06-24 | addons/gamecore/map/basic/index.tscn | TerrainConfig 子资源添加 threshold_min 值 |
+| 2026-06-24 | PROJECT.md | 更新 GdMapBasic API 文档（多层世界网格、新方法签名） |
+| 2026-06-24 | FILES.md | 更新 dual_grid.rs 和 gd_map_basic.rs 文件描述 |

@@ -1,8 +1,10 @@
 // 双网格地图算法核心逻辑
-// 世界网格存储逻辑地形类型，显示网格根据四角组合查表得到过渡贴图
+// 世界网格按地形层存储坐标集合，支持同一坐标属于多个地形
+// 显示网格根据四角组合查表得到过渡贴图
 // TerrainType 使用 u16 newtype，支持动态注册任意地形
+use godot::prelude::*;
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 /// 地形类型（动态 ID，0 = Null，1+ = 用户注册的地形）
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -68,9 +70,10 @@ fn build_tile_lookup() -> HashMap<CornerKey, (i32, i32)> {
 const FOUR_CELLS: [(i32, i32); 4] = [(0, 0), (1, 0), (0, 1), (1, 1)];
 
 /// 双网格算法核心
+/// 世界网格按地形层存储坐标集合，支持同一坐标属于多个地形
 pub struct DualGrid {
-    /// 世界网格：坐标 → 地形类型
-    world_tiles: HashMap<(i32, i32), TerrainType>,
+    /// 世界网格：地形类型 → 坐标集合（同一坐标可属于多个地形）
+    world_tiles: HashMap<TerrainType, HashSet<(i32, i32)>>,
     /// 四角组合查找表
     tile_lookup: HashMap<CornerKey, (i32, i32)>,
 }
@@ -83,28 +86,69 @@ impl DualGrid {
         }
     }
 
-    /// 设置世界格子的地形类型
+    /// 设置世界格子的地形（将坐标添加到对应地形层）
     pub fn set_world_tile(&mut self, coords: (i32, i32), terrain: TerrainType) {
         if terrain.is_null() {
-            self.world_tiles.remove(&coords);
-        } else {
-            self.world_tiles.insert(coords, terrain);
+            return;
+        }
+        self.world_tiles
+            .entry(terrain)
+            .or_insert_with(HashSet::new)
+            .insert(coords);
+    }
+
+    /// 从指定地形层移除坐标
+    pub fn erase_world_tile(&mut self, coords: (i32, i32), terrain: TerrainType) {
+        if let Some(set) = self.world_tiles.get_mut(&terrain) {
+            set.remove(&coords);
+            // 如果该地形层已空，移除整个条目
+            if set.is_empty() {
+                self.world_tiles.remove(&terrain);
+            }
         }
     }
 
-    /// 获取世界格子的地形类型
-    pub fn get_world_tile(&self, coords: (i32, i32)) -> TerrainType {
-        self.world_tiles.get(&coords).copied().unwrap_or(TerrainType::NULL)
+    /// 从所有地形层移除该坐标
+    pub fn erase_coord(&mut self, coords: (i32, i32)) {
+        for set in self.world_tiles.values_mut() {
+            set.remove(&coords);
+        }
+        // 移除空的地形层
+        self.world_tiles.retain(|_, set| !set.is_empty());
     }
 
-    /// 清除世界格子
-    pub fn erase_world_tile(&mut self, coords: (i32, i32)) {
-        self.world_tiles.remove(&coords);
+    /// 查询某坐标是否属于指定地形
+    pub fn has_terrain_at(&self, coords: (i32, i32), terrain: TerrainType) -> bool {
+        self.world_tiles
+            .get(&terrain)
+            .map(|set| set.contains(&coords))
+            .unwrap_or(false)
     }
 
-    /// 获取所有已使用的世界格子坐标
+    /// 获取某坐标的所有地形类型
+    pub fn get_terrains_at(&self, coords: (i32, i32)) -> Vec<TerrainType> {
+        self.world_tiles
+            .iter()
+            .filter(|(_, set)| set.contains(&coords))
+            .map(|(terrain, _)| *terrain)
+            .collect()
+    }
+
+    /// 获取所有有地形的坐标（去重）
     pub fn get_used_cells(&self) -> Vec<(i32, i32)> {
-        self.world_tiles.keys().copied().collect()
+        let mut all: HashSet<(i32, i32)> = HashSet::new();
+        for set in self.world_tiles.values() {
+            all.extend(set);
+        }
+        all.into_iter().collect()
+    }
+
+    /// 获取某地形层的所有坐标
+    pub fn get_cells_for_terrain(&self, terrain: TerrainType) -> Vec<(i32, i32)> {
+        self.world_tiles
+            .get(&terrain)
+            .map(|set| set.iter().copied().collect())
+            .unwrap_or_default()
     }
 
     /// 计算某个显示格子位置的四角组合对应的 atlas_coord
@@ -121,16 +165,15 @@ impl DualGrid {
         let down_left = (display_pos.0 - 1, display_pos.1);
         let down_right = (display_pos.0, display_pos.1);
 
-        let corners = [
-            self.get_world_tile(up_left),
-            self.get_world_tile(up_right),
-            self.get_world_tile(down_left),
-            self.get_world_tile(down_right),
-        ];
-
-        // 将地形类型转换为针对目标地形的 NotNull/Null
-        let corner_key: CornerKey = corners.map(|t| {
-            if t == target_terrain {
+        // 检查四角是否属于目标地形
+        let corner_key: CornerKey = [
+            self.has_terrain_at(up_left, target_terrain),
+            self.has_terrain_at(up_right, target_terrain),
+            self.has_terrain_at(down_left, target_terrain),
+            self.has_terrain_at(down_right, target_terrain),
+        ]
+        .map(|has| {
+            if has {
                 CornerState::NotNull
             } else {
                 CornerState::Null
@@ -152,21 +195,26 @@ impl DualGrid {
             .collect()
     }
 
-    /// 噪声生成地形
-    /// 返回所有世界格子的地形类型映射
+    /// 噪声生成地形（每地形独立判断，一坐标可属多地形）
+    /// 返回：坐标 → 该坐标的所有地形列表
     pub fn generate_terrain_from_noise(
         width: i32,
         height: i32,
         noise_values: &HashMap<(i32, i32), f64>,
         thresholds: &TerrainThresholds,
-    ) -> HashMap<(i32, i32), TerrainType> {
-        let mut result = HashMap::new();
+    ) -> HashMap<(i32, i32), Vec<TerrainType>> {
+        let mut result: HashMap<(i32, i32), Vec<TerrainType>> = HashMap::new();
         for x in 0..width {
             for y in 0..height {
                 let value = noise_values.get(&(x, y)).copied().unwrap_or(0.0);
-                let terrain = thresholds.classify(value);
-                if !terrain.is_null() {
-                    result.insert((x, y), terrain);
+                // 每个地形独立判断，一个坐标可属于多个地形
+                for entry in &thresholds.entries {
+                    if value >= entry.min_value && value < entry.max_value {
+                        result
+                            .entry((x, y))
+                            .or_insert_with(Vec::new)
+                            .push(entry.terrain_id);
+                    }
                 }
             }
         }
@@ -174,15 +222,16 @@ impl DualGrid {
     }
 }
 
-/// 地形阈值条目：地形 ID + 噪声值上限
+/// 地形阈值条目：地形 ID + 噪声值范围 [min, max)
 #[derive(Debug, Clone)]
 pub struct TerrainThresholdEntry {
     pub terrain_id: TerrainType,
+    pub min_value: f64,
     pub max_value: f64,
 }
 
 /// 地形阈值配置，用于噪声生成
-/// 按顺序匹配：噪声值 < 第一个条目的 max_value → 该地形，否则检查下一个
+/// 每个地形独立判断：噪声值在 [min_value, max_value) 范围内则属于该地形
 #[derive(Debug, Clone)]
 pub struct TerrainThresholds {
     pub entries: Vec<TerrainThresholdEntry>,
@@ -193,18 +242,6 @@ impl Default for TerrainThresholds {
         Self {
             entries: Vec::new(),
         }
-    }
-}
-
-impl TerrainThresholds {
-    /// 根据噪声值分类地形
-    pub fn classify(&self, value: f64) -> TerrainType {
-        for entry in &self.entries {
-            if value < entry.max_value {
-                return entry.terrain_id;
-            }
-        }
-        TerrainType::NULL
     }
 }
 
@@ -288,32 +325,52 @@ pub struct PropPlacement {
 }
 
 /// 根据噪声值和概率在地图上放置资源
+/// terrains: 坐标 → 该坐标的所有地形列表（支持同一坐标属于多个地形）
 pub fn place_props(
     width: i32,
     height: i32,
     noise_values: &HashMap<(i32, i32), f64>,
-    terrains: &HashMap<(i32, i32), TerrainType>,
+    terrains: &HashMap<(i32, i32), Vec<TerrainType>>,
     prop_configs: &[PropConfig],
     rng: &mut impl FnMut() -> f64,
 ) -> Vec<PropPlacement> {
     let mut placements = Vec::new();
 
+    // 统计计数器
+    let mut total_coords = 0i32;
+    let mut coords_with_terrain = 0i32;
+    let mut terrain_match_count = 0i32;
+    let mut noise_match_count = 0i32;
+    let mut prob_pass_count = 0i32;
+
     for x in 0..width {
         for y in 0..height {
+            total_coords += 1;
             let noise_val = noise_values.get(&(x, y)).copied().unwrap_or(0.0);
-            let terrain = terrains.get(&(x, y)).copied().unwrap_or(TerrainType::NULL);
+            let coord_terrains = terrains.get(&(x, y)).cloned().unwrap_or_default();
+            if !coord_terrains.is_empty() {
+                coords_with_terrain += 1;
+            }
 
             for prop in prop_configs {
-                // 检查地形是否允许
-                if !prop.allowed_terrains.contains(&terrain) {
+                // 检查该坐标的任一地形是否允许放置此资源
+                let terrain_allowed = coord_terrains
+                    .iter()
+                    .any(|t| prop.allowed_terrains.contains(t));
+                if !terrain_allowed {
                     continue;
                 }
+                terrain_match_count += 1;
+
                 // 检查噪声范围
                 if noise_val < prop.noise_range.0 || noise_val >= prop.noise_range.1 {
                     continue;
                 }
+                noise_match_count += 1;
+
                 // 概率检查
                 if rng() < prop.probability {
+                    prob_pass_count += 1;
                     placements.push(PropPlacement {
                         coords: (x, y),
                         source_id: prop.source_id,
@@ -323,6 +380,11 @@ pub fn place_props(
             }
         }
     }
+
+    godot_print!(
+        "[place_props] 统计: 总坐标={}, 有地形={}, 地形匹配={}, 噪声匹配={}, 概率通过={}, 最终放置={}",
+        total_coords, coords_with_terrain, terrain_match_count, noise_match_count, prob_pass_count, placements.len()
+    );
 
     placements
 }
