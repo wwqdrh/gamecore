@@ -133,6 +133,23 @@ core 是一个基于 Rust 的 Godot 4 GDExtension 项目，使用 gdext 库与 G
     - 编辑器支持：继承 TileMapLayer 后可在编辑器中直接配置 TileSet 图集
     - 方法：load_resource_config、load_resource_config_from_string、set_tile、set_terrain、erase_tile、get_terrain_type、generate_map、generate_map_with_resources、clear_map、set_thresholds、refresh_display、add_terrain_config、add_prop_config、set_tile_set
 
+12. **TileMapDual 双网格地形过渡系统**（tilemap 模块）
+    - 移植自 GDScript TileMapDual 插件 v5.0.2，保持 API 和属性与原版一致
+    - TileMapDual：双网格 TileMapLayer，世界网格存储逻辑地形，通过 Display 子节点显示过渡贴图，使用 ghost material 使世界网格不可见
+    - DisplayLayer：显示层 TileMapLayer，根据父 TileMapDual 的内容和 TerrainLayer 规则自动计算和更新显示贴图
+    - Display：Node2D 管理节点，管理最多 2 个 DisplayLayer 子节点，根据 GridShape 创建对应数量的 DisplayLayer
+    - TerrainDual：地形系统核心，管理 TerrainLayer 集合，根据 TileSet 的 terrain set 0 自动生成地形过渡规则
+    - TerrainLayer：单层地形规则，存储 terrain_neighbors → {sid, tile} 映射和 display_to_world_neighborhood 路径
+    - TileSetWatcher：监视 TileSet 变化（tile_size/tile_shape/terrain set 0），发射 tileset_resized/atlas_autotiled 信号
+    - TileCache：缓存世界网格中每个格子的贴图位置和地形，支持 XOR 对称差集计算
+    - CursorDual：Sprite2D 光标节点，跟随鼠标在 TileMapDual 上绘制贴图，支持快捷键切换地形
+    - GridShape 枚举：SQUARE/ISO/HALF_OFF_HORI/HALF_OFF_VERT/HEX_HORI/HEX_VERT，对应不同 TileSet.tile_shape * tile_offset_axis 组合
+    - Ghost shader：内联创建（ShaderMaterial + canvas_item shader，alpha=0），替代原版 preload .tres 文件
+    - Godot 4.3 兼容模式：双检查所有格子（godot_4_3_compatibility 属性）
+    - 编辑器专属功能（autotile/popup）按对齐方案在 GDScript 中实现，Rust 仅处理运行时逻辑
+    - 属性：refresh_time、godot_4_3_compatibility、display_material
+    - 方法：draw_cell、get_cell
+
 ## 项目结构
 
 ```
@@ -220,6 +237,20 @@ core/
 │           ├── dual_grid_iso.rs # 等距双网格算法核心逻辑
 │           ├── gd_map_basic.rs # GdMapBasic 方形地图节点
 │           └── gd_map_isometric.rs # GdMapIsometric 等距地图节点
+│       └── tilemap/           # TileMapDual 双网格地形过渡模块（移植自 TileMapDual v5.0.2）
+│           ├── mod.rs      # 模块入口
+│           ├── util.rs     # Util 静态工具函数（reverse_neighbor 等）
+│           ├── grid_shape.rs # GridShape 枚举与 tileset_gridshape 函数
+│           ├── tile_cache.rs # TileCache 格子缓存（Resource）
+│           ├── terrain_layer.rs # TerrainLayer 单层地形规则（Resource）
+│           ├── atlas_watcher.rs # AtlasWatcher 图集监视器（Resource）
+│           ├── tile_set_watcher.rs # TileSetWatcher TileSet 监视器（Resource）
+│           ├── terrain_dual.rs # TerrainDual 地形系统核心（Resource）
+│           ├── terrain_preset.rs # TerrainPreset 地形预设（Resource）
+│           ├── display_layer.rs # DisplayLayer 显示层（TileMapLayer）
+│           ├── display.rs   # Display 显示管理节点（Node2D）
+│           ├── tile_map_dual.rs # TileMapDual 主类（TileMapLayer）
+│           └── cursor_dual.rs # CursorDual 光标节点（Sprite2D）
 ├── example/
 │   ├── test_from_gd_script.gd  # GDScript 测试脚本
 │   ├── fish_procedural_anim.gd # 鱼的程序化动画示例

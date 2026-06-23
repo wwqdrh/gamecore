@@ -1,0 +1,28 @@
+[gd_scene format=4 uid="uid://dy28wf3fikc7d"]
+
+[ext_resource type="TileSet" uid="uid://7l0cwy2ahtmu" path="res://assets/tileset/iso.tres" id="1_utpqm"]
+[ext_resource type="Texture2D" uid="uid://cboyfp0fxdjd5" path="res://assets/cursor.svg" id="3_sdgx4"]
+
+[sub_resource type="Shader" id="Shader_5hed8"]
+code = "
+shader_type canvas_item;
+void fragment() {
+    COLOR.a = 0.0;
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_oxxsf"]
+shader = SubResource("Shader_5hed8")
+
+[node name="Isometric" type="Node2D" unique_id=1332533071]
+
+[node name="TileMapDual" type="TileMapDual" parent="." unique_id=1329398767]
+material = SubResource("ShaderMaterial_oxxsf")
+tile_map_data = PackedByteArray("AAABAAMAAQAAAAMAAAACAAYAAQAAAAMAAAACAAcAAQAAAAMAAAACAAUAAQAAAAMAAAADAAYAAQAAAAMAAAABAAcAAQAAAAMAAAAEAAYAAQACAAEAAAAFAAYAAQACAAEAAAAGAAgAAQAAAAMAAAAFAAoAAQACAAEAAAAEAAkAAQAAAAMAAAADAAkAAQAAAAMAAAADAAoAAQAAAAMAAAAEAAwAAQAAAAMAAAACAAoAAQAAAAMAAAADAAQAAQAAAAMAAAADAAUAAQACAAEAAAAEAAQAAQACAAEAAAAEAAUAAQACAAEAAAADAAMAAQAAAAMAAAACAAIAAQAAAAMAAAACAAMAAQAAAAMAAAADAAIAAQAAAAMAAAACAAEAAQAAAAMAAAADAAgAAQAAAAMAAAACAAgAAQAAAAMAAAADAAcAAQAAAAMAAAAEAAcAAQACAAEAAAAFAAgAAQACAAEAAAAFAAkAAQACAAEAAAAFAAcAAQACAAEAAAAEAAgAAQAAAAMAAAAEAAoAAQAAAAMAAAAEAAsAAQAAAAMAAAADAAsAAQAAAAMAAAABAAgAAQAAAAMAAAACAAsAAQAAAAMAAAA=")
+tile_set = ExtResource("1_utpqm")
+
+[node name="CursorDual" type="CursorDual" parent="." unique_id=662328264]
+position = Vector2(515, 264)
+texture = ExtResource("3_sdgx4")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1958505782]

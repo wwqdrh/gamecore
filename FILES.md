@@ -466,6 +466,75 @@
 - 噪声生成：内置 Perlin-like 噪声算法，支持种子可复现
 - 资源放置：根据噪声值和概率自动放置资源
 
+## tilemap 模块（TileMapDual 双网格地形过渡系统）
+
+### [rust/src/tilemap/mod.rs](file:///Users/dengronghui/project/gamekit/gamecore/rust/src/tilemap/mod.rs)
+- TileMapDual 模块入口，移植自 GDScript TileMapDual 插件 v5.0.2
+- 提供双网格地形过渡系统：世界网格存储逻辑地形，显示网格根据四角组合查表得到过渡贴图
+
+### [rust/src/tilemap/util.rs](file:///Users/dengronghui/project/gamekit/gamecore/rust/src/tilemap/util.rs)
+- Util 静态工具函数
+- 方法：reverse_neighbor（反转 CellNeighbor）、cell_neighbors_to_var_array、cell_neighbors_2d_to_var_array
+
+### [rust/src/tilemap/grid_shape.rs](file:///Users/dengronghui/project/gamekit/gamecore/rust/src/tilemap/grid_shape.rs)
+- GridShape 枚举（SQUARE/ISO/HALF_OFF_HORI/HALF_OFF_VERT/HEX_HORI/HEX_VERT）
+- tileset_gridshape 函数：根据 TileSet 的 tile_shape 和 tile_offset_axis 返回 GridShape
+
+### [rust/src/tilemap/tile_cache.rs](file:///Users/dengronghui/project/gamekit/gamecore/rust/src/tilemap/tile_cache.rs)
+- **TileCache** 类（继承 Resource）
+- 缓存世界网格中每个格子的贴图位置和地形（cells: Dictionary[Vector2i, Dictionary{sid, tile, terrain}]）
+- 方法：update、update_edited、xor（对称差集）、get_terrain_at
+
+### [rust/src/tilemap/terrain_layer.rs](file:///Users/dengronghui/project/gamekit/gamecore/rust/src/tilemap/terrain_layer.rs)
+- **TerrainLayer** 类（继承 Resource）
+- 单层地形规则，存储 terrain_neighbors → {sid, tile} 映射和 display_to_world_neighborhood 路径
+- 方法：apply_rule、register_rule
+
+### [rust/src/tilemap/atlas_watcher.rs](file:///Users/dengronghui/project/gamekit/gamecore/rust/src/tilemap/atlas_watcher.rs)
+- **AtlasWatcher** 类（继承 Resource）
+- 图集监视器，监视 TileSetAtlasSource 的图集变化
+
+### [rust/src/tilemap/tile_set_watcher.rs](file:///Users/dengronghui/project/gamekit/gamecore/rust/src/tilemap/tile_set_watcher.rs)
+- **TileSetWatcher** 类（继承 Resource）
+- 监视 TileSet 变化（tile_size/tile_shape/terrain set 0）
+- 信号：tileset_resized、atlas_autotiled
+- 属性：tile_set、tile_size、grid_shape
+
+### [rust/src/tilemap/terrain_dual.rs](file:///Users/dengronghui/project/gamekit/gamecore/rust/src/tilemap/terrain_dual.rs)
+- **TerrainDual** 类（继承 Resource）
+- 地形系统核心，管理 TerrainLayer 集合
+- 根据 TileSet 的 terrain set 0 自动生成地形过渡规则
+- 信号：changed
+- 属性：terrains、layers
+
+### [rust/src/tilemap/terrain_preset.rs](file:///Users/dengronghui/project/gamekit/gamecore/rust/src/tilemap/terrain_preset.rs)
+- **TerrainPreset** 类（继承 Resource）
+- 地形预设，neighborhood_preset 静态方法返回预设地形配置
+
+### [rust/src/tilemap/display_layer.rs](file:///Users/dengronghui/project/gamekit/gamecore/rust/src/tilemap/display_layer.rs)
+- **DisplayLayer** 类（继承 TileMapLayer）
+- 显示层，根据父 TileMapDual 的内容和 TerrainLayer 规则自动计算和更新显示贴图
+- 方法：setup、reposition、update_properties、update_tiles_all、update_tiles、update_tile、follow_path
+
+### [rust/src/tilemap/display.rs](file:///Users/dengronghui/project/gamekit/gamecore/rust/src/tilemap/display.rs)
+- **Display** 类（继承 Node2D）
+- 显示管理节点，管理最多 2 个 DisplayLayer 子节点
+- 信号：world_tiles_changed
+- 方法：setup、update
+
+### [rust/src/tilemap/tile_map_dual.rs](file:///Users/dengronghui/project/gamekit/gamecore/rust/src/tilemap/tile_map_dual.rs)
+- **TileMapDual** 类（继承 TileMapLayer，tool 模式）
+- 双网格 TileMapLayer 主类，世界网格存储逻辑地形，通过 Display 子节点显示过渡贴图
+- 使用 ghost material（内联 ShaderMaterial，alpha=0）使世界网格不可见
+- 属性：refresh_time、godot_4_3_compatibility、display_material
+- 方法：draw_cell、get_cell
+
+### [rust/src/tilemap/cursor_dual.rs](file:///Users/dengronghui/project/gamekit/gamecore/rust/src/tilemap/cursor_dual.rs)
+- **CursorDual** 类（继承 Sprite2D）
+- 光标节点，跟随鼠标在 TileMapDual 上绘制贴图
+- 属性：tilemap_dual
+- 支持快捷键切换地形（0/1/2），左键绘制，右键擦除
+
 ### [vendor/gamedialog/Cargo.toml](file:///Users/dengronghui/project/gamekit/core/vendor/gamedialog/Cargo.toml)
 - gamedialog crate 配置，纯 Rust 对话脚本引擎库
 
@@ -825,3 +894,20 @@
 | 2026-06-15 | example/ui/tudouxiongdi/levelup.gd | 重写升级弹窗界面严格匹配HTML设计稿；builder.rs新增ProgressBar fill颜色支持(background→fill,track→background)和theme默认值 |
 | 2026-06-15 | example/ui/tudouxiongdi/pause.gd | 新建土豆兄弟暂停/结算面板GML控制器，严格匹配pause.html设计稿 |
 | 2026-06-23 | rust/src/map/dual_grid_iso.rs | 修复等距双网格偏移量Bug：calculate_display_tile中top=(0,-1)→(-1,-1), right=(1,-1)→(0,-1), left=(-1,-1)→(-1,0)；ISO_FOUR_CELLS从[(0,0),(-1,1),(0,1),(1,1)]修正为[(0,0),(1,1),(0,1),(1,0)]；更新相关注释 |
+| 2026-06-24 | rust/src/tilemap/ | 新建tilemap模块，移植自GDScript TileMapDual插件v5.0.2，包含util/grid_shape/tile_cache/terrain_layer/atlas_watcher/tile_set_watcher/terrain_dual/terrain_preset/display_layer/display/tile_map_dual/cursor_dual共12个文件 |
+| 2026-06-24 | rust/src/tilemap/mod.rs | 新建模块入口，导出所有子模块 |
+| 2026-06-24 | rust/src/tilemap/util.rs | 新建Util静态工具函数（reverse_neighbor/cell_neighbors_to_var_array/cell_neighbors_2d_to_var_array） |
+| 2026-06-24 | rust/src/tilemap/grid_shape.rs | 新建GridShape枚举与tileset_gridshape函数 |
+| 2026-06-24 | rust/src/tilemap/tile_cache.rs | 新建TileCache类（继承Resource），缓存格子贴图位置和地形，支持XOR对称差集 |
+| 2026-06-24 | rust/src/tilemap/terrain_layer.rs | 新建TerrainLayer类（继承Resource），单层地形规则，terrain_neighbors→{sid,tile}映射 |
+| 2026-06-24 | rust/src/tilemap/atlas_watcher.rs | 新建AtlasWatcher类（继承Resource），图集监视器 |
+| 2026-06-24 | rust/src/tilemap/tile_set_watcher.rs | 新建TileSetWatcher类（继承Resource），监视TileSet变化，发射tileset_resized/atlas_autotiled信号 |
+| 2026-06-24 | rust/src/tilemap/terrain_dual.rs | 新建TerrainDual类（继承Resource），地形系统核心，管理TerrainLayer集合，自动生成地形过渡规则 |
+| 2026-06-24 | rust/src/tilemap/terrain_preset.rs | 新建TerrainPreset类（继承Resource），地形预设，neighborhood_preset静态方法 |
+| 2026-06-24 | rust/src/tilemap/display_layer.rs | 新建DisplayLayer类（继承TileMapLayer），显示层，自动计算和更新显示贴图 |
+| 2026-06-24 | rust/src/tilemap/display.rs | 新建Display类（继承Node2D），显示管理节点，管理DisplayLayer子节点 |
+| 2026-06-24 | rust/src/tilemap/tile_map_dual.rs | 新建TileMapDual类（继承TileMapLayer,tool），双网格主类，ghost material内联创建，draw_cell/get_cell方法 |
+| 2026-06-24 | rust/src/tilemap/cursor_dual.rs | 新建CursorDual类（继承Sprite2D），光标节点，跟随鼠标绘制贴图 |
+| 2026-06-24 | PROJECT.md | 添加tilemap模块说明（第12节）和项目结构中的tilemap目录 |
+| 2026-06-24 | FILES.md | 添加tilemap模块文件索引和变更记录 |
+| 2026-06-24 | API.md | 新建API使用手册，包含TileMapDual模块API文档 |
