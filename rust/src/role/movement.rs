@@ -40,6 +40,9 @@ pub struct GdRoleMover {
     #[export]
     enable: bool,
 
+    /// 剧情锁：对话/演出期间暂停一切移动（不影响 enable 的配置语义）
+    paused: bool,
+
     /// 控制方式 CONTROL_NONE / CONTROL_KEYBOARD / CONTROL_MOUSE / CONTROL_AI
     #[export]
     control_mode: i64,
@@ -136,6 +139,7 @@ impl ICharacterBody2D for GdRoleMover {
     fn init(base: Base<CharacterBody2D>) -> Self {
         Self {
             enable: true,
+            paused: false,
             control_mode: CONTROL_KEYBOARD,
             move_mode: MODE_FOUR_WAY,
             speed: 150.0,
@@ -186,7 +190,7 @@ impl ICharacterBody2D for GdRoleMover {
     }
 
     fn physics_process(&mut self, delta: f64) {
-        if !self.enable {
+        if !self.enable || self.paused {
             return;
         }
         self.tick(delta);
@@ -271,6 +275,22 @@ impl GdRoleMover {
     #[func]
     pub fn get_velocity(&self) -> Vector2 {
         self.base().get_velocity()
+    }
+
+    /// 暂停/恢复移动（对话等剧情演出期间锁定，停止并清零速度）
+    #[func]
+    pub fn set_paused(&mut self, paused: bool) {
+        self.paused = paused;
+        if paused {
+            self.stop();
+            self.base_mut().set_velocity(Vector2::ZERO);
+        }
+    }
+
+    /// 是否被剧情锁暂停
+    #[func]
+    pub fn is_paused(&self) -> bool {
+        self.paused
     }
 
     // ---- 内部实现 ----

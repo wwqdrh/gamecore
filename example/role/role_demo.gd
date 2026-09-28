@@ -1,39 +1,78 @@
-# role 模块示例：键盘四向玩家 + 三种 NPC 行为
+# role 模块示例：键盘四向玩家 + NPC 行为 + 对话系统集成
 #
 # 场景布局（相机居中于原点）:
-#   - Player        蓝色，WASD/方向键四向移动（GdRoleMover 键盘控制，零配置）
-#   - NpcTopRight   黄色，右上角静止（GdNpcBrain IDLE）
-#   - NpcBottomLeft 绿色，左下角静止（GdNpcBrain IDLE）
-#   - NpcPatrol     红色，右下角在固定范围内横向来回巡逻（GdNpcBrain PATROL）
-#   - NpcFollow     紫色，跟随玩家但保持安全距离不重叠（GdNpcBrain FOLLOW）
+#   - Player         蓝色，WASD/方向键四向移动，speaker 角色"旅人"
+#   - Dialogue       共享 GdDialogue（加载 demo_timeline.txt）
+#   - DialogBox      对话框 UI（dialog_box.gd，同时充当对话状态存储）
+#   - NpcTopRight    黄色"长老"，IDLE，交互键(E)触发对话
+#   - NpcBottomLeft  绿色"小孩"，IDLE，靠近触发对话
+#   - NpcPatrol      红色"守卫"，横向巡逻，靠近 + 条件触发（需先见过长老）
+#   - NpcFollow      紫色"猫"，跟随玩家，3 秒后自动触发自言自语
 #
+# 对话期间双方自动暂停移动、互相面向，结束后恢复。
 # 运行: 打开 example/role/index.tscn 直接 F6 运行
 extends Node2D
 
-# 行为常量（与 GdNpcBrain 中定义一致）
-const AI_IDLE := 0
-const AI_PATROL := 2
-const AI_FOLLOW := 3
-
-# 控制方式常量（与 GdRoleMover 中定义一致）
-const CONTROL_NONE := 0
-const CONTROL_KEYBOARD := 1
-const CONTROL_AI := 3
+# 触发模式常量（与 GdDialogTrigger 一致）
+const TRIGGER_PROXIMITY := 0
+const TRIGGER_INTERACT := 1
+const TRIGGER_AUTO := 2
 
 const VIEW_HALF := Vector2(460, 260)  # 各 NPC 相对屏幕中心的基准位置
 
 var player: GdRoleMover
+var dialogue: GdDialogue
 
 
 func _ready() -> void:
 	_make_background()
+	_make_dialog_system()
 	player = _make_player()
-	_make_static_npc("NpcTopRight", Vector2(VIEW_HALF.x, -VIEW_HALF.y), Color(0.95, 0.78, 0.25))
-	_make_static_npc("NpcBottomLeft", Vector2(-VIEW_HALF.x, VIEW_HALF.y), Color(0.45, 0.8, 0.5))
-	_make_patrol_npc(Vector2(VIEW_HALF.x, VIEW_HALF.y), Color(0.9, 0.42, 0.35))
-	_make_follow_npc(Vector2(-VIEW_HALF.x, 0), Color(0.62, 0.48, 0.9))
+	_make_static_npc("NpcTopRight", Vector2(VIEW_HALF.x, -VIEW_HALF.y),
+			Color(0.95, 0.78, 0.25), "长老", TRIGGER_INTERACT, "elder_first", "")
+	_make_static_npc("NpcBottomLeft", Vector2(-VIEW_HALF.x, VIEW_HALF.y),
+			Color(0.45, 0.8, 0.5), "小孩", TRIGGER_PROXIMITY, "kid_chat", "")
+	_make_patrol_npc(Vector2(VIEW_HALF.x, VIEW_HALF.y),
+			Color(0.9, 0.42, 0.35), "守卫", "guard_talk", "has_flag:met_elder")
+	_make_follow_npc(Vector2(-VIEW_HALF.x, 0),
+			Color(0.62, 0.48, 0.9), "猫", "cat_mind")
 	_make_camera()
-	_claim_ownership()
+
+
+# ---------------------------------------------------------------------------
+# 对话系统
+# ---------------------------------------------------------------------------
+
+## 共享 GdDialogue + DialogBox：所有 NPC 的触发器指向同一个 Dialogue，
+## 借助 is_playing 天然互斥，避免两场对话抢占 UI
+func _make_dialog_system() -> void:
+	dialogue = GdDialogue.new()
+	dialogue.name = "Dialogue"
+	dialogue.set_timeline_path("res://example/role/demo_timeline.txt")
+	add_child(dialogue)
+
+	var box: CanvasLayer = load("res://example/role/dialog_box.gd").new()
+	box.name = "DialogBox"
+	box.dialogue_path = NodePath("../Dialogue")
+	add_child(box)
+
+
+## 给 NPC 挂对话绑定与触发器
+func _add_dialog_parts(npc: GdRoleMover, role_name: String, mode: int,
+		entry: String, condition: String) -> void:
+	var speaker := GdRoleSpeaker.new()
+	speaker.name = "Speaker"
+	speaker.role_name = role_name
+	npc.add_child(speaker)
+
+	var trigger := GdDialogTrigger.new()
+	trigger.name = "Trigger"
+	trigger.trigger_mode = mode
+	trigger.dialogue_path = NodePath("../../Dialogue")
+	trigger.entry_stage = entry
+	trigger.condition_fn = condition
+	trigger.trigger_radius = 100.0
+	npc.add_child(trigger)
 
 
 # ---------------------------------------------------------------------------
@@ -42,17 +81,20 @@ func _ready() -> void:
 
 func _make_player() -> GdRoleMover:
 	player = GdRoleMover.new()
-
 	player.name = "Player"
-	player.control_mode = CONTROL_KEYBOARD
-	player.move_mode = 0  # 四向
+	player.control_mode = 1  # 键盘
+	player.move_mode = 0     # 四向
 	player.speed = 220.0
 	player.position = Vector2.ZERO
 	_attach_visual(player, Vector2(36, 36), Color(0.3, 0.6, 1.0))
-	add_child(player)
 
-	# 键盘提示
-	_make_label("Player  WASD/方向键移动", Vector2(-110, -60), Color(0.7, 0.85, 1.0))
+	var speaker := GdRoleSpeaker.new()
+	speaker.name = "Speaker"
+	speaker.role_name = "旅人"
+	player.add_child(speaker)
+
+	add_child(player)
+	_make_label("WASD 移动  E 对话", Vector2(-80, -64), Color(0.7, 0.85, 1.0))
 	return player
 
 
@@ -60,23 +102,27 @@ func _make_player() -> GdRoleMover:
 # NPC
 # ---------------------------------------------------------------------------
 
-## 静止 NPC：IDLE 行为，只站桩
-func _make_static_npc(npc_name: String, pos: Vector2, color: Color) -> void:
+## 静止 NPC：IDLE 站桩
+func _make_static_npc(npc_name: String, pos: Vector2, color: Color,
+		role_name: String, mode: int, entry: String, condition: String) -> void:
 	var npc := GdRoleMover.new()
 	npc.name = npc_name
-	npc.control_mode = CONTROL_NONE  # 不响应任何输入
+	npc.control_mode = 0  # 不响应输入
 	npc.position = pos
 	_attach_visual(npc, Vector2(32, 32), color)
 	add_child(npc)
 
 	var brain := GdNpcBrain.new()
 	brain.name = npc_name + "Brain"
-	brain.behavior = AI_IDLE
+	brain.behavior = 0  # IDLE
 	npc.add_child(brain)
+
+	_add_dialog_parts(npc, role_name, mode, entry, condition)
 
 
 ## 巡逻 NPC：在出生点两侧 120px 范围内横向来回走动
-func _make_patrol_npc(pos: Vector2, color: Color) -> void:
+func _make_patrol_npc(pos: Vector2, color: Color, role_name: String,
+		entry: String, condition: String) -> void:
 	var npc := GdRoleMover.new()
 	npc.name = "NpcPatrol"
 	npc.position = pos
@@ -85,19 +131,22 @@ func _make_patrol_npc(pos: Vector2, color: Color) -> void:
 
 	var brain := GdNpcBrain.new()
 	brain.name = "NpcPatrolBrain"
-	brain.behavior = AI_PATROL
+	brain.behavior = 2  # PATROL
 	brain.patrol_points = PackedVector2Array([
 		pos + Vector2(-120, 0),
 		pos + Vector2(120, 0),
 	])
 	brain.patrol_loop = true
-	brain.patrol_pause = 0.8  # 在端点稍作停留，更像人
+	brain.patrol_pause = 0.8
 	brain.arrival_distance = 6.0
 	npc.add_child(brain)
 
+	_add_dialog_parts(npc, role_name, TRIGGER_PROXIMITY, entry, condition)
 
-## 跟随 NPC：保持 follow_stop_distance 的安全距离，不与玩家重叠
-func _make_follow_npc(pos: Vector2, color: Color) -> void:
+
+## 跟随 NPC：保持安全距离跟随玩家，auto_delay 秒后自动开口
+func _make_follow_npc(pos: Vector2, color: Color, role_name: String,
+		entry: String) -> void:
 	var npc := GdRoleMover.new()
 	npc.name = "NpcFollow"
 	npc.position = pos
@@ -106,13 +155,13 @@ func _make_follow_npc(pos: Vector2, color: Color) -> void:
 
 	var brain := GdNpcBrain.new()
 	brain.name = "NpcFollowBrain"
-	brain.behavior = AI_FOLLOW
+	brain.behavior = 3  # FOLLOW
 	brain.follow_target = player
-	brain.follow_stop_distance = 80.0  # 安全距离，避免重叠
+	brain.follow_stop_distance = 80.0
 	brain.arrival_distance = 6.0
 	npc.add_child(brain)
 
-	# 玩家移动后跟随目标引用不变，无需额外处理
+	_add_dialog_parts(npc, role_name, TRIGGER_AUTO, entry, "")
 	_make_label("Follow", Vector2(-24, -52), color)
 
 
@@ -155,26 +204,3 @@ func _make_camera() -> void:
 	cam.position = Vector2.ZERO
 	add_child(cam)
 	cam.make_current()
-
-## pack() 只保存 owner 为根节点的节点 —— 运行时创建的节点必须补设 owner
-## SaveButton 是工具按钮，跳过它，使其不被写入文件
-func _claim_ownership() -> void:
-	for child in get_children():
-		if child.name == "SaveButton":
-			continue
-		_set_owner_recursive(child)
-
-
-func _set_owner_recursive(node: Node) -> void:
-	node.owner = self
-	for child in node.get_children():
-		_set_owner_recursive(child)
-
-
-func _show_toast(text: String) -> void:
-	var label := Label.new()
-	label.text = text
-	label.position = Vector2(170, 22)
-	label.modulate = Color(0.7, 1.0, 0.7)
-	add_child(label)
-	get_tree().create_timer(2.0).timeout.connect(label.queue_free)

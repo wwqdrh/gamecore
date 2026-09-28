@@ -1,0 +1,67 @@
+# demo_timeline - role 示例对话时间线
+# 语法：[stage@标记] 舞台；(角色名) 说话人轮换；- 选项@动作；
+#       @函数:参数 调用对话 control 上的方法；:goto:stage 控制流
+
+# ---- 长老：交互键触发（elder_first），见过后二次对话走 elder_again ----
+[elder_first]
+(长老,旅人)
+年轻人，你终于醒了。三天前你在村口倒下，是我们把你抬回来的。
+@set_flag:met_elder
+- 这里是什么地方？@goto:elder_story
+- 谢谢你救了我。@goto:elder_thanks
+
+[elder_story]
+(长老)
+这里是雾隐村。三个月前，村子被浓雾围住，出不去也进不来。
+(旅人)
+所以我想办法出去看看。
+:goto:elder_end
+
+[elder_thanks]
+(长老)
+举手之劳。不过你既然醒了，或许命中注定要帮我们一把。
+:goto:elder_end
+
+[elder_end]
+(长老)
+去村子里走走吧，和大家聊聊。守卫就在东边巡逻。
+
+[elder_again]
+(长老)
+感觉如何？村子虽小，人心却齐。有什么难处就来找我。
+
+# ---- 小孩：靠近触发（proximity）----
+[kid_chat]
+(小孩,旅人)
+哇！你是新来的人吗？我叫小豆子！
+- 你知道怎么出村吗？@goto:kid_hint
+- 你在玩什么呀？@goto:kid_play
+
+[kid_hint]
+(小孩)
+出村？出不去的啦！雾把路都吃掉了，大人们都这么说。
+
+[kid_play]
+(小孩)
+我在抓萤火虫！你要一起吗？……算了，大人都不会玩。
+
+# ---- 守卫：靠近 + 条件触发（condition_fn = has_flag:met_elder）----
+[guard_talk]
+(守卫)
+见过村长了？那你应该听说了雾的事。
+@set_flag:guard_talked
+- 有什么我能帮忙的？@goto:guard_quest
+- 只是听说而已。@goto:guard_bye
+
+[guard_quest]
+(守卫)
+北边的桥是唯一的出路，但雾最浓的地方就在那里。想去的话，先把自己变强吧。
+
+[guard_bye]
+(守卫)
+嘿，别不当回事。这雾，连鸟都飞不出去。
+
+# ---- 猫：自动触发（auto，自言自语，无玩家参与）----
+[cat_mind]
+(猫)
+……喵。（猫抬头看了你一眼，又缩回了爪子。）

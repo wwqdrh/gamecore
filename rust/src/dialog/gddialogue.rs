@@ -44,6 +44,8 @@ pub struct GdDialogue {
     role_target: HashMap<String, NodePath>,
     /// 是否在等待 response 选择
     in_response: bool,
+    /// 对话是否正在播放中（第一条 next 后为 true，timeline 播完为 false）
+    playing: bool,
     /// 对话控制节点的缓存引用
     dialogue_control: Option<Gd<Node>>,
 }
@@ -64,6 +66,7 @@ impl INode for GdDialogue {
             scene_manager: SceneManager::new(),
             role_target: HashMap::new(),
             in_response: false,
+            playing: false,
             dialogue_control: None,
         }
     }
@@ -164,7 +167,7 @@ impl GdDialogue {
 
     /// 检查角色是否已注册且节点有效
     #[func]
-    fn is_registered_role(&self, role: GString) -> bool {
+    pub fn is_registered_role(&self, role: GString) -> bool {
         let role_str = role.to_string();
         if let Some(path) = self.role_target.get(&role_str) {
             if self.try_get_node(path).is_some() {
@@ -176,7 +179,7 @@ impl GdDialogue {
 
     /// 注册角色对应的节点
     #[func]
-    fn register_role_node(&mut self, role: GString, target: Gd<Node>) {
+    pub fn register_role_node(&mut self, role: GString, target: Gd<Node>) {
         let role_str = role.to_string();
         let path = target.get_path();
         self.role_target.insert(role_str, path);
@@ -184,7 +187,7 @@ impl GdDialogue {
 
     /// 获取角色节点的全局位置
     #[func]
-    fn get_role_pos(&self, role: GString) -> Variant {
+    pub fn get_role_pos(&self, role: GString) -> Variant {
         let role_str = role.to_string();
         if let Some(path) = self.role_target.get(&role_str) {
             if let Some(mut node) = self.try_get_node(path) {
@@ -196,7 +199,7 @@ impl GdDialogue {
 
     /// 推进对话到下一条，可选跳转到指定 label
     #[func]
-    fn next(&mut self, label: GString) {
+    pub fn next(&mut self, label: GString) {
         if self.in_response {
             return;
         }
@@ -217,6 +220,7 @@ impl GdDialogue {
         };
 
         if !timeline.has_next() {
+            self.playing = false;
             self.base_mut().emit_signal("s_finished", &[]);
             return;
         }
@@ -225,6 +229,7 @@ impl GdDialogue {
             Some(w) => w,
             None => return,
         };
+        self.playing = true;
 
         let mut dia_line = VarDictionary::new();
         dia_line.set("name", word.get_name());
@@ -270,7 +275,7 @@ impl GdDialogue {
 
     /// 执行选择分支的响应动作
     #[func]
-    fn exec_response(&mut self, data: VarDictionary, role: GString) {
+    pub fn exec_response(&mut self, data: VarDictionary, role: GString) {
         let expr: GString = match data.get("fn") {
             Some(v) => v.to::<GString>(),
             None => return,
@@ -392,7 +397,7 @@ impl GdDialogue {
 
     /// 用文本数据初始化 Timeline
     #[func]
-    fn initial(&mut self, data: GString) {
+    pub fn initial(&mut self, data: GString) {
         let data_str = data.to_string();
         let mut timeline = Timeline::new(&data_str);
         self.register_check(&mut timeline);
@@ -401,7 +406,7 @@ impl GdDialogue {
 
     /// 跳转到指定 stage
     #[func]
-    fn goto_stage(&mut self, label: GString) {
+    pub fn goto_stage(&mut self, label: GString) {
         if let Some(ref mut timeline) = self.timeline {
             timeline.goto_stage(&label.to_string());
         }
@@ -409,7 +414,7 @@ impl GdDialogue {
 
     /// 返回所有 stage 名称列表
     #[func]
-    fn all_stages(&mut self) -> PackedStringArray {
+    pub fn all_stages(&mut self) -> PackedStringArray {
         if let Some(ref timeline) = self.timeline {
             let stages = timeline.all_stages();
             return stages.iter()
@@ -421,13 +426,37 @@ impl GdDialogue {
 
     /// 是否还有下一条对话
     #[func]
-    fn has_next(&self) -> bool {
+    pub fn has_next(&self) -> bool {
         self.timeline.as_ref().map_or(false, |t| t.has_next())
+    }
+
+    /// 对话是否正在播放中
+    #[func]
+    pub fn is_playing(&self) -> bool {
+        self.playing
+    }
+
+    /// 在 dialogue_control 节点上调用方法（无 control 或方法缺失时返回 nil）
+    /// 用于触发器条件回调（如 DialogBox.has_flag）等跨节点查询
+    #[func]
+    pub fn call_control(&mut self, fn_name: GString, args: VarArray) -> Variant {
+        let Some(ref mut control) = self.dialogue_control else {
+            return Variant::nil();
+        };
+        if !control.is_instance_valid() {
+            return Variant::nil();
+        }
+        let has: bool = control.call("has_method", &[fn_name.to_variant()]).to();
+        if has {
+            control.callv(fn_name.to_string().as_str(), &args)
+        } else {
+            Variant::nil()
+        }
     }
 
     /// 获取 stage 的索引
     #[func]
-    fn stage_index(&self, label: GString) -> i32 {
+    pub fn stage_index(&self, label: GString) -> i32 {
         self.timeline.as_ref().map_or(-1, |t| t.stage_index(&label.to_string()))
     }
 }

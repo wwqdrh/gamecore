@@ -4,3 +4,5 @@
 // GdDialogue 为对话控制节点，管理 Timeline 和对话推进
 
 mod gddialogue;
+
+pub use gddialogue::GdDialogue;
