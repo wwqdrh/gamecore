@@ -64,6 +64,29 @@ fn build_tile_lookup() -> HashMap<CornerKey, (i32, i32)> {
     entries.into_iter().collect()
 }
 
+/// 四角组合 (up_left, up_right, down_left, down_right) → 图集坐标 (x, y)
+/// 与 build_tile_lookup 同表，供 GdQuickMap 双网格渲染直接使用
+pub fn dual_grid_atlas_coord(ul: bool, ur: bool, dl: bool, dr: bool) -> (i32, i32) {
+    match (ul, ur, dl, dr) {
+        (true, true, true, true) => (2, 1),     // 全地形
+        (false, false, false, true) => (1, 3),  // 右下角
+        (false, false, true, false) => (0, 0),  // 左下角
+        (false, true, false, false) => (0, 2),  // 右上角
+        (true, false, false, false) => (3, 3),  // 左上角
+        (false, true, false, true) => (1, 0),   // 右半边
+        (true, false, true, false) => (3, 2),   // 左半边
+        (false, false, true, true) => (3, 0),   // 下半边
+        (true, true, false, false) => (1, 2),   // 上半边
+        (false, true, true, true) => (1, 1),    // 缺左上
+        (true, false, true, true) => (2, 0),    // 缺右上
+        (true, true, false, true) => (2, 2),    // 缺左下
+        (true, true, true, false) => (3, 1),    // 缺右下
+        (false, true, true, false) => (2, 3),   // 左上/右下对角
+        (true, false, false, true) => (0, 1),   // 右上/左下对角
+        (false, false, false, false) => (0, 3), // 全空
+    }
+}
+
 /// 四个偏移量：用于从世界格子坐标计算显示格子四角对应的世界格子
 /// FOUR_CELLS = [(0,0), (1,0), (0,1), (1,1)]
 /// 对应四角：[左上, 右上, 左下, 右下]

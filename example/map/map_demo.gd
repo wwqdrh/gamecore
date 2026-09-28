@@ -40,6 +40,11 @@ func _make_map() -> void:
 	map.cell_size = CELL
 	map.seed_value = MAP_SEED
 	map.draw_grid_lines = true
+	# 每种地形一个 TileMapLayer；草地启用双网格 16 格过渡图集
+	map.terrain_names = PackedStringArray(["water", "sand", "grass", "forest", "mountain"])
+	map.terrain_dualgrid_textures = PackedStringArray([
+		"", "", "res://example/map/assets/tileset_grass.png", "", "",
+	])
 	add_child(map)
 	map.generate(MAP_SEED)
 	map.set_blocked_terrain_names(PackedStringArray(["water", "mountain"]))

@@ -139,3 +139,61 @@ func test_find_path() -> void:
 	# 起点 == 终点 → 空
 	assert_eq(map.find_path(start, start).size(), 0, "起点等于终点应返回空路径")
 	map.free()
+
+
+func test_terrain_layers() -> void:
+	var map := _make_map(16, 16, 2026)
+	map.terrain_names = PackedStringArray(["water", "sand", "grass", "forest", "mountain"])
+	map.terrain_dualgrid_textures = PackedStringArray([
+		"", "", "res://example/map/assets/tileset_grass.png", "", "",
+	])
+	map.generate(2026)
+
+	# 每种地形一个 TileMapLayer
+	assert_eq(map.get_child_count(), 5, "5 种地形应生成 5 个图层")
+
+	# 草地层：双网格模式，偏移半格且有内容
+	var grass := map.get_terrain_layer(2)
+	assert_true(grass != null, "草地图层应存在")
+	if grass != null:
+		assert_eq(grass.position, Vector2(-16, -16), "双网格图层应偏移 -半格")
+		assert_true(grass.get_used_cells().size() > 0, "草地图层应有过渡贴图")
+
+	# 水层：普通模式，无偏移；累积铺底下应铺满全部格子（作为最底层）
+	var water := map.get_terrain_layer(0)
+	assert_true(water != null, "水层应存在")
+	if water != null:
+		assert_eq(water.position, Vector2.ZERO, "普通图层不应偏移")
+		assert_eq(water.get_used_cells().size(), 16 * 16,
+			"水层作为最底层应铺满全图，避免上层透明缺口露灰底")
+
+	# 沙层：累积铺底应覆盖所有非水格（含草地格，作为草地图层缺口的垫底）
+	var sand := map.get_terrain_layer(1)
+	assert_true(sand != null, "沙层应存在")
+	if sand != null:
+		var non_water := 0
+		for cy in range(16):
+			for cx in range(16):
+				if String(map.get_terrain_name_at(Vector2i(cx, cy))) != "water":
+					non_water += 1
+		assert_eq(sand.get_used_cells().size(), non_water,
+			"沙层应铺满所有非水格（含上层地形格）")
+
+	# set_terrain_at 局部刷新：把一个格子改成草地，其右下受影响显示格必有图块
+	# （可能是新加的过渡片，也可能由"垫底整块"切换而来，故验证格子非空而非数量）
+	if grass != null:
+		var target := Vector2i(-1, -1)
+		for cy in range(16):
+			for cx in range(16):
+				if String(map.get_terrain_name_at(Vector2i(cx, cy))) != "grass":
+					target = Vector2i(cx, cy)
+					break
+			if target.x >= 0:
+				break
+		assert_true(target.x >= 0, "应存在非草地格")
+		if target.x >= 0:
+			map.set_terrain_at(target, 2)
+			var dcell := Vector2i(target.x + 1, target.y + 1)
+			assert_true(grass.get_cell_source_id(dcell) != -1,
+				"设置草地后受影响显示格 %s 应有过渡贴图" % dcell)
+	map.free()

@@ -7,6 +7,11 @@
 //   - 提供格子坐标换算与 is_walkable 通行查询，配合 GdRoleMover 的
 //     MODE_GRID 网格移动模式使用
 //
+// 图层铺底规则（paint_cumulative = true 时）：
+//   每种地形的图层会把"自己 + 所有比自己更上层（下标更大）的地形"格子都铺满，
+//   保证上层贴图（尤其双网格过渡片的圆角透明缺口）下方永远有图，不会露出灰底。
+//   例如 grass(2) 的圆角缺口内露出的是 sand(1) 铺的底，sand 的缺口露出 water(0) 的底。
+//
 // 坐标约定：格子 (cx, cy) 占据世界矩形 [cx*cell, (cx+1)*cell) x [cy*cell, (cy+1)*cell)，
 // 格心为 ((cx+0.5)*cell, (cy+0.5)*cell)。地图根节点位于原点。
 //
@@ -18,10 +23,20 @@
 
 use godot::prelude::*;
 use godot::builtin::{Color, GString, PackedColorArray, PackedFloat64Array, PackedStringArray, Rect2, Vector2, Vector2i};
-use godot::classes::{INode2D, Node2D, ResourceLoader, Texture2D};
+use godot::classes::{INode2D, Image, ImageTexture, Node2D, ResourceLoader, TileMapLayer, TileSet, TileSetAtlasSource, TileSetSource, Texture2D};
+use godot::classes::image::Format as ImageFormat;
+
+use super::dual_grid::dual_grid_atlas_coord;
 
 /// 地形数量上限（防御并行数组异常输入）
 const MAX_TERRAINS: usize = 32;
+
+/// 每个地形的渲染图层信息
+struct TerrainLayerInfo {
+    node: Gd<TileMapLayer>,
+    /// 是否为双网格渲染模式
+    dual: bool,
+}
 
 #[derive(GodotClass)]
 #[class(base = Node2D, tool)]
@@ -49,6 +64,9 @@ pub struct GdQuickMap {
     /// 是否绘制网格参考线
     #[export]
     draw_grid_lines: bool,
+    /// 累积铺底：下层图层把上层地形的格子也铺满，避免上层贴图透明缺口露出灰底
+    #[export]
+    paint_cumulative: bool,
 
     /// 地形名列表（留空使用内置默认地形）
     #[export]
@@ -59,6 +77,9 @@ pub struct GdQuickMap {
     /// 地形贴图路径（可选，填了则覆盖颜色）
     #[export]
     terrain_textures: PackedStringArray,
+    /// 双网格过渡贴图路径（4x4 = 16 格图集；某地形填了则该层启用双网格渲染）
+    #[export]
+    terrain_dualgrid_textures: PackedStringArray,
     /// 地形噪声上界（升序，前 n-1 个生效）
     #[export]
     terrain_thresholds: PackedFloat64Array,
@@ -76,6 +97,8 @@ pub struct GdQuickMap {
     textures: Vec<Option<Gd<Texture2D>>>,
     /// 不可通行地形下标缓存
     blocked_indices: Vec<i32>,
+    /// 每个地形对应的渲染图层（与 names 下标对应）
+    layers: Vec<TerrainLayerInfo>,
 }
 
 #[godot_api]
@@ -90,9 +113,11 @@ impl INode2D for GdQuickMap {
             noise_scale: 10.0,
             octaves: 3,
             draw_grid_lines: false,
+            paint_cumulative: true,
             terrain_names: PackedStringArray::new(),
             terrain_colors: PackedColorArray::new(),
             terrain_textures: PackedStringArray::new(),
+            terrain_dualgrid_textures: PackedStringArray::new(),
             terrain_thresholds: PackedFloat64Array::new(),
             blocked_terrains: PackedStringArray::new(),
             grid: Vec::new(),
@@ -100,6 +125,7 @@ impl INode2D for GdQuickMap {
             colors: Vec::new(),
             textures: Vec::new(),
             blocked_indices: Vec::new(),
+            layers: Vec::new(),
         }
     }
 
@@ -112,38 +138,21 @@ impl INode2D for GdQuickMap {
 
     fn draw(&mut self) {
         let cs = self.cell_size as f32;
-        if cs <= 0.0 || self.grid.is_empty() {
+        if cs <= 0.0 {
             return;
         }
 
-        for cy in 0..self.height {
-            for cx in 0..self.width {
-                let idx = self.grid[(cy * self.width + cx) as usize];
-                let rect = Rect2::new(
-                    Vector2::new(cx as f32 * cs, cy as f32 * cs),
-                    Vector2::new(cs, cs),
-                );
-                if idx >= 0 && (idx as usize) < self.colors.len() {
-                    let ti = idx as usize;
-                    match self.textures.get(ti).and_then(|t| t.as_ref()) {
-                        Some(tex) => {
-                            let tex = tex.clone();
-                            self.base_mut()
-                                .draw_texture_rect(&tex, rect, false);
-                        }
-                        None => {
-                            let color = self.colors[ti];
-                            self.base_mut().draw_rect(rect, color);
-                        }
-                    }
-                } else {
-                    // 未生成的格子画底色
-                    self.base_mut()
-                        .draw_rect(rect, Color::from_rgb(0.12, 0.12, 0.14));
-                }
-            }
+        // 未生成时画整块底色；已生成时地形由各 TileMapLayer 子节点渲染
+        if self.grid.is_empty() {
+            let rect = Rect2::new(
+                Vector2::ZERO,
+                Vector2::new(self.width as f32 * cs, self.height as f32 * cs),
+            );
+            self.base_mut()
+                .draw_rect(rect, Color::from_rgb(0.12, 0.12, 0.14));
         }
 
+        // 网格参考线画在自身画布上，图层子节点 z_index = -1 保证线在贴图之上
         if self.draw_grid_lines {
             let line_color = Color::from_rgba(1.0, 1.0, 1.0, 0.08);
             let map_w = self.width as f32 * cs;
@@ -184,7 +193,17 @@ impl GdQuickMap {
     #[func]
     pub fn clear(&mut self) {
         self.grid.clear();
+        self.free_layers();
         self.base_mut().queue_redraw();
+    }
+
+    /// 获取地形对应的渲染图层（下标对应 terrain_names；未生成为 null）
+    #[func]
+    pub fn get_terrain_layer(&self, terrain_index: i32) -> Option<Gd<TileMapLayer>> {
+        self.layers
+            .get(terrain_index as usize)
+            .filter(|info| info.node.is_instance_valid())
+            .map(|info| info.node.clone())
     }
 
     /// 地图宽度（格子数）
@@ -266,7 +285,10 @@ impl GdQuickMap {
             self.grid = vec![-1; (self.width * self.height) as usize];
         }
         let i = (cell.y * self.width + cell.x) as usize;
+        let old_ti = self.grid[i];
         self.grid[i] = terrain_index;
+        // 局部刷新：新旧地形之间的所有受影响图层（含被铺底的下层）
+        self.refresh_cell(cell, old_ti, terrain_index);
         self.base_mut().queue_redraw();
     }
 
@@ -386,7 +408,288 @@ impl GdQuickMap {
             }
         }
 
+        self.rebuild_layers();
         self.base_mut().queue_redraw();
+    }
+
+    // ---- 图层渲染 ----
+
+    /// 释放所有地形图层子节点
+    fn free_layers(&mut self) {
+        for info in self.layers.drain(..) {
+            if info.node.is_instance_valid() {
+                info.node.free();
+            }
+        }
+    }
+
+    /// 重建全部地形图层：每种地形一个 TileMapLayer，按地形顺序叠放
+    fn rebuild_layers(&mut self) {
+        self.free_layers();
+        if self.grid.is_empty() || self.names.is_empty() {
+            return;
+        }
+        let cs = self.cell_size.max(1) as f32;
+        let count = self.names.len().min(MAX_TERRAINS);
+
+        for ti in 0..count {
+            let dual_path = self
+                .terrain_dualgrid_textures
+                .get(ti)
+                .map(|s| s.to_string())
+                .unwrap_or_default();
+            let mut layer = TileMapLayer::new_alloc();
+            let name = format!("L{}_{}", ti, self.names.get(ti).map(|s| s.as_str()).unwrap_or("?"));
+            layer.set_name(&StringName::from(name.as_str()));
+            // z_index = -1：让本节点的网格参考线绘制在贴图之上
+            layer.set_z_index(-1);
+
+            let info = if !dual_path.is_empty() {
+                match Self::load_texture(&dual_path) {
+                    Some(tex) if tex.is_instance_valid() => {
+                        // 4x4 = 16 格过渡图集，显示网格偏移半格并缩放到 cell_size
+                        let ts_px = (tex.get_width().max(4) / 4).max(1);
+                        let ts = self.build_tile_set(&tex, ts_px);
+                        layer.set_tile_set(&ts);
+                        layer.set_position(Vector2::new(-cs / 2.0, -cs / 2.0));
+                        layer.set_scale(Vector2::new(cs / ts_px as f32, cs / ts_px as f32));
+                        self.fill_dual_layer(&mut layer, ti);
+                        TerrainLayerInfo { node: layer, dual: true }
+                    }
+                    _ => {
+                        godot_error!(
+                            "GdQuickMap: 双网格贴图加载失败: {}（地形 {} 回退为纯色）",
+                            dual_path,
+                            ti
+                        );
+                        self.build_plain_layer(&mut layer, ti, cs);
+                        TerrainLayerInfo { node: layer, dual: false }
+                    }
+                }
+            } else {
+                self.build_plain_layer(&mut layer, ti, cs);
+                TerrainLayerInfo { node: layer, dual: false }
+            };
+
+            self.base_mut().add_child(&info.node);
+            self.layers.push(info);
+        }
+    }
+
+    /// 普通整格模式：贴图优先，否则用地形颜色生成纯色贴图
+    fn build_plain_layer(&mut self, layer: &mut Gd<TileMapLayer>, ti: usize, cs: f32) {
+        let tex: Option<Gd<Texture2D>> = match self.textures.get(ti).and_then(|t| t.clone()) {
+            Some(t) if t.is_instance_valid() => Some(t),
+            _ => {
+                let color = self
+                    .colors
+                    .get(ti)
+                    .copied()
+                    .unwrap_or_else(|| Color::from_rgb(0.6, 0.6, 0.6));
+                Self::color_texture(color, 16).map(|t| t.upcast())
+            }
+        };
+        let Some(tex) = tex else {
+            return;
+        };
+        let ts_px = tex.get_width().max(1);
+        let ts = self.build_tile_set(&tex, ts_px);
+        layer.set_tile_set(&ts);
+        layer.set_position(Vector2::ZERO);
+        layer.set_scale(Vector2::new(cs / ts_px as f32, cs / ts_px as f32));
+
+        let sid = Self::first_source_id(&ts);
+        if sid < 0 {
+            return;
+        }
+        for cy in 0..self.height {
+            for cx in 0..self.width {
+                let g = self.grid[(cy * self.width + cx) as usize];
+                // 累积铺底：下层也铺更上层地形的格子，保证上层透明缺口下有图
+                let paint = if self.paint_cumulative {
+                    g >= ti as i32
+                } else {
+                    g == ti as i32
+                };
+                if paint {
+                    layer.set_cell_ex(Vector2i::new(cx, cy))
+                        .source_id(sid)
+                        .atlas_coords(Vector2i::new(0, 0))
+                        .done();
+                }
+            }
+        }
+    }
+
+    /// 双网格模式填充：显示格 (dx,dy) 覆盖世界格 (dx-1,dy-1)..(dx,dy)，
+    /// 按 dual_display_tile 决策放置过渡片或垫底整块
+    fn fill_dual_layer(&self, layer: &mut Gd<TileMapLayer>, ti: usize) {
+        let Some(ts) = layer.get_tile_set() else {
+            return;
+        };
+        let sid = Self::first_source_id(&ts);
+        if sid < 0 {
+            return;
+        }
+        for dy in 0..=self.height {
+            for dx in 0..=self.width {
+                if let Some((ax, ay)) = self.dual_display_tile(dx, dy, ti as i32) {
+                    layer.set_cell_ex(Vector2i::new(dx, dy))
+                        .source_id(sid)
+                        .atlas_coords(Vector2i::new(ax, ay))
+                        .done();
+                }
+            }
+        }
+    }
+
+    /// 双网格显示格决策：返回 Some((atlas_x, atlas_y)) 表示放置图块，None 表示保持空
+    /// 优先级 1：任一四角是本地形 → 按四角组合取过渡贴图（本地形边缘形状）
+    /// 优先级 2（累积铺底）：四角全是更上层地形（且无越界外混入更低地形）→
+    ///   取"全地形"整块图块垫底，让上层的圆角缺口不露灰
+    fn dual_display_tile(&self, dx: i32, dy: i32, ti: i32) -> Option<(i32, i32)> {
+        let quads = [
+            self.terrain_index_at(dx - 1, dy - 1),
+            self.terrain_index_at(dx, dy - 1),
+            self.terrain_index_at(dx - 1, dy),
+            self.terrain_index_at(dx, dy),
+        ];
+        let is_self = |q: Option<i32>| q == Some(ti);
+        if quads.iter().any(|q| is_self(*q)) {
+            let (ax, ay) = dual_grid_atlas_coord(
+                is_self(quads[0]),
+                is_self(quads[1]),
+                is_self(quads[2]),
+                is_self(quads[3]),
+            );
+            return Some((ax, ay));
+        }
+        if self.paint_cumulative {
+            let mut has_inbounds = false;
+            let mut all_upper = true;
+            for q in quads.iter().flatten() {
+                has_inbounds = true;
+                if *q <= ti {
+                    all_upper = false;
+                    break;
+                }
+            }
+            if has_inbounds && all_upper {
+                return Some(dual_grid_atlas_coord(true, true, true, true));
+            }
+        }
+        None
+    }
+
+    /// 构建 TileSet：单图集源，格尺寸 = ts_px
+    fn build_tile_set(&self, tex: &Gd<Texture2D>, ts_px: i32) -> Gd<TileSet> {
+        let mut ts = TileSet::new_gd();
+        ts.set_tile_size(Vector2i::new(ts_px, ts_px));
+        let mut src = TileSetAtlasSource::new_gd();
+        src.set_texture(tex);
+        src.set_texture_region_size(Vector2i::new(ts_px, ts_px));
+        // 图集内所有可用格都注册为 tile
+        let region_w = tex.get_width() / ts_px.max(1);
+        let region_h = tex.get_height() / ts_px.max(1);
+        for ry in 0..region_h {
+            for rx in 0..region_w {
+                src.create_tile(Vector2i::new(rx, ry));
+            }
+        }
+        let source: Gd<TileSetSource> = src.upcast();
+        ts.add_source_ex(&source).done();
+        ts
+    }
+
+    /// 取 TileSet 中第一个图集源的 source_id（无源返回 -1）
+    fn first_source_id(ts: &Gd<TileSet>) -> i32 {
+        if ts.get_source_count() > 0 {
+            ts.get_source_id(0)
+        } else {
+            -1
+        }
+    }
+
+    /// 地形颜色 → 纯色贴图（16x16，双线性下放大无碍像素观感）
+    fn color_texture(color: Color, size: i32) -> Option<Gd<ImageTexture>> {
+        let mut img = Image::create_empty(size, size, false, ImageFormat::RGBA8)?;
+        img.fill_rect(
+            Rect2i::new(Vector2i::ZERO, Vector2i::new(size, size)),
+            color,
+        );
+        ImageTexture::create_from_image(&img)
+    }
+
+    /// 局部刷新：世界格 cell 的地形从 old_ti 变为 new_ti 后，
+    /// 重算所有受影响图层在该格（双网格层为其 4 个受影响显示格）上的图块。
+    /// 受影响图层 = 下标在 (min, max] 区间的层（这些层的铺底/过渡判定会翻转）；
+    /// 任一端为 -1（擦除/从空上色）时为 0..=max。
+    fn refresh_cell(&mut self, cell: Vector2i, old_ti: i32, new_ti: i32) {
+        if self.grid.is_empty() {
+            return;
+        }
+        let hi = old_ti.max(new_ti);
+        if hi < 0 {
+            return;
+        }
+        let start = if old_ti < 0 || new_ti < 0 {
+            0
+        } else {
+            old_ti.min(new_ti) + 1
+        };
+        for ti in start..=hi {
+            self.update_layer_cell(cell, ti);
+        }
+    }
+
+    /// 更新单个图层在世界格 cell 上的图块（普通层动一格；双网格层动 4 个显示格）
+    fn update_layer_cell(&mut self, cell: Vector2i, ti: i32) {
+        // 先取出图层信息，避免与后续 self 不可变借用冲突
+        let (dual, node) = {
+            let Some(info) = self.layers.get(ti as usize) else {
+                return;
+            };
+            if !info.node.is_instance_valid() {
+                return;
+            }
+            (info.dual, info.node.clone())
+        };
+        let mut sid = -1;
+        if let Some(s) = node.get_tile_set() {
+            sid = Self::first_source_id(&s);
+        }
+        if sid < 0 {
+            return;
+        }
+        let g = self.terrain_index_at(cell.x, cell.y);
+        if !dual {
+            // 普通模式：铺底条件与 build_plain_layer 一致
+            let paint = if self.paint_cumulative {
+                matches!(g, Some(v) if v >= ti)
+            } else {
+                g == Some(ti)
+            };
+            let mut layer = node;
+            if paint {
+                layer.set_cell_ex(cell).source_id(sid)
+                    .atlas_coords(Vector2i::new(0, 0)).done();
+            } else {
+                layer.erase_cell(cell);
+            }
+            return;
+        }
+        // 双网格模式：该世界格影响 4 个显示格
+        let offsets = [(0i32, 0i32), (1, 0), (0, 1), (1, 1)];
+        for (ox, oy) in offsets {
+            let dcell = Vector2i::new(cell.x + ox, cell.y + oy);
+            let mut layer = node.clone();
+            if let Some((ax, ay)) = self.dual_display_tile(dcell.x, dcell.y, ti) {
+                layer.set_cell_ex(dcell).source_id(sid)
+                    .atlas_coords(Vector2i::new(ax, ay)).done();
+            } else {
+                layer.erase_cell(dcell);
+            }
+        }
     }
 
     /// 构建地形表：无配置时使用内置默认地形（颜色即贴图）
@@ -413,10 +716,9 @@ impl GdQuickMap {
             let count = (self.terrain_names.len() as usize).min(MAX_TERRAINS);
             for i in 0..count {
                 let name = self.terrain_names.get(i).map(|s| s.to_string()).unwrap_or_default();
-                let color = self
-                    .terrain_colors
-                    .get(i)
-                    .unwrap_or_else(|| Color::from_rgb(0.6, 0.6, 0.6));
+                let color = self.terrain_colors.get(i).unwrap_or_else(|| {
+                    Self::default_color_for(&name)
+                });
                 let tex_path = self
                     .terrain_textures
                     .get(i)
@@ -518,6 +820,18 @@ impl GdQuickMap {
             *v = (*v - min) / range;
         }
         out
+    }
+
+    /// 已知地形名的默认颜色（自定义配置缺色时回退）
+    fn default_color_for(name: &str) -> Color {
+        match name {
+            "water" => Color::from_rgb(0.25, 0.5, 0.85),
+            "sand" => Color::from_rgb(0.9, 0.85, 0.62),
+            "grass" => Color::from_rgb(0.36, 0.7, 0.38),
+            "forest" => Color::from_rgb(0.2, 0.45, 0.24),
+            "mountain" => Color::from_rgb(0.56, 0.56, 0.6),
+            _ => Color::from_rgb(0.6, 0.6, 0.6),
+        }
     }
 
     /// 重建不可通行地形下标缓存
