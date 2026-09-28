@@ -13,7 +13,7 @@
 //   s_jumped()                起跳
 
 use godot::prelude::*;
-use godot::builtin::{GString, StringName, Vector2};
+use godot::builtin::{GString, NodePath, PackedVector2Array, StringName, Vector2, Vector2i};
 use godot::classes::{
     CharacterBody2D, ICharacterBody2D, Input, InputEvent, InputEventMouseButton, InputMap,
 };
@@ -32,6 +32,8 @@ pub const CONTROL_AI: i64 = 3;
 pub const MODE_FOUR_WAY: i64 = 0;
 /// 移动模式：横向（平台，仅左右，配合重力做平台跳跃）
 pub const MODE_HORIZONTAL: i64 = 1;
+/// 移动模式：网格（俯视，每次一格、禁止斜向；配合 grid_cell_size / grid_map_path）
+pub const MODE_GRID: i64 = 2;
 
 #[derive(GodotClass)]
 #[class(base = CharacterBody2D)]
@@ -107,6 +109,14 @@ pub struct GdRoleMover {
     #[export]
     arrival_distance: f64,
 
+    /// 网格模式：格子尺寸（像素，一格的距离）
+    #[export]
+    grid_cell_size: f64,
+
+    /// 网格模式：地图节点路径（节点需实现 is_walkable(cell: Vector2i) -> bool；为空则全部可走）
+    #[export]
+    grid_map_path: NodePath,
+
     // ---- 运行时状态 ----
     /// 当前朝向 left/right/up/down
     facing: GString,
@@ -130,6 +140,16 @@ pub struct GdRoleMover {
     ai_use_target: bool,
     /// AI 到达停止距离
     ai_stop_distance: f64,
+    /// 网格模式：是否正在格间移动
+    grid_moving: bool,
+    /// 网格模式：目标格中心（世界坐标）
+    grid_target: Vector2,
+    /// 网格模式：缓存的地图节点引用（懒解析，鸭子类型调用 is_walkable）
+    grid_map: Option<Gd<Node>>,
+    /// 网格模式：路径点队列（世界坐标格心，依次走完）
+    grid_path: Vec<Vector2>,
+    /// 网格模式：是否正在跟随路径（走完最后一个点时复位并发信号）
+    grid_path_active: bool,
 
     base: Base<CharacterBody2D>,
 }
@@ -156,6 +176,8 @@ impl ICharacterBody2D for GdRoleMover {
             action_down: GString::from("move_down"),
             mouse_follow: false,
             arrival_distance: 6.0,
+            grid_cell_size: 32.0,
+            grid_map_path: NodePath::default(),
             facing: GString::from("right"),
             moving: false,
             was_on_floor: false,
@@ -167,6 +189,11 @@ impl ICharacterBody2D for GdRoleMover {
             ai_target: Vector2::ZERO,
             ai_use_target: false,
             ai_stop_distance: 6.0,
+            grid_moving: false,
+            grid_target: Vector2::ZERO,
+            grid_map: None,
+            grid_path: Vec::new(),
+            grid_path_active: false,
             base,
         }
     }
@@ -215,6 +242,10 @@ impl GdRoleMover {
     #[signal]
     fn s_jumped();
 
+    /// 网格路径走完信号（中途被输入打断/清空/失效不发）
+    #[signal]
+    fn s_grid_path_finished();
+
     /// 当前朝向
     #[func]
     pub fn get_facing(&self) -> GString {
@@ -237,13 +268,18 @@ impl GdRoleMover {
         self.moving
     }
 
-    /// 停止一切移动指令（清除鼠标目标与 AI 驱动）
+    /// 停止一切移动指令（清除鼠标目标、AI 驱动与网格路径）
     #[func]
     pub fn stop(&mut self) {
         self.has_move_target = false;
         self.mouse_held = false;
         self.ai_dir = Vector2::ZERO;
         self.ai_use_target = false;
+        // 网格模式：停在当前格间位置（恢复后从该位置继续对齐逻辑）
+        self.grid_moving = false;
+        self.grid_path.clear();
+        self.grid_path_active = false;
+        self.set_moving(false);
     }
 
     /// 脚本便捷接口：移动到世界坐标点（切换为鼠标控制方式）
@@ -293,10 +329,42 @@ impl GdRoleMover {
         self.paused
     }
 
+    /// 网格模式：设置要依次走完的路径点队列（世界坐标，通常来自 GdQuickMap.find_path）
+    /// 立即清除旧路径；键盘输入随时可打断
+    #[func]
+    pub fn set_grid_path(&mut self, points: PackedVector2Array) {
+        self.grid_path.clear();
+        for i in 0..points.len() {
+            if let Some(p) = points.get(i) {
+                self.grid_path.push(p);
+            }
+        }
+        self.grid_path_active = !self.grid_path.is_empty();
+    }
+
+    /// 网格模式：清除路径队列（角色停在当前格）
+    #[func]
+    pub fn clear_grid_path(&mut self) {
+        self.grid_path.clear();
+        self.grid_path_active = false;
+    }
+
+    /// 网格模式：是否正在跟随路径
+    #[func]
+    pub fn is_grid_path_active(&self) -> bool {
+        self.grid_path_active
+    }
+
     // ---- 内部实现 ----
 
     /// 物理帧驱动
     fn tick(&mut self, delta: f64) {
+        // 网格模式：离散逐格移动，不走速度/重力管线
+        if self.move_mode == MODE_GRID {
+            self.tick_grid(delta);
+            return;
+        }
+
         let mut input_vec = self.read_input();
 
         // 横向模式：输入只保留水平分量
@@ -403,7 +471,7 @@ impl GdRoleMover {
         if self.pressed(&self.action_right, &[Key::D, Key::RIGHT]) {
             v.x += 1.0;
         }
-        if self.move_mode == MODE_FOUR_WAY {
+        if self.move_mode == MODE_FOUR_WAY || self.move_mode == MODE_GRID {
             if self.pressed(&self.action_up, &[Key::W, Key::UP]) {
                 v.y -= 1.0;
             }
@@ -504,6 +572,130 @@ impl GdRoleMover {
                 let var = self.facing.to_variant();
                 self.base_mut().emit_signal("s_facing_changed", &[var]);
             }
+        }
+    }
+
+    /// 网格模式驱动：每次输入走一格（主导轴，禁止斜向），格心对齐
+    /// 坐标约定与 GdQuickMap 一致：格 (cx, cy) 中心在 ((cx+0.5)*cell, (cy+0.5)*cell)
+    fn tick_grid(&mut self, delta: f64) {
+        let cs = self.grid_cell_size;
+        if cs <= 0.0 {
+            return;
+        }
+        let csf = cs as f32;
+
+        // 格间移动中：按速度直线插值到目标格心
+        if self.grid_moving {
+            let mut pos = self.base().get_position();
+            let diff = self.grid_target - pos;
+            let step = (self.speed * delta) as f32;
+            if diff.length() <= step {
+                pos = self.grid_target;
+                self.grid_moving = false;
+                self.set_moving(false);
+                // 路径最后一个点走完：复位状态并发信号
+                if self.grid_path_active && self.grid_path.is_empty() {
+                    self.grid_path_active = false;
+                    self.base_mut().emit_signal("s_grid_path_finished", &[]);
+                }
+            } else {
+                pos += diff.normalized() * step;
+            }
+            self.base_mut().set_position(pos);
+            return;
+        }
+
+        // 静止：键盘输入优先（有输入则打断路径跟随），否则依次走路径队列
+        let input_vec = self.read_input();
+        if input_vec.length_squared() >= 0.2 {
+            if self.grid_path_active {
+                self.grid_path.clear();
+                self.grid_path_active = false;
+            }
+        } else if !self.grid_path.is_empty() {
+            let target = self.grid_path.remove(0);
+            let nx = (target.x / csf).floor() as i32;
+            let ny = (target.y / csf).floor() as i32;
+            // 地图被改动导致下一格不可走：终止整条路径
+            if !self.grid_cell_walkable(nx, ny) {
+                self.grid_path.clear();
+                self.grid_path_active = false;
+                return;
+            }
+            let dir = target - self.base().get_position();
+            let facing = if dir.x > 0.5 {
+                "right"
+            } else if dir.x < -0.5 {
+                "left"
+            } else if dir.y > 0.5 {
+                "down"
+            } else {
+                "up"
+            };
+            self.set_facing(GString::from(facing));
+            self.grid_target = target;
+            self.grid_moving = true;
+            self.set_moving(true);
+            return;
+        } else {
+            return;
+        }
+
+        let dir = if input_vec.x.abs() >= input_vec.y.abs() {
+            Vector2::new(input_vec.x.signum(), 0.0)
+        } else {
+            Vector2::new(0.0, input_vec.y.signum())
+        };
+
+        // 朝向（即使撞墙也更新，表现一致）
+        let facing = if dir.x > 0.0 {
+            "right"
+        } else if dir.x < 0.0 {
+            "left"
+        } else if dir.y > 0.0 {
+            "down"
+        } else {
+            "up"
+        };
+        self.set_facing(GString::from(facing));
+
+        // 目标格通行检查
+        let pos = self.base().get_position();
+        let cx = (pos.x / csf).floor() as i32;
+        let cy = (pos.y / csf).floor() as i32;
+        let nx = cx + dir.x as i32;
+        let ny = cy + dir.y as i32;
+        if !self.grid_cell_walkable(nx, ny) {
+            return;
+        }
+
+        self.grid_target = Vector2::new((nx as f32 + 0.5) * csf, (ny as f32 + 0.5) * csf);
+        self.grid_moving = true;
+        self.set_moving(true);
+    }
+
+    /// 网格通行查询：绑定地图节点则鸭子调用 is_walkable(Vector2i)，否则全部放行
+    fn grid_cell_walkable(&mut self, cx: i32, cy: i32) -> bool {
+        if self.grid_map.is_none() && !self.grid_map_path.is_empty() {
+            self.grid_map = self.base().get_node_or_null(&self.grid_map_path);
+        }
+        if let Some(ref map) = self.grid_map {
+            if !map.is_instance_valid() {
+                return true;
+            }
+            let mut map = map.clone();
+            let ret = map.call("is_walkable", &[Vector2i::new(cx, cy).to_variant()]);
+            return ret.try_to::<bool>().unwrap_or(true);
+        }
+        true
+    }
+
+    /// 统一的 moving 状态切换 + 信号
+    fn set_moving(&mut self, m: bool) {
+        if self.moving != m {
+            self.moving = m;
+            self.base_mut()
+                .emit_signal("s_moving_changed", &[m.to_variant()]);
         }
     }
 }

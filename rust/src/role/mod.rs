@@ -20,7 +20,7 @@ pub mod dialog_trigger;
 pub use movement::{
     GdRoleMover,
     CONTROL_NONE, CONTROL_KEYBOARD, CONTROL_MOUSE, CONTROL_AI,
-    MODE_FOUR_WAY, MODE_HORIZONTAL,
+    MODE_FOUR_WAY, MODE_HORIZONTAL, MODE_GRID,
 };
 pub use animator::GdRoleAnimator;
 pub use npc_ai::{

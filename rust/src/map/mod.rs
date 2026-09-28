@@ -3,6 +3,7 @@
 
 mod dual_grid;
 mod gd_map_basic;
+mod quick_map;
 
 pub use dual_grid::{
     TerrainType, TerrainRegistry, TerrainThresholds, TerrainThresholdEntry,
@@ -11,3 +12,4 @@ pub use dual_grid::{
 };
 
 pub use gd_map_basic::GdMapBasic;
+pub use quick_map::GdQuickMap;
