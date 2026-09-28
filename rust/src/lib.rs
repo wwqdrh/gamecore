@@ -18,6 +18,7 @@ mod ui;
 mod anim;
 mod manager;
 mod map;
+mod role;
 mod dev;
 
 #[doc(hidden)]
