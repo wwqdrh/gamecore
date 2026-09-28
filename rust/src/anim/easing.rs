@@ -128,11 +128,11 @@ pub fn ease_in_sine(x: f32) -> f32 {
 }
 
 pub fn ease_out_sine(x: f32) -> f32 {
-    1.0 - ((x * PI) / 2.0).sin()
+    (x * PI / 2.0).sin()
 }
 
 pub fn ease_in_out_sine(x: f32) -> f32 {
-    -(x * PI).cos() + 1.0 / 2.0
+    (1.0 - (x * PI).cos()) / 2.0
 }
 
 // ===== Quad =====
