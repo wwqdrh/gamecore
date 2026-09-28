@@ -23,13 +23,64 @@
 
 use godot::prelude::*;
 use godot::builtin::{Color, GString, PackedColorArray, PackedFloat64Array, PackedStringArray, Rect2, Vector2, Vector2i};
-use godot::classes::{INode2D, Image, ImageTexture, Node2D, ResourceLoader, TileMapLayer, TileSet, TileSetAtlasSource, TileSetSource, Texture2D};
+use godot::classes::{INode2D, Image, ImageTexture, Node2D, ResourceLoader, Shader, ShaderMaterial, TileMapLayer, TileSet, TileSetAtlasSource, TileSetSource, Texture2D};
 use godot::classes::image::Format as ImageFormat;
 
 use super::dual_grid::dual_grid_atlas_coord;
 
 /// 地形数量上限（防御并行数组异常输入）
 const MAX_TERRAINS: usize = 32;
+
+/// 内置水体流动 shader 源码（terrain_shaders 填 "water_flow" 启用）
+///
+/// 原理：图集贴图提供静态岸线与水色打底；shader 用"世界坐标 UV"采样两层
+/// 不同速度、反向滚动的程序化值噪声，叠加出流动感并在波峰处提亮高光。
+///
+/// 关键点：必须用世界坐标 UV，不能直接滚动图集 UV —— 图集 UV 会滚出
+/// 格子边界、采样到相邻 tile（串格）。世界坐标还让过渡片与垫底块的
+/// 流动相位天然连续，双网格的半格偏移也不受影响。
+const WATER_FLOW_SHADER_SRC: &str = r#"
+shader_type canvas_item;
+
+uniform float strength : hint_range(0.0, 1.0) = 0.45;
+uniform float scale1 = 64.0;
+uniform float scale2 = 96.0;
+uniform float speed1 = 0.045;
+uniform float speed2 = -0.028;
+
+varying vec2 world_pos;
+
+float hash21(vec2 p) {
+	p = fract(p * vec2(123.34, 456.21));
+	p += dot(p, p + 45.32);
+	return fract(p.x * p.y);
+}
+
+float vnoise(vec2 p) {
+	vec2 i = floor(p);
+	vec2 f = fract(p);
+	vec2 u = f * f * (3.0 - 2.0 * f);
+	float a = hash21(i);
+	float b = hash21(i + vec2(1.0, 0.0));
+	float c = hash21(i + vec2(0.0, 1.0));
+	float d = hash21(i + vec2(1.0, 1.0));
+	return mix(mix(a, b, u.x), mix(c, d, u.x), u.y);
+}
+
+void vertex() {
+	world_pos = (MODEL_MATRIX * vec4(VERTEX, 0.0, 1.0)).xy;
+}
+
+void fragment() {
+	vec2 uv1 = world_pos / scale1 + vec2(TIME * speed1, TIME * speed1 * 0.7);
+	vec2 uv2 = world_pos / scale2 + vec2(TIME * speed2, TIME * speed2 * 0.4);
+	float n = vnoise(uv1) * 0.62 + vnoise(uv2) * 0.38;
+	float shade = smoothstep(0.40, 0.08, n);
+	COLOR.rgb = mix(COLOR.rgb, COLOR.rgb * 0.55, shade * strength * COLOR.a);
+	float shine = smoothstep(0.60, 0.92, n);
+	COLOR.rgb = mix(COLOR.rgb, vec3(1.0), shine * strength * COLOR.a);
+}
+"#;
 
 /// 每个地形的渲染图层信息
 struct TerrainLayerInfo {
@@ -80,6 +131,11 @@ pub struct GdQuickMap {
     /// 双网格过渡贴图路径（4x4 = 16 格图集；某地形填了则该层启用双网格渲染）
     #[export]
     terrain_dualgrid_textures: PackedStringArray,
+    /// 地形图层 shader（可选，按下标对应 terrain_names）：
+    /// 填内置 shader 名（如 "water_flow"，源码编译在 Rust 侧，动态创建），
+    /// 或 res://...gdshader 资源路径；留空不挂载
+    #[export]
+    terrain_shaders: PackedStringArray,
     /// 地形噪声上界（升序，前 n-1 个生效）
     #[export]
     terrain_thresholds: PackedFloat64Array,
@@ -118,6 +174,7 @@ impl INode2D for GdQuickMap {
             terrain_colors: PackedColorArray::new(),
             terrain_textures: PackedStringArray::new(),
             terrain_dualgrid_textures: PackedStringArray::new(),
+            terrain_shaders: PackedStringArray::new(),
             terrain_thresholds: PackedFloat64Array::new(),
             blocked_terrains: PackedStringArray::new(),
             grid: Vec::new(),
@@ -444,7 +501,7 @@ impl GdQuickMap {
             // z_index = -1：让本节点的网格参考线绘制在贴图之上
             layer.set_z_index(-1);
 
-            let info = if !dual_path.is_empty() {
+            let mut info = if !dual_path.is_empty() {
                 match Self::load_texture(&dual_path) {
                     Some(tex) if tex.is_instance_valid() => {
                         // 4x4 = 16 格过渡图集，显示网格偏移半格并缩放到 cell_size
@@ -470,6 +527,29 @@ impl GdQuickMap {
                 self.build_plain_layer(&mut layer, ti, cs);
                 TerrainLayerInfo { node: layer, dual: false }
             };
+
+            // 可选 shader：为该地形层挂 ShaderMaterial（如水体流动）
+            let shader_name = self
+                .terrain_shaders
+                .get(ti)
+                .map(|s| s.to_string())
+                .unwrap_or_default();
+            if !shader_name.is_empty() {
+                match Self::resolve_shader(&shader_name) {
+                    Some(shader) => {
+                        let mut mat = ShaderMaterial::new_gd();
+                        mat.set_shader(&shader);
+                        info.node.set_material(&mat);
+                    }
+                    None => {
+                        godot_error!(
+                            "GdQuickMap: shader 无法创建: {}（地形 {}）",
+                            shader_name,
+                            ti
+                        );
+                    }
+                }
+            }
 
             self.base_mut().add_child(&info.node);
             self.layers.push(info);
@@ -851,6 +931,39 @@ impl GdQuickMap {
         }
         let res = ResourceLoader::singleton().load_ex(path).done()?;
         res.try_cast::<Texture2D>().ok()
+    }
+
+    /// 解析 shader 来源：res:// 路径 → 从资源加载；否则视为内置 shader 名，
+    /// 用编译进 Rust 的源码动态创建 Shader 对象
+    fn resolve_shader(name_or_path: &str) -> Option<Gd<Shader>> {
+        if name_or_path.is_empty() {
+            return None;
+        }
+        if name_or_path.starts_with("res://") {
+            return Self::load_shader(name_or_path);
+        }
+        let src = Self::builtin_shader_source(name_or_path)?;
+        let mut shader = Shader::new_gd();
+        shader.set_code(src);
+        Some(shader)
+    }
+
+    /// 内置 shader 源码注册表：名字 → gdshader 源码（编译进 Rust 二进制，
+    /// 无需 Godot 侧资源文件）
+    fn builtin_shader_source(name: &str) -> Option<&'static str> {
+        match name {
+            "water_flow" => Some(WATER_FLOW_SHADER_SRC),
+            _ => None,
+        }
+    }
+
+    /// 加载 shader 资源（res://...gdshader）
+    fn load_shader(path: &str) -> Option<Gd<Shader>> {
+        if path.is_empty() {
+            return None;
+        }
+        let res = ResourceLoader::singleton().load_ex(path).done()?;
+        res.try_cast::<Shader>().ok()
     }
 }
 

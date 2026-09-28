@@ -40,10 +40,22 @@ func _make_map() -> void:
 	map.cell_size = CELL
 	map.seed_value = MAP_SEED
 	map.draw_grid_lines = true
-	# 每种地形一个 TileMapLayer；草地启用双网格 16 格过渡图集
-	map.terrain_names = PackedStringArray(["water", "sand", "grass", "forest", "mountain"])
+	# 每种地形一个 TileMapLayer，图层栈顺序 = 地形下标顺序（0 在最底、越靠后越靠上）。
+	# 水放最上层：岸线过渡片的圆角缺口压在沙滩/草地上，露出下层而不是灰底。
+	# 阈值保持各地形占比：sand[0,0.2) grass[0.2,0.4) forest[0.4,0.6)
+	# mountain[0.6,0.8) water[0.8,1.0)（water 是最后一个地形，兜底接收最高噪声段）
+	map.terrain_names = PackedStringArray(["sand", "grass", "forest", "mountain", "water"])
+	map.terrain_thresholds = PackedFloat64Array([0.2, 0.4, 0.6, 0.8])
 	map.terrain_dualgrid_textures = PackedStringArray([
-		"", "", "res://example/map/assets/tileset_grass.png", "", "",
+		"",
+		"res://example/map/assets/tileset_grass.png",
+		"",
+		"",
+		"res://example/map/assets/tileset_water.png",
+	])
+	map.terrain_shaders = PackedStringArray([
+		"", "", "", "",
+		"water_flow",  # 内置水体流动 shader（源码在 Rust 侧动态创建）
 	])
 	add_child(map)
 	map.generate(MAP_SEED)

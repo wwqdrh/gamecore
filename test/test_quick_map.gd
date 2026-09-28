@@ -149,7 +149,7 @@ func test_terrain_layers() -> void:
 	])
 	map.generate(2026)
 
-	# 每种地形一个 TileMapLayer
+	# 每种地形一个 TileMapLayer（图层栈顺序 = 地形下标顺序，0 在最底）
 	assert_eq(map.get_child_count(), 5, "5 种地形应生成 5 个图层")
 
 	# 草地层：双网格模式，偏移半格且有内容
@@ -196,4 +196,28 @@ func test_terrain_layers() -> void:
 			var dcell := Vector2i(target.x + 1, target.y + 1)
 			assert_true(grass.get_cell_source_id(dcell) != -1,
 				"设置草地后受影响显示格 %s 应有过渡贴图" % dcell)
+	map.free()
+
+
+func test_water_dual_and_shader() -> void:
+	var map := _make_map(16, 16, 2026)
+	map.terrain_names = PackedStringArray(["water", "sand", "grass", "forest", "mountain"])
+	map.terrain_dualgrid_textures = PackedStringArray([
+		"res://example/map/assets/tileset_water.png", "",
+		"res://example/map/assets/tileset_grass.png", "", "",
+	])
+	map.terrain_shaders = PackedStringArray([
+		"water_flow", "", "", "", "",
+	])
+	map.generate(2026)
+
+	# 水层：双网格模式（偏移半格）+ 挂载 shader 材质
+	var water := map.get_terrain_layer(0)
+	assert_true(water != null, "水层应存在")
+	if water != null:
+		assert_eq(water.position, Vector2(-16, -16), "双网格水层应偏移 -半格")
+		# 显示网格为 (w+1)x(h+1)；水层最底层，过渡片或垫底块覆盖全部显示格
+		assert_eq(water.get_used_cells().size(), 17 * 17,
+			"水层应覆盖全部 (w+1)x(h+1) 显示格")
+		assert_true(water.material != null, "水层应挂载水体流动 shader 材质")
 	map.free()
