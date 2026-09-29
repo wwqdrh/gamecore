@@ -171,7 +171,7 @@ impl GdCoreData {
     }
 
     #[func]
-    fn watch(&mut self, p_string: GString, p_callback: Callable, scope: GString) {
+    pub fn watch(&mut self, p_string: GString, p_callback: Callable, scope: GString) {
         if !self.check_initial() || !p_callback.is_valid() {
             return;
         }
@@ -213,7 +213,7 @@ impl GdCoreData {
     }
 
     #[func]
-    fn update(
+    pub fn update(
         &mut self,
         field: GString,
         action: GString,
@@ -228,7 +228,7 @@ impl GdCoreData {
     }
 
     #[func]
-    fn value(&self, field: GString, default: Variant, scope: GString) -> Variant {
+    pub fn value(&self, field: GString, default: Variant, scope: GString) -> Variant {
         if !self.check_initial() {
             return false.to_variant();
         }
@@ -245,7 +245,7 @@ impl GdCoreData {
     }
 
     #[func]
-    fn has(&self, field: GString, scope: GString) -> bool {
+    pub fn has(&self, field: GString, scope: GString) -> bool {
         if !self.check_initial() {
             return false;
         }
