@@ -470,18 +470,20 @@ impl GdViewCamera {
 
     /// 更新边界限制
     /// limits: Vector4(left, right, top, bottom)
+    /// 分量为 NaN 表示"该边保持不变"；0 是合法边界值（常见于左/上边界），
+    /// 会被正常设置（不能用 0 当哨兵，否则左/上边界永远无法设为 0）
     #[func]
     fn update_limit(&mut self, limits: Vector4) {
-        if limits.x != 0.0 {
+        if !limits.x.is_nan() {
             self.base_mut().set_limit(Side::LEFT, limits.x as i32);
         }
-        if limits.y != 0.0 {
+        if !limits.y.is_nan() {
             self.base_mut().set_limit(Side::RIGHT, limits.y as i32);
         }
-        if limits.z != 0.0 {
+        if !limits.z.is_nan() {
             self.base_mut().set_limit(Side::TOP, limits.z as i32);
         }
-        if limits.w != 0.0 {
+        if !limits.w.is_nan() {
             self.base_mut().set_limit(Side::BOTTOM, limits.w as i32);
         }
     }

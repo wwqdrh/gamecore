@@ -2,5 +2,7 @@
 
 [ext_resource type="Script" path="res://example/map/map_demo.gd" id="1_mapdemo"]
 
-[node name="Index" type="Node2D"]
+[node name="Index" type="GdSceneRoot"]
+
+[node name="Demo" type="Node2D" parent="."]
 script = ExtResource("1_mapdemo")

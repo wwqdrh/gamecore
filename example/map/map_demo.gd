@@ -1,9 +1,11 @@
 # map_demo - 快速地图 + 网格移动玩家演示
 #
 # 场景结构（运行时构建）：
-#   - QuickMap  GdQuickMap  30x18 格、cell=32，种子 20260928 生成
-#   - Player    GdRoleMover  键盘控制 + MODE_GRID 网格移动（一次一格、禁止斜向）
-#   - Camera    跟随地图中心
+#   Index     GdSceneRoot  场景管理器根节点
+#   └ Demo    Node2D       本脚本，演示内容
+#     - QuickMap  GdQuickMap  30x18 格、cell=32，种子 20260928 生成
+#     - Player    GdRoleMover  键盘控制 + MODE_GRID 网格移动（一次一格、禁止斜向）
+#     - Camera    GdViewCamera 平滑放大视野、跟随玩家、限制在地图边界内
 #
 # 网格移动约定：格 (cx, cy) 中心在 ((cx+0.5)*32, (cy+0.5)*32)，
 # 水体/山地不可通行（由 QuickMap.is_walkable 判定，Mover 每步自动查询）。
@@ -144,11 +146,19 @@ func _find_walkable_near(center: Vector2i) -> Vector2i:
 
 
 func _make_camera() -> void:
-	var cam := Camera2D.new()
+	# 相机管理器：跟随玩家、限制在地图边界内、平滑放大视野
+	var cam := GdViewCamera.new()
 	cam.name = "Camera"
-	cam.position = Vector2(MAP_W, MAP_H) * CELL / 2.0
+	cam.zoom_min = 1.5
+	cam.zoom_max = 2.5
 	add_child(cam)
 	cam.make_current()
+	# 放大视野：从当前缩放平滑过渡到 zoom_max（zoom_steps=2，步 2 即最大档）
+	cam.start_zoom(2, -1.0, -1.0)
+	# 立即贴合玩家并开启平滑跟随
+	cam.follow(player, true, true)
+	# 视野边界 = 地图矩形（left, right, top, bottom），不超出地图
+	cam.update_limit(Vector4(0.0, MAP_W * CELL, 0.0, MAP_H * CELL))
 
 
 func _make_label(text: String, pos: Vector2) -> void:
