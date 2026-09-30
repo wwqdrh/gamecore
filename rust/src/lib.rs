@@ -20,6 +20,8 @@ mod manager;
 mod map;
 mod role;
 mod dev;
+mod drawer;
+mod environment;
 
 #[doc(hidden)]
 pub enum OnFinishCall {
