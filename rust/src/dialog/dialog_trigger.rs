@@ -31,9 +31,9 @@ use godot::builtin::{GString, NodePath, VarArray, Vector2};
 use godot::classes::{INode, Input, InputMap, Node, Node2D};
 use godot::global::Key;
 
-use super::movement::GdRoleMover;
+use crate::role::GdRoleMover;
 use super::speaker::GdRoleSpeaker;
-use crate::dialog::GdDialogue;
+use super::gddialogue::GdDialogue;
 
 /// 触发模式：玩家进入范围自动触发
 pub const TRIGGER_PROXIMITY: i64 = 0;

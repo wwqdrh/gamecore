@@ -14,8 +14,6 @@
 pub mod movement;
 pub mod animator;
 pub mod npc_ai;
-pub mod speaker;
-pub mod dialog_trigger;
 
 pub use movement::{
     GdRoleMover,
@@ -26,9 +24,4 @@ pub use animator::GdRoleAnimator;
 pub use npc_ai::{
     GdNpcBrain,
     AI_IDLE, AI_WANDER, AI_PATROL, AI_FOLLOW, AI_FLEE,
-};
-pub use speaker::GdRoleSpeaker;
-pub use dialog_trigger::{
-    GdDialogTrigger,
-    TRIGGER_PROXIMITY, TRIGGER_INTERACT, TRIGGER_AUTO, TRIGGER_MANUAL,
 };
