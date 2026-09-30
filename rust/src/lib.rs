@@ -22,6 +22,10 @@ mod role;
 mod dev;
 mod drawer;
 mod environment;
+mod event;
+mod pool;
+mod components;
+mod debug;
 
 #[doc(hidden)]
 pub enum OnFinishCall {
@@ -37,11 +41,17 @@ unsafe impl ExtensionLibrary for GameKitCore {
         if stage == InitStage::Scene {
             state::gdcore::register_gdcore_singleton();
             console::register_gdconsole_singleton();
+            event::event_bus::register_gdeventbus_singleton();
+            pool::spawn_pool::register_gdspawnpool_singleton();
+            debug::debug_draw::register_gddebugdraw_singleton();
         }
     }
 
     fn on_stage_deinit(stage: InitStage) {
         if stage == InitStage::Scene {
+            debug::debug_draw::unregister_gddebugdraw_singleton();
+            pool::spawn_pool::unregister_gdspawnpool_singleton();
+            event::event_bus::unregister_gdeventbus_singleton();
             console::unregister_gdconsole_singleton();
             state::gdcore::unregister_gdcore_singleton();
         }

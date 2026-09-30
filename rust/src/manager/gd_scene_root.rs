@@ -357,6 +357,26 @@ impl GdSceneRoot {
     fn is_changing_scene(&self) -> bool {
         self.is_changing
     }
+
+    /// 全局暂停：暂停整个场景树（Tween/动画/物理全部冻结）。
+    /// 管理器自身以 PROCESS_MODE_ALWAYS 运行，转场动画不受暂停影响。
+    #[func]
+    pub fn set_game_paused(&mut self, paused: bool) {
+        // 管理器节点常驻处理，保证转场/自身逻辑继续
+        self.base_mut()
+            .set_process_mode(godot::classes::node::ProcessMode::ALWAYS);
+        if let Some(mut tree) = self.base().get_tree_or_null() {
+            tree.set_pause(paused);
+        }
+    }
+
+    /// 当前是否全局暂停
+    #[func]
+    pub fn is_game_paused(&self) -> bool {
+        self.base()
+            .get_tree_or_null()
+            .map_or(false, |t| t.is_paused())
+    }
 }
 
 impl GdSceneRoot {

@@ -1,30 +1,30 @@
 // GDCore - 全局核心单例
-// 继承 RefCounted，作为 Engine singleton 注册为 "GDCORE"
+// 继承 Object（手动内存），作为 Engine singleton 注册为 "GDCORE"
 // 支持存档 ID 管理，根据 save_id 切换不同的存档文件
 // 存档文件路径：user://coredata_{id}.data（id 为空时为 user://coredata.data）
 
 use std::collections::HashMap;
 
 use godot::prelude::*;
-use godot::classes::{Engine, IRefCounted};
+use godot::classes::{Engine, IObject, Object};
 use godot::builtin::{StringName, VarDictionary};
 
 use super::coredata::GdCoreData;
 use super::bean::GdBean;
 
 #[derive(GodotClass)]
-#[class(base = RefCounted)]
+#[class(base = Object)]
 pub struct GDCore {
     save_id: GString,
     core_data_cache: HashMap<String, Gd<GdCoreData>>,
     /// 全局节点映射 (alias -> Node)
     global_nodes: VarDictionary,
-    base: Base<RefCounted>,
+    base: Base<Object>,
 }
 
 #[godot_api]
-impl IRefCounted for GDCore {
-    fn init(base: Base<RefCounted>) -> Self {
+impl IObject for GDCore {
+    fn init(base: Base<Object>) -> Self {
         let mut core_data_cache = HashMap::new();
         let default_data = GdCoreData::build(
             GString::from("user://coredata.data"),

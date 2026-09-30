@@ -344,10 +344,35 @@ impl GdViewAudio {
         None
     }
 
+    /// 一行播放音效（免注册别名）：直接传资源路径，自动复用内部播放器池，
+    /// 播完自动回收。适合原型期快速配音效，正式期建议 preload_audio + play_audio。
+    #[func]
+    pub fn play_sfx(&mut self, path: GString, volume: f32) -> bool {
+        if path.is_empty() {
+            return false;
+        }
+        let path_str = path.to_string();
+        let Some(res) = ResourceLoader::singleton().load_ex(path_str.as_str()).done() else {
+            godot_warn!("GdViewAudio: play_sfx 音频加载失败 {}", path);
+            return false;
+        };
+        let Ok(stream) = res.try_cast::<AudioStream>() else {
+            godot_warn!("GdViewAudio: play_sfx 资源不是 AudioStream {}", path);
+            return false;
+        };
+        let mut player = self.get_audio_player(AUDIO_TYPE_AUDIO);
+        let bus_name = self.get_bus_name(AUDIO_TYPE_AUDIO);
+        player.call("set_stream", &[stream.to_variant()]);
+        player.set_bus(&StringName::from(&bus_name));
+        let db = linear_to_db(volume.clamp(0.0, 1.0) as f64) as f32;
+        player.set_volume_db(db);
+        player.play();
+        true
+    }
+
     /// 停止背景音乐
     #[func]
-    fn stop_bgm(&mut self) {
-        self.stopbgm = true;
+    fn stop_bgm(&mut self) {        self.stopbgm = true;
         if let Some(ref mut bgm_player) = self.bgm_player {
             if bgm_player.is_instance_valid() {
                 bgm_player.stop();

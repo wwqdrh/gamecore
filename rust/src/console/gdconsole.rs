@@ -10,7 +10,7 @@ use mlua::{IntoLua, Lua, MultiValue, Value};
 use parking_lot::Mutex;
 
 use godot::builtin::{GString, StringName, Variant};
-use godot::classes::{Engine, IRefCounted, Os, Performance};
+use godot::classes::{Engine, IObject, Object, Os, Performance};
 use godot::prelude::*;
 
 /// Send-safe Callable 包装
@@ -34,15 +34,15 @@ static CONSOLE_OUTPUT: LazyLock<Mutex<Vec<String>>> =
     LazyLock::new(|| Mutex::new(Vec::new()));
 
 #[derive(GodotClass)]
-#[class(base = RefCounted)]
+#[class(base = Object)]
 pub struct GdConsole {
     lua: Mutex<Lua>,
-    base: Base<RefCounted>,
+    base: Base<Object>,
 }
 
 #[godot_api]
-impl IRefCounted for GdConsole {
-    fn init(base: Base<RefCounted>) -> Self {
+impl IObject for GdConsole {
+    fn init(base: Base<Object>) -> Self {
         let lua = Lua::new();
 
         let console = Self {

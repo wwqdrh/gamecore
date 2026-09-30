@@ -37,6 +37,19 @@ func _ready() -> void:
 	_make_follow_npc(Vector2(-VIEW_HALF.x, 0),
 			Color(0.62, 0.48, 0.9), "猫", "cat_mind")
 	_make_camera()
+	_make_combat_button()
+
+
+## 导航按钮：进入战斗场景演示（combat 模块）
+func _make_combat_button() -> void:
+	var btn := Button.new()
+	btn.name = "CombatButton"
+	btn.text = "战斗场景 →"
+	btn.position = Vector2(24, 16)
+	btn.size = Vector2(130, 36)
+	btn.pressed.connect(func():
+		get_tree().change_scene_to_file("res://example/combat/index.tscn"))
+	add_child(btn)
 
 
 # ---------------------------------------------------------------------------

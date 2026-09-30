@@ -28,6 +28,8 @@ pub const AI_PATROL: i64 = 2;
 pub const AI_FOLLOW: i64 = 3;
 /// 行为：逃离目标
 pub const AI_FLEE: i64 = 4;
+/// 行为：猎手（游走为底，目标进入视野追击，进入攻击距离后攻击）
+pub const AI_HUNTER: i64 = 5;
 
 #[derive(GodotClass)]
 #[class(base = Node)]
@@ -89,11 +91,27 @@ pub struct GdNpcBrain {
     #[export]
     arrival_distance: f64,
 
+    /// [HUNTER] 视野半径（像素）：目标进入后从游走切换追击
+    #[export]
+    sight_range: f64,
+
+    /// [HUNTER] 失去视野后继续追击的持续时间（秒），期间再次进入视野则刷新
+    #[export]
+    chase_memory: f64,
+
+    /// [HUNTER] 攻击距离（像素）：追到该距离内进入攻击相位
+    #[export]
+    attack_range: f64,
+
+    /// [HUNTER] 攻击冷却（秒）
+    #[export]
+    attack_cooldown: f64,
+
     // ---- 运行时状态 ----
     mover: Option<Gd<GdRoleMover>>,
     /// 初始位置（游走中心）
     home: Vector2,
-    /// 当前 AI 状态 idle/walk/pause/flee
+    /// 当前 AI 状态 idle/walk/pause/flee/chase/attack
     phase: GString,
     /// 当前状态已持续时长
     phase_timer: f64,
@@ -105,6 +123,10 @@ pub struct GdNpcBrain {
     patrol_index: i64,
     /// 巡逻方向（往返模式 1/-1）
     patrol_dir: i64,
+    /// [HUNTER] 追击记忆倒计时（失去视野后递减）
+    chase_timer: f64,
+    /// [HUNTER] 攻击冷却倒计时
+    attack_timer: f64,
 
     base: Base<Node>,
 }
@@ -127,6 +149,10 @@ impl INode for GdNpcBrain {
             follow_stop_distance: 40.0,
             flee_radius: 120.0,
             arrival_distance: 6.0,
+            sight_range: 220.0,
+            chase_memory: 3.0,
+            attack_range: 48.0,
+            attack_cooldown: 1.0,
             mover: None,
             home: Vector2::ZERO,
             phase: GString::from("idle"),
@@ -135,6 +161,8 @@ impl INode for GdNpcBrain {
             current_target: Vector2::ZERO,
             patrol_index: 0,
             patrol_dir: 1,
+            chase_timer: 0.0,
+            attack_timer: 0.0,
             base,
         }
     }
@@ -166,6 +194,7 @@ impl INode for GdNpcBrain {
             AI_PATROL => self.tick_patrol(delta, &mut mover),
             AI_FOLLOW => self.tick_follow(&mut mover),
             AI_FLEE => self.tick_flee(&mut mover),
+            AI_HUNTER => self.tick_hunter(delta, &mut mover),
             _ => self.set_phase(&mut mover, "idle"),
         }
     }
@@ -176,6 +205,10 @@ impl GdNpcBrain {
     /// AI 状态变化信号
     #[signal]
     fn s_ai_state_changed(state: GString);
+
+    /// [HUNTER] 攻击触发信号（进入攻击相位及冷却结束再次命中时发出）
+    #[signal]
+    fn s_attack();
 
     #[func]
     fn get_follow_target(&self) -> Option<Gd<Node2D>> {
@@ -300,6 +333,77 @@ impl GdNpcBrain {
         } else {
             self.set_phase(mover, "idle");
         }
+    }
+
+    /// 猎手：以随机游走为底行为，目标进入视野 → 追击 → 进入攻击距离 → 攻击
+    /// （视野丢失后 chase_memory 秒内继续追，超时回到游走）
+    fn tick_hunter(&mut self, delta: f64, mover: &mut Gd<GdRoleMover>) {
+        // 攻击冷却推进
+        if self.attack_timer > 0.0 {
+            self.attack_timer = (self.attack_timer - delta).max(0.0);
+        }
+        let tpos = match self.follow_target.as_ref() {
+            Some(t) if t.is_instance_valid() => Some(t.get_global_position()),
+            _ => None,
+        };
+        let mpos = mover.bind().base().get_global_position();
+
+        // 判断目标可见性，刷新追击记忆
+        let mut in_sight = false;
+        if let Some(tp) = tpos {
+            if mpos.distance_to(tp) <= self.sight_range as f32 {
+                in_sight = true;
+                self.chase_timer = self.chase_memory;
+            }
+        }
+
+        let dist = tpos.map_or(f32::INFINITY, |tp| mpos.distance_to(tp));
+
+        // 相位机：attack > chase > wander
+        if self.phase_is("attack") {
+            // 攻击中：面向目标原地不动，脱离攻击距离则继续追
+            mover.bind_mut().stop();
+            if let Some(tp) = tpos {
+                if dist > self.attack_range as f32 * 1.5 {
+                    self.set_phase(mover, "chase");
+                    return;
+                }
+                let _ = tp;
+            } else {
+                self.set_phase(mover, "idle");
+            }
+            // 冷却好了再触发一次攻击信号
+            if self.attack_timer <= 0.0 && dist <= self.attack_range as f32 {
+                self.attack_timer = self.attack_cooldown;
+                self.base_mut().emit_signal("s_attack", &[]);
+            }
+            return;
+        }
+
+        if in_sight && dist <= self.attack_range as f32 && self.attack_timer <= 0.0 {
+            self.chase_timer = self.chase_memory;
+            self.attack_timer = self.attack_cooldown;
+            self.set_phase(mover, "attack");
+            self.base_mut().emit_signal("s_attack", &[]);
+            return;
+        }
+
+        let chasing = in_sight || self.chase_timer > 0.0;
+        if chasing {
+            if let Some(tp) = tpos {
+                self.chase_timer = if in_sight { self.chase_memory } else { self.chase_timer - delta };
+                if self.chase_timer <= 0.0 {
+                    self.enter_idle(mover);
+                    return;
+                }
+                self.set_phase(mover, "chase");
+                self.drive_to(mover, tp, self.attack_range);
+                return;
+            }
+        }
+
+        // 无目标：随机游走
+        self.tick_wander(delta, mover);
     }
 
     /// 驱动移动器走向目标点，返回是否已到达
