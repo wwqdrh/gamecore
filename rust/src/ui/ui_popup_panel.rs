@@ -17,7 +17,7 @@ use godot::obj::WithBaseField;
 use crate::anim::easing::ease_out_cubic;
 
 #[derive(GodotClass)]
-#[class(base = Control)]
+#[class(base = Control, tool)]
 pub struct GdPopupPanel {
     base: Base<Control>,
 

@@ -32,6 +32,11 @@ pub struct GdGmlScene {
     #[export]
     auto_connect: bool,
 
+    /// GML 文件路径（res:// 或绝对路径）。
+    /// 设置后节点 ready 时自动加载该文件，可直接作为 .tscn 主场景运行
+    #[export]
+    gml_file: GString,
+
     // 内部状态
     content_root: Option<Gd<Control>>,
     loaded: bool,
@@ -43,8 +48,16 @@ impl IControl for GdGmlScene {
         Self {
             base,
             auto_connect: true,
+            gml_file: GString::new(),
             content_root: None,
             loaded: false,
+        }
+    }
+
+    fn ready(&mut self) {
+        // 配置了 gml_file 时自动加载（tscn 薄封装场景的核心链路）
+        if !self.gml_file.is_empty() && !self.loaded {
+            self.load_gml(self.gml_file.clone());
         }
     }
 

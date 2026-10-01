@@ -1,0 +1,91 @@
+[gd_scene format=3 uid="uid://d6q0yj52xh23"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pmevi"]
+bg_color = Color(0.18039216, 0.25882354, 0.20392157, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.08627451, 0.14117648, 0.101960786, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_np8mc"]
+bg_color = Color(0.14117648, 0.20784314, 0.16470589, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.72156864, 0.627451, 0.41568628, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[node name="UiRoot" type="Control" unique_id=709786646]
+layout_mode = 3
+anchors_preset = 0
+metadata/__theme_name = "cartoon"
+
+[node name="WindowPanel" type="Panel" parent="." unique_id=1902598764]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_pmevi")
+metadata/__anchor = "full"
+metadata/__pct_margin = "2%"
+
+[node name="@MarginContainer@21819" type="MarginContainer" parent="WindowPanel" unique_id=637440608]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 18.0
+offset_top = 18.0
+offset_right = -18.0
+offset_bottom = -18.0
+metadata/__anchor = "full"
+
+[node name="@VBoxContainer@21818" type="VBoxContainer" parent="WindowPanel/@MarginContainer@21819" unique_id=1345767568]
+layout_mode = 2
+
+[node name="TopBarSlot" type="Control" parent="WindowPanel/@MarginContainer@21819/@VBoxContainer@21818" unique_id=1711128919]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+
+[node name="@Control@21813" type="Control" parent="WindowPanel/@MarginContainer@21819/@VBoxContainer@21818" unique_id=1129529149]
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+
+[node name="@Panel@21815" type="Panel" parent="WindowPanel/@MarginContainer@21819/@VBoxContainer@21818" unique_id=299910571]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_np8mc")
+
+[node name="@Label@21814" type="Label" parent="WindowPanel/@MarginContainer@21819/@VBoxContainer@21818/@Panel@21815" unique_id=1628927655]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.9098039, 0.8627451, 0.72156864, 1)
+theme_override_font_sizes/font_size = 16
+text = "宗门任务"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="@Control@21816" type="Control" parent="WindowPanel/@MarginContainer@21819/@VBoxContainer@21818" unique_id=886903382]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+
+[node name="TabSlot" type="Control" parent="WindowPanel/@MarginContainer@21819/@VBoxContainer@21818" unique_id=1563325382]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="@Control@21817" type="Control" parent="WindowPanel/@MarginContainer@21819/@VBoxContainer@21818" unique_id=1193559420]
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+
+[node name="ActivitySlot" type="Control" parent="WindowPanel/@MarginContainer@21819/@VBoxContainer@21818" unique_id=342188398]
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2

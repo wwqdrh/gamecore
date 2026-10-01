@@ -19,7 +19,7 @@ use godot::classes::text_server::AutowrapMode;
 use godot::obj::WithBaseField;
 
 #[derive(GodotClass)]
-#[class(base = Control)]
+#[class(base = Control, tool)]
 pub struct GdUITooltip {
     base: Base<Control>,
 

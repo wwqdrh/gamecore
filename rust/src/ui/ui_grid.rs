@@ -16,7 +16,7 @@ use godot::obj::WithBaseField;
 use super::ui_list_helper;
 
 #[derive(GodotClass)]
-#[class(base = GridContainer)]
+#[class(base = GridContainer, tool)]
 pub struct GdUIGrid {
     base: Base<GridContainer>,
 

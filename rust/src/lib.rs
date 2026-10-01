@@ -44,6 +44,10 @@ unsafe impl ExtensionLibrary for GameKitCore {
             event::event_bus::register_gdeventbus_singleton();
             pool::spawn_pool::register_gdspawnpool_singleton();
             debug::debug_draw::register_gddebugdraw_singleton();
+            // .gml 不再注册 ResourceFormatLoader（那会劫持 .gml 使其无法在
+            // 编辑器中按纯文本打开/编辑）。工作流改为：.gml 是纯文本源码，
+            // 编辑器插件扫描后调用 GdUiBuilder.build_scene_file 自动生成
+            // 同名 .gml.tscn（真实场景文件），gml 修改后 tscn 自动再生成。
         }
     }
 

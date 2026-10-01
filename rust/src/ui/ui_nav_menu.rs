@@ -59,7 +59,7 @@ struct PanelInfo {
 }
 
 #[derive(GodotClass)]
-#[class(base = Control)]
+#[class(base = Control, tool)]
 pub struct GdUINavMenu {
     base: Base<Control>,
 

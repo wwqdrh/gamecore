@@ -15,7 +15,7 @@ use godot::obj::WithBaseField;
 use super::ui_list_helper;
 
 #[derive(GodotClass)]
-#[class(base = VBoxContainer)]
+#[class(base = VBoxContainer, tool)]
 pub struct GdUIVList {
     base: Base<VBoxContainer>,
 

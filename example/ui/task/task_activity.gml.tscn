@@ -1,0 +1,156 @@
+[gd_scene format=3 uid="uid://cn1q32fs3uv4i"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_go40a"]
+bg_color = Color(0.10980392, 0.16470589, 0.1254902, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.72156864, 0.627451, 0.41568628, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_e0lrm"]
+bg_color = Color(0.16470589, 0.23137255, 0.18431373, 1)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1lqa2"]
+bg_color = Color(0.83137256, 0.6627451, 0.25882354, 1)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+
+[node name="UiRoot" type="Control" unique_id=777096493]
+layout_mode = 3
+anchors_preset = 0
+metadata/__theme_name = "cartoon"
+
+[node name="ActivityRoot" type="HBoxContainer" parent="." unique_id=823826025]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+metadata/__anchor = "full"
+
+[node name="@Label@21792" type="Label" parent="ActivityRoot" unique_id=1681171040]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9098039, 0.8627451, 0.72156864, 1)
+theme_override_font_sizes/font_size = 16
+text = "今日活跃度"
+vertical_alignment = 1
+
+[node name="@Control@21793" type="Control" parent="ActivityRoot" unique_id=776311370]
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 2
+
+[node name="@Panel@21794" type="Panel" parent="ActivityRoot" unique_id=1623326754]
+custom_minimum_size = Vector2(52, 36)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_go40a")
+
+[node name="ActValue" type="Label" parent="ActivityRoot/@Panel@21794" unique_id=921400090]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.22745098, 0.1764706, 0.36078432, 1)
+theme_override_font_sizes/font_size = 16
+text = "65"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="@Control@21795" type="Control" parent="ActivityRoot" unique_id=1907008969]
+custom_minimum_size = Vector2(14, 0)
+layout_mode = 2
+
+[node name="@VBoxContainer@21808" type="VBoxContainer" parent="ActivityRoot" unique_id=745235694]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+
+[node name="ActivityBar" type="ProgressBar" parent="ActivityRoot/@VBoxContainer@21808" unique_id=1009298091]
+custom_minimum_size = Vector2(0, 18)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_e0lrm")
+theme_override_styles/fill = SubResource("StyleBoxFlat_1lqa2")
+value = 65.0
+
+[node name="@Control@21796" type="Control" parent="ActivityRoot/@VBoxContainer@21808" unique_id=1908469836]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="@HBoxContainer@21807" type="HBoxContainer" parent="ActivityRoot/@VBoxContainer@21808" unique_id=162581585]
+layout_mode = 2
+
+[node name="@Control@21797" type="Control" parent="ActivityRoot/@VBoxContainer@21808/@HBoxContainer@21807" unique_id=1189500756]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Chest1" type="VBoxContainer" parent="ActivityRoot/@VBoxContainer@21808/@HBoxContainer@21807" unique_id=1312482311]
+layout_mode = 2
+
+[node name="@Label@21798" type="Label" parent="ActivityRoot/@VBoxContainer@21808/@HBoxContainer@21807/Chest1" unique_id=1231769206]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.22745098, 0.1764706, 0.36078432, 1)
+theme_override_font_sizes/font_size = 16
+text = "🎁"
+horizontal_alignment = 1
+
+[node name="@Label@21799" type="Label" parent="ActivityRoot/@VBoxContainer@21808/@HBoxContainer@21807/Chest1" unique_id=1610220719]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8039216, 0.7490196, 0.6039216, 1)
+theme_override_font_sizes/font_size = 16
+text = "30"
+horizontal_alignment = 1
+
+[node name="@Control@21800" type="Control" parent="ActivityRoot/@VBoxContainer@21808/@HBoxContainer@21807" unique_id=733862448]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Chest2" type="VBoxContainer" parent="ActivityRoot/@VBoxContainer@21808/@HBoxContainer@21807" unique_id=1331950727]
+layout_mode = 2
+
+[node name="@Label@21801" type="Label" parent="ActivityRoot/@VBoxContainer@21808/@HBoxContainer@21807/Chest2" unique_id=700976164]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.22745098, 0.1764706, 0.36078432, 1)
+theme_override_font_sizes/font_size = 16
+text = "🔒"
+horizontal_alignment = 1
+
+[node name="@Label@21802" type="Label" parent="ActivityRoot/@VBoxContainer@21808/@HBoxContainer@21807/Chest2" unique_id=98428586]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8039216, 0.7490196, 0.6039216, 1)
+theme_override_font_sizes/font_size = 16
+text = "60"
+horizontal_alignment = 1
+
+[node name="@Control@21803" type="Control" parent="ActivityRoot/@VBoxContainer@21808/@HBoxContainer@21807" unique_id=2098115211]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Chest3" type="VBoxContainer" parent="ActivityRoot/@VBoxContainer@21808/@HBoxContainer@21807" unique_id=873430987]
+layout_mode = 2
+
+[node name="@Label@21804" type="Label" parent="ActivityRoot/@VBoxContainer@21808/@HBoxContainer@21807/Chest3" unique_id=3734025]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.22745098, 0.1764706, 0.36078432, 1)
+theme_override_font_sizes/font_size = 16
+text = "🔒"
+horizontal_alignment = 1
+
+[node name="@Label@21805" type="Label" parent="ActivityRoot/@VBoxContainer@21808/@HBoxContainer@21807/Chest3" unique_id=1439872819]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8039216, 0.7490196, 0.6039216, 1)
+theme_override_font_sizes/font_size = 16
+text = "90"
+horizontal_alignment = 1
+
+[node name="@Control@21806" type="Control" parent="ActivityRoot/@VBoxContainer@21808/@HBoxContainer@21807" unique_id=2021335215]
+layout_mode = 2
+size_flags_horizontal = 3

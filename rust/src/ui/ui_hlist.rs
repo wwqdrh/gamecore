@@ -15,7 +15,7 @@ use godot::obj::WithBaseField;
 use super::ui_list_helper;
 
 #[derive(GodotClass)]
-#[class(base = HBoxContainer)]
+#[class(base = HBoxContainer, tool)]
 pub struct GdUIHList {
     base: Base<HBoxContainer>,
 

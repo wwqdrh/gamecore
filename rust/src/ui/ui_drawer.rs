@@ -23,7 +23,7 @@ const DIR_TOP: i32 = 2;
 const DIR_BOTTOM: i32 = 3;
 
 #[derive(GodotClass)]
-#[class(base = Control)]
+#[class(base = Control, tool)]
 pub struct GdUIDrawer {
     base: Base<Control>,
 
