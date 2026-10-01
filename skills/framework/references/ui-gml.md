@@ -137,54 +137,66 @@ popup.is_popup_visible()
 
 ## 多 GML 组合实战（example/ui/task/ 宗门任务面板）
 
-复杂界面按区块拆成多个 `.gml`，由一个控制器脚本组合。
-可运行示例 `example/ui/task/task_panel.tscn`，验收脚本 `check_task_ui.gd`（无头跑：
-`godot --headless --path . -s res://example/ui/task/check_task_ui.gd`）。
+复杂界面按区块拆成多个 `.gml`，用 **`<Gml>` 标签直接引用**组合成完整 UI，
+控制器脚本只负责数据与信号。可运行示例 `example/ui/task/task_panel.tscn`，
+验收脚本 `check_task_ui.gd`（无头跑：`godot --headless --path . -s res://example/ui/task/check_task_ui.gd`）。
 
-拆分方式：`task_panel.gml` 只做骨架布局 + Slot 占位（`<Control name="XxxSlot" />`），
-各功能区块独立成文件，条目模板再单独一个文件。
+拆分方式：`task_panel.gml` 骨架布局，各功能区块独立成文件，条目模板再单独一个文件。
 
-### 模式一：Slot 挂载
+### `<Gml>` 标签：引用另一个 gml 文件（构建期嫁接，推荐）
 
-```gdscript
-func _load_root(gml_name: String) -> Control:
-    var builder := GdUiBuilder.new()
-    builder.set_theme("cartoon")
-    var wrapper := builder.parse_file(DIR + gml_name)
-    var root: Control = wrapper.get_child(0)   # 剥掉 UiRoot 包装层，见下
-    wrapper.remove_child(root)
-    wrapper.free()
-    builder.connect_signals(root, self)
-    return root
-
-func _mount(slot_name: String, gml_name: String) -> void:
-    var view := _load_root(gml_name)
-    find_node(slot_name).add_child(view)
+```xml
+<ui theme="cartoon">
+  <Panel name="WindowPanel" class="window-bg" anchor="full">
+    <VBoxContainer>
+      <Gml src="task_topbar.gml" />                              <!-- 相对路径 -->
+      <Gml src="res://ui/shop/shop_list.gml" />                  <!-- 也可用 res:// 绝对路径 -->
+      <Gml src="task_list.gml" size_flags_vertical="expand_fill" /> <!-- 其余属性覆盖式应用到被引用根节点 -->
+    </VBoxContainer>
+  </Panel>
+</ui>
 ```
 
-### 模式二：列表模板注入（条目 gml 复用为 UIVList slot 模板）
+- 构建期解析 src 指向的文件、构建子树、**自动剥掉 UiRoot 包装层**并嫁接到引用位置
+  （`parse_file` 手动组合时才需要自己剥壳，见下方坑 1）
+- src 支持相对路径（基于引用方文件所在目录）与 `res://` 绝对路径；同一文件可引用多次（各自独立实例）
+- Gml 标签上的其余属性（`name`/`anchor`/`margin`/`size_flags_*`/`class`/`on_xxx`）
+  会覆盖式应用到被引用文件的根节点上
+- 主题与样式继承：子文件继承引用方的主题变量与 `<style>` class；子文件自己的
+  `theme` 属性 / `<theme>` 块 / `<style>` 块优先
+- 信号（`on_pressed` 等）照常写在子文件里，由控制器的 `connect_signals` / `allbind_signal` 统一连接
+- 循环引用（A 引 B、B 引 A、自引用）构建期报错，不会卡死
 
-```gdscript
-var tpl := _load_root("task_item.gml")
-list.add_child(tpl)        # 第一个子节点 = slot 模板（UIVList 内部用 get_child(0) 当模板）
-list.initial()
-list.update(data, false)   # 见下方 force 语义
-list.allbind_signal("ItemMargin/ItemRow/ItemBtn", "pressed", _on_item_btn)
+### 列表模板注入：条目 gml 复用为 UIVList slot 模板
+
+直接在列表 gml 内用 `<Gml>` 引用条目文件，构建期即完成模板注入：
+
+```xml
+<ScrollContainer name="TaskScroll" size_flags_vertical="expand_fill">
+  <UIVList name="TaskList" size_flags_horizontal="expand_fill">
+    <Gml src="task_item.gml" />
+  </UIVList>
+</ScrollContainer>
 ```
 
-### 模式三：数据驱动刷新
+### 数据驱动刷新
 
 条目 GML 内用 `{{key}}` 占位（`text="{{title}}"`），`update(Array[Dictionary])` 按字段填充；
 未被模板使用的字段自动存为条目根节点 `__item_data` meta，回调里 `get_meta("__item_data")` 取回整行数据。
 列表条目内的按钮信号用 `allbind_signal(条目内NodePath, 信号名, 回调)` 批量连接
 （duplicate 出的实例不会继承 connect_signals 的连接，每次 update 后重新 allbind）。
 
+```gdscript
+list.update(data, false)
+list.allbind_signal("ItemMargin/ItemRow/ItemBtn", "pressed", _on_item_btn)
+```
+
 ### 页签：直接复用 TabContainer/Tab
 
 ```xml
 <TabContainer name="TaskTabs" anchor="full" tabs_visible="true" current_tab="0">
-  <Tab title="日常"> ... </Tab>
-  <Tab title="主线"> ... </Tab>
+  <Tab title="日常"><Gml src="task_list.gml" /></Tab>
+  <Tab title="主线"><Gml src="task_list.gml" /></Tab>
 </TabContainer>
 ```
 
@@ -198,7 +210,8 @@ list.allbind_signal("ItemMargin/ItemRow/ItemBtn", "pressed", _on_item_btn)
 1. **`parse_string/parse_file` 返回 UiRoot 包装层**：真正的根控件是它的子节点。
    包装层是普通 Control、无尺寸语义——直接当 slot 子节点或列表模板用会导致
    锚点失效、条目高度塌陷为 0；内部未命名节点是 `@Class@id` 形式，NodePath 无法命中。
-   组合场景一律剥壳（`wrapper.get_child(0)`），且结构节点在 GML 中**显式命名**。
+   手动组合场景一律剥壳（`wrapper.get_child(0)`）；`<Gml>` 标签已内置剥壳，无需处理。
+   结构节点在 GML 中务必**显式命名**。
 2. **`UIVList/UIGrid.update(data, force)` 的 force 语义**：`force=true` 会把内部 count
    固定为数据长度——首次调用时（列表为空）两个增删分支都不命中，**一个条目都不会创建**。
    纯数据驱动列表保持 `count<=0`（GML 不写 count 属性），统一用 `update(data, false)`。

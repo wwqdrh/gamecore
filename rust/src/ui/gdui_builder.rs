@@ -64,8 +64,12 @@ impl GdUiBuilder {
     #[func]
     fn parse_string(&self, markup: GString) -> Gd<Control> {
         match self.build_from_markup(&markup.to_string()) {
-            Ok(control) => control,
+            Ok(control) => {
+                set_last_error(None);
+                control
+            }
             Err(e) => {
+                set_last_error(Some(e.clone()));
                 godot_error!("[GdUiBuilder] {}", e);
                 Control::new_alloc()
             }
@@ -87,25 +91,30 @@ impl GdUiBuilder {
         let fa = unsafe { fa.unwrap_unchecked() };
         let content = fa.get_as_text();
 
-        self.parse_string(content)
+        // 文件加载携带目录上下文，使 <Gml src="相对路径"> 可以解析
+        match build_markup(
+            &content.to_string(),
+            self.theme_name.as_deref(),
+            &self.custom_theme_vars,
+            super::builder::parent_dir_of(&path_str).as_deref(),
+        ) {
+            Ok(control) => {
+                set_last_error(None);
+                control
+            }
+            Err(e) => {
+                set_last_error(Some(e.clone()));
+                godot_error!("[GdUiBuilder] {}", e);
+                Control::new_alloc()
+            }
+        }
     }
 
     /// 解析标记字符串并打包为 PackedScene（编辑器预览 / 资源化场景使用）
     /// 解析/构建失败时返回 None，错误信息可通过 last_error() 获取
     #[func]
     fn build_scene_string(&self, markup: GString) -> Option<Gd<PackedScene>> {
-        match self.build_from_markup(&markup.to_string()) {
-            Ok(control) => {
-                let scene = pack_control_to_scene(&control);
-                set_last_error(None);
-                Some(scene)
-            }
-            Err(e) => {
-                set_last_error(Some(e.clone()));
-                godot_error!("[GdUiBuilder] Build scene error: {}", e);
-                None
-            }
-        }
+        self.build_scene_markup(markup, None)
     }
 
     /// 解析 .gml 文件并打包为 PackedScene（编辑器预览 / 资源化场景使用）
@@ -122,7 +131,7 @@ impl GdUiBuilder {
         }
         let fa = unsafe { fa.unwrap_unchecked() };
         let content = fa.get_as_text();
-        self.build_scene_string(content)
+        self.build_scene_markup(content, super::builder::parent_dir_of(&path_str))
     }
 
     /// 最近一次 build_scene_string/build_scene_file 的错误信息（空串表示无错误）
@@ -136,7 +145,33 @@ impl GdUiBuilder {
 
     /// 内部：解析 + 主题注入 + 构建，返回 Control 节点树
     fn build_from_markup(&self, markup: &str) -> Result<Gd<Control>, String> {
-        build_markup(markup, self.theme_name.as_deref(), &self.custom_theme_vars)
+        build_markup(
+            markup,
+            self.theme_name.as_deref(),
+            &self.custom_theme_vars,
+            None,
+        )
+    }
+
+    /// 内部：带目录上下文构建并打包为 PackedScene（<Gml> 引用需要 base_dir）
+    fn build_scene_markup(&self, markup: GString, base_dir: Option<String>) -> Option<Gd<PackedScene>> {
+        match build_markup(
+            &markup.to_string(),
+            self.theme_name.as_deref(),
+            &self.custom_theme_vars,
+            base_dir.as_deref(),
+        ) {
+            Ok(control) => {
+                let scene = pack_control_to_scene(&control);
+                set_last_error(None);
+                Some(scene)
+            }
+            Err(e) => {
+                set_last_error(Some(e.clone()));
+                godot_error!("[GdUiBuilder] Build scene error: {}", e);
+                None
+            }
+        }
     }
 
     /// 连接 UI 节点树中的信号到目标脚本
@@ -206,10 +241,12 @@ impl GdUiBuilder {
 }
 
 /// 解析 + 主题注入 + 构建的公共实现
+/// base_dir：gml 文件所在目录（<Gml src="相对路径"> 的解析基准），字符串构建时为 None
 fn build_markup(
     markup: &str,
     theme_name: Option<&str>,
     custom_theme_vars: &ThemeVars,
+    base_dir: Option<&str>,
 ) -> Result<Gd<Control>, String> {
     let mut parser = UiParser::new(markup);
     let parse_result = parser
@@ -217,6 +254,7 @@ fn build_markup(
         .map_err(|e| format!("Parse error: {}", e))?;
 
     let mut builder = UiBuilder::new();
+    builder.set_base_dir(base_dir.map(|s| s.to_string()));
 
     // 注入主题变量：先设置内置主题，再设置自定义变量
     let mut theme_vars = ThemeVars::new();
@@ -231,34 +269,6 @@ fn build_markup(
     }
 
     builder.build(&parse_result)
-}
-
-/// 供 GdGmlLoader 调用：读取 .gml 文件并构建 PackedScene
-/// 与 GdUiBuilder.new() 的行为一致（不注入运行时主题，与编辑器预览保持一致）
-/// 失败时返回 None，错误信息可通过 get_last_error() 获取
-pub(crate) fn build_scene_from_file_for_loader(path: &GString) -> Option<Gd<PackedScene>> {
-    let fa = FileAccess::open(path, godot::classes::file_access::ModeFlags::READ);
-    if fa.is_none() {
-        let msg = format!("无法打开文件: {}", path);
-        set_last_error(Some(msg.clone()));
-        godot_error!("[GdUiBuilder] {}", msg);
-        return None;
-    }
-    let fa = unsafe { fa.unwrap_unchecked() };
-    let content = fa.get_as_text();
-
-    match build_markup(&content.to_string(), None, &ThemeVars::new()) {
-        Ok(control) => {
-            let scene = pack_control_to_scene(&control);
-            set_last_error(None);
-            Some(scene)
-        }
-        Err(e) => {
-            set_last_error(Some(e.clone()));
-            godot_error!("[GdUiBuilder] Build scene error: {}", e);
-            None
-        }
-    }
 }
 
 /// 将构建好的 Control 树打包为 PackedScene

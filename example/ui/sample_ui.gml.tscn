@@ -171,55 +171,55 @@ corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
-[node name="UiRoot" type="Control" unique_id=1212293887]
+[node name="UiRoot" type="Control" unique_id=1038239506]
 layout_mode = 3
 anchors_preset = 0
 metadata/__theme_name = "cartoon"
 
-[node name="@VBoxContainer@20738" type="VBoxContainer" parent="." unique_id=1800823085]
+[node name="@VBoxContainer@22171" type="VBoxContainer" parent="." unique_id=1020758541]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 metadata/__anchor = "full"
 metadata/__pct_margin = "2%"
 
-[node name="@Label@20713" type="Label" parent="@VBoxContainer@20738" unique_id=721169712]
+[node name="@Label@22146" type="Label" parent="@VBoxContainer@22171" unique_id=960980395]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.22745098, 0.1764706, 0.36078432, 1)
 theme_override_font_sizes/font_size = 16
 text = "从 .gml 文件加载的 UI"
 horizontal_alignment = 1
 
-[node name="@HSeparator@20714" type="HSeparator" parent="@VBoxContainer@20738" unique_id=1711516437]
+[node name="@HSeparator@22147" type="HSeparator" parent="@VBoxContainer@22171" unique_id=1862596606]
 layout_mode = 2
 
-[node name="@Panel@20722" type="Panel" parent="@VBoxContainer@20738" unique_id=1968727614]
+[node name="@Panel@22155" type="Panel" parent="@VBoxContainer@22171" unique_id=203519530]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_8tsbr")
 metadata/__pct_size = "60%,30%"
 
-[node name="@MarginContainer@20721" type="MarginContainer" parent="@VBoxContainer@20738/@Panel@20722" unique_id=1907742790]
+[node name="@MarginContainer@22154" type="MarginContainer" parent="@VBoxContainer@22171/@Panel@22155" unique_id=566746669]
 layout_mode = 0
 
-[node name="@VBoxContainer@20720" type="VBoxContainer" parent="@VBoxContainer@20738/@Panel@20722/@MarginContainer@20721" unique_id=1410356255]
+[node name="@VBoxContainer@22153" type="VBoxContainer" parent="@VBoxContainer@22171/@Panel@22155/@MarginContainer@22154" unique_id=391853446]
 layout_mode = 2
 
-[node name="@Label@20715" type="Label" parent="@VBoxContainer@20738/@Panel@20722/@MarginContainer@20721/@VBoxContainer@20720" unique_id=464367812]
+[node name="@Label@22148" type="Label" parent="@VBoxContainer@22171/@Panel@22155/@MarginContainer@22154/@VBoxContainer@22153" unique_id=2139452654]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.22745098, 0.1764706, 0.36078432, 1)
 theme_override_font_sizes/font_size = 16
 text = "这是一个从外部文件加载的 UI 布局"
 
-[node name="@Label@20716" type="Label" parent="@VBoxContainer@20738/@Panel@20722/@MarginContainer@20721/@VBoxContainer@20720" unique_id=2016656353]
+[node name="@Label@22149" type="Label" parent="@VBoxContainer@22171/@Panel@22155/@MarginContainer@22154/@VBoxContainer@22153" unique_id=928828030]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.22745098, 0.1764706, 0.36078432, 1)
 theme_override_font_sizes/font_size = 16
 text = "使用 ui_builder.parse_file() 加载"
 
-[node name="@HBoxContainer@20719" type="HBoxContainer" parent="@VBoxContainer@20738/@Panel@20722/@MarginContainer@20721/@VBoxContainer@20720" unique_id=108822102]
+[node name="@HBoxContainer@22152" type="HBoxContainer" parent="@VBoxContainer@22171/@Panel@22155/@MarginContainer@22154/@VBoxContainer@22153" unique_id=949061180]
 layout_mode = 2
 
-[node name="@Button@20717" type="Button" parent="@VBoxContainer@20738/@Panel@20722/@MarginContainer@20721/@VBoxContainer@20720/@HBoxContainer@20719" unique_id=1109584297]
+[node name="@Button@22150" type="Button" parent="@VBoxContainer@22171/@Panel@22155/@MarginContainer@22154/@VBoxContainer@22153/@HBoxContainer@22152" unique_id=1646164435]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_pressed_color = Color(0.12745097, 0.07647059, 0.26078433, 1)
@@ -231,7 +231,7 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_6ogtr")
 text = "确认"
 metadata/__signal_pressed = "_on_confirm"
 
-[node name="@Button@20718" type="Button" parent="@VBoxContainer@20738/@Panel@20722/@MarginContainer@20721/@VBoxContainer@20720/@HBoxContainer@20719" unique_id=1010293059]
+[node name="@Button@22151" type="Button" parent="@VBoxContainer@22171/@Panel@22155/@MarginContainer@22154/@VBoxContainer@22153/@HBoxContainer@22152" unique_id=188555860]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_pressed_color = Color(0.12745097, 0.07647059, 0.26078433, 1)
@@ -243,22 +243,22 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_bmafr")
 text = "取消"
 metadata/__signal_pressed = "_on_cancel"
 
-[node name="@HSeparator@20723" type="HSeparator" parent="@VBoxContainer@20738" unique_id=423745626]
+[node name="@HSeparator@22156" type="HSeparator" parent="@VBoxContainer@22171" unique_id=176672586]
 layout_mode = 2
 
-[node name="@Label@20724" type="Label" parent="@VBoxContainer@20738" unique_id=1794327039]
+[node name="@Label@22157" type="Label" parent="@VBoxContainer@22171" unique_id=1013418513]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.22745098, 0.1764706, 0.36078432, 1)
 theme_override_font_sizes/font_size = 16
 text = "水平列表"
 
-[node name="@GdUIHList@20728" type="GdUIHList" parent="@VBoxContainer@20738" unique_id=39170116]
+[node name="@GdUIHList@22161" type="GdUIHList" parent="@VBoxContainer@22171" unique_id=1940587789]
 count = 4
 highlight_mode = 1
 highlight_color = Color(1, 1, 0, 1)
 layout_mode = 2
 
-[node name="@Button@20725" type="Button" parent="@VBoxContainer@20738/@GdUIHList@20728" unique_id=1169765978]
+[node name="@Button@22158" type="Button" parent="@VBoxContainer@22171/@GdUIHList@22161" unique_id=222936296]
 visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(0.22745098, 0.1764706, 0.36078432, 1)
@@ -271,7 +271,7 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_2omfn")
 text = "Slot"
 metadata/__pct_min_size = "10%,5%"
 
-[node name="_Button_20725" type="Button" parent="@VBoxContainer@20738/@GdUIHList@20728" unique_id=680407268]
+[node name="_Button_22158" type="Button" parent="@VBoxContainer@22171/@GdUIHList@22161" unique_id=1240210581]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.22745098, 0.1764706, 0.36078432, 1)
 theme_override_colors/font_pressed_color = Color(0.12745097, 0.07647059, 0.26078433, 1)
@@ -283,7 +283,7 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_2omfn")
 text = "Slot"
 metadata/__pct_min_size = "10%,5%"
 
-[node name="@Button@20726" type="Button" parent="@VBoxContainer@20738/@GdUIHList@20728" unique_id=583528505]
+[node name="@Button@22159" type="Button" parent="@VBoxContainer@22171/@GdUIHList@22161" unique_id=564053603]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.22745098, 0.1764706, 0.36078432, 1)
 theme_override_colors/font_pressed_color = Color(0.12745097, 0.07647059, 0.26078433, 1)
@@ -295,7 +295,7 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_2omfn")
 text = "Slot"
 metadata/__pct_min_size = "10%,5%"
 
-[node name="@Button@20727" type="Button" parent="@VBoxContainer@20738/@GdUIHList@20728" unique_id=245190926]
+[node name="@Button@22160" type="Button" parent="@VBoxContainer@22171/@GdUIHList@22161" unique_id=467467841]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.22745098, 0.1764706, 0.36078432, 1)
 theme_override_colors/font_pressed_color = Color(0.12745097, 0.07647059, 0.26078433, 1)
@@ -307,126 +307,126 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_2omfn")
 text = "Slot"
 metadata/__pct_min_size = "10%,5%"
 
-[node name="@HSeparator@20729" type="HSeparator" parent="@VBoxContainer@20738" unique_id=988901513]
+[node name="@HSeparator@22162" type="HSeparator" parent="@VBoxContainer@22171" unique_id=775648797]
 layout_mode = 2
 
-[node name="@Label@20730" type="Label" parent="@VBoxContainer@20738" unique_id=659012168]
+[node name="@Label@22163" type="Label" parent="@VBoxContainer@22171" unique_id=1766377455]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.22745098, 0.1764706, 0.36078432, 1)
 theme_override_font_sizes/font_size = 16
 text = "网格列表"
 
-[node name="@GdUIGrid@20737" type="GdUIGrid" parent="@VBoxContainer@20738" unique_id=468142197]
+[node name="@GdUIGrid@22170" type="GdUIGrid" parent="@VBoxContainer@22171" unique_id=1490052680]
 count = 6
 highlight_mode = 1
 highlight_color = Color(1, 0.53333336, 0, 1)
 layout_mode = 2
 columns = 3
 
-[node name="@Panel@20732" type="Panel" parent="@VBoxContainer@20738/@GdUIGrid@20737" unique_id=159219225]
+[node name="@Panel@22165" type="Panel" parent="@VBoxContainer@22171/@GdUIGrid@22170" unique_id=918256744]
 visible = false
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_48t01")
 metadata/__pct_min_size = "10%,10%"
 
-[node name="@MarginContainer@20731" type="MarginContainer" parent="@VBoxContainer@20738/@GdUIGrid@20737/@Panel@20732" unique_id=1015670600]
+[node name="@MarginContainer@22164" type="MarginContainer" parent="@VBoxContainer@22171/@GdUIGrid@22170/@Panel@22165" unique_id=183338068]
 layout_mode = 0
 offset_left = 5.0
 offset_top = 5.0
 offset_right = -5.0
 offset_bottom = -5.0
 
-[node name="GLabel" type="Label" parent="@VBoxContainer@20738/@GdUIGrid@20737/@Panel@20732/@MarginContainer@20731" unique_id=121295307]
+[node name="GLabel" type="Label" parent="@VBoxContainer@22171/@GdUIGrid@22170/@Panel@22165/@MarginContainer@22164" unique_id=619028775]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.22745098, 0.1764706, 0.36078432, 1)
 theme_override_font_sizes/font_size = 16
 text = "Grid"
 
-[node name="_Panel_20732" type="Panel" parent="@VBoxContainer@20738/@GdUIGrid@20737" unique_id=396082949]
+[node name="_Panel_22165" type="Panel" parent="@VBoxContainer@22171/@GdUIGrid@22170" unique_id=59969520]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_48t01")
 metadata/__pct_min_size = "10%,10%"
 
-[node name="_MarginContainer_20731" type="MarginContainer" parent="@VBoxContainer@20738/@GdUIGrid@20737/_Panel_20732" unique_id=1670157131]
+[node name="_MarginContainer_22164" type="MarginContainer" parent="@VBoxContainer@22171/@GdUIGrid@22170/_Panel_22165" unique_id=2130481831]
 layout_mode = 0
 offset_left = 5.0
 offset_top = 5.0
 offset_right = -5.0
 offset_bottom = -5.0
 
-[node name="GLabel" type="Label" parent="@VBoxContainer@20738/@GdUIGrid@20737/_Panel_20732/_MarginContainer_20731" unique_id=311638113]
+[node name="GLabel" type="Label" parent="@VBoxContainer@22171/@GdUIGrid@22170/_Panel_22165/_MarginContainer_22164" unique_id=1856978987]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.22745098, 0.1764706, 0.36078432, 1)
 theme_override_font_sizes/font_size = 16
 text = "Grid"
 
-[node name="@Panel@20733" type="Panel" parent="@VBoxContainer@20738/@GdUIGrid@20737" unique_id=608649626]
+[node name="@Panel@22166" type="Panel" parent="@VBoxContainer@22171/@GdUIGrid@22170" unique_id=736885853]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_48t01")
 metadata/__pct_min_size = "10%,10%"
 
-[node name="_MarginContainer_20731" type="MarginContainer" parent="@VBoxContainer@20738/@GdUIGrid@20737/@Panel@20733" unique_id=2128021526]
+[node name="_MarginContainer_22164" type="MarginContainer" parent="@VBoxContainer@22171/@GdUIGrid@22170/@Panel@22166" unique_id=522552631]
 layout_mode = 0
 offset_left = 5.0
 offset_top = 5.0
 offset_right = -5.0
 offset_bottom = -5.0
 
-[node name="GLabel" type="Label" parent="@VBoxContainer@20738/@GdUIGrid@20737/@Panel@20733/_MarginContainer_20731" unique_id=1953989699]
+[node name="GLabel" type="Label" parent="@VBoxContainer@22171/@GdUIGrid@22170/@Panel@22166/_MarginContainer_22164" unique_id=1465795918]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.22745098, 0.1764706, 0.36078432, 1)
 theme_override_font_sizes/font_size = 16
 text = "Grid"
 
-[node name="@Panel@20734" type="Panel" parent="@VBoxContainer@20738/@GdUIGrid@20737" unique_id=725337273]
+[node name="@Panel@22167" type="Panel" parent="@VBoxContainer@22171/@GdUIGrid@22170" unique_id=1172598792]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_48t01")
 metadata/__pct_min_size = "10%,10%"
 
-[node name="_MarginContainer_20731" type="MarginContainer" parent="@VBoxContainer@20738/@GdUIGrid@20737/@Panel@20734" unique_id=97710308]
+[node name="_MarginContainer_22164" type="MarginContainer" parent="@VBoxContainer@22171/@GdUIGrid@22170/@Panel@22167" unique_id=1245172308]
 layout_mode = 0
 offset_left = 5.0
 offset_top = 5.0
 offset_right = -5.0
 offset_bottom = -5.0
 
-[node name="GLabel" type="Label" parent="@VBoxContainer@20738/@GdUIGrid@20737/@Panel@20734/_MarginContainer_20731" unique_id=775828598]
+[node name="GLabel" type="Label" parent="@VBoxContainer@22171/@GdUIGrid@22170/@Panel@22167/_MarginContainer_22164" unique_id=1516289617]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.22745098, 0.1764706, 0.36078432, 1)
 theme_override_font_sizes/font_size = 16
 text = "Grid"
 
-[node name="@Panel@20735" type="Panel" parent="@VBoxContainer@20738/@GdUIGrid@20737" unique_id=674243088]
+[node name="@Panel@22168" type="Panel" parent="@VBoxContainer@22171/@GdUIGrid@22170" unique_id=1694723809]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_48t01")
 metadata/__pct_min_size = "10%,10%"
 
-[node name="_MarginContainer_20731" type="MarginContainer" parent="@VBoxContainer@20738/@GdUIGrid@20737/@Panel@20735" unique_id=1075750233]
+[node name="_MarginContainer_22164" type="MarginContainer" parent="@VBoxContainer@22171/@GdUIGrid@22170/@Panel@22168" unique_id=870937011]
 layout_mode = 0
 offset_left = 5.0
 offset_top = 5.0
 offset_right = -5.0
 offset_bottom = -5.0
 
-[node name="GLabel" type="Label" parent="@VBoxContainer@20738/@GdUIGrid@20737/@Panel@20735/_MarginContainer_20731" unique_id=1414666625]
+[node name="GLabel" type="Label" parent="@VBoxContainer@22171/@GdUIGrid@22170/@Panel@22168/_MarginContainer_22164" unique_id=944505269]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.22745098, 0.1764706, 0.36078432, 1)
 theme_override_font_sizes/font_size = 16
 text = "Grid"
 
-[node name="@Panel@20736" type="Panel" parent="@VBoxContainer@20738/@GdUIGrid@20737" unique_id=1460628220]
+[node name="@Panel@22169" type="Panel" parent="@VBoxContainer@22171/@GdUIGrid@22170" unique_id=764981790]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_48t01")
 metadata/__pct_min_size = "10%,10%"
 
-[node name="_MarginContainer_20731" type="MarginContainer" parent="@VBoxContainer@20738/@GdUIGrid@20737/@Panel@20736" unique_id=609779789]
+[node name="_MarginContainer_22164" type="MarginContainer" parent="@VBoxContainer@22171/@GdUIGrid@22170/@Panel@22169" unique_id=669216881]
 layout_mode = 0
 offset_left = 5.0
 offset_top = 5.0
 offset_right = -5.0
 offset_bottom = -5.0
 
-[node name="GLabel" type="Label" parent="@VBoxContainer@20738/@GdUIGrid@20737/@Panel@20736/_MarginContainer_20731" unique_id=1970530752]
+[node name="GLabel" type="Label" parent="@VBoxContainer@22171/@GdUIGrid@22170/@Panel@22169/_MarginContainer_22164" unique_id=2059810377]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.22745098, 0.1764706, 0.36078432, 1)
 theme_override_font_sizes/font_size = 16

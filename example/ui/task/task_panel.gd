@@ -1,20 +1,17 @@
-# 宗门任务面板 —— 多 GML 文件组合示例（对照设计图用简单图形/emoji 占位）
+# 宗门任务面板 —— 多 GML 组合示例（对照设计图用简单图形/emoji 占位）
 #
-# 拆分策略（复用框架组件）：
-#   task_panel.gml    骨架：整体布局 + Slot 占位 + 标题横幅
-#   task_topbar.gml   顶部资源栏 + 关闭按钮
-#   task_tabs.gml     TabContainer/Tab 原生页签切换（4 个页签）
-#   task_list.gml     任务列表容器（ScrollContainer + UIVList，每个页签挂一个实例）
-#   task_item.gml     单个任务条目（作为 UIVList 的 slot 模板注入）
-#   task_activity.gml 底部活跃度进度 + 宝箱里程碑
+# 拆分与引用（GML 间直接引用，无需脚本挂载）：
+#   task_panel.gml    骨架：<Gml src="task_topbar/task_tabs/task_activity.gml">
+#   task_tabs.gml     每个 <Tab> 内 <Gml src="task_list.gml">（各自独立实例）
+#   task_list.gml     UIVList 内 <Gml src="task_item.gml">（构建期注入条目模板）
+#   task_item.gml     单个任务条目（{{key}} 模板绑定）
 #
-# 组合方式（三种典型模式各一）：
-#   1. Slot 挂载    ：GdUiBuilder.parse_file + find_node(slot).add_child
-#   2. 列表模板注入 ：条目 gml 运行时塞进 UIVList 作为 slot 模板
-#   3. 数据驱动刷新 ：list.update(data) + {{key}} 模板绑定 + allbind 批量连信号
+# 控制器只负责数据与信号：
+#   1. list.update(data)     数据驱动刷新（模式三）
+#   2. allbind_signal        批量连接条目按钮信号
+#   3. on_pressed 回调       顶部栏/条目按钮信号自动连到本脚本
 extends GdGmlScene
 
-const DIR := "res://example/ui/task/"
 const TAB_NAMES := ["日常", "主线", "宗门", "悬赏"]
 
 var _lists: Array = []   # 每个页签一个 GdUIVList
@@ -45,69 +42,32 @@ var _tab_data := {
 
 
 func _ready() -> void:
-	# 1. 加载骨架（Slot 占位布局）
-	load_gml(DIR + "task_panel.gml")
-	# 2. 挂载各功能区块
-	_mount("TopBarSlot", "task_topbar.gml")
-	_mount("TabSlot", "task_tabs.gml")
-	_mount("ActivitySlot", "task_activity.gml")
-	# 3. 每个页签挂载一个 task_list 实例并注入条目模板
-	_setup_tab_lists()
-	# 4. 填充各页签的任务数据
-	for i in range(TAB_NAMES.size()):
+	# gml_file 属性已配置时 GdGmlScene 自动加载（含全部 <Gml> 引用）
+	if not is_loaded():
+		load_gml("res://example/ui/task/task_panel.gml")
+	# 页签切换为原生行为，只连信号（当前引擎 TabContainer 仅支持顶部/底部页签，
+	# 设计图中的左侧竖排页签如需还原，可换回自定义按钮列表 + 数据驱动高亮）
+	var tabs: TabContainer = find_node("TaskTabs")
+	if tabs:
+		tabs.tab_changed.connect(_on_tab_changed)
+	# 收集每个页签的列表实例（由 <Gml src="task_list.gml"> 构建期创建）
+	for tab_name in TAB_NAMES:
+		var page: Control = find_node(tab_name)
+		if page == null:
+			continue
+		var list: GdUIVList = page.find_child("TaskList", true, false)
+		if list:
+			_lists.append(list)
+	# 填充各页签的任务数据
+	for i in range(_lists.size()):
 		_refresh_list(i)
 
 
-## 解析子 gml 并剥掉 UiRoot 包装层，返回真正的根控件。
-## 包装层是普通 Control（无尺寸语义）：
-##   - 作为列表 slot 模板时，条目最小高度无法向上传递（高度塌陷为 0）
-##   - 其内部未命名节点是 @Class@id 形式，NodePath 无法稳定命中
-## 因此组合场景统一剥壳后使用。
-func _load_root(gml_name: String) -> Control:
-	var builder := GdUiBuilder.new()
-	builder.set_theme("cartoon")
-	var wrapper := builder.parse_file(DIR + gml_name)
-	var root: Control = wrapper.get_child(0)
-	wrapper.remove_child(root)
-	wrapper.free()
-	builder.connect_signals(root, self)   # 子视图信号连到本脚本
-	return root
-
-
-## 模式一：Slot 挂载 —— 把子视图放进骨架的占位节点
-func _mount(slot_name: String, gml_name: String) -> void:
-	var view := _load_root(gml_name)
-	var slot := find_node(slot_name)
-	if slot:
-		slot.add_child(view)
-
-
-## 页签 + 列表装配：每个 Tab 页挂一个 task_list 实例（模式二：列表模板注入）
-func _setup_tab_lists() -> void:
-	var tabs: TabContainer = find_node("TaskTabs")
-	if tabs == null:
-		return
-	# 页签切换为原生行为，只连信号（当前引擎 TabContainer 仅支持顶部/底部页签，
-	# 设计图中的左侧竖排页签如需还原，可换回自定义按钮列表 + 数据驱动高亮）
-	tabs.tab_changed.connect(_on_tab_changed)
-	for i in range(TAB_NAMES.size()):
-		var page := find_node(TAB_NAMES[i])
-		if page == null:
-			continue
-		var list_view := _load_root("task_list.gml")
-		page.add_child(list_view)
-		var list: GdUIVList = list_view.find_child("TaskList", true, false)
-		var tpl := _load_root("task_item.gml")
-		list.add_child(tpl)       # 第一个子节点 = slot 模板
-		list.initial()
-		_lists.append(list)
-
-
-## 模式三：数据驱动刷新 —— {{key}} 模板绑定 + allbind 批量连接条目信号
+## 数据驱动刷新 —— {{key}} 模板绑定 + allbind 批量连接条目信号
 func _refresh_list(idx: int) -> void:
 	var list: GdUIVList = _lists[idx]
 	var tasks: Array = _tab_data[TAB_NAMES[idx]]
-	# force=false：保持 count<=0，走“按 data 长度动态增删条目”分支
+	# force=false：保持 count<=0，走"按 data 长度动态增删条目"分支
 	# （force=true 会把 count 固定为数据长度，首次更新时反而不会创建条目）
 	list.update(tasks, false)
 	# duplicate 出来的条目实例需要重新绑定内部按钮信号

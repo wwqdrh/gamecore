@@ -23,14 +23,14 @@ func _run() -> void:
 
 	var ok := true
 
-	# 1. 骨架 slot 均已挂载
-	for slot_name in ["TopBarSlot", "TabSlot", "ActivitySlot"]:
-		var slot = panel.find_node(slot_name)
-		if slot == null or slot.get_child_count() == 0:
-			push_error("[Check] %s 未挂载子视图" % slot_name)
+	# 1. <Gml> 引用的子视图直接成为骨架子节点（构建期嫁接，无需脚本挂载）
+	for view_name in ["TopBar", "ActivityRoot"]:
+		var view = panel.find_node(view_name)
+		if view == null:
+			push_error("[Check] <Gml> 引用子视图 %s 不存在" % view_name)
 			ok = false
 		else:
-			print("[Check] slot=%s children=%d size=%s" % [slot_name, slot.get_child_count(), slot.get_size()])
+			print("[Check] gml include=%s size=%s" % [view_name, view.get_size()])
 
 	# 2. TabContainer：4 个页签 + 原生切换
 	var tabs: TabContainer = panel.find_node("TaskTabs")

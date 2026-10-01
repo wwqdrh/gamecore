@@ -102,7 +102,8 @@ impl GdGmlScene {
         let content = fa.get_as_text();
 
         self.clear_content();
-        self.parse_and_build(&content.to_string());
+        let base_dir = super::builder::parent_dir_of(&path_str);
+        self.parse_and_build_with_dir(&content.to_string(), base_dir);
     }
 
     /// 从字符串加载 GML 内容
@@ -174,7 +175,9 @@ impl GdGmlScene {
                     // 没有 theme 属性，添加一个
                     content = content.replacen("<ui", &format!("<ui theme=\"{}\"", new_theme), 1);
                 }
-                self.parse_and_build(&content);
+                // 重载保持原文件的目录上下文（<Gml> 相对路径解析需要）
+                let base_dir = super::builder::parent_dir_of(&self.gml_file.to_string());
+                self.parse_and_build_with_dir(&content, base_dir);
             }
         }
     }
@@ -444,6 +447,11 @@ impl GdGmlScene {
 impl GdGmlScene {
     /// 解析 GML 文本并构建节点树
     fn parse_and_build(&mut self, content: &str) {
+        self.parse_and_build_with_dir(content, None)
+    }
+
+    /// 带 <Gml> 相对路径基准目录的解析构建
+    fn parse_and_build_with_dir(&mut self, content: &str, base_dir: Option<String>) {
         // 先清除旧内容
         self.clear_content();
 
@@ -451,6 +459,7 @@ impl GdGmlScene {
         match parser.parse() {
             Ok(parse_result) => {
                 let mut builder = UiBuilder::new();
+                builder.set_base_dir(base_dir);
 
                 // 注入主题变量：根据 GML 中 <ui theme="xxx"> 属性加载内置主题
                 if let Some(ref gml_theme) = parse_result.theme_name {

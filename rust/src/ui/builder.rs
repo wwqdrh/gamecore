@@ -14,12 +14,13 @@ use godot::classes::{
     SpinBox, HSeparator, VSeparator, NinePatchRect,
     StyleBoxFlat, ResourceLoader, Range, Texture2D,
     CheckButton, HSlider, ColorRect, OptionButton,
+    FileAccess,
 };
 use godot::classes::control::LayoutPreset;
 use godot::classes::texture_rect::StretchMode;
 use godot::obj::NewGd;
 
-use super::parser::{UiNode, StyleRule, ParseResult};
+use super::parser::{UiNode, StyleRule, ParseResult, UiParser};
 use super::ui_hlist::GdUIHList;
 use super::ui_vlist::GdUIVList;
 use super::ui_grid::GdUIGrid;
@@ -35,6 +36,10 @@ pub struct UiBuilder {
     styles: HashMap<String, StyleRule>,
     /// 主题变量表
     theme_vars: ThemeVars,
+    /// 当前构建的 gml 文件所在目录（用于 <Gml src="相对路径"> 解析）
+    base_dir: Option<String>,
+    /// <Gml> 引用链（含当前文件），用于检测循环引用
+    include_stack: Vec<String>,
 }
 
 impl UiBuilder {
@@ -42,7 +47,14 @@ impl UiBuilder {
         Self {
             styles: HashMap::new(),
             theme_vars: ThemeVars::new(),
+            base_dir: None,
+            include_stack: Vec::new(),
         }
+    }
+
+    /// 设置当前构建文件的所在目录（<Gml> 相对路径基准）
+    pub(crate) fn set_base_dir(&mut self, dir: Option<String>) {
+        self.base_dir = dir;
     }
 
     /// 设置主题变量表
@@ -94,6 +106,11 @@ impl UiBuilder {
 
     /// 构建单个 AST 节点为 Control
     fn build_node(&self, node: &UiNode) -> Result<Gd<Control>, String> {
+        // <Gml src="...">：引用另一个 gml 文件，构建后剥壳嫁接到当前位置
+        if node.tag == "Gml" {
+            return self.build_gml_include(node);
+        }
+
         let mut control = self.instantiate_control(&node.tag)?;
 
         // 设置节点名
@@ -260,6 +277,99 @@ impl UiBuilder {
         }
 
         Ok(control)
+    }
+
+    /// 构建 <Gml src="..."> 引用：解析目标 gml → 构建子树 → 剥掉 UiRoot 包装层，
+    /// 返回真正的根控件（由调用方挂到引用位置的父节点上）。
+    /// Gml 标签上的其余属性（name/anchor/margin/class/on_xxx 等）会覆盖式地
+    /// 应用到被引用文件的根节点上。
+    /// 主题与样式继承：子文件继承引用方的主题变量与 class 样式；
+    /// 子文件自己的 theme 属性 / <theme> 块 / <style> 块优先。
+    fn build_gml_include(&self, node: &UiNode) -> Result<Gd<Control>, String> {
+        let src = node
+            .attributes
+            .iter()
+            .find(|(k, _)| k == "src")
+            .map(|(_, v)| v.clone())
+            .ok_or_else(|| "<Gml> 标签缺少 src 属性".to_string())?;
+
+        let path = resolve_include_path(&src, self.base_dir.as_deref());
+        if self.include_stack.contains(&path) {
+            return Err(format!(
+                "GML 循环引用: {} -> {}",
+                self.include_stack.join(" -> "),
+                path
+            ));
+        }
+
+        let path_g = GString::from(&path);
+        let content = match FileAccess::open(&path_g, godot::classes::file_access::ModeFlags::READ) {
+            Some(fa) => fa.get_as_text().to_string(),
+            None => {
+                return Err(format!(
+                    "<Gml> 无法打开引用文件: {}（base_dir={:?}）",
+                    path, self.base_dir
+                ))
+            }
+        };
+
+        let mut parser = UiParser::new(&content);
+        let parse_result = parser
+            .parse()
+            .map_err(|e| format!("GML 引用解析失败 {}: {}", path, e))?;
+
+        // 被引用文件根节点（<ui> 的第一个子元素）的标签，用于 class 样式的标签匹配
+        let root_tag = parse_result
+            .root
+            .children
+            .first()
+            .map(|n| n.tag.clone())
+            .unwrap_or_default();
+
+        // 子构建器：继承引用方的主题变量与 class 样式
+        let mut sub = UiBuilder {
+            styles: self.styles.clone(),
+            theme_vars: self.theme_vars.clone(),
+            base_dir: parent_dir_of(&path),
+            include_stack: {
+                let mut stack = self.include_stack.clone();
+                stack.push(path.clone());
+                stack
+            },
+        };
+        let mut wrapper = sub.build(&parse_result)?;
+
+        // 剥壳：UiRoot 包装层是构建器的实现细节，引用场景只保留根控件
+        let grafted_node = wrapper
+            .get_child(0)
+            .ok_or_else(|| format!("GML 引用文件为空: {}", path))?;
+        let mut grafted = grafted_node
+            .try_cast::<Control>()
+            .map_err(|_| format!("GML 引用根节点不是 Control: {}", path))?;
+        wrapper.remove_child(&grafted.clone().upcast::<godot::classes::Node>());
+        // pack 后包装层不再需要（Node 为手动内存，需显式释放）
+        wrapper.free();
+
+        // Gml 标签上的其余属性覆盖式应用到被引用根节点
+        for (key, value) in &node.attributes {
+            match key.as_str() {
+                "src" => {}
+                "name" => grafted.set_name(&StringName::from(value)),
+                "class" => self.apply_class_style(&mut grafted, &root_tag, value),
+                k if k.starts_with("on_") => {
+                    let signal_name = &k[3..];
+                    grafted.set_meta(
+                        &StringName::from(format!("__signal_{}", signal_name).as_str()),
+                        &value.to_variant(),
+                    );
+                }
+                k => {
+                    grafted = apply_attribute(grafted, &root_tag, k, value);
+                }
+            }
+        }
+
+        Ok(grafted)
     }
 
     /// 根据标签名实例化对应的 Godot Control
@@ -2115,4 +2225,36 @@ fn parse_internal_action(value: &str) -> Option<(InternalAction, String)> {
         }
     }
     None
+}
+
+/// 解析 <Gml src="..."> 的目标路径：
+/// - res:// / user:// / absolute 开头：按原样使用
+/// - 相对路径：基于引用方文件所在目录；无目录上下文时回退到 res:// 根
+fn resolve_include_path(src: &str, base_dir: Option<&str>) -> String {
+    if src.starts_with("res://") || src.starts_with("user://") || src.starts_with('/') {
+        return src.to_string();
+    }
+    match base_dir {
+        Some(dir) => {
+            let dir = dir.trim_end_matches('/');
+            if dir.is_empty() || dir == "res:" {
+                format!("res://{}", src)
+            } else {
+                format!("{}/{}", dir, src)
+            }
+        }
+        None => format!("res://{}", src),
+    }
+}
+
+/// 取文件路径的父目录（"res://a/b/c.gml" -> "res://a/b"），无父目录时返回 None
+pub(crate) fn parent_dir_of(path: &str) -> Option<String> {
+    let p = path.trim_end_matches('/');
+    let idx = p.rfind('/')?;
+    let dir = &p[..idx];
+    if dir.is_empty() || dir == "res:" || dir == "user:" {
+        None
+    } else {
+        Some(dir.to_string())
+    }
 }
