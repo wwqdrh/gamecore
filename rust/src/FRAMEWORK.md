@@ -3,6 +3,9 @@
 本文档描述 `rust/src` 中游戏框架的功能模块划分。框架以 godot-rust 0.5（Godot 4.6）实现，
 通过 GDExtension 暴露给 GDScript 使用；入口与单例注册见 `lib.rs`。
 
+> **用法示例**请查阅 `skills/framework/`（SKILL.md 按功能模块分类，含 GDScript 示例代码）；
+> 本文档只描述 Rust 源码结构，不含用法。
+
 ```
 rust/src/
 ├── lib.rs              # 扩展入口：模块声明 + 5 个引擎单例注册（InitStage::Scene）
