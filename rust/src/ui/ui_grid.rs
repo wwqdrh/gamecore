@@ -387,6 +387,10 @@ impl GdUIGrid {
                 }
             }
         }
+
+        // @pressed/on_pressed 声明的条目信号自动重连（目标为 connect_signals 记录的 __signal_target）
+        let list_ctrl = self.base().clone().upcast::<Control>();
+        ui_list_helper::auto_bind_item_signals(&list_ctrl);
     }
 
     fn on_item_mouse_enter(&mut self, click_item: &Gd<Control>) {

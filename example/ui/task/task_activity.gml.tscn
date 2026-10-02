@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://cn1q32fs3uv4i"]
+[gd_scene format=3]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_go40a"]
 bg_color = Color(0.10980392, 0.16470589, 0.1254902, 1)
@@ -26,131 +26,133 @@ corner_radius_top_right = 9
 corner_radius_bottom_right = 9
 corner_radius_bottom_left = 9
 
-[node name="UiRoot" type="Control" unique_id=1036821125]
+[node name="UiRoot" type="Control" unique_id=208823812]
 layout_mode = 3
 anchors_preset = 0
 metadata/__theme_name = "cartoon"
+metadata/__script_vars = {}
 
-[node name="ActivityRoot" type="HBoxContainer" parent="." unique_id=1087854745]
+[node name="ActivityRoot" type="HBoxContainer" parent="." unique_id=1631280217]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 metadata/__anchor = "full"
+metadata/__script_vars = {}
 
-[node name="@Label@22196" type="Label" parent="ActivityRoot" unique_id=1171320154]
+[node name="@Label@28" type="Label" parent="ActivityRoot" unique_id=180747930]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.9098039, 0.8627451, 0.72156864, 1)
 theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.9098039, 0.8627451, 0.72156864, 1)
 text = "今日活跃度"
 vertical_alignment = 1
 
-[node name="@Control@22197" type="Control" parent="ActivityRoot" unique_id=1693559745]
+[node name="@Control@29" type="Control" parent="ActivityRoot" unique_id=1962092023]
 custom_minimum_size = Vector2(10, 0)
 layout_mode = 2
 
-[node name="@Panel@22198" type="Panel" parent="ActivityRoot" unique_id=519147078]
+[node name="@Panel@30" type="Panel" parent="ActivityRoot" unique_id=1243139013]
 custom_minimum_size = Vector2(52, 36)
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_styles/panel = SubResource("StyleBoxFlat_go40a")
 
-[node name="ActValue" type="Label" parent="ActivityRoot/@Panel@22198" unique_id=1777961720]
+[node name="ActValue" type="Label" parent="ActivityRoot/@Panel@30" unique_id=1008105903]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_colors/font_color = Color(0.22745098, 0.1764706, 0.36078432, 1)
 theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.22745098, 0.1764706, 0.36078432, 1)
 text = "65"
 horizontal_alignment = 1
 vertical_alignment = 1
 metadata/__anchor = "full"
 
-[node name="@Control@22199" type="Control" parent="ActivityRoot" unique_id=247851092]
+[node name="@Control@31" type="Control" parent="ActivityRoot" unique_id=638776559]
 custom_minimum_size = Vector2(14, 0)
 layout_mode = 2
 
-[node name="@VBoxContainer@22212" type="VBoxContainer" parent="ActivityRoot" unique_id=804551530]
+[node name="@VBoxContainer@44" type="VBoxContainer" parent="ActivityRoot" unique_id=2145836346]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 
-[node name="ActivityBar" type="ProgressBar" parent="ActivityRoot/@VBoxContainer@22212" unique_id=468996990]
+[node name="ActivityBar" type="ProgressBar" parent="ActivityRoot/@VBoxContainer@44" unique_id=308782527]
 custom_minimum_size = Vector2(0, 18)
 layout_mode = 2
 theme_override_styles/background = SubResource("StyleBoxFlat_e0lrm")
 theme_override_styles/fill = SubResource("StyleBoxFlat_1lqa2")
 value = 65.0
 
-[node name="@Control@22200" type="Control" parent="ActivityRoot/@VBoxContainer@22212" unique_id=1336627584]
+[node name="@Control@32" type="Control" parent="ActivityRoot/@VBoxContainer@44" unique_id=343357708]
 custom_minimum_size = Vector2(0, 6)
 layout_mode = 2
 
-[node name="@HBoxContainer@22211" type="HBoxContainer" parent="ActivityRoot/@VBoxContainer@22212" unique_id=1275300300]
+[node name="@HBoxContainer@43" type="HBoxContainer" parent="ActivityRoot/@VBoxContainer@44" unique_id=885103485]
 layout_mode = 2
 
-[node name="@Control@22201" type="Control" parent="ActivityRoot/@VBoxContainer@22212/@HBoxContainer@22211" unique_id=10368270]
+[node name="@Control@33" type="Control" parent="ActivityRoot/@VBoxContainer@44/@HBoxContainer@43" unique_id=708845199]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Chest1" type="VBoxContainer" parent="ActivityRoot/@VBoxContainer@22212/@HBoxContainer@22211" unique_id=2030580908]
+[node name="Chest1" type="VBoxContainer" parent="ActivityRoot/@VBoxContainer@44/@HBoxContainer@43" unique_id=1745000903]
 layout_mode = 2
 
-[node name="@Label@22202" type="Label" parent="ActivityRoot/@VBoxContainer@22212/@HBoxContainer@22211/Chest1" unique_id=417833334]
+[node name="@Label@34" type="Label" parent="ActivityRoot/@VBoxContainer@44/@HBoxContainer@43/Chest1" unique_id=1468730511]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.22745098, 0.1764706, 0.36078432, 1)
 theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.22745098, 0.1764706, 0.36078432, 1)
 text = "🎁"
 horizontal_alignment = 1
 
-[node name="@Label@22203" type="Label" parent="ActivityRoot/@VBoxContainer@22212/@HBoxContainer@22211/Chest1" unique_id=1620414265]
+[node name="@Label@35" type="Label" parent="ActivityRoot/@VBoxContainer@44/@HBoxContainer@43/Chest1" unique_id=1024494498]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.8039216, 0.7490196, 0.6039216, 1)
 theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.8039216, 0.7490196, 0.6039216, 1)
 text = "30"
 horizontal_alignment = 1
 
-[node name="@Control@22204" type="Control" parent="ActivityRoot/@VBoxContainer@22212/@HBoxContainer@22211" unique_id=1998557225]
+[node name="@Control@36" type="Control" parent="ActivityRoot/@VBoxContainer@44/@HBoxContainer@43" unique_id=907879863]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Chest2" type="VBoxContainer" parent="ActivityRoot/@VBoxContainer@22212/@HBoxContainer@22211" unique_id=1606150445]
+[node name="Chest2" type="VBoxContainer" parent="ActivityRoot/@VBoxContainer@44/@HBoxContainer@43" unique_id=2001649683]
 layout_mode = 2
 
-[node name="@Label@22205" type="Label" parent="ActivityRoot/@VBoxContainer@22212/@HBoxContainer@22211/Chest2" unique_id=23885537]
+[node name="@Label@37" type="Label" parent="ActivityRoot/@VBoxContainer@44/@HBoxContainer@43/Chest2" unique_id=905902142]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.22745098, 0.1764706, 0.36078432, 1)
 theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.22745098, 0.1764706, 0.36078432, 1)
 text = "🔒"
 horizontal_alignment = 1
 
-[node name="@Label@22206" type="Label" parent="ActivityRoot/@VBoxContainer@22212/@HBoxContainer@22211/Chest2" unique_id=731471278]
+[node name="@Label@38" type="Label" parent="ActivityRoot/@VBoxContainer@44/@HBoxContainer@43/Chest2" unique_id=323400213]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.8039216, 0.7490196, 0.6039216, 1)
 theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.8039216, 0.7490196, 0.6039216, 1)
 text = "60"
 horizontal_alignment = 1
 
-[node name="@Control@22207" type="Control" parent="ActivityRoot/@VBoxContainer@22212/@HBoxContainer@22211" unique_id=1731166414]
+[node name="@Control@39" type="Control" parent="ActivityRoot/@VBoxContainer@44/@HBoxContainer@43" unique_id=1623305910]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Chest3" type="VBoxContainer" parent="ActivityRoot/@VBoxContainer@22212/@HBoxContainer@22211" unique_id=215178784]
+[node name="Chest3" type="VBoxContainer" parent="ActivityRoot/@VBoxContainer@44/@HBoxContainer@43" unique_id=1053573525]
 layout_mode = 2
 
-[node name="@Label@22208" type="Label" parent="ActivityRoot/@VBoxContainer@22212/@HBoxContainer@22211/Chest3" unique_id=1129099866]
+[node name="@Label@40" type="Label" parent="ActivityRoot/@VBoxContainer@44/@HBoxContainer@43/Chest3" unique_id=306950099]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.22745098, 0.1764706, 0.36078432, 1)
 theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.22745098, 0.1764706, 0.36078432, 1)
 text = "🔒"
 horizontal_alignment = 1
 
-[node name="@Label@22209" type="Label" parent="ActivityRoot/@VBoxContainer@22212/@HBoxContainer@22211/Chest3" unique_id=377930196]
+[node name="@Label@41" type="Label" parent="ActivityRoot/@VBoxContainer@44/@HBoxContainer@43/Chest3" unique_id=1106791674]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.8039216, 0.7490196, 0.6039216, 1)
 theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.8039216, 0.7490196, 0.6039216, 1)
 text = "90"
 horizontal_alignment = 1
 
-[node name="@Control@22210" type="Control" parent="ActivityRoot/@VBoxContainer@22212/@HBoxContainer@22211" unique_id=1343393572]
+[node name="@Control@42" type="Control" parent="ActivityRoot/@VBoxContainer@44/@HBoxContainer@43" unique_id=2033848720]
 layout_mode = 2
 size_flags_horizontal = 3

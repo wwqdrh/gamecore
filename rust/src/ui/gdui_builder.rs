@@ -43,6 +43,9 @@ pub struct GdUiBuilder {
     theme_name: Option<String>,
     /// 自定义主题变量（通过 set_theme_var 设置）
     custom_theme_vars: ThemeVars,
+    /// parse_string 的相对路径基准（<Gml src> / <ui script> 相对路径解析）
+    /// parse_file 自动按文件目录推导，不读本字段
+    base_dir: Option<String>,
 }
 
 #[godot_api]
@@ -52,6 +55,7 @@ impl IRefCounted for GdUiBuilder {
             base,
             theme_name: None,
             custom_theme_vars: ThemeVars::new(),
+            base_dir: None,
         }
     }
 }
@@ -149,7 +153,7 @@ impl GdUiBuilder {
             markup,
             self.theme_name.as_deref(),
             &self.custom_theme_vars,
-            None,
+            self.base_dir.as_deref(),
         )
     }
 
@@ -191,6 +195,15 @@ impl GdUiBuilder {
             Ok(_) => GString::new(),
             Err(e) => GString::from(e.to_string().as_str()),
         }
+    }
+
+    /// 设置 parse_string 的相对路径基准目录（如 "user://ui_test"）
+    /// <Gml src="相对路径"> 与 <ui script="相对路径"> 以该目录解析；
+    /// parse_file 无需设置（自动按文件所在目录推导）。传空字符串清除。
+    #[func]
+    fn set_base_dir(&mut self, dir: GString) {
+        let d = dir.to_string();
+        self.base_dir = if d.is_empty() { None } else { Some(d) };
     }
 
     /// 设置内置主题名称（cartoon）
@@ -300,12 +313,19 @@ fn assign_owners(node: &Gd<Node>, owner: &Gd<Node>) {
 
 /// 递归连接信号
 pub fn connect_signals_recursive(node: &mut Gd<Control>, target: &Gd<Object>) {
-    // 检查节点是否有信号元数据
-    let meta_list = get_signal_meta_list(node);
-    for (signal_name, method_name) in meta_list {
-        let callable = Callable::from_object_method(target, &StringName::from(method_name.as_str()));
-        node.connect(&StringName::from(signal_name.as_str()), &callable);
+    // 列表控件记录信号目标：条目由 slot.duplicate() 创建，外部脚本连接不会随
+    // duplicate 复制，update() 重建条目后由 bind_events 依据该 meta 自动重连
+    // 条目内 @pressed/on_pressed 声明的信号（见 ui_list_helper::auto_bind_item_signals）
+    let class_name = node.get_class().to_string();
+    if matches!(class_name.as_str(), "GdUIVList" | "GdUIHList" | "GdUIGrid") {
+        node.set_meta(
+            &StringName::from("__gml_signal_target"),
+            &target.clone().to_variant(),
+        );
     }
+
+    // 连接本节点声明的全部信号绑定（@pressed / on_pressed，含参数补绑）
+    super::ui_list_helper::connect_node_signal_meta(node, target);
 
     // 递归处理子节点
     let children = node.get_children();
@@ -319,7 +339,7 @@ pub fn connect_signals_recursive(node: &mut Gd<Control>, target: &Gd<Object>) {
 }
 
 /// 获取节点上的信号元数据列表
-fn get_signal_meta_list(node: &Gd<Control>) -> Vec<(String, String)> {
+pub(crate) fn get_signal_meta_list(node: &Gd<Control>) -> Vec<(String, String)> {
     let mut result = Vec::new();
 
     // 获取所有元数据键

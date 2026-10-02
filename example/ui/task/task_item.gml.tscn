@@ -1,6 +1,8 @@
-[gd_scene format=3 uid="uid://c3jsqex6gj8ec"]
+[gd_scene format=3]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_36kl3"]
+[ext_resource type="Script" path="res://example/ui/task/task_item.gd" id="1_7le24"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2o5l5"]
 bg_color = Color(0.9647059, 0.9372549, 0.85882354, 1)
 border_width_left = 2
 border_width_top = 2
@@ -12,14 +14,14 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7le24"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_h8dq8"]
 bg_color = Color(0.89411765, 0.8509804, 0.72156864, 1)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2o5l5"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8ioi3"]
 content_margin_left = 16.0
 content_margin_top = 8.0
 content_margin_right = 16.0
@@ -35,7 +37,7 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_h8dq8"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2wnfk"]
 content_margin_left = 16.0
 content_margin_top = 8.0
 content_margin_right = 16.0
@@ -51,7 +53,7 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8ioi3"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hlyf7"]
 content_margin_left = 16.0
 content_margin_top = 8.0
 content_margin_right = 16.0
@@ -67,17 +69,20 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[node name="UiRoot" type="Control" unique_id=1469694052]
+[node name="UiRoot" type="Control" unique_id=1839049454]
 layout_mode = 3
 anchors_preset = 0
 metadata/__theme_name = "cartoon"
+metadata/__script_vars = {}
 
-[node name="ItemRoot" type="Panel" parent="." unique_id=2105878625]
+[node name="ItemRoot" type="Panel" parent="." unique_id=534607754]
 custom_minimum_size = Vector2(0, 84)
 layout_mode = 0
-theme_override_styles/panel = SubResource("StyleBoxFlat_36kl3")
+theme_override_styles/panel = SubResource("StyleBoxFlat_2o5l5")
+script = ExtResource("1_7le24")
+metadata/__script_vars = {}
 
-[node name="ItemMargin" type="MarginContainer" parent="ItemRoot" unique_id=1228177355]
+[node name="ItemMargin" type="MarginContainer" parent="ItemRoot" unique_id=2034976197]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -87,96 +92,97 @@ offset_right = -12.0
 offset_bottom = -8.0
 metadata/__anchor = "full"
 
-[node name="ItemRow" type="HBoxContainer" parent="ItemRoot/ItemMargin" unique_id=1841812880]
+[node name="ItemRow" type="HBoxContainer" parent="ItemRoot/ItemMargin" unique_id=1886809100]
 layout_mode = 2
 
-[node name="@Panel@22321" type="Panel" parent="ItemRoot/ItemMargin/ItemRow" unique_id=610323403]
+[node name="@Panel@175" type="Panel" parent="ItemRoot/ItemMargin/ItemRow" unique_id=561761348]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 size_flags_vertical = 4
-theme_override_styles/panel = SubResource("StyleBoxFlat_7le24")
+theme_override_styles/panel = SubResource("StyleBoxFlat_h8dq8")
 
-[node name="ItemIcon" type="Label" parent="ItemRoot/ItemMargin/ItemRow/@Panel@22321" unique_id=1858059442]
+[node name="ItemIcon" type="Label" parent="ItemRoot/ItemMargin/ItemRow/@Panel@175" unique_id=973998970]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_colors/font_color = Color(0.22745098, 0.1764706, 0.36078432, 1)
 theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.22745098, 0.1764706, 0.36078432, 1)
 horizontal_alignment = 1
 vertical_alignment = 1
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 metadata/__anchor = "full"
 
-[node name="@Control@22322" type="Control" parent="ItemRoot/ItemMargin/ItemRow" unique_id=1559401549]
+[node name="@Control@176" type="Control" parent="ItemRoot/ItemMargin/ItemRow" unique_id=341752123]
 custom_minimum_size = Vector2(10, 0)
 layout_mode = 2
 
-[node name="@VBoxContainer@22323" type="VBoxContainer" parent="ItemRoot/ItemMargin/ItemRow" unique_id=1707681395]
+[node name="@VBoxContainer@177" type="VBoxContainer" parent="ItemRoot/ItemMargin/ItemRow" unique_id=74241668]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 
-[node name="ItemTitle" type="Label" parent="ItemRoot/ItemMargin/ItemRow/@VBoxContainer@22323" unique_id=1914990176]
+[node name="ItemTitle" type="Label" parent="ItemRoot/ItemMargin/ItemRow/@VBoxContainer@177" unique_id=805771919]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
 theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
 metadata/__tpl_text = "title"
 metadata/__tpl_keys = "text"
 
-[node name="ItemDesc" type="Label" parent="ItemRoot/ItemMargin/ItemRow/@VBoxContainer@22323" unique_id=1586614669]
+[node name="ItemDesc" type="Label" parent="ItemRoot/ItemMargin/ItemRow/@VBoxContainer@177" unique_id=390933767]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.5411765, 0.47843137, 0.34509805, 1)
 theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.5411765, 0.47843137, 0.34509805, 1)
 metadata/__tpl_text = "desc"
 metadata/__tpl_keys = "text"
 
-[node name="ItemProgress" type="Label" parent="ItemRoot/ItemMargin/ItemRow" unique_id=140496908]
+[node name="ItemProgress" type="Label" parent="ItemRoot/ItemMargin/ItemRow" unique_id=1828722270]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.36078432, 0.3019608, 0.18039216, 1)
 theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.36078432, 0.3019608, 0.18039216, 1)
 vertical_alignment = 1
 metadata/__tpl_text = "progress"
 metadata/__tpl_keys = "text"
 
-[node name="@Control@22324" type="Control" parent="ItemRoot/ItemMargin/ItemRow" unique_id=1217856750]
+[node name="@Control@178" type="Control" parent="ItemRoot/ItemMargin/ItemRow" unique_id=1148315996]
 custom_minimum_size = Vector2(14, 0)
 layout_mode = 2
 
-[node name="Reward1" type="Label" parent="ItemRoot/ItemMargin/ItemRow" unique_id=131665912]
+[node name="Reward1" type="Label" parent="ItemRoot/ItemMargin/ItemRow" unique_id=141102902]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.2901961, 0.3529412, 0.22745098, 1)
 theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.2901961, 0.3529412, 0.22745098, 1)
 vertical_alignment = 1
 metadata/__tpl_text = "reward1"
 metadata/__tpl_keys = "text"
 
-[node name="@Control@22325" type="Control" parent="ItemRoot/ItemMargin/ItemRow" unique_id=472631541]
+[node name="@Control@179" type="Control" parent="ItemRoot/ItemMargin/ItemRow" unique_id=510396515]
 custom_minimum_size = Vector2(12, 0)
 layout_mode = 2
 
-[node name="Reward2" type="Label" parent="ItemRoot/ItemMargin/ItemRow" unique_id=1840768558]
+[node name="Reward2" type="Label" parent="ItemRoot/ItemMargin/ItemRow" unique_id=204484611]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.2901961, 0.3529412, 0.22745098, 1)
 theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.2901961, 0.3529412, 0.22745098, 1)
 vertical_alignment = 1
 metadata/__tpl_text = "reward2"
 metadata/__tpl_keys = "text"
 
-[node name="@Control@22326" type="Control" parent="ItemRoot/ItemMargin/ItemRow" unique_id=1408420400]
+[node name="@Control@180" type="Control" parent="ItemRoot/ItemMargin/ItemRow" unique_id=1023968322]
 custom_minimum_size = Vector2(14, 0)
 layout_mode = 2
 
-[node name="ItemBtn" type="Button" parent="ItemRoot/ItemMargin/ItemRow" unique_id=948739999]
+[node name="ItemBtn" type="Button" parent="ItemRoot/ItemMargin/ItemRow" unique_id=1681098178]
 custom_minimum_size = Vector2(84, 40)
 layout_mode = 2
 size_flags_vertical = 4
+theme_override_styles/normal = SubResource("StyleBoxFlat_8ioi3")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_2wnfk")
+theme_override_styles/hover = SubResource("StyleBoxFlat_hlyf7")
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_pressed_color = Color(0.12745097, 0.07647059, 0.26078433, 1)
 theme_override_colors/font_hover_color = Color(0.377451, 0.3264706, 0.5107843, 1)
 theme_override_font_sizes/font_size = 16
-theme_override_styles/normal = SubResource("StyleBoxFlat_2o5l5")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_h8dq8")
-theme_override_styles/hover = SubResource("StyleBoxFlat_8ioi3")
 metadata/__tpl_text = "btn_text"
 metadata/__tpl_keys = "text"
+metadata/__signal_pressed = "_on_task_action"

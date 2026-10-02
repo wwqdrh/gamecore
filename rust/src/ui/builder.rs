@@ -2,6 +2,7 @@
 // 将解析器生成的 AST 节点树转换为 Godot Control 节点树
 // 支持容器/控件/样式/信号绑定/布局属性
 
+use std::cell::RefCell;
 use std::collections::HashMap;
 
 use godot::prelude::*;
@@ -20,7 +21,7 @@ use godot::classes::control::LayoutPreset;
 use godot::classes::texture_rect::StretchMode;
 use godot::obj::NewGd;
 
-use super::parser::{UiNode, StyleRule, ParseResult, UiParser};
+use super::parser::{UiNode, StyleRule, ParseResult, UiParser, DataValue};
 use super::ui_hlist::GdUIHList;
 use super::ui_vlist::GdUIVList;
 use super::ui_grid::GdUIGrid;
@@ -40,6 +41,15 @@ pub struct UiBuilder {
     base_dir: Option<String>,
     /// <Gml> 引用链（含当前文件），用于检测循环引用
     include_stack: Vec<String>,
+    /// <script> 块定义的数据变量（已合并 provided_vars 覆盖）
+    script_vars: HashMap<String, DataValue>,
+    /// 父文件 <Gml data-xxx="父变量名"> 注入的具名数据（xxx 为本文件 <script> 变量名，构建前覆盖同名变量）
+    provided_vars: HashMap<String, DataValue>,
+    /// <ui script="xxx.gd"> 声明的脚本（构建后挂载到内容根节点）
+    ui_script: Option<String>,
+    /// 待应用的数据绑定（节点, data="变量名"），树构建完成后统一应用，
+    /// 保证列表的 slot 模板子节点已就位
+    pending_data: RefCell<Vec<(Gd<Control>, String)>>,
 }
 
 impl UiBuilder {
@@ -49,6 +59,10 @@ impl UiBuilder {
             theme_vars: ThemeVars::new(),
             base_dir: None,
             include_stack: Vec::new(),
+            script_vars: HashMap::new(),
+            provided_vars: HashMap::new(),
+            ui_script: None,
+            pending_data: RefCell::new(Vec::new()),
         }
     }
 
@@ -82,6 +96,17 @@ impl UiBuilder {
             self.theme_vars.insert(key.clone(), value.clone());
         }
 
+        // <ui script="xxx.gd"> 声明
+        self.ui_script = parse_result.ui_script.clone();
+
+        // <script> 块数据变量
+        self.script_vars.extend(parse_result.script_vars.clone());
+        // 父文件 data-xxx 具名数据覆盖同名 <script> 变量（<Gml> 引用复用时的数据注入点，
+        // 子文件内部节点继续用自己的变量名 data="xxx" / {{xxx}} 引用）
+        for (name, value) in &self.provided_vars {
+            self.script_vars.insert(name.clone(), value.clone());
+        }
+
         // 创建根 Control 节点
         let mut root = Control::new_alloc();
         root.set_name("UiRoot");
@@ -100,6 +125,12 @@ impl UiBuilder {
 
         // 后处理：解析内部信号绑定（show:/hide:/toggle:NodeName）
         resolve_internal_signals(&mut root);
+
+        // 后处理：应用 data="变量名" 绑定（<script> 数据 → 列表 update / 节点 meta）
+        self.apply_data_bindings(&mut root);
+
+        // 后处理：挂载 <ui script="xxx.gd"> 声明的脚本
+        self.attach_ui_script(&mut root);
 
         Ok(root)
     }
@@ -131,11 +162,18 @@ impl UiBuilder {
                 "class" => class_name = Some(value.clone()),
                 "name" => { /* 已处理 */ }
                 "title" => { /* Tab 标签的 title 已在上方处理（设置节点名） */ }
+                "data" => {
+                    // <script> 数据绑定延迟到树构建完成后应用
+                    self.pending_data
+                        .borrow_mut()
+                        .push((control.clone(), value.clone()));
+                }
                 _ => {
-                    if key.starts_with("on_") {
-                        // 信号绑定延迟处理（需要节点在场景树中）
-                        // 存储为元数据，由 connect_signals 方法连接
-                        let signal_name = &key[3..];
+                    // 信号绑定声明：on_pressed / @pressed（@ 为简写）→ 存 meta，
+                    // 由 connect_signals（静态节点）/ 列表 bind_events（条目内）统一连接
+                    if let Some(signal_name) =
+                        key.strip_prefix("on_").or_else(|| key.strip_prefix('@'))
+                    {
                         control.set_meta(
                             &StringName::from(format!("__signal_{}", signal_name).as_str()),
                             &value.to_variant(),
@@ -162,10 +200,13 @@ impl UiBuilder {
             control.call(&StringName::from("ensure_ui_built"), &[]);
         }
 
-        // NinePatchRect 作为按钮使用时（有 on_pressed 属性）：
+        // NinePatchRect 作为按钮使用时（有 on_pressed/@pressed 属性）：
         // 添加不可见 Button 子节点处理点击事件，NinePatchRect 本身设为鼠标穿透
         if node.tag == "NinePatchRect" {
-            let has_signal_pressed = node.attributes.iter().any(|(k, _)| k == "on_pressed");
+            let has_signal_pressed = node
+                .attributes
+                .iter()
+                .any(|(k, _)| k == "on_pressed" || k == "@pressed");
             if has_signal_pressed {
                 control.set_mouse_filter(godot::classes::control::MouseFilter::IGNORE);
                 let mut btn = Button::new_alloc();
@@ -326,6 +367,23 @@ impl UiBuilder {
             .map(|n| n.tag.clone())
             .unwrap_or_default();
 
+        // 收集 data-xxx="父变量名" 具名数据：xxx 为子文件 <script> 变量名，
+        // 用父文件的变量值覆盖子文件同名变量（子文件节点用 data="xxx" / {{xxx}} 引用）
+        let mut provided_vars: HashMap<String, DataValue> = HashMap::new();
+        for (key, value) in &node.attributes {
+            if let Some(child_name) = key.strip_prefix("data-") {
+                match self.script_vars.get(value) {
+                    Some(v) => {
+                        provided_vars.insert(child_name.to_string(), v.clone());
+                    }
+                    None => godot_error!(
+                        "[GdUiBuilder] data-{}=\"{}\" 引用的父文件 <script> 变量不存在",
+                        child_name, value
+                    ),
+                }
+            }
+        }
+
         // 子构建器：继承引用方的主题变量与 class 样式
         let mut sub = UiBuilder {
             styles: self.styles.clone(),
@@ -336,6 +394,10 @@ impl UiBuilder {
                 stack.push(path.clone());
                 stack
             },
+            script_vars: HashMap::new(),
+            provided_vars,
+            ui_script: None,
+            pending_data: RefCell::new(Vec::new()),
         };
         let mut wrapper = sub.build(&parse_result)?;
 
@@ -356,8 +418,21 @@ impl UiBuilder {
                 "src" => {}
                 "name" => grafted.set_name(&StringName::from(value)),
                 "class" => self.apply_class_style(&mut grafted, &root_tag, value),
-                k if k.starts_with("on_") => {
-                    let signal_name = &k[3..];
+                "data" => {
+                    // 覆盖被引用文件的数据绑定：按引用方（父文件）的 <script> 变量解析
+                    // （旧版整体覆盖语法，推荐改用 data-xxx 具名覆盖）
+                    self.pending_data
+                        .borrow_mut()
+                        .push((grafted.clone(), value.clone()));
+                }
+                k if k.starts_with("data-") => {
+                    // 具名数据覆盖（data-子变量名="父变量名"）已在构建前注入子文件
+                    // script_vars，此处无需再处理
+                }
+                k if k.starts_with("on_") || k.starts_with('@') => {
+                    // 信号绑定声明（on_pressed / @pressed 简写）
+                    let signal_name = k.strip_prefix("on_").or_else(|| k.strip_prefix('@'))
+                        .unwrap_or(k);
                     grafted.set_meta(
                         &StringName::from(format!("__signal_{}", signal_name).as_str()),
                         &value.to_variant(),
@@ -370,6 +445,123 @@ impl UiBuilder {
         }
 
         Ok(grafted)
+    }
+
+    /// 应用 data="变量名" 绑定（树构建完成后调用）：
+    /// - 列表节点（UIVList/UIHList/UIGrid）+ 数组变量：直接 update(data, false) 驱动条目
+    /// - 其他节点：变量存为节点 meta "__script_data"
+    /// - 所有变量同时挂到根节点 meta "__script_vars"（含每个顶层子节点），控制器可读取
+    /// 挂载 <ui script="xxx.gd"> 声明的脚本到本文件的内容根节点
+    /// 挂载目标是 UiRoot 包装层的顶层子节点——<Gml> 嫁接与场景打包均保留该节点，
+    /// 条目被列表 duplicate 时脚本随节点复制，条目内 @pressed 声明可就近绑定自身脚本
+    fn attach_ui_script(&self, root: &mut Gd<Control>) {
+        let Some(rel) = &self.ui_script else { return; };
+        let path = resolve_include_path(rel, self.base_dir.as_deref());
+        let Some(child) = root.get_child(0) else {
+            godot_warn!("[GdUiBuilder] <ui script=\"{}\"> 无顶层节点可挂载", rel);
+            return;
+        };
+        let Ok(mut target) = child.try_cast::<Control>() else {
+            godot_warn!("[GdUiBuilder] <ui script=\"{}\"> 顶层节点不是 Control，跳过挂载", rel);
+            return;
+        };
+        // 外部已挂脚本（如 GdGmlScene 场景脚本）时不覆盖
+        if target.get_script().is_some() {
+            godot_warn!(
+                "[GdUiBuilder] <ui script=\"{}\"> 挂载目标已存在脚本，跳过（外部脚本优先）",
+                rel
+            );
+            return;
+        }
+        match ResourceLoader::singleton().load(&GString::from(path.as_str())) {
+            Some(script) => {
+                if let Ok(script) = script.try_cast::<godot::classes::Script>() {
+                    // set_script 的类型安全包装对 Option<Gd<Script>> 的 AsArg 判定有
+                    // corner case，走通用 call（Variant 签名）最稳
+                    target.call(&StringName::from("set_script"), &[script.to_variant()]);
+                } else {
+                    godot_error!(
+                        "[GdUiBuilder] <ui script=\"{}\"> 资源不是脚本: {}",
+                        rel, path
+                    );
+                }
+            }
+            None => godot_error!(
+                "[GdUiBuilder] <ui script=\"{}\"> 脚本加载失败: {}",
+                rel, path
+            ),
+        }
+    }
+
+    fn apply_data_bindings(&self, root: &mut Gd<Control>) {
+        let bindings: Vec<(Gd<Control>, String)> = self.pending_data.borrow().clone();
+        self.pending_data.borrow_mut().clear();
+
+        // script 变量表挂根节点 meta
+        let mut dict: Dictionary<Variant, Variant> = Dictionary::new();
+        for (name, value) in &self.script_vars {
+            dict.set(&Variant::from(name.as_str()), &data_value_to_variant(value));
+        }
+        let dict_variant = dict.to_variant();
+        root.set_meta(&StringName::from("__script_vars"), &dict_variant.clone());
+        // 顶层子节点（剥壳嫁接后真正存活的根控件）也挂一份，供控制器按文件读取
+        let children = root.get_children();
+        for i in 0..children.len() {
+            if let Some(child) = children.get(i) {
+                if let Ok(mut control) = child.try_cast::<Control>() {
+                    control.set_meta(&StringName::from("__script_vars"), &dict_variant.clone());
+                }
+            }
+        }
+
+        for (mut node, var_name) in bindings {
+            let Some(value) = self.script_vars.get(&var_name) else {
+                godot_error!(
+                    "[GdUiBuilder] data=\"{}\" 引用的 <script> 变量不存在",
+                    var_name
+                );
+                continue;
+            };
+
+            // 数组数据：优先绑定到列表控件（UIVList/UIHList/UIGrid）。
+            // 节点本身不是列表时（如 <Gml> 覆盖的根是 ScrollContainer 等容器），
+            // 向后代查找最近的列表控件作为绑定目标
+            if let DataValue::Array(_) = value {
+                let target = if is_list_control(&node) {
+                    Some(node.clone())
+                } else {
+                    find_list_descendant(&node)
+                };
+                if let Some(mut list) = target {
+                    list.set_meta(
+                        &StringName::from("__script_data"),
+                        &data_value_to_variant(value),
+                    );
+                    // #[func] update(data, force)：构建期直接驱动列表条目
+                    list.call(
+                        &StringName::from("update"),
+                        &[
+                            data_value_to_array(value).to_variant(),
+                            false.to_variant(),
+                        ],
+                    );
+                    continue;
+                }
+            }
+
+            // 非数组 / 无列表目标：变量原样存 meta，任何组件/控制器都能取到
+            node.set_meta(
+                &StringName::from("__script_data"),
+                &data_value_to_variant(value),
+            );
+            if let DataValue::Array(_) = value {
+                godot_warn!(
+                    "[GdUiBuilder] data=\"{}\" 为数组但节点 {} 及其后代中没有列表控件（UIVList/UIHList/UIGrid），已存为 meta",
+                    var_name,
+                    node.get_name()
+                );
+            }
+        }
     }
 
     /// 根据标签名实例化对应的 Godot Control
@@ -2257,4 +2449,58 @@ pub(crate) fn parent_dir_of(path: &str) -> Option<String> {
     } else {
         Some(dir.to_string())
     }
+}
+
+/// 节点是否为列表控件（UIVList/UIHList/UIGrid）
+fn is_list_control(node: &Gd<Control>) -> bool {
+    node.clone().try_cast::<GdUIVList>().is_ok()
+        || node.clone().try_cast::<GdUIHList>().is_ok()
+        || node.clone().try_cast::<GdUIGrid>().is_ok()
+}
+
+/// 深度优先查找后代中最近的列表控件（<Gml data=...> 覆盖容器根时使用）
+fn find_list_descendant(root: &Gd<Control>) -> Option<Gd<Control>> {
+    let children = root.get_children();
+    for i in 0..children.len() {
+        if let Some(child) = children.get(i) {
+            if let Ok(control) = child.try_cast::<Control>() {
+                if is_list_control(&control) {
+                    return Some(control);
+                }
+                if let Some(found) = find_list_descendant(&control) {
+                    return Some(found);
+                }
+            }
+        }
+    }
+    None
+}
+
+/// DataValue -> Godot Variant（数组/对象递归转换）
+fn data_value_to_variant(value: &DataValue) -> Variant {
+    match value {
+        DataValue::Str(s) => GString::from(s.as_str()).to_variant(),
+        DataValue::Num(n) => n.to_variant(),
+        DataValue::Bool(b) => b.to_variant(),
+        DataValue::Null => Variant::nil(),
+        DataValue::Array(_) => data_value_to_array(value).to_variant(),
+        DataValue::Dict(pairs) => {
+            let mut dict: Dictionary<Variant, Variant> = Dictionary::new();
+            for (k, v) in pairs {
+                dict.set(&Variant::from(k.as_str()), &data_value_to_variant(v));
+            }
+            dict.to_variant()
+        }
+    }
+}
+
+/// DataValue::Array -> godot Array<Variant>（非数组返回空数组）
+fn data_value_to_array(value: &DataValue) -> Array<Variant> {
+    let mut arr = Array::new();
+    if let DataValue::Array(items) = value {
+        for item in items {
+            arr.push(&data_value_to_variant(item));
+        }
+    }
+    arr
 }

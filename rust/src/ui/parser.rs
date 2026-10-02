@@ -24,6 +24,27 @@ pub struct StyleRule {
     pub properties: HashMap<String, String>,
 }
 
+/// <script> 块中定义的数据值（JSON 风格字面量）
+#[derive(Debug, Clone, PartialEq)]
+pub enum DataValue {
+    Str(String),
+    Num(f64),
+    Bool(bool),
+    Null,
+    Array(Vec<DataValue>),
+    Dict(Vec<(String, DataValue)>),
+}
+
+impl DataValue {
+    /// 便捷取值：数组元素个数
+    pub fn array_len(&self) -> Option<usize> {
+        match self {
+            DataValue::Array(items) => Some(items.len()),
+            _ => None,
+        }
+    }
+}
+
 /// 解析结果：包含根节点、样式规则和主题变量
 #[derive(Debug, Clone)]
 pub struct ParseResult {
@@ -35,6 +56,10 @@ pub struct ParseResult {
     pub theme_vars: HashMap<String, String>,
     /// 主题名称（来自 <ui theme="xxx">）
     pub theme_name: Option<String>,
+    /// <script> 块定义的数据变量（供节点 data="变量名" 绑定）
+    pub script_vars: HashMap<String, DataValue>,
+    /// <ui script="xxx.gd"> 声明的脚本（构建期自动挂载到内容根节点）
+    pub ui_script: Option<String>,
 }
 
 /// 解析错误
@@ -68,7 +93,9 @@ impl UiParser {
     pub fn parse(&mut self) -> Result<ParseResult, ParseError> {
         let mut styles = Vec::new();
         let mut theme_vars = HashMap::new();
+        let mut script_vars = HashMap::new();
         let mut theme_name: Option<String> = None;
+        let mut ui_script: Option<String> = None;
         let mut root_children = Vec::new();
 
         self.skip_whitespace_and_comments();
@@ -88,6 +115,9 @@ impl UiParser {
         for (key, value) in &ui_attrs {
             if key == "theme" {
                 theme_name = Some(value.clone());
+            } else if key == "script" {
+                // <ui script="xxx.gd">：脚本随本文件构建结果自动挂载
+                ui_script = Some(value.clone());
             }
         }
 
@@ -153,6 +183,22 @@ impl UiParser {
                 continue;
             }
 
+            // 检查 <script> 块（数据变量定义，如 var tasks = [...]）
+            if self.expect_str("<script") {
+                self.skip_whitespace();
+                if !self.expect_char('>') {
+                    return Err(ParseError {
+                        message: "Expected '>' after <script".to_string(),
+                        position: self.pos,
+                    });
+                }
+                let script_content = self.read_until_close_tag("script")?;
+                let parsed_vars = parse_script_block(&script_content)
+                    .map_err(|msg| ParseError { message: format!("<script> {}", msg), position: self.pos })?;
+                script_vars.extend(parsed_vars);
+                continue;
+            }
+
             // 解析普通子节点
             let node = self.parse_node()?;
             root_children.push(node);
@@ -164,7 +210,7 @@ impl UiParser {
             children: root_children,
         };
 
-        Ok(ParseResult { root, styles, theme_vars, theme_name })
+        Ok(ParseResult { root, styles, theme_vars, theme_name, script_vars, ui_script })
     }
 
     /// 解析一个节点（标签 + 属性 + 子节点）
@@ -302,12 +348,12 @@ impl UiParser {
         Ok(name)
     }
 
-    /// 读取属性名
+    /// 读取属性名（允许 @ 前缀，如 @pressed="_on_xxx" 信号绑定声明）
     fn read_attr_name(&mut self) -> Result<String, ParseError> {
         let mut name = String::new();
         while !self.is_at_end() {
             let c = self.current_char();
-            if c.is_alphanumeric() || c == '_' || c == '-' {
+            if c.is_alphanumeric() || c == '_' || c == '-' || c == '@' {
                 name.push(c);
                 self.advance();
             } else {
@@ -458,6 +504,271 @@ impl UiParser {
             }
             break;
         }
+    }
+}
+
+/// 解析 <script> 块内容为数据变量表
+///
+/// 语法（JSON 风格字面量，宽松处理）：
+/// ```text
+/// // 行注释
+/// var tasks = [
+///   { icon: "🌿", title: "采集灵草", count: 3, done: false },
+///   "纯字符串也可以",   // 尾逗号允许
+/// ]
+/// title = "单变量"      // var/let 关键字可选
+/// ```
+pub fn parse_script_block(content: &str) -> Result<HashMap<String, DataValue>, String> {
+    let mut parser = ScriptParser {
+        chars: content.chars().collect(),
+        pos: 0,
+    };
+    parser.parse_declarations()
+}
+
+/// <script> 块解析器
+struct ScriptParser {
+    chars: Vec<char>,
+    pos: usize,
+}
+
+impl ScriptParser {
+    fn parse_declarations(&mut self) -> Result<HashMap<String, DataValue>, String> {
+        let mut vars = HashMap::new();
+        loop {
+            self.skip_ws_comments();
+            if self.is_at_end() {
+                break;
+            }
+            // var / let 关键字可选
+            if self.peek_word("var") || self.peek_word("let") {
+                self.pos += 3;
+                self.skip_ws_comments();
+            }
+            // 变量名
+            let name = self.read_ident();
+            if name.is_empty() {
+                return Err(self.err_msg("期望变量名"));
+            }
+            self.skip_ws_comments();
+            if !self.expect_char('=') || self.current_is('=') {
+                return Err(self.err_msg(&format!("变量 '{}' 期望 '=' 赋值", name)));
+            }
+            self.skip_ws_comments();
+            let value = self.parse_value()?;
+            self.skip_ws_comments();
+            self.expect_char(';'); // 结尾分号可选
+            vars.insert(name, value);
+        }
+        Ok(vars)
+    }
+
+    /// 解析一个值：字符串 / 数字 / 布尔 / null / 数组 / 对象
+    fn parse_value(&mut self) -> Result<DataValue, String> {
+        self.skip_ws_comments();
+        if self.is_at_end() {
+            return Err(self.err_msg("期望值，但输入已结束"));
+        }
+        match self.current() {
+            '"' | '\'' => Ok(DataValue::Str(self.parse_string()?)),
+            c if c == '-' || c.is_ascii_digit() => self.parse_number(),
+            c if c.is_alphabetic() || c == '_' => {
+                let word = self.read_ident();
+                match word.as_str() {
+                    "true" => Ok(DataValue::Bool(true)),
+                    "false" => Ok(DataValue::Bool(false)),
+                    "null" => Ok(DataValue::Null),
+                    other => Err(self.err_msg(&format!("未知字面量 '{}'", other))),
+                }
+            }
+            '[' => self.parse_array(),
+            '{' => self.parse_dict(),
+            c => Err(self.err_msg(&format!("意外的字符 '{}'", c))),
+        }
+    }
+
+    fn parse_string(&mut self) -> Result<String, String> {
+        let quote = self.current();
+        self.pos += 1;
+        let mut out = String::new();
+        while !self.is_at_end() {
+            let c = self.current();
+            self.pos += 1;
+            if c == quote {
+                return Ok(out);
+            }
+            if c == '\\' && !self.is_at_end() {
+                let esc = self.current();
+                self.pos += 1;
+                match esc {
+                    'n' => out.push('\n'),
+                    't' => out.push('\t'),
+                    other => out.push(other), // \" \\ \' 原样还原
+                }
+            } else {
+                out.push(c);
+            }
+        }
+        Err(self.err_msg("字符串缺少闭合引号"))
+    }
+
+    fn parse_number(&mut self) -> Result<DataValue, String> {
+        let start = self.pos;
+        if self.current_is('-') {
+            self.pos += 1;
+        }
+        while !self.is_at_end()
+            && (self.current().is_ascii_digit()
+                || matches!(self.current(), '.' | 'e' | 'E' | '+' | '-'))
+        {
+            self.pos += 1;
+        }
+        let text: String = self.chars[start..self.pos].iter().collect();
+        text.parse::<f64>()
+            .map(DataValue::Num)
+            .map_err(|_| self.err_msg(&format!("非法数字 '{}'", text)))
+    }
+
+    fn parse_array(&mut self) -> Result<DataValue, String> {
+        self.pos += 1; // 跳过 [
+        let mut items = Vec::new();
+        loop {
+            self.skip_ws_comments();
+            if self.is_at_end() {
+                return Err(self.err_msg("数组缺少闭合 ']'"));
+            }
+            if self.current_is(']') {
+                self.pos += 1;
+                return Ok(DataValue::Array(items));
+            }
+            items.push(self.parse_value()?);
+            self.skip_ws_comments();
+            if self.current_is(',') {
+                self.pos += 1; // 尾逗号允许：下一轮先检查 ']'
+            } else if !self.current_is(']') {
+                return Err(self.err_msg("数组元素之间期望 ',' 或 ']'"));
+            }
+        }
+    }
+
+    fn parse_dict(&mut self) -> Result<DataValue, String> {
+        self.pos += 1; // 跳过 {
+        let mut pairs = Vec::new();
+        loop {
+            self.skip_ws_comments();
+            if self.is_at_end() {
+                return Err(self.err_msg("对象缺少闭合 '}'"));
+            }
+            if self.current_is('}') {
+                self.pos += 1;
+                return Ok(DataValue::Dict(pairs));
+            }
+            // 键：带引号字符串或裸标识符
+            let key = if self.current_is('"') || self.current_is('\'') {
+                self.parse_string()?
+            } else {
+                self.read_ident()
+            };
+            if key.is_empty() {
+                return Err(self.err_msg("对象键不能为空"));
+            }
+            self.skip_ws_comments();
+            if !self.expect_char(':') {
+                return Err(self.err_msg(&format!("对象键 '{}' 后期望 ':'", key)));
+            }
+            let value = self.parse_value()?;
+            pairs.push((key, value));
+            self.skip_ws_comments();
+            if self.current_is(',') {
+                self.pos += 1; // 尾逗号允许
+            } else if !self.current_is('}') {
+                return Err(self.err_msg("对象键值对之间期望 ',' 或 '}'"));
+            }
+        }
+    }
+
+    // === 辅助方法 ===
+
+    fn skip_ws_comments(&mut self) {
+        loop {
+            while !self.is_at_end() && self.current().is_whitespace() {
+                self.pos += 1;
+            }
+            // // 行注释
+            if !self.is_at_end() && self.current_is('/') && self.peek(1) == '/' {
+                while !self.is_at_end() && self.current() != '\n' {
+                    self.pos += 1;
+                }
+                continue;
+            }
+            // /* 块注释 */
+            if !self.is_at_end() && self.current_is('/') && self.peek(1) == '*' {
+                self.pos += 2;
+                while self.pos + 1 < self.chars.len()
+                    && !(self.chars[self.pos] == '*' && self.chars[self.pos + 1] == '/')
+                {
+                    self.pos += 1;
+                }
+                self.pos = (self.pos + 2).min(self.chars.len());
+                continue;
+            }
+            break;
+        }
+    }
+
+    fn read_ident(&mut self) -> String {
+        let start = self.pos;
+        while !self.is_at_end() && (self.current().is_alphanumeric() || self.current() == '_') {
+            self.pos += 1;
+        }
+        self.chars[start..self.pos].iter().collect()
+    }
+
+    /// 判断当前位置是否以 word 开头（且后面不是标识符字符，避免 varX 误判）
+    fn peek_word(&self, word: &str) -> bool {
+        let w: Vec<char> = word.chars().collect();
+        if self.pos + w.len() > self.chars.len() {
+            return false;
+        }
+        if self.chars[self.pos..self.pos + w.len()] != w[..] {
+            return false;
+        }
+        let next = self.chars.get(self.pos + w.len()).copied().unwrap_or(' ');
+        !(next.is_alphanumeric() || next == '_')
+    }
+
+    fn expect_char(&mut self, c: char) -> bool {
+        if !self.is_at_end() && self.current_is(c) {
+            self.pos += 1;
+            true
+        } else {
+            false
+        }
+    }
+
+    fn current(&self) -> char {
+        self.chars[self.pos]
+    }
+
+    fn current_is(&self, c: char) -> bool {
+        !self.is_at_end() && self.chars[self.pos] == c
+    }
+
+    fn peek(&self, offset: usize) -> char {
+        self.chars.get(self.pos + offset).copied().unwrap_or('\0')
+    }
+
+    fn is_at_end(&self) -> bool {
+        self.pos >= self.chars.len()
+    }
+
+    fn err_msg(&self, msg: &str) -> String {
+        let line = self.chars[..self.pos.min(self.chars.len())]
+            .iter()
+            .filter(|&&c| c == '\n')
+            .count()
+            + 1;
+        format!("第 {} 行: {}", line, msg)
     }
 }
 
@@ -614,6 +925,18 @@ mod tests {
     }
 
     #[test]
+    fn test_parse_ui_script() {
+        let input = r#"<ui theme="cartoon" script="task_item.gd">
+            <Panel name="ItemRoot" />
+        </ui>"#;
+        let result = UiParser::new(input).parse().unwrap();
+        assert_eq!(result.ui_script, Some("task_item.gd".to_string()));
+        // 无 script 属性时为 None
+        let plain = UiParser::new(r#"<ui><Label /></ui>"#).parse().unwrap();
+        assert_eq!(plain.ui_script, None);
+    }
+
+    #[test]
     fn test_parse_signal_binding() {
         let input = r#"<ui>
             <Button text="Start" on_pressed="_on_start" />
@@ -621,6 +944,17 @@ mod tests {
         let result = UiParser::new(input).parse().unwrap();
         let btn = &result.root.children[0];
         assert_eq!(btn.attributes[1], ("on_pressed".to_string(), "_on_start".to_string()));
+    }
+
+    #[test]
+    fn test_parse_at_signal_binding() {
+        // @pressed 简写：@ 前缀属性名，与 on_pressed 语义一致
+        let input = r#"<ui>
+            <Button text="Start" @pressed="_on_start" />
+        </ui>"#;
+        let result = UiParser::new(input).parse().unwrap();
+        let btn = &result.root.children[0];
+        assert_eq!(btn.attributes[1], ("@pressed".to_string(), "_on_start".to_string()));
     }
 
     #[test]
@@ -747,5 +1081,98 @@ mod tests {
         assert_eq!(result.theme_name, Some("cartoon".to_string()));
         assert_eq!(result.theme_vars.get("bg_primary").unwrap(), "#f8f4ff");
         assert_eq!(result.theme_vars.get("text_primary").unwrap(), "#3a2d5c");
+    }
+
+    #[test]
+    fn test_parse_script_block_values() {
+        let input = r#"<ui>
+            <script>
+                // 行注释
+                var tasks = [
+                    { icon: "🌿", title: "采集灵草", count: 3, done: false },
+                    { icon: "🐺", title: "击败妖狼", count: 8.5, done: true, }, // 尾逗号
+                ]
+                title = "单变量";
+                /* 块注释 */ empty = null
+            </script>
+            <Label text="test" />
+        </ui>"#;
+        let result = UiParser::new(input).parse().unwrap();
+        assert_eq!(result.root.children.len(), 1, "<script> 块不应产生 UI 节点");
+
+        let tasks = result.script_vars.get("tasks").unwrap();
+        let items = match tasks {
+            DataValue::Array(items) => items,
+            other => panic!("tasks 应为数组，实际 {:?}", other),
+        };
+        assert_eq!(items.len(), 2);
+        let first = match &items[0] {
+            DataValue::Dict(pairs) => pairs,
+            other => panic!("条目应为对象，实际 {:?}", other),
+        };
+        let get = |k: &str| {
+            first
+                .iter()
+                .find(|(key, _)| key == k)
+                .map(|(_, v)| v.clone())
+                .unwrap()
+        };
+        assert_eq!(get("icon"), DataValue::Str("🌿".to_string()));
+        assert_eq!(get("count"), DataValue::Num(3.0));
+        assert_eq!(get("done"), DataValue::Bool(false));
+        assert_eq!(
+            result.script_vars.get("title"),
+            Some(&DataValue::Str("单变量".to_string()))
+        );
+        assert_eq!(result.script_vars.get("empty"), Some(&DataValue::Null));
+    }
+
+    #[test]
+    fn test_parse_script_block_nested() {
+        let input = r#"<ui>
+            <script>
+                var cfg = { list: [1, [2, 3], "x"], name: '单引号 "嵌套"' }
+            </script>
+            <Label />
+        </ui>"#;
+        let result = UiParser::new(input).parse().unwrap();
+        let cfg = result.script_vars.get("cfg").unwrap();
+        match cfg {
+            DataValue::Dict(pairs) => {
+                assert_eq!(pairs.len(), 2);
+                match &pairs[0].1 {
+                    DataValue::Array(items) => {
+                        assert_eq!(items.len(), 3);
+                        match &items[1] {
+                            DataValue::Array(inner) => assert_eq!(inner.len(), 2),
+                            other => panic!("嵌套数组错误: {:?}", other),
+                        }
+                    }
+                    other => panic!("list 应为数组: {:?}", other),
+                }
+            }
+            other => panic!("cfg 应为对象: {:?}", other),
+        }
+    }
+
+    #[test]
+    fn test_parse_script_block_errors() {
+        // 缺少 '='
+        let bad = r#"<ui><script>
+            tasks [1, 2]
+        </script></ui>"#;
+        assert!(UiParser::new(bad).parse().is_err());
+
+        // 未闭合字符串
+        let bad2 = r#"<ui><script>
+            name = "abc
+        </script></ui>"#;
+        assert!(UiParser::new(bad2).parse().is_err());
+
+        // 未闭合数组
+        let bad3 = r#"<ui><script>
+            tasks = [1, 2
+        </script></ui>"#;
+        assert!(UiParser::new(bad3).parse().is_err());
     }
 }

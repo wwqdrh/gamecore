@@ -1,5 +1,7 @@
-<ui theme="cartoon">
-  <!-- 单个任务条目容器：作为 UIVList 的 slot 模板注入（见 task_panel.gd）
+<ui theme="cartoon" script="task_item.gd">
+  <!-- 单个任务条目容器：作为 UIVList 的 slot 模板注入
+	   script="task_item.gd"：控制器脚本自动挂载到条目根节点，
+	   条目内 @pressed 信号就近绑定到该脚本（详见 task_item.gd 头注释）
 	   {{key}} 为模板绑定，列表 update(data) 时按字段填充 -->
   <style>
 	.item-bg {
@@ -41,7 +43,9 @@
 		<Control custom_minimum_size="12,0" />
 		<Label name="Reward2" text="{{reward2}}" class="reward-num" font_size="15" valign="center" size_flags_vertical="shrink_center" />
 		<Control custom_minimum_size="14,0" />
-		<Button name="ItemBtn" text="{{btn_text}}" class="go-btn" custom_minimum_size="84,40" size_flags_vertical="shrink_center" />
+		<!-- @pressed 声明信号绑定：就近解析到条目根挂载的 task_item.gd（见 <ui script>），
+			 条目 duplicate 后由列表 bind_events 自动重连 -->
+		<Button name="ItemBtn" text="{{btn_text}}" class="go-btn" custom_minimum_size="84,40" size_flags_vertical="shrink_center" @pressed="_on_task_action" />
 	  </HBoxContainer>
 	</MarginContainer>
   </Panel>

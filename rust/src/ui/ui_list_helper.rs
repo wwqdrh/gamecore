@@ -210,6 +210,7 @@ pub fn list_initial(target: &mut Gd<Control>, slot: &Gd<Control>, count: i32) {
         // 需要添加节点
         for _ in 0..(count - current_count) {
             let mut cc = slot.duplicate_node(); // 复制节点
+            copy_signal_meta(&slot, &mut cc);
             cc.set_owner(Gd::null_arg());
             target.add_child(&cc);
             cc.set_visible(true);
@@ -272,6 +273,30 @@ pub fn update_data_alias(data: &Array<Variant>, slots: &Array<Variant>) -> Array
     new_res
 }
 
+/// 把模板树中声明的 __signal_* 元数据（@pressed / on_pressed）同步到 duplicate 出的条目树
+/// （Node.duplicate 不复制 meta；条目重建后信号绑定声明需随条目存活，
+/// 由 bind_events -> auto_bind_item_signals 据此重连）
+fn copy_signal_meta(src: &Gd<Control>, dst: &mut Gd<Control>) {
+    for (signal_name, method_name) in crate::ui::gdui_builder::get_signal_meta_list(src) {
+        dst.set_meta(
+            &StringName::from(format!("__signal_{}", signal_name).as_str()),
+            &method_name.to_variant(),
+        );
+    }
+    let src_children = src.get_children();
+    for i in 0..src_children.len() {
+        if let Some(sc) = src_children.get(i) {
+            if let Ok(src_ctrl) = sc.clone().try_cast::<Control>() {
+                if let Some(dc) = dst.get_child(i as i32) {
+                    if let Ok(mut dst_ctrl) = dc.try_cast::<Control>() {
+                        copy_signal_meta(&src_ctrl, &mut dst_ctrl);
+                    }
+                }
+            }
+        }
+    }
+}
+
 /// 更新容器：根据 data 数组动态创建/删除/更新子节点
 pub fn update_container(target: &mut Gd<Control>, slot: &Gd<Control>, count: i32, data: &Array<Variant>) {
     let slot = slot.clone();
@@ -297,6 +322,7 @@ pub fn update_container(target: &mut Gd<Control>, slot: &Gd<Control>, count: i32
             // 创建不足的可见节点
             for _ in visible_count..data_size {
                 let mut cc = slot.duplicate_node();
+                copy_signal_meta(&slot, &mut cc);
                 cc.set_owner(Gd::null_arg());
                 cc.set_custom_minimum_size(slot.get_custom_minimum_size());
                 target.add_child(&cc);
@@ -307,6 +333,7 @@ pub fn update_container(target: &mut Gd<Control>, slot: &Gd<Control>, count: i32
         // count <= 0 时，按 data 大小动态调整
         for _ in visible_count..data_size {
             let mut cc = slot.duplicate_node();
+            copy_signal_meta(&slot, &mut cc);
             cc.set_owner(Gd::null_arg());
             cc.set_custom_minimum_size(slot.get_custom_minimum_size());
             target.add_child(&cc);
@@ -518,6 +545,140 @@ pub fn allbind_signal(container: &mut Gd<Control>, path: &str, sig: &str, cb: &C
             }
         }
     }
+}
+
+/// 自动连接条目内声明的信号绑定（@pressed / on_pressed 属性 → __signal_xxx meta）。
+/// 信号目标从列表节点的 __signal_target meta 读取（connect_signals 递归时记录到列表控件上）。
+/// 条目由 slot.duplicate() 创建：指向外部脚本的连接不会随 duplicate 复制，
+/// 因此 update() 重建条目后需重新连接——各列表 bind_events 在每次更新后调用本函数。
+pub fn auto_bind_item_signals(list: &Gd<Control>) {
+    if !list.has_meta(&StringName::from("__gml_signal_target")) {
+        return;
+    }
+    let target_var = list.get_meta(&StringName::from("__gml_signal_target"));
+    let Ok(target) = target_var.try_to::<Gd<Object>>() else {
+        return;
+    };
+    let children = list.get_children();
+    // 从 index 1 开始，跳过 index 0 的 slot 模板
+    for i in 1..children.len() {
+        if let Some(child) = children.get(i) {
+            if let Ok(mut item) = child.clone().try_cast::<Control>() {
+                connect_signal_meta_recursive(&mut item, &target);
+            }
+        }
+    }
+}
+
+/// 就近解析信号绑定目标：从 node 沿父链向上（含自身）找最近一个
+/// "挂了脚本且实现了该方法"的节点——条目根由 <ui script> 挂载脚本后，
+/// 条目内 @pressed 声明优先绑定条目自身脚本而非外部场景；
+/// 找不到时回退 fallback（场景连接目标）
+fn resolve_target_for_method(
+    node: &Gd<Control>,
+    method: &StringName,
+    fallback: &Gd<Object>,
+) -> Gd<Object> {
+    let mut cur = Some(node.clone().upcast::<godot::classes::Node>());
+    while let Some(n) = cur {
+        let parent = n.get_parent();
+        if n.get_script().is_some() && n.has_method(method) {
+            return n.upcast::<godot::classes::Object>();
+        }
+        cur = parent;
+    }
+    fallback.clone()
+}
+
+/// 连接单个节点上声明的全部 __signal_xxx 信号绑定（@pressed / on_pressed）
+/// 目标方法要求的参数多于信号提供的参数时，补绑发出节点——
+/// 条目回调可写成 _on_item(btn) 直接拿到按钮引用（与 allbind_signal 语义一致）
+pub fn connect_node_signal_meta(node: &mut Gd<Control>, fallback: &Gd<Object>) {
+    for (signal_name, method_name) in crate::ui::gdui_builder::get_signal_meta_list(node) {
+        let method_sn = StringName::from(method_name.as_str());
+        // 就近解析绑定目标：优先条目自身挂载的脚本（<ui script>），回退场景目标
+        let target = resolve_target_for_method(node, &method_sn, fallback);
+        if !target.has_method(&method_sn) {
+            godot_warn!(
+                "[GdUiBuilder] 信号绑定方法不存在: {}()（信号 {}，可检查 GML 中 @/on_ 声明与目标脚本）",
+                method_name, signal_name
+            );
+            continue;
+        }
+        let sig_sn = StringName::from(signal_name.as_str());
+        let callable = Callable::from_object_method(&target, &method_sn);
+        let extra = required_arg_count(&target, &method_sn)
+            .map(|req| req.saturating_sub(signal_arg_count(node, signal_name.as_str())))
+            .unwrap_or(0);
+        let bound = if extra > 0 {
+            let mut bind_args: Vec<Variant> = Vec::new();
+            bind_args.push(node.clone().to_variant());
+            for _ in 1..extra {
+                bind_args.push(Variant::nil());
+            }
+            callable.bind(&bind_args)
+        } else {
+            callable
+        };
+        if !node.is_connected(&sig_sn, &bound) {
+            node.connect(&sig_sn, &bound);
+        }
+    }
+}
+
+/// 递归连接节点树中带 __signal_xxx 元数据的节点到目标脚本
+fn connect_signal_meta_recursive(node: &mut Gd<Control>, target: &Gd<Object>) {
+    connect_node_signal_meta(node, target);
+
+    let children = node.get_children();
+    for i in 0..children.len() {
+        if let Some(child) = children.get(i) {
+            if let Ok(mut c) = child.clone().try_cast::<Control>() {
+                connect_signal_meta_recursive(&mut c, target);
+            }
+        }
+    }
+}
+
+/// 目标方法的必填参数个数（总参数 - 默认参数）；查不到方法信息时返回 None
+fn required_arg_count(target: &Gd<Object>, method: &StringName) -> Option<usize> {
+    let list = target.get_method_list();
+    for i in 0..list.len() {
+        let Some(m) = list.get(i) else { continue; };
+        let name = m.get_or_nil(&"name".to_variant()).to_string();
+        if name == method.to_string() {
+            // 方法列表中的 args/default_args 为 typed Array，gdext 的 try_to 转换会失败，
+            // 改用 Variant.call("size") 取长度
+            let size_of = |v: Variant| -> usize {
+                if v.get_type() == VariantType::ARRAY {
+                    v.call(&StringName::from("size"), &[]).to::<i64>().max(0) as usize
+                } else {
+                    0
+                }
+            };
+            let args_len = size_of(m.get_or_nil(&"args".to_variant()));
+            let defaults_len = size_of(m.get_or_nil(&"default_args".to_variant()));
+            return Some(args_len.saturating_sub(defaults_len));
+        }
+    }
+    None
+}
+
+/// 信号的参数个数；信号不存在时返回 0
+fn signal_arg_count(node: &Gd<Control>, signal: &str) -> usize {
+    let list = node.get_signal_list();
+    for i in 0..list.len() {
+        let Some(s) = list.get(i) else { continue; };
+        let name = s.get_or_nil(&"name".to_variant()).to_string();
+        if name == signal {
+            let args_v = s.get_or_nil(&"args".to_variant());
+            if args_v.get_type() == VariantType::ARRAY {
+                return args_v.call(&StringName::from("size"), &[]).to::<i64>().max(0) as usize;
+            }
+            return 0;
+        }
+    }
+    0
 }
 
 /// 更新槽位填充效果

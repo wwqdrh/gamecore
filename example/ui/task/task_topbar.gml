@@ -39,6 +39,6 @@
       </MarginContainer>
     </Panel>
     <Control size_flags_horizontal="expand_fill" />
-    <Button name="CloseBtn" text="✕" class="close-btn" custom_minimum_size="44,44" size_flags_vertical="shrink_center" on_pressed="_on_close_pressed" mouse_default_cursor_shape="pointing_hand" />
+    <Button name="CloseBtn" text="✕" class="close-btn" custom_minimum_size="44,44" size_flags_vertical="shrink_center" @pressed="_on_close_pressed" mouse_default_cursor_shape="pointing_hand" />
   </HBoxContainer>
 </ui>

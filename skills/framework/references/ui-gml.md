@@ -183,20 +183,118 @@ popup.is_popup_visible()
 
 条目 GML 内用 `{{key}}` 占位（`text="{{title}}"`），`update(Array[Dictionary])` 按字段填充；
 未被模板使用的字段自动存为条目根节点 `__item_data` meta，回调里 `get_meta("__item_data")` 取回整行数据。
-列表条目内的按钮信号用 `allbind_signal(条目内NodePath, 信号名, 回调)` 批量连接
-（duplicate 出的实例不会继承 connect_signals 的连接，每次 update 后重新 allbind）。
 
 ```gdscript
 list.update(data, false)
-list.allbind_signal("ItemMargin/ItemRow/ItemBtn", "pressed", _on_item_btn)
 ```
+
+### 信号绑定：`@信号名=方法名`（推荐，零控制器绑定代码）
+
+GML 内直接声明信号绑定，`GdGmlScene` 加载时自动连接到场景脚本方法，无需在控制器里写
+`connect_signals` / `allbind_signal`：
+
+```xml
+<!-- 静态节点：0 参方法 -->
+<Button name="CloseBtn" @pressed="_on_close_pressed" />
+
+<!-- 列表条目内按钮：1 参方法自动补绑发出按钮，可经 __item_data 读整行数据 -->
+<Button name="ItemBtn" text="{{btn_text}}" @pressed="_on_task_action" />
+```
+
+- 任意信号均可：`@pressed` / `@text_changed` / `@toggled` …（等价于旧 `on_pressed` 写法）
+- **条目内声明**会随 slot 复制自动存活：构建期条目由 `connect_signals` 走树连接；
+  运行时 `update()` 重建条目后由列表 `bind_events` 自动重连——控制器全程零绑定代码
+- 参数自动匹配：方法要求的参数多于信号提供时，补绑发出节点
+  （`_on_task_action(btn)` 收到按钮；`_on_close()` 0 参照常）
+- 方法不存在时构建期告警但不崩溃；`on_xxx` 旧写法仍兼容
+- **绑定目标就近解析**：从声明节点沿父链向上找最近一个"挂了脚本且实现了该方法"的节点，
+  找不到才回退场景脚本——配合 `<ui script>`（见下节），条目回调可落在条目自身脚本
+- 仅当需要**运行时动态目标**（如回调对象不是场景脚本）时才用 `allbind_signal` 手动连接
+
+### `<ui script="xxx.gd">`：脚本声明与自动挂载（组件自带控制器）
+
+gml 根标签声明 `script` 属性，构建期自动把脚本挂到本文件的**内容根节点**
+（UiRoot 包装层的顶层子节点；`<Gml>` 引用嫁接与 tscn 打包均保留该节点）：
+
+```xml
+<!-- task_item.gml：条目组件自带控制器，可独立预览/独立回调 -->
+<ui theme="cartoon" script="task_item.gd">
+  <Panel name="ItemRoot" class="item-bg">
+    <Button name="ItemBtn" text="{{btn_text}}" @pressed="_on_task_action" />
+  </Panel>
+</ui>
+```
+
+```gdscript
+# task_item.gd —— 挂载方式完全由 GML 声明，无需手动 add script
+extends Panel
+
+func _on_task_action(btn: Control) -> void:
+	var data: Dictionary = btn.get_meta("__item_data")  # 经父链取条目数据
+	print("点击: ", data.get("title"))
+```
+
+要点：
+- **条目组件标准用法**：声明了 script 的 gml 被 `<Gml>` 注入列表 slot 模板后，
+  脚本随条目根节点进入模板；条目 `duplicate()` 时脚本随节点复制（duplicate 复制 script），
+  `update()` 重建后 `bind_events` 就近重连到**每个条目自己的脚本实例**——
+  条目回调写在条目脚本里，外部场景控制器完全不感知
+- **就近解析回退**：若祖先链上没有实现该方法的脚本（如顶栏按钮），回退连接到
+  `GdGmlScene` 场景脚本——一个面板可混合"条目自带回调 + 场景级回调"
+- 挂载目标已有脚本时（如场景根），跳过并告警（外部脚本优先）
+- 路径相对当前 gml 所在目录解析；`GdUiBuilder.set_base_dir("user://xxx")` 可为
+  `parse_string` 提供相对路径基准（`parse_file` 自动推导）
+
+### `<script>` 数据块与 data 绑定
+
+gml 内 `<script>` 块用 JSON 风格字面量定义数据变量（支持字符串/数字/布尔/null/数组/对象、
+行注释与尾逗号），节点用 `data="变量名"` 绑定：
+
+- **列表控件（UIVList/UIHList/UIGrid）+ 数组变量**：构建期直接 `update(data, false)` 驱动条目，
+  无需控制器代码
+- **其他节点**：变量值存为节点 meta `__script_data`，控制器按需读取
+- 全部变量同时挂根节点 meta `__script_vars`（Dictionary），控制器可整体读取
+
+```xml
+<ui>
+  <script>
+    // 各页签任务数据（数据与 UI 同文件声明，构建期直接绑定到列表）
+    var daily_tasks = [
+      { icon: "🌿", title: "采集灵草", progress: "3/5", btn_text: "前往" },
+    ]
+  </script>
+  <UIVList name="TaskList" data="daily_tasks">
+    <Gml src="task_item.gml" />
+  </UIVList>
+</ui>
+```
+
+### `<Gml>` 具名数据映射：data-子变量名="父变量名"
+
+被引用文件 `<script>` 定义的是**默认数据**；引用方用 `data-xxx="父变量"` 把自己的变量
+映射进子文件同名变量 `xxx`（`data-` 后跟的是**子文件**的变量名），子文件内部节点继续用
+自己的变量名（`data="tasks"` 等）引用——子文件不知道、也不需要知道父变量的名字：
+
+```xml
+<!-- task_tabs.gml（父）：data-tasks 中的 tasks 是 task_list.gml 的变量名 -->
+<Tab title="日常"><Gml src="task_list.gml" data-tasks="daily_tasks" /></Tab>
+<Tab title="主线"><Gml src="task_list.gml" data-tasks="main_tasks" /></Tab>
+
+<!-- task_list.gml（子）：保持 data="tasks" 不变，被引用时被覆盖，独立打开用默认数据 -->
+<UIVList name="TaskList" data="tasks"> ... </UIVList>
+```
+
+- 可同时映射多个变量：`<Gml src="sub.gml" data-tasks="a" data-title="b" />`
+- 引用的父变量不存在时构建期报错但不中断，子文件默认数据原样生效
+- 不写 `data-*` 时子文件默认数据原样生效（组件可独立预览/复用）
+- 旧版整体覆盖语法 `data="父变量"`（不指定子变量名）仍兼容，推荐迁移到 `data-*` 具名映射
 
 ### 页签：直接复用 TabContainer/Tab
 
 ```xml
 <TabContainer name="TaskTabs" anchor="full" tabs_visible="true" current_tab="0">
-  <Tab title="日常"><Gml src="task_list.gml" /></Tab>
-  <Tab title="主线"><Gml src="task_list.gml" /></Tab>
+  <Tab title="日常"><Gml src="task_list.gml" data-tasks="daily_tasks" /></Tab>
+  <Tab title="主线"><Gml src="task_list.gml" data-tasks="main_tasks" /></Tab>
 </TabContainer>
 ```
 
@@ -217,3 +315,7 @@ list.allbind_signal("ItemMargin/ItemRow/ItemBtn", "pressed", _on_item_btn)
    纯数据驱动列表保持 `count<=0`（GML 不写 count 属性），统一用 `update(data, false)`。
 3. **allbind_signal 的 path 是相对条目根节点的完整 NodePath**（如 `ItemMargin/ItemRow/ItemBtn`），
    路径上每个节点都要显式命名；未命名节点在 duplicate/add 后变成 `_Class_N`，路径必失效。
+   条目信号优先用 `@pressed` 声明（自动重连），仅动态目标场景才用 allbind_signal。
+4. **`Node.duplicate()` 不复制 meta**：GML 声明（@pressed/信号绑定）依赖 `__signal_*` meta
+   随条目存活，列表在 duplicate 后会自动从 slot 模板同步这些 meta；自己写 duplicate
+   相关逻辑时注意同样的问题。
