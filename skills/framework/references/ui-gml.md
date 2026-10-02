@@ -289,12 +289,50 @@ gml 内 `<script>` 块用 JSON 风格字面量定义数据变量（支持字符�
 - 不写 `data-*` 时子文件默认数据原样生效（组件可独立预览/复用）
 - 旧版整体覆盖语法 `data="父变量"`（不指定子变量名）仍兼容，推荐迁移到 `data-*` 具名映射
 
+### GdBean 响应式绑定：data="bean:bean_id:属性名"
+
+`data` 值以 `bean:` 开头时走 **GdBean 运行时响应式绑定**（不走 `<script>` 变量机制）：
+`GdGmlScene` 场景加载后 `auto_bind_data` 自动完成初始填充 + `bean.watch()` 注册，
+Bean 属性 `emit([key])` 变化时**更新全部同名绑定节点**（多页签共享数据源时全部同步刷新）。
+数据源由任意脚本注册（`GdBean.bean(id, 工厂)`，工厂返回继承 GdBean 的数据类），
+通常配合 `<ui script>` 组件脚本一并声明（见 example/ui/task/task_list.gd）。
+
+```xml
+<!-- task_list.gml：<script> 默认数据 + 组件脚本注册 Bean -->
+<ui theme="cartoon" script="task_list.gd">
+  <script>
+    var tasks = [ { title: "示例任务", btn_state: "go" }, ]
+  </script>
+  <UIVList name="TaskList" data="bean:task_list:tasks"> ... </UIVList>
+</ui>
+```
+
+```gdscript
+# task_list.gd（挂载在内容根上）：注册 GdBean 数据源 + 驱动数据
+class TaskBean:
+	extends GdBean
+	var tasks: Array = []
+
+func _ready() -> void:
+	_bean = GdBean.bean("task_list", _create_bean)  # 工厂从 __script_vars meta 取 GML 默认数据
+	_bean.watch("tasks", _on_tasks_changed)          # 独立打开（无场景脚本）时兜底绑定
+```
+
+- **注意**：GdBean 属性经 GDCORE 存档持久化（`user://coredata_*.data`），跨运行会恢复上次
+  数据；演示类场景可在注册后 `bean.set("tasks", 默认数据)` 重置
+- 列表刷新统一用 `update(data, false)`（count<=0 走动态分支按数据增删条目）；
+  **`update(data, true)` 在 `count == data.len()` 时（如首次填充）两个分支都不满足，
+  不会创建条目**——这是已知坑
+- 同一 bean+key 的 watch 每个 GmlScene 只注册一次（回调内部更新全部同名节点）；
+  独立打开组件 tscn（无 GdGmlScene）时由组件脚本兜底绑定
+
 ### 页签：直接复用 TabContainer/Tab
 
 ```xml
 <TabContainer name="TaskTabs" anchor="full" tabs_visible="true" current_tab="0">
   <Tab title="日常"><Gml src="task_list.gml" data-tasks="daily_tasks" /></Tab>
   <Tab title="主线"><Gml src="task_list.gml" data-tasks="main_tasks" /></Tab>
+
 </TabContainer>
 ```
 

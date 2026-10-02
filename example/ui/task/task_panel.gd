@@ -2,8 +2,10 @@
 #
 # 拆分与引用（GML 间直接引用，无需脚本挂载）：
 #   task_panel.gml    骨架：<Gml src="task_topbar/task_tabs/task_activity.gml">
-#   task_tabs.gml     <script> 定义各页签任务数据，<Gml src="task_list.gml" data-tasks="..."> 映射传入
-#   task_list.gml     <script> 定义默认数据，UIVList data="tasks" 绑定；
+#   task_tabs.gml     4 个页签各自 <Gml src="task_list.gml">（独立实例，共享数据源）
+#   task_list.gml     <ui script="task_list.gd"> 自动挂载组件脚本；
+#                     UIVList data="bean:task_list:tasks" 绑定 GdBean 数据源
+#                     （task_list.gd 每 5s 插入任务，全部页签响应式刷新）；
 #                     <Gml src="task_item.gml"> 构建期注入条目模板
 #   task_item.gml     单个任务条目（{{key}} 模板绑定 + @pressed 信号声明）
 #
@@ -23,8 +25,9 @@ func _ready() -> void:
 	var tabs: TabContainer = find_node("TaskTabs")
 	if tabs:
 		tabs.tab_changed.connect(_on_tab_changed)
-	# 列表条目已由 GML <script> 数据在构建期填充（data="tasks"），
-	# 条目按钮的 @pressed 声明由列表 bind_events 自动重连到本脚本，
+	# 列表条目由 GdBean 数据源驱动（task_list.gml data="bean:task_list:tasks"，
+	# GdGmlScene 加载后 auto_bind_data 自动完成初始填充 + watch 注册，
+	# task_list.gd 每 5s 插入任务时全部页签的列表自动刷新），
 	# 控制器只剩状态着色这类表现逻辑
 	for tab_name in TAB_NAMES:
 		var page: Control = find_node(tab_name)

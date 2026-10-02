@@ -163,10 +163,20 @@ impl UiBuilder {
                 "name" => { /* 已处理 */ }
                 "title" => { /* Tab 标签的 title 已在上方处理（设置节点名） */ }
                 "data" => {
-                    // <script> 数据绑定延迟到树构建完成后应用
-                    self.pending_data
-                        .borrow_mut()
-                        .push((control.clone(), value.clone()));
+                    if value.starts_with("bean:") {
+                        // bean:bean_id:prop_key —— GdBean 运行时响应式绑定，
+                        // 存 __data_var meta 由 GdGmlScene auto_bind_data 消费
+                        // （构建期不解析，<script> 变量机制不接管）
+                        control.set_meta(
+                            &StringName::from("__data_var"),
+                            &value.to_variant(),
+                        );
+                    } else {
+                        // <script> 数据绑定延迟到树构建完成后应用
+                        self.pending_data
+                            .borrow_mut()
+                            .push((control.clone(), value.clone()));
+                    }
                 }
                 _ => {
                     // 信号绑定声明：on_pressed / @pressed（@ 为简写）→ 存 meta，

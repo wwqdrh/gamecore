@@ -384,16 +384,36 @@ impl GdGmlScene {
         }
     }
 
-    /// 内部实现：根据 node_name 查找节点并用 data 更新
+    /// 内部实现：查找全部同名节点并用 data 更新
+    /// （同名节点可出现多个，如多个页签各自包含一份 task_list.gml 实例，
+    /// 同一 Bean 属性变化时所有实例都要刷新）
     fn update_node_with_bean_data(&mut self, node_name: GString, data: Variant) {
         if data.get_type() == VariantType::ARRAY {
-            if let Some(node) = self.find_node(node_name.clone()) {
-                // //godot_print!("[GmlScene] on_bean_data_changed: updating node='{}' with {} items", node_name, data.to::<Array<Variant>>().len());
-                let mut node_mut = node;
-                node_mut.call(
+            let mut targets: Vec<Gd<Control>> = Vec::new();
+            if let Some(ref root) = self.content_root {
+                Self::collect_nodes_named(root, &node_name, &mut targets);
+            }
+            for mut node in targets {
+                // force=false：count<=0 时按 data 大小动态增删条目（同 auto_bind 初始填充）
+                node.call(
                     &StringName::from("update"),
-                    &[data, Variant::from(true)],
+                    &[data.clone(), Variant::from(false)],
                 );
+            }
+        }
+    }
+
+    /// 递归收集树中全部同名 Control 节点
+    fn collect_nodes_named(root: &Gd<Control>, name: &GString, out: &mut Vec<Gd<Control>>) {
+        if root.get_name().to_string() == name.to_string() {
+            out.push(root.clone());
+        }
+        let children = root.get_children();
+        for i in 0..children.len() {
+            if let Some(child) = children.get(i) {
+                if let Ok(child_ctrl) = child.clone().try_cast::<Control>() {
+                    Self::collect_nodes_named(&child_ctrl, name, out);
+                }
             }
         }
     }
@@ -559,7 +579,12 @@ fn auto_bind_data(&mut self, root: &Gd<Control>) {
     let _bean_ids: Vec<String> = all_beans.iter().map(|(id, _)| id.clone()).collect();
     //godot_print!("[GmlScene] auto_bind_data: registered beans: {:?}", bean_ids);
     let self_node = self.base().clone();
-    let watch_registrations = Self::auto_bind_data_recursive(root, &self_node.upcast::<Object>());
+    // 同一 bean 实例的同一属性只注册一次 watch——同名列表可出现多份实例，
+    // 变化回调会更新全部同名节点，重复注册只会造成重复刷新
+    let mut registered_watches: std::collections::HashSet<(i64, String)> =
+        std::collections::HashSet::new();
+    let watch_registrations =
+        Self::auto_bind_data_recursive(root, &self_node.upcast::<Object>(), &mut registered_watches);
 
     // 延迟注册 watch 回调，避免 bean 立即触发回调时与当前 &mut self 借用冲突
     if !watch_registrations.is_empty() {
@@ -571,7 +596,11 @@ fn auto_bind_data(&mut self, root: &Gd<Control>) {
     }
 }
 
-fn auto_bind_data_recursive(node: &Gd<Control>, script_obj: &Gd<Object>) -> Array<Variant> {
+fn auto_bind_data_recursive(
+    node: &Gd<Control>,
+    script_obj: &Gd<Object>,
+    registered_watches: &mut std::collections::HashSet<(i64, String)>,
+) -> Array<Variant> {
     let mut watch_registrations = Array::new();
     let node_name = node.get_name().to_string();
     // 检查当前节点是否有 __data_var 元数据
@@ -587,6 +616,7 @@ fn auto_bind_data_recursive(node: &Gd<Control>, script_obj: &Gd<Object>) -> Arra
                     let prop_key = parts[1];
                     if let Some(mut bean) = get_bean_by_id(bean_id) {
                         let data = bean.call("get_value_by_key", &[GString::from(prop_key).to_variant()]);
+                        let bean_instance_id = bean.instance_id().to_i64();
                         //godot_print!("[GmlScene] auto_bind_data: bean '{}' key '{}' type={:?}", bean_id, prop_key, data.get_type());
                         if data.get_type() == VariantType::ARRAY {
                             let arr = data.to::<Array<Variant>>();
@@ -598,24 +628,29 @@ fn auto_bind_data_recursive(node: &Gd<Control>, script_obj: &Gd<Object>) -> Arra
                                 }
                             }
                             let mut node_mut = node.clone();
+                            // force=false：count<=0 走动态分支，按 data 大小增删条目
+                            // （force=true 在 count==data_size 时 update_container
+                            //   的两个分支都不满足，首次填充不会建条目）
                             node_mut.call(
                                 &StringName::from("update"),
-                                &[data.clone(), Variant::from(true)],
+                                &[data.clone(), Variant::from(false)],
                             );
                         } else {
                             godot_warn!("[GmlScene] auto_bind_data: bean '{}' key '{}' is not Array (type={:?}), value={}", bean_id, prop_key, data.get_type(), data);
                         }
-                        // 收集 watch 注册信息，延迟注册
-                        let self_obj = script_obj.clone();
-                        let node_name_gstr = GString::from(&node_name);
-                        let callable = self_obj.callable("on_bean_data_changed_bound").bind(&[node_name_gstr.to_variant()]);
-                        // 将 (bean, prop_key, callable) 打包为 Array<Variant>
-                        let reg = Array::from(&[
-                            bean.clone().upcast::<Object>().to_variant(),
-                            GString::from(prop_key).to_variant(),
-                            callable.to_variant(),
-                        ]);
-                        watch_registrations.push(&reg.to_variant());
+                        // 收集 watch 注册信息，延迟注册（同一 bean+key 只注册一次）
+                        if registered_watches.insert((bean_instance_id, prop_key.to_string())) {
+                            let self_obj = script_obj.clone();
+                            let node_name_gstr = GString::from(&node_name);
+                            let callable = self_obj.callable("on_bean_data_changed_bound").bind(&[node_name_gstr.to_variant()]);
+                            // 将 (bean, prop_key, callable) 打包为 Array<Variant>
+                            let reg = Array::from(&[
+                                bean.clone().upcast::<Object>().to_variant(),
+                                GString::from(prop_key).to_variant(),
+                                callable.to_variant(),
+                            ]);
+                            watch_registrations.push(&reg.to_variant());
+                        }
                         //godot_print!("[GmlScene] auto_bind_data: will defer-register watch on bean '{}' key '{}' for node '{}'", bean_id, prop_key, node_name);
                     } else {
                         let all_beans = get_all_bean_instances();
@@ -632,9 +667,10 @@ fn auto_bind_data_recursive(node: &Gd<Control>, script_obj: &Gd<Object>) -> Arra
                 if data.get_type() == VariantType::ARRAY {
                     //godot_print!("[GmlScene] auto_bind_data: calling update() on node='{}' with {} items", node_name, data.to::<Array<Variant>>().len());
                     let mut node_mut = node.clone();
+                    // force=false：走 count<=0 动态分支（同上，force=true 首次不建条目）
                     node_mut.call(
                         &StringName::from("update"),
-                        &[data.clone(), Variant::from(true)],
+                        &[data.clone(), Variant::from(false)],
                     );
                 } else if data.get_type() != VariantType::NIL {
                     godot_warn!("[GmlScene] auto_bind_data: variable '{}' is not Array (type={:?}), skipping", data_var_name, data.get_type());
@@ -653,7 +689,8 @@ fn auto_bind_data_recursive(node: &Gd<Control>, script_obj: &Gd<Object>) -> Arra
     for i in 0..children.len() {
         if let Some(child) = children.get(i) {
             if let Ok(child_ctrl) = child.clone().try_cast::<Control>() {
-                let child_watches = Self::auto_bind_data_recursive(&child_ctrl, script_obj);
+                let child_watches =
+                    Self::auto_bind_data_recursive(&child_ctrl, script_obj, registered_watches);
                 for j in 0..child_watches.len() {
                     if let Some(item) = child_watches.get(j) {
                         watch_registrations.push(&item);
