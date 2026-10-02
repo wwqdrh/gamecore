@@ -1,17 +1,30 @@
 # 任务列表组件控制器 —— 由 task_list.gml 的 <ui script="task_list.gd"> 自动挂载
 # 到内容根节点（ScrollContainer）。
 #
-# 职责：注册 GdBean 可监听数据源（bean id: task_list），并每 5s 向 tasks
-# 插入一条新任务，模拟数据变化 → 绑定该 Bean 的所有列表自动刷新。
+# 职责：注册 GdBean 可监听数据源（bean id: task_list），并每 5s 轮换分类插入
+# 一条新任务，模拟数据变化 → 绑定该 Bean 的所有列表自动刷新
+# （各实例列表经 filter_key/filter_value_var 只显示自己分类的任务）。
 #
 # 数据绑定链路：
-#   task_list.gml  <UIVList data="bean:task_list:tasks">  声明式绑定 Bean 属性
+#   task_list.gml  <UIVList data="bean:task_list:tasks"
+#                          filter_key="category" filter_value_var="category">
+#   声明式绑定 Bean 全量任务 + 分类过滤声明；分类值由引用方
+#   <Gml src="task_list.gml" data-category="分类变量"> 具名映射注入。
 #   GdGmlScene 场景加载后 auto_bind_data 自动完成：初始填充 + watch 注册，
-#   Bean 属性 emit 变化时更新全部同名 TaskList 节点（多页签共享数据源）。
+#   Bean 属性 emit 变化时更新全部同名 TaskList 节点（各列表内部按分类过滤）。
 #   独立打开 task_list.gml.tscn（无场景脚本）时本脚本兜底绑定。
 extends ScrollContainer
 
 const INSERT_INTERVAL := 5.0
+
+# 动态插入任务的分类轮换序列（演示各页签独立增长）
+const INSERT_CATEGORIES := ["daily", "main", "guild", "bounty"]
+const CATEGORY_NAMES := {
+	"daily": "日常",
+	"main": "主线",
+	"guild": "宗门",
+	"bounty": "悬赏",
+}
 
 # Bean 数据类：tasks 数组即任务列表数据源（watch/emit 监听其变化）
 class TaskBean:
@@ -23,6 +36,7 @@ static var _driver: ScrollContainer
 
 var _bean: GdBean
 var _default_tasks: Array = []
+var _insert_seq := 0
 
 
 func _ready() -> void:
@@ -53,7 +67,7 @@ func _setup() -> void:
 		return
 	# 列表无条目（index 0 是 slot 模板）→ 无场景脚本接管，本脚本自行绑定
 	if list.get_child_count() <= 1:
-		list.call("update", [_bean.get_value_by_key("tasks"), true])
+		list.update(_bean.get_value_by_key("tasks"), true)
 		_bean.watch("tasks", _on_tasks_changed)
 	# 数据驱动定时器：仅存活的第一个实例持有
 	if _driver == null or not is_instance_valid(_driver):
@@ -69,16 +83,20 @@ func _setup() -> void:
 func _on_tasks_changed(value: Variant, _metas: Variant) -> void:
 	var list: Control = find_child("TaskList", true, false)
 	if list:
-		list.call("update", [value, true])
+		list.update(value, true)
 
 
-## 每 5s 插入一条新任务并通知所有监听者
+## 每 5s 轮换分类插入一条新任务并通知所有监听者
+## （各页签列表按 filter_key=category 过滤，只有分类匹配的页签条目增长）
 func _on_insert_tick() -> void:
 	var data: Array = _bean.get_value_by_key("tasks")
 	var seq := data.size() + 1
+	var category: String = INSERT_CATEGORIES[_insert_seq % INSERT_CATEGORIES.size()]
+	_insert_seq += 1
 	data.append({
+		category = category,
 		icon = "🆕",
-		title = "动态任务 %d" % seq,
+		title = "%s·动态任务 %d" % [CATEGORY_NAMES.get(category, category), seq],
 		desc = "每 %d 秒由 GdBean 自动插入" % int(INSERT_INTERVAL),
 		progress = "0/1",
 		reward1 = "💎 %d" % seq,

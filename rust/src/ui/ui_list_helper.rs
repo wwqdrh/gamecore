@@ -300,6 +300,11 @@ fn copy_signal_meta(src: &Gd<Control>, dst: &mut Gd<Control>) {
 /// 更新容器：根据 data 数组动态创建/删除/更新子节点
 pub fn update_container(target: &mut Gd<Control>, slot: &Gd<Control>, count: i32, data: &Array<Variant>) {
     let slot = slot.clone();
+    // 列表过滤（GML filter_key + filter_value_var 声明 → __filter_* meta）：
+    // 只保留 item[filter_key] == filter_value 的条目；未声明过滤或过滤值为空串时显示全部。
+    // 在建条目前统一过滤，bean: 响应式绑定推来的全量数据 / 直接 update() 的外部数据
+    // 都在此生效，列表声明 filter 后即成为"只显示匹配分类"的视图
+    let data = apply_list_filter(target, data);
     let data_size = data.len() as i32;
     let _target_name = target.get_name().to_string();
     // slot 模板始终在 index 0，可见子节点从 index 1 开始
@@ -382,6 +387,21 @@ pub fn update_container(target: &mut Gd<Control>, slot: &Gd<Control>, count: i32
 
                         // 处理简单 key：通过模板绑定解析
                         let mut used_keys: Vec<String> = Vec::new();
+
+                        // 数据契约注入：条目脚本 @export 声明的同名变量直接写入脚本实例
+                        // （@export 即契约：只有声明了的变量才会被注入，
+                        //   编辑条目 GML 时对照 <ui script> 脚本的 @export 即知会传入哪些数据）
+                        if !simple_keys.is_empty() {
+                            let export_vars = collect_export_var_names(&c);
+                            if !export_vars.is_empty() {
+                                for (key, val) in &simple_keys {
+                                    if export_vars.contains(key) {
+                                        c.set(&StringName::from(key.as_str()), val);
+                                    }
+                                }
+                            }
+                        }
+
                         resolve_template_bindings_recursive(&mut c, &simple_keys, &mut used_keys);
 
                         // 未被模板绑定使用的简单 key，存储为 meta
@@ -419,6 +439,41 @@ pub fn update_container(target: &mut Gd<Control>, slot: &Gd<Control>, count: i32
             }
         }
     }
+}
+
+/// 应用列表过滤：__filter_key（数据字段名）+ __filter_value（匹配值）meta 由
+/// GdUiBuilder 从 GML filter_key / filter_value_var 属性注入。
+/// 返回过滤后的数组；未声明过滤、缺任一 meta 或过滤值为空串时原样返回。
+fn apply_list_filter(target: &Gd<Control>, data: &Array<Variant>) -> Array<Variant> {
+    let key_sn = StringName::from("__filter_key");
+    let value_sn = StringName::from("__filter_value");
+    if !target.has_meta(&key_sn) || !target.has_meta(&value_sn) {
+        return data.clone();
+    }
+    let key = target.get_meta(&key_sn).to_string();
+    let filter_value = target.get_meta(&value_sn);
+    // 空串过滤值视为"未指定分类"：不过滤（列表组件独立打开的合理默认）
+    if filter_value.get_type() == VariantType::STRING && filter_value.to_string().is_empty() {
+        return data.clone();
+    }
+    let mut filtered = Array::new();
+    for i in 0..data.len() {
+        if let Some(item) = data.get(i) {
+            if item.get_type() != godot::builtin::VariantType::DICTIONARY {
+                continue;
+            }
+            let dict: Dictionary<Variant, Variant> = item
+                .clone()
+                .try_to::<Dictionary<Variant, Variant>>()
+                .unwrap_or_default();
+            if let Some(v) = dict.get(&Variant::from(key.as_str())) {
+                if v == filter_value {
+                    filtered.push(&item);
+                }
+            }
+        }
+    }
+    filtered
 }
 
 /// 更新单个子节点的字典数据
@@ -728,6 +783,29 @@ pub fn update_slot_fill(target: &mut Gd<Control>, fill_color: Color, mode: i32) 
     }
 }
 
+/// 收集节点脚本声明的 @export 变量名（数据注入契约）。
+/// 判定依据（Godot 4.6 实测）：@export var 的 usage =
+/// SCRIPT_VARIABLE(4096) | STORAGE(4) | EDITOR(2)；
+/// 普通脚本变量只有 SCRIPT_VARIABLE(4096)——用 EDITOR 位区分"声明为可注入"。
+/// 内建属性（size/texture 等）无 SCRIPT_VARIABLE 位，不会被误收集。
+pub fn collect_export_var_names(node: &Gd<Control>) -> Vec<String> {
+    let mut names: Vec<String> = Vec::new();
+    let properties = node.get_property_list();
+    for i in 0..properties.len() {
+        if let Some(prop) = properties.get(i) {
+            let usage = prop
+                .get_or_nil(&"usage".to_variant())
+                .try_to::<i64>()
+                .unwrap_or(0);
+            if (usage & 2) != 0 && (usage & 4096) != 0 {
+                let name = prop.get_or_nil(&"name".to_variant()).to_string();
+                names.push(name);
+            }
+        }
+    }
+    names
+}
+
 /// 获取节点的导出变量（以 ui_ 开头的属性）
 pub fn get_default_exported_variables(target_node: &Gd<Control>) -> Dictionary<Variant, Variant> {
     let mut result = Dictionary::new();
@@ -737,9 +815,10 @@ pub fn get_default_exported_variables(target_node: &Gd<Control>) -> Dictionary<V
         if let Some(prop) = properties.get(i) {
             if let Some(usage_var) = prop.get(&"usage".to_variant()) {
                 let usage: i32 = usage_var.try_to::<i32>().unwrap_or(0);
-                // PROPERTY_USAGE_SCRIPT_VARIABLE = 1 << 2 = 4
-                // PROPERTY_USAGE_EDITOR = 1 << 5 = 32
-                if (usage & 4) != 0 && (usage & 32) != 0 {
+                // Godot 4.6 实测：PROPERTY_USAGE_SCRIPT_VARIABLE = 4096，
+                // PROPERTY_USAGE_EDITOR = 2（@export var usage = 4102 = 4096|4|2；
+                // 旧常量 4/32 在 4.6 下永远匹配不到 @export 变量，过滤实际失效）
+                if (usage & 4096) != 0 && (usage & 2) != 0 {
                     if let Some(name_var) = prop.get(&"name".to_variant()) {
                         let name = name_var.to_string();
                         if name.starts_with("ui_") {

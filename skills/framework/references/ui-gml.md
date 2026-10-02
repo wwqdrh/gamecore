@@ -229,9 +229,12 @@ gml 根标签声明 `script` 属性，构建期自动把脚本挂到本文件的
 # task_item.gd —— 挂载方式完全由 GML 声明，无需手动 add script
 extends Panel
 
-func _on_task_action(btn: Control) -> void:
-	var data: Dictionary = btn.get_meta("__item_data")  # 经父链取条目数据
-	print("点击: ", data.get("title"))
+# 数据契约：@export 变量 = 条目接受的外部注入字段（见下一节）
+@export var title: String = ""
+@export var btn_state: String = ""
+
+func _on_task_action(_btn: Control) -> void:
+	print("点击: ", title, " state=", btn_state)  # 直读契约变量
 ```
 
 要点：
@@ -244,6 +247,40 @@ func _on_task_action(btn: Control) -> void:
 - 挂载目标已有脚本时（如场景根），跳过并告警（外部脚本优先）
 - 路径相对当前 gml 所在目录解析；`GdUiBuilder.set_base_dir("user://xxx")` 可为
   `parse_string` 提供相对路径基准（`parse_file` 自动推导）
+- 挂载时把脚本 @export 变量名列表记录为条目根 meta `__data_contract`
+  （PackedStringArray），编辑器/检查工具可读取
+
+### 数据契约：条目脚本 `@export` 变量自动注入（推荐）
+
+条目脚本中用 `@export var` 声明的变量 = 该条目接受的外部数据字段。
+列表 `update(data)` 时，data 字典中与 @export 变量**同名**的 key 自动写入脚本实例
+（`@export` 即契约：**声明了才注入**，类型即文档——编辑条目 gml 时对照
+`<ui script>` 脚本的 @export 列表即知会传入哪些数据）：
+
+```gdscript
+# task_item.gd
+extends Panel
+@export var icon: String = ""
+@export var title: String = ""
+@export var btn_state: String = ""
+```
+
+```xml
+<!-- task_item.gml：{{模板}} 负责把数据渲染到子节点，@export 负责把数据交给脚本 -->
+<ui script="task_item.gd">
+  <Panel name="ItemRoot">
+    <Button name="ItemBtn" text="{{title}}" @pressed="_on_task_action" />
+  </Panel>
+</ui>
+```
+
+规则：
+- **注入优先级**：@export 同名注入与 `{{模板}}` 绑定互不冲突（一个写给脚本、
+  一个写给节点属性）；未声明的 key 仍走模板绑定与 `__item_data` meta 兜底（向后兼容）
+- **部分更新友好**：data 中缺失的契约字段保留当前值（不重置），适合增量 update
+- **类型匹配**：注入走 `node.set()`，data 值类型需与 @export 类型一致
+  （如 `@export var count: int` 配数字）；普通 `var`（无 @export）不会被注入
+- 无脚本的条目完全不受影响；回调可直接读契约变量，无需再沿父链解析 `__item_data`
 
 ### `<script>` 数据块与 data 绑定
 
@@ -326,6 +363,44 @@ func _ready() -> void:
 - 同一 bean+key 的 watch 每个 GmlScene 只注册一次（回调内部更新全部同名节点）；
   独立打开组件 tscn（无 GdGmlScene）时由组件脚本兜底绑定
 
+### 列表分类过滤：filter_key + filter_value_var（配合 bean: 绑定与 <Gml> 复用）
+
+列表控件（UIVList/UIHList/UIGrid）可声明过滤：`update_container` 建条目前按
+`item[filter_key] == filter_value` 过滤数据，声明后列表即成为"只显示匹配分类"的视图
+（bean: 响应式推来的全量数据、直接 `update()` 的外部数据都在建条目前过滤）：
+
+```xml
+<!-- task_list.gml：绑定全量数据 + 声明分类过滤；filter_value_var 引用本文件
+     <script> 的 category 变量（过滤值），引用方用 data-category 注入各自分类 -->
+<ui theme="cartoon" script="task_list.gd">
+  <script>
+    var category = ""   <!-- 独立打开时为空 = 不过滤（显示全部） -->
+    var tasks = [ { category: "daily", title: "..." }, ... ]
+  </script>
+  <UIVList name="TaskList" data="bean:task_list:tasks"
+           filter_key="category" filter_value_var="category"> ... </UIVList>
+</ui>
+```
+
+```xml
+<!-- task_tabs.gml：每个页签注入不同分类，同一份列表文件按分类各显示各的 -->
+<script>
+  var cat_daily = "daily"
+  var cat_main = "main"
+</script>
+<Tab title="日常"><Gml src="task_list.gml" data-category="cat_daily" /></Tab>
+<Tab title="主线"><Gml src="task_list.gml" data-category="cat_main" /></Tab>
+```
+
+规则：
+- `filter_key` = 数据字段名字面量；`filter_value_var` = 本文件 `<script>` 变量名
+  （构建期解析为过滤值，**必须在 data 绑定前注入**，首次填充即过滤）
+- 过滤值匹配用 Variant 相等比较，任务数据字段类型需与过滤值一致（同为字符串）
+- 过滤值为**空串**时不过滤（组件独立打开的合理默认）；`filter_value_var` 引用的
+  变量不存在时告警并不过滤
+- 典型组合：bean 存全量数据（单一数据源）+ 各实例 filter 出自己的分类视图，
+  数据变化 emit 后所有实例自动刷新（各显示各的分类）
+
 ### 页签：直接复用 TabContainer/Tab
 
 ```xml
@@ -341,7 +416,7 @@ func _ready() -> void:
 - 当前引擎 TabContainer 仅支持顶部/底部页签（`tabs_position` 无 LEFT/RIGHT）；
   设计图样式的左侧竖排页签需用自定义按钮列表 + 数据驱动高亮实现
 
-### 三个必踩的坑（重要）
+### 必踩的坑（重要）
 
 1. **`parse_string/parse_file` 返回 UiRoot 包装层**：真正的根控件是它的子节点。
    包装层是普通 Control、无尺寸语义——直接当 slot 子节点或列表模板用会导致
@@ -357,3 +432,7 @@ func _ready() -> void:
 4. **`Node.duplicate()` 不复制 meta**：GML 声明（@pressed/信号绑定）依赖 `__signal_*` meta
    随条目存活，列表在 duplicate 后会自动从 slot 模板同步这些 meta；自己写 duplicate
    相关逻辑时注意同样的问题。
+5. **`node.call("method", [a, b])` 是错的**：`call` 的参数是变长逐个传的
+   （`call("update", data, true)`），包成数组等于只传 1 个 Array 参数，
+   对 Rust `#[func]` 方法直接报"N parameters, M arguments"。类型明确时直接
+   `node.update(data, true)` 动态调用，别绕 call。

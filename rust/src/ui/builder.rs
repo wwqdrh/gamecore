@@ -50,6 +50,10 @@ pub struct UiBuilder {
     /// 待应用的数据绑定（节点, data="变量名"），树构建完成后统一应用，
     /// 保证列表的 slot 模板子节点已就位
     pending_data: RefCell<Vec<(Gd<Control>, String)>>,
+    /// 待解析的列表过滤值（列表控件, filter_value_var="变量名"），apply_data_bindings 时
+    /// 从 script_vars 取值注入 __filter_value meta——与 update_container 的
+    /// __filter_key 配合实现"同一份列表数据源按分类过滤"
+    pending_filter: RefCell<Vec<(Gd<Control>, String)>>,
 }
 
 impl UiBuilder {
@@ -63,6 +67,7 @@ impl UiBuilder {
             provided_vars: HashMap::new(),
             ui_script: None,
             pending_data: RefCell::new(Vec::new()),
+            pending_filter: RefCell::new(Vec::new()),
         }
     }
 
@@ -177,6 +182,21 @@ impl UiBuilder {
                             .borrow_mut()
                             .push((control.clone(), value.clone()));
                     }
+                }
+                "filter_key" => {
+                    // 列表过滤：数据字段名字面量（与 filter_value_var 配合，
+                    // update_container 按 item[key] == value 过滤条目）
+                    control.set_meta(
+                        &StringName::from("__filter_key"),
+                        &value.to_variant(),
+                    );
+                }
+                "filter_value_var" => {
+                    // 列表过滤值：本文件 <script> 变量名，延迟到 apply_data_bindings
+                    // 解析（届时 provided_vars 具名映射已完成变量覆盖）
+                    self.pending_filter
+                        .borrow_mut()
+                        .push((control.clone(), value.clone()));
                 }
                 _ => {
                     // 信号绑定声明：on_pressed / @pressed（@ 为简写）→ 存 meta，
@@ -408,6 +428,7 @@ impl UiBuilder {
             provided_vars,
             ui_script: None,
             pending_data: RefCell::new(Vec::new()),
+            pending_filter: RefCell::new(Vec::new()),
         };
         let mut wrapper = sub.build(&parse_result)?;
 
@@ -489,6 +510,14 @@ impl UiBuilder {
                     // set_script 的类型安全包装对 Option<Gd<Script>> 的 AsArg 判定有
                     // corner case，走通用 call（Variant 签名）最稳
                     target.call(&StringName::from("set_script"), &[script.to_variant()]);
+                    // 数据契约 meta：记录脚本 @export 变量名列表（编辑器/检查工具可读取，
+                    // 运行时注入由列表 update 按属性表实时收集，不依赖本 meta）
+                    let contract = crate::ui::ui_list_helper::collect_export_var_names(&target);
+                    let mut packed = godot::builtin::PackedStringArray::new();
+                    for name in &contract {
+                        packed.push(&GString::from(name.as_str()));
+                    }
+                    target.set_meta(&StringName::from("__data_contract"), &packed.to_variant());
                 } else {
                     godot_error!(
                         "[GdUiBuilder] <ui script=\"{}\"> 资源不是脚本: {}",
@@ -521,6 +550,27 @@ impl UiBuilder {
                 if let Ok(mut control) = child.try_cast::<Control>() {
                     control.set_meta(&StringName::from("__script_vars"), &dict_variant.clone());
                 }
+            }
+        }
+
+        // 列表过滤值解析：filter_value_var 引用的 <script> 变量取值注入 __filter_value。
+        // 必须在 data 绑定（构建期 update）之前完成，否则首次填充未过滤；
+        // 变量不存在时跳过——无 __filter_value meta 的列表不过滤，显示全部数据
+        // （常见于独立打开带 filter 声明的列表组件，属合理降级）
+        let filters: Vec<(Gd<Control>, String)> = self.pending_filter.borrow().clone();
+        self.pending_filter.borrow_mut().clear();
+        for (mut node, var_name) in filters {
+            if let Some(value) = self.script_vars.get(&var_name) {
+                node.set_meta(
+                    &StringName::from("__filter_value"),
+                    &data_value_to_variant(value),
+                );
+            } else {
+                godot_warn!(
+                    "[GdUiBuilder] filter_value_var=\"{}\" 引用的 <script> 变量不存在，列表 {} 不过滤（显示全部）",
+                    var_name,
+                    node.get_name()
+                );
             }
         }
 
