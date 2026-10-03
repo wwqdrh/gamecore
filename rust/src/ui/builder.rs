@@ -29,7 +29,7 @@ use super::ui_popup_panel::GdPopupPanel;
 use super::ui_tooltip::GdUITooltip;
 use super::ui_drawer::GdUIDrawer;
 use super::ui_nav_menu::GdUINavMenu;
-use super::ui_theme::{ThemeVars, get_builtin_theme, get_theme_color, resolve_theme_vars};
+use super::ui_theme::{ThemeVars, get_theme_color, resolve_theme_vars};
 
 /// UI 构建器：将 AST 转换为 Godot Control 节点树
 pub struct UiBuilder {
@@ -88,15 +88,7 @@ impl UiBuilder {
             self.styles.insert(style.class_name.clone(), style.clone());
         }
 
-        // 构建主题变量：先加载内置主题，再用 <theme> 块覆盖
-        if let Some(ref theme_name) = parse_result.theme_name {
-            if let Some(builtin_vars) = get_builtin_theme(theme_name) {
-                for (key, value) in builtin_vars {
-                    self.theme_vars.entry(key).or_insert(value);
-                }
-            }
-        }
-        // <theme> 块中的变量覆盖内置主题
+        // <theme> 块变量（文件级自定义，样式值中 $var 引用）
         for (key, value) in &parse_result.theme_vars {
             self.theme_vars.insert(key.clone(), value.clone());
         }
@@ -1337,14 +1329,6 @@ impl UiBuilder {
 /// 应用根节点属性
 fn apply_root_attribute(control: &mut Gd<Control>, key: &str, value: &str) {
     match key {
-        "theme" => {
-            // 主题名称，已由 UiBuilder::build() 处理
-            // 此处存储为 meta 供 GdGmlScene 读取
-            control.set_meta(
-                &StringName::from("__theme_name"),
-                &GString::from(value).to_variant(),
-            );
-        }
         "anchor" => {
             apply_anchor(control, value);
         }

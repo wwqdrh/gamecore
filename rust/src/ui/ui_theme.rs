@@ -1,27 +1,12 @@
-// UI 主题系统
-// 提供内置卡通风格配色方案和变量替换机制
-// GML 中通过 <ui theme="cartoon"> 指定主题，样式属性值中使用 $var_name 引用主题变量
-// GDScript 中通过 GdUiBuilder.set_theme() / GdGmlScene.theme_name 切换主题
+// UI 主题变量系统
+// 无内置主题：变量来自 gml 的 <theme> 块（文件级自定义）与
+// GdUiBuilder.set_theme_var()（代码注入），样式属性值中使用 $var_name 引用变量
 // 组件默认颜色：builder 构建节点时自动从主题变量取值，无需 GML 中显式声明
 
 use std::collections::HashMap;
 
 /// 主题变量表：变量名 -> 变量值
 pub type ThemeVars = HashMap<String, String>;
-
-/// 获取内置主题列表
-pub fn builtin_theme_names() -> Vec<&'static str> {
-    vec!["cartoon"]
-}
-
-/// 根据名称获取内置主题变量表
-/// 返回 None 表示未找到对应内置主题
-pub fn get_builtin_theme(name: &str) -> Option<ThemeVars> {
-    match name {
-        "cartoon" => Some(cartoon_theme()),
-        _ => None,
-    }
-}
 
 /// 解析 <theme> 块内容为变量表
 /// 格式：每行一个变量定义，"var_name: value;" 或 "var_name: value"
@@ -123,89 +108,9 @@ fn parse_theme_color(value: &str) -> Option<godot::builtin::Color> {
     }
 }
 
-// === 内置主题定义 ===
-
-/// Cartoon 主题（卡通亮色风格，圆角、鲜明色彩、活泼配色）
-fn cartoon_theme() -> ThemeVars {
-    let mut vars = ThemeVars::new();
-    // 背景色 - 柔和亮色
-    vars.insert("bg_primary".into(), "#f8f4ff".into());       // 淡紫白
-    vars.insert("bg_secondary".into(), "#eee8f8".into());     // 浅紫灰
-    vars.insert("bg_panel".into(), "#ffffff".into());          // 纯白面板
-    vars.insert("bg_button".into(), "#e8dff5".into());        // 淡紫按钮
-    vars.insert("bg_button_primary".into(), "#7c4dff".into()); // 鲜紫主按钮
-    vars.insert("bg_button_danger".into(), "#ff5252".into());  // 鲜红危险按钮
-    // 边框色 - 鲜明描边
-    vars.insert("border_default".into(), "#c5b3e6".into());   // 淡紫边框
-    vars.insert("border_accent".into(), "#7c4dff".into());    // 鲜紫强调边框
-    vars.insert("border_highlight".into(), "#ffab40".into()); // 橙黄高亮边框
-    // 文字色 - 深色为主，保证可读性
-    vars.insert("text_primary".into(), "#3a2d5c".into());     // 深紫文字
-    vars.insert("text_secondary".into(), "#7b6fa0".into());   // 紫灰次要文字
-    vars.insert("text_muted".into(), "#a99cc4".into());       // 淡紫弱化文字
-    vars.insert("text_accent".into(), "#7c4dff".into());      // 鲜紫强调文字
-    vars.insert("text_title".into(), "#5c3dbd".into());       // 深紫标题
-    vars.insert("text_white".into(), "white".into());         // 白色文字
-    // 功能色
-    vars.insert("overlay".into(), "#3a2d5c60".into());        // 半透明紫遮罩
-    vars.insert("popup_bg".into(), "#fffffffa".into());       // 白色弹窗背景
-    vars.insert("popup_border".into(), "#c5b3e6".into());     // 淡紫弹窗边框
-    vars.insert("highlight".into(), "#7c4dff30".into());      // 鲜紫高亮
-    vars.insert("highlight_strong".into(), "#ffab40".into()); // 橙黄强高亮
-    vars.insert("accent".into(), "#7c4dff".into());           // 鲜紫强调色
-    // 组件默认颜色（builder 自动应用）
-    vars.insert("panel_bg".into(), "$bg_panel".into());
-    vars.insert("button_bg".into(), "$bg_button".into());
-    vars.insert("button_font_color".into(), "$text_primary".into());
-    vars.insert("label_font_color".into(), "$text_primary".into());
-    vars.insert("input_bg".into(), "#ffffff".into());
-    vars.insert("input_font_color".into(), "$text_primary".into());
-    vars.insert("separator_color".into(), "$border_default".into());
-    vars.insert("tab_bg".into(), "$bg_secondary".into());
-    vars.insert("tab_font_color".into(), "$text_secondary".into());
-    vars.insert("tab_selected_bg".into(), "#ffffff".into());
-    vars.insert("tab_selected_font_color".into(), "$text_accent".into());
-    vars.insert("scrollbar_color".into(), "#c5b3e6".into());
-    vars.insert("progress_bg".into(), "$bg_button".into());
-    vars.insert("progress_fill".into(), "$accent".into());
-    vars.insert("checkbutton_bg".into(), "$bg_button".into());
-    vars.insert("slider_bg".into(), "$bg_button".into());
-    vars.insert("slider_fill".into(), "$accent".into());
-    vars.insert("optionbutton_bg".into(), "$bg_button".into());
-    vars.insert("optionbutton_font_color".into(), "$text_primary".into());
-    vars.insert("popup_title_color".into(), "$text_title".into());
-    vars.insert("drawer_title_color".into(), "$text_title".into());
-    vars.insert("tooltip_title_color".into(), "$text_accent".into());
-    vars.insert("tooltip_content_color".into(), "$text_primary".into());
-    vars.insert("nav_item_color".into(), "$text_primary".into());
-    vars.insert("nav_item_hover_color".into(), "$text_accent".into());
-    vars.insert("nav_item_active_color".into(), "#ff6d00".into());   // 活力橙激活
-    vars.insert("nav_item_hover_bg".into(), "#7c4dff18".into());
-    vars.insert("nav_item_pressed_bg".into(), "#7c4dff28".into());
-    vars
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn test_builtin_themes() {
-        for name in builtin_theme_names() {
-            let theme = get_builtin_theme(name);
-            assert!(theme.is_some(), "Missing builtin theme: {}", name);
-            let vars = theme.unwrap();
-            // 每个内置主题至少包含这些核心变量
-            assert!(vars.contains_key("bg_primary"), "{} missing bg_primary", name);
-            assert!(vars.contains_key("text_primary"), "{} missing text_primary", name);
-            assert!(vars.contains_key("border_default"), "{} missing border_default", name);
-            // 组件默认颜色变量
-            assert!(vars.contains_key("panel_bg"), "{} missing panel_bg", name);
-            assert!(vars.contains_key("button_bg"), "{} missing button_bg", name);
-            assert!(vars.contains_key("button_font_color"), "{} missing button_font_color", name);
-            assert!(vars.contains_key("label_font_color"), "{} missing label_font_color", name);
-        }
-    }
 
     #[test]
     fn test_parse_theme_block() {
@@ -240,7 +145,9 @@ mod tests {
     #[test]
     fn test_resolve_theme_vars_chained() {
         // 测试变量引用链：panel_bg -> $bg_panel -> #ffffff
-        let vars = cartoon_theme();
+        let mut vars = ThemeVars::new();
+        vars.insert("bg_panel".into(), "#ffffff".into());
+        vars.insert("panel_bg".into(), "$bg_panel".into());
         // resolve_theme_vars 只做一层替换
         let resolved = resolve_theme_vars("$panel_bg", &vars);
         assert_eq!(resolved, "$bg_panel"); // 第一层替换
@@ -250,7 +157,8 @@ mod tests {
 
     #[test]
     fn test_get_theme_color() {
-        let vars = cartoon_theme();
+        let mut vars = ThemeVars::new();
+        vars.insert("bg_primary".into(), "#f8f4ff".into());
         let color = get_theme_color(&vars, "bg_primary");
         assert!(color.is_some());
         let c = color.unwrap();

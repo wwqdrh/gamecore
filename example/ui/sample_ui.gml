@@ -1,17 +1,17 @@
-<ui theme="cartoon">
+<ui>
   <style>
     .main-bg {
-      background: $bg_secondary;
+      background: #eee8f8;
       border_radius: 12;
       padding: 20;
     }
     .action-button {
-      background: $bg_button_danger;
-      color: $text_white;
+      background: #e8dff5_danger;
+      color: #ffffff;
       border_radius: 6;
     }
     .info-label {
-      color: $text_primary;
+      color: #3a2d5c;
     }
   </style>
   <VBoxContainer anchor="full" margin="2%">

@@ -10,7 +10,7 @@ func _write_fixture(dir: String) -> void:
 	# 子文件：列表组件（filter_value_var 引用本文件 category 变量）
 	var fa := FileAccess.open(dir + "/item_list.gml", FileAccess.WRITE)
 	fa.store_string("""
-<ui theme="cartoon">
+<ui>
 	<script>
 		var category = ""
 		var tasks = [
@@ -33,7 +33,7 @@ func _write_fixture(dir: String) -> void:
 	# 父文件：两个页签各引用一份，注入不同分类
 	fa = FileAccess.open(dir + "/main.gml", FileAccess.WRITE)
 	fa.store_string("""
-<ui theme="cartoon">
+<ui>
 	<script>
 		var cat_daily = "daily"
 		var cat_main = "main"

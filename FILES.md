@@ -301,12 +301,10 @@
 - UI标记语言模块入口，导出parser/builder/gdui_builder/ui_theme/ui_popup_panel/ui_tooltip/ui_drawer/ui_nav_menu/ui_gml_scene/ui_list_helper/ui_hlist/ui_vlist/ui_grid子模块
 
 ### [rust/src/ui/ui_theme.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/ui_theme.rs)
-- **UI 主题系统**
-- 内置配色方案：dark/light/forest/ocean
+- **UI 主题变量系统**（无内置主题，变量来自 <theme> 块 / set_theme_var 注入）
 - 主题变量定义（ThemeVars = HashMap<String, String>）
 - 变量替换：resolve_theme_vars() 将 $var_name 替换为变量值
 - 解析 <theme> 块：parse_theme_block() 解析自定义主题变量
-- 获取内置主题：get_builtin_theme() / builtin_theme_names()
 
 ### [rust/src/ui/parser.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/parser.rs)
 - **类HTML标记解析器**
@@ -330,7 +328,7 @@
 ### [rust/src/ui/gdui_builder.rs](file:///Users/dengronghui/project/gamekit/core/rust/src/ui/gdui_builder.rs)
 - **GdUiBuilder** 类（继承 RefCounted）
 - UI标记语言GDScript API
-- 方法：parse_string, parse_file, connect_signals, validate, set_theme, get_theme, get_builtin_themes, set_theme_var, clear_custom_theme_vars
+- 方法：parse_string, parse_file, connect_signals, validate, set_theme_var, clear_custom_theme_vars
 - connect_signals：递归遍历节点树，将__signal_xxx元数据连接为信号
 - 主题支持：set_theme 设置内置主题，set_theme_var 设置自定义变量，parse 时自动注入
 
@@ -376,8 +374,7 @@
 - **GdGmlScene** 类（继承 Control）
 - GML 文件加载节点，设置 gml_file 属性即可加载 .gml 文件并显示为 Control 节点树
 - 属性：gml_file（GML文件路径，编辑器中显示 .gml 文件选择器）, auto_connect（自动连接信号到自身脚本）
-- 主题来源：由 GML 中 <ui theme="xxx"> 属性决定，不暴露 theme_name 导出属性
-- 主题切换：apply_theme() 修改 GML 中的 theme 属性并重新加载，get_builtin_themes() 获取内置主题列表
+- 主题变量：仅来自 GML 的 <theme> 块（文件级自定义变量，样式值 $var 引用）
 - 数据自动绑定：加载后扫描 __data_var 元数据，支持两种格式：
   - 简单变量名（如 `data="equip_data"`）：从脚本对象读取变量
   - GdBean 引用（如 `data="bean:scene_main:equip_data"`）：从 GdBean 实例读取属性值，支持响应式更新
@@ -696,7 +693,7 @@
 - 卡片下方刷新按钮：黑底白字+白色播放图标Panel(26x26)
 - 右侧竖版黑色属性面板(240px宽)：剩余升级点数+目前等级(右对齐22px)+11项属性列表(灰色图标#666 22x22+属性名+数值)
 - 右下角浅灰色"九游"水印
-- 使用 `<theme>` 块覆盖 cartoon 主题为暗色调配色，ProgressBar 使用 class 样式设置 fill/track 颜色
+- 使用 `<theme>` 块定义暗色调配色变量，ProgressBar 使用 class 样式设置 fill/track 颜色
 
 ### [example/ui/tudouxiongdi/pause.gd](file:///Users/dengronghui/project/gamekit/core/example/ui/tudouxiongdi/pause.gd)
 - 土豆兄弟暂停/结算面板 GML 控制器（继承 GdGmlScene），严格匹配 pause.html 设计稿

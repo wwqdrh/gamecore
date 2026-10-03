@@ -1,4 +1,4 @@
-<ui theme="cartoon">
+<ui>
   <!-- 宗门任务面板骨架：整体布局 + 通过 <Gml> 标签直接引用子视图
 	   （无需控制脚本手动 parse_file 挂载，GML 即所见即所得）
 	   <Gml src="task_topbar.gml" />    顶部资源栏 + 关闭按钮

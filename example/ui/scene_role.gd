@@ -10,55 +10,55 @@ var total_pages = 1
 var bag_data = []
 
 var UI = """
-<ui theme="cartoon">
+<ui>
   <style>
     .role-btn {
-      background: $bg_button_primary;
-      color: $text_white;
+      background: #e8dff5_primary;
+      color: #ffffff;
     }
     .panel-section {
-      background: $bg_secondary;
+      background: #eee8f8;
       border_radius: 6;
-      border_color: $border_default;
+      border_color: #c5b3e6;
       border_width: 1;
       padding: 8;
     }
     .equip-slot {
-      background: $bg_primary;
+      background: #f8f4ff;
       border_radius: 4;
-      border_color: $border_default;
+      border_color: #c5b3e6;
       border_width: 1;
       padding: 4;
     }
     .equip-label {
-      color: $text_muted;
+      color: #a99cc4;
     }
     .portrait-panel {
-      background: $bg_panel;
+      background: #ffffff;
       border_radius: 6;
-      border_color: $border_accent;
+      border_color: #7c4dff;
       border_width: 2;
       padding: 8;
     }
     .portrait-text {
-      color: $text_title;
+      color: #5c3dbd;
     }
     .grid-item {
-      background: $bg_primary;
+      background: #f8f4ff;
       border_radius: 4;
-      border_color: $border_default;
+      border_color: #c5b3e6;
       border_width: 1;
       padding: 4;
     }
     .grid-item-name {
-      color: $text_primary;
+      color: #3a2d5c;
     }
     .page-btn {
-      background: $bg_button;
-      color: $text_primary;
+      background: #e8dff5;
+      color: #3a2d5c;
     }
     .page-info {
-      color: $text_muted;
+      color: #a99cc4;
     }
   </style>
   <Control anchor="full">

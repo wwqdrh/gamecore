@@ -1,10 +1,9 @@
 // GdUiBuilder - UI 标记语言构建器
 // 暴露给 GDScript 的 API，支持解析类 HTML 标记字符串/文件并生成 Godot Control 节点树
-// 支持主题切换：通过 set_theme() 设置内置主题名称，重新解析时自动应用主题变量
+// 主题变量：gml <theme> 块 / set_theme_var() 注入，样式值中 $var 引用
 // 用法：
 //   var builder = GdUiBuilder.new()
-//   builder.set_theme("cartoon")  # 设置主题（可选，默认无主题）
-//   var ui = builder.parse_string("<ui theme='cartoon'><Label text='Hello' /></ui>")
+//   var ui = builder.parse_string("<ui><Label text='Hello' /></ui>")
 //   add_child(ui)
 //   builder.connect_signals(ui, self)  # 连接信号到脚本方法
 
@@ -15,7 +14,7 @@ use godot::global::Error;
 
 use super::parser::UiParser;
 use super::builder::UiBuilder;
-use super::ui_theme::{ThemeVars, get_builtin_theme, builtin_theme_names};
+use super::ui_theme::ThemeVars;
 
 use std::sync::Mutex;
 
@@ -40,7 +39,6 @@ pub(crate) fn get_last_error() -> Option<String> {
 pub struct GdUiBuilder {
     base: Base<RefCounted>,
     /// 当前主题名称（None 表示不使用主题）
-    theme_name: Option<String>,
     /// 自定义主题变量（通过 set_theme_var 设置）
     custom_theme_vars: ThemeVars,
     /// parse_string 的相对路径基准（<Gml src> / <ui script> 相对路径解析）
@@ -53,7 +51,6 @@ impl IRefCounted for GdUiBuilder {
     fn init(base: Base<RefCounted>) -> Self {
         Self {
             base,
-            theme_name: None,
             custom_theme_vars: ThemeVars::new(),
             base_dir: None,
         }
@@ -64,7 +61,6 @@ impl IRefCounted for GdUiBuilder {
 impl GdUiBuilder {
     /// 解析标记字符串，返回 Control 节点树
     /// 标记格式参考 docs/类html设计稿.md
-    /// 如果设置了 theme_name，会自动注入内置主题变量
     #[func]
     fn parse_string(&self, markup: GString) -> Gd<Control> {
         match self.build_from_markup(&markup.to_string()) {
@@ -98,7 +94,6 @@ impl GdUiBuilder {
         // 文件加载携带目录上下文，使 <Gml src="相对路径"> 可以解析
         match build_markup(
             &content.to_string(),
-            self.theme_name.as_deref(),
             &self.custom_theme_vars,
             super::builder::parent_dir_of(&path_str).as_deref(),
         ) {
@@ -151,7 +146,6 @@ impl GdUiBuilder {
     fn build_from_markup(&self, markup: &str) -> Result<Gd<Control>, String> {
         build_markup(
             markup,
-            self.theme_name.as_deref(),
             &self.custom_theme_vars,
             self.base_dir.as_deref(),
         )
@@ -161,7 +155,6 @@ impl GdUiBuilder {
     fn build_scene_markup(&self, markup: GString, base_dir: Option<String>) -> Option<Gd<PackedScene>> {
         match build_markup(
             &markup.to_string(),
-            self.theme_name.as_deref(),
             &self.custom_theme_vars,
             base_dir.as_deref(),
         ) {
@@ -206,40 +199,7 @@ impl GdUiBuilder {
         self.base_dir = if d.is_empty() { None } else { Some(d) };
     }
 
-    /// 设置内置主题名称（cartoon）
-    /// 设置后，下次 parse_string/parse_file 时自动注入主题变量
-    /// GML 中使用 $var_name 引用主题变量
-    #[func]
-    fn set_theme(&mut self, theme_name: GString) {
-        let name = theme_name.to_string();
-        if name.is_empty() {
-            self.theme_name = None;
-        } else if get_builtin_theme(&name).is_some() {
-            self.theme_name = Some(name);
-        } else {
-            godot_warn!("[GdUiBuilder] Unknown theme '{}', available: {:?}", name, builtin_theme_names());
-        }
-    }
-
-    /// 获取当前主题名称
-    #[func]
-    fn get_theme(&self) -> GString {
-        match &self.theme_name {
-            Some(name) => GString::from(name.as_str()),
-            None => GString::new(),
-        }
-    }
-
-    /// 获取所有内置主题名称
-    #[func]
-    fn get_builtin_themes(&self) -> PackedStringArray {
-        let names: Vec<GString> = builtin_theme_names().iter()
-            .map(|s| GString::from(*s))
-            .collect();
-        PackedStringArray::from(names.as_slice())
-    }
-
-    /// 设置自定义主题变量（覆盖内置主题同名变量）
+    /// 设置自定义主题变量
     /// key: 变量名（不含 $ 前缀），value: 变量值（如 "#1a1a3e"）
     #[func]
     fn set_theme_var(&mut self, key: GString, value: GString) {
@@ -253,11 +213,10 @@ impl GdUiBuilder {
     }
 }
 
-/// 解析 + 主题注入 + 构建的公共实现
+/// 解析 + 主题变量注入 + 构建的公共实现
 /// base_dir：gml 文件所在目录（<Gml src="相对路径"> 的解析基准），字符串构建时为 None
 fn build_markup(
     markup: &str,
-    theme_name: Option<&str>,
     custom_theme_vars: &ThemeVars,
     base_dir: Option<&str>,
 ) -> Result<Gd<Control>, String> {
@@ -269,13 +228,8 @@ fn build_markup(
     let mut builder = UiBuilder::new();
     builder.set_base_dir(base_dir.map(|s| s.to_string()));
 
-    // 注入主题变量：先设置内置主题，再设置自定义变量
+    // 主题变量：set_theme_var 注入的自定义变量（gml <theme> 块变量在 build 内合并）
     let mut theme_vars = ThemeVars::new();
-    if let Some(name) = theme_name {
-        if let Some(builtin) = get_builtin_theme(name) {
-            theme_vars.extend(builtin);
-        }
-    }
     theme_vars.extend(custom_theme_vars.clone());
     if !theme_vars.is_empty() {
         builder.set_theme_vars(theme_vars);

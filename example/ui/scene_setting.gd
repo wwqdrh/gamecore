@@ -3,11 +3,11 @@
 extends GdGmlScene
 
 var UI = """
-<ui theme="cartoon">
+<ui>
   <style>
     .setting-btn {
-      background: $bg_button;
-      color: $text_primary;
+      background: #e8dff5;
+      color: #3a2d5c;
       border_radius: 6;
       padding: 12 24;
     }

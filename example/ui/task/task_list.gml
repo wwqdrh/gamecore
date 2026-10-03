@@ -1,4 +1,4 @@
-<ui theme="cartoon" script="task_list.gd">
+<ui script="task_list.gd">
   <!-- 任务列表容器（可复用）：滚动列表
 	   UIVList 的 slot 模板通过 <Gml> 直接引用 task_item.gml（构建期注入），
 	   <script> 定义默认数据（task_list.gd 注册 GdBean 时取作初始值），

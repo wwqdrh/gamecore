@@ -1,4 +1,4 @@
-<ui theme="cartoon">
+<ui>
   <!-- 页签切换容器：复用框架 TabContainer/Tab，页签切换为原生行为
 	   每个 Tab 页通过 <Gml> 引用 task_list.gml（各自独立实例）。
 	   分类过滤：<script> 定义各页签分类标识，<Gml data-category="分类变量">

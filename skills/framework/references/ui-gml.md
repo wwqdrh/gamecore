@@ -35,7 +35,7 @@ if scene == null:
 extends GdGmlScene
 
 var UI = """
-<ui theme="cartoon">
+<ui>
   <VList>
     <Label text="图鉴" />
     <Button name="BackBtn" text="返回" on_pressed="close:Self" />
@@ -69,9 +69,7 @@ var root2: Control = builder.parse_file("res://ui/shop.gml")
 var scene: PackedScene = builder.build_scene_file(path)  # -> PackedScene（编辑器预览用）
 builder.connect_signals(root, self)                # 按 on_xxx 属性连接信号到 target
 builder.validate(markup)                           # 校验 -> 错误信息（空串为合法）
-builder.set_theme("cartoon")                       # 内置主题
-builder.set_theme_var("primary", Color.RED)        # 主题变量
-builder.get_builtin_themes()                       # -> PackedStringArray
+builder.set_theme_var("primary", "#ff0000")        # 主题变量（<style> 值中 $primary 引用）
 ```
 
 ## GdGmlScene — GML 场景节点
@@ -86,7 +84,6 @@ get_content()                        # 内容根节点
 find_node("GalleryBtn")              # 按名字查找控件
 clear_content()
 is_loaded()
-apply_theme("cartoon")               # 换主题
 refresh_anchors()                    # 视口变化后刷新锚点
 ```
 
@@ -146,7 +143,7 @@ popup.is_popup_visible()
 ### `<Gml>` 标签：引用另一个 gml 文件（构建期嫁接，推荐）
 
 ```xml
-<ui theme="cartoon">
+<ui>
   <Panel name="WindowPanel" class="window-bg" anchor="full">
     <VBoxContainer>
       <Gml src="task_topbar.gml" />                              <!-- 相对路径 -->
@@ -163,7 +160,7 @@ popup.is_popup_visible()
 - Gml 标签上的其余属性（`name`/`anchor`/`margin`/`size_flags_*`/`class`/`on_xxx`）
   会覆盖式应用到被引用文件的根节点上
 - 主题与样式继承：子文件继承引用方的主题变量与 `<style>` class；子文件自己的
-  `theme` 属性 / `<theme>` 块 / `<style>` 块优先
+  `<theme>` 块 / `<style>` 块优先
 - 信号（`on_pressed` 等）照常写在子文件里，由控制器的 `connect_signals` / `allbind_signal` 统一连接
 - 循环引用（A 引 B、B 引 A、自引用）构建期报错，不会卡死
 
@@ -218,7 +215,7 @@ gml 根标签声明 `script` 属性，构建期自动把脚本挂到本文件的
 
 ```xml
 <!-- task_item.gml：条目组件自带控制器，可独立预览/独立回调 -->
-<ui theme="cartoon" script="task_item.gd">
+<ui script="task_item.gd">
   <Panel name="ItemRoot" class="item-bg">
     <Button name="ItemBtn" text="{{btn_text}}" @pressed="_on_task_action" />
   </Panel>
@@ -336,7 +333,7 @@ Bean 属性 `emit([key])` 变化时**更新全部同名绑定节点**（多页�
 
 ```xml
 <!-- task_list.gml：<script> 默认数据 + 组件脚本注册 Bean -->
-<ui theme="cartoon" script="task_list.gd">
+<ui script="task_list.gd">
   <script>
     var tasks = [ { title: "示例任务", btn_state: "go" }, ]
   </script>
@@ -372,7 +369,7 @@ func _ready() -> void:
 ```xml
 <!-- task_list.gml：绑定全量数据 + 声明分类过滤；filter_value_var 引用本文件
      <script> 的 category 变量（过滤值），引用方用 data-category 注入各自分类 -->
-<ui theme="cartoon" script="task_list.gd">
+<ui script="task_list.gd">
   <script>
     var category = ""   <!-- 独立打开时为空 = 不过滤（显示全部） -->
     var tasks = [ { category: "daily", title: "..." }, ... ]

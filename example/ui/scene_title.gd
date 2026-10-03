@@ -4,48 +4,48 @@
 extends GdGmlScene
 
 var UI = """
-<ui theme="cartoon">
+<ui>
   <style>
     .title-text {
-      color: $text_white;
+      color: #ffffff;
     }
     .subtitle-text {
-      color: $text_secondary;
+      color: #7b6fa0;
     }
     .menu-button {
       texture: res://example/ui/assets/btn_green.png;
-      color: $text_white;
+      color: #ffffff;
       padding: 12;
     }
     .settings-btn {
-      background: $bg_button;
-      color: $text_primary;
+      background: #e8dff5;
+      color: #3a2d5c;
       border_radius: 4;
       padding: 8;
     }
     .section-title {
-      color: $text_title;
+      color: #5c3dbd;
     }
     .row-bg {
-      background: $bg_secondary;
+      background: #eee8f8;
       border_radius: 4;
       padding: 10;
     }
     .label-text {
-      color: $text_primary;
+      color: #3a2d5c;
     }
     .value-text {
-      color: $text_accent;
+      color: #7c4dff;
     }
     .apply-btn {
-      background: $bg_button_primary;
-      color: $text_white;
+      background: #e8dff5_primary;
+      color: #ffffff;
       border_radius: 6;
       padding: 10;
     }
     .cancel-btn {
-      background: $bg_button_danger;
-      color: $text_white;
+      background: #e8dff5_danger;
+      color: #ffffff;
       border_radius: 6;
       padding: 10;
     }

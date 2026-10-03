@@ -1,4 +1,4 @@
-<ui theme="cartoon">
+<ui>
   <!-- 底部活跃度：数值 + 进度条 + 宝箱里程碑（30/60/90）
 	   ProgressBar 的 class 中 background=填充色、track=轨道色 -->
   <style>

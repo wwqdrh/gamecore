@@ -20,7 +20,7 @@ use godot::obj::WithBaseField;
 use super::parser::UiParser;
 use super::builder::{UiBuilder, parse_size_value};
 use super::gdui_builder::connect_signals_recursive;
-use super::ui_theme::{ThemeVars, get_builtin_theme, builtin_theme_names};
+use super::ui_theme::ThemeVars;
 use crate::state::bean::{get_bean_by_id, get_all_bean_instances};
 
 #[derive(GodotClass)]
@@ -153,42 +153,6 @@ impl GdGmlScene {
     #[func]
     fn is_loaded(&self) -> bool {
         self.loaded
-    }
-
-    /// 切换主题并重新加载（最简单的主题切换方式）
-    /// 传入内置主题名称（cartoon），自动修改 GML 中的 theme 属性并重新加载
-    #[func]
-    fn apply_theme(&mut self, theme_name: GString) {
-        if !self.loaded {
-            return;
-        }
-        if let Some(ref root) = self.content_root {
-            if root.has_meta(&StringName::from("__gml_content")) {
-                let gml_content: GString = root.get_meta(&StringName::from("__gml_content")).to();
-                let mut content = gml_content.to_string();
-                // 替换 <ui theme="xxx"> 中的 theme 属性值
-                let new_theme = theme_name.to_string();
-                let re = regex_lite::Regex::new(r#"<ui\s+theme="[^"]*""#).unwrap();
-                if re.is_match(&content) {
-                    content = re.replace_all(&content, format!(r#"<ui theme="{}""#, new_theme)).to_string();
-                } else {
-                    // 没有 theme 属性，添加一个
-                    content = content.replacen("<ui", &format!("<ui theme=\"{}\"", new_theme), 1);
-                }
-                // 重载保持原文件的目录上下文（<Gml> 相对路径解析需要）
-                let base_dir = super::builder::parent_dir_of(&self.gml_file.to_string());
-                self.parse_and_build_with_dir(&content, base_dir);
-            }
-        }
-    }
-
-    /// 获取所有内置主题名称
-    #[func]
-    fn get_builtin_themes(&self) -> PackedStringArray {
-        let names: Vec<GString> = builtin_theme_names().iter()
-            .map(|s| GString::from(*s))
-            .collect();
-        PackedStringArray::from(names.as_slice())
     }
 
     /// 延迟重新应用所有带 __anchor meta 的节点的 anchor preset
@@ -481,18 +445,8 @@ impl GdGmlScene {
                 let mut builder = UiBuilder::new();
                 builder.set_base_dir(base_dir);
 
-                // 注入主题变量：根据 GML 中 <ui theme="xxx"> 属性加载内置主题
-                if let Some(ref gml_theme) = parse_result.theme_name {
-                    if let Some(builtin_vars) = get_builtin_theme(gml_theme) {
-                        let mut theme_vars = builtin_vars;
-                        // <theme> 块中的变量覆盖内置主题
-                        for (key, value) in &parse_result.theme_vars {
-                            theme_vars.insert(key.clone(), value.clone());
-                        }
-                        builder.set_theme_vars(theme_vars);
-                    }
-                } else if !parse_result.theme_vars.is_empty() {
-                    // 没有 theme 属性，但有 <theme> 块
+                // 主题变量：仅 gml 的 <theme> 块（文件级自定义变量）
+                if !parse_result.theme_vars.is_empty() {
                     let mut theme_vars = ThemeVars::new();
                     for (key, value) in &parse_result.theme_vars {
                         theme_vars.insert(key.clone(), value.clone());

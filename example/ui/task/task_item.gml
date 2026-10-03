@@ -1,4 +1,4 @@
-<ui theme="cartoon" script="task_item.gd">
+<ui script="task_item.gd">
   <!-- 单个任务条目容器：作为 UIVList 的 slot 模板注入
 	   script="task_item.gd"：控制器脚本自动挂载到条目根节点，
 	   条目内 @pressed 信号就近绑定到该脚本（详见 task_item.gd 头注释）

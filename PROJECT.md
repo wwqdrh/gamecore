@@ -89,12 +89,12 @@ core 是一个基于 Rust 的 Godot 4 GDExtension 项目，使用 gdext 库与 G
     - GdUiBuilder：UI 构建器类（继承 RefCounted），暴露给 GDScript 的 API
     - 解析器：自写 HTML 子集解析器，支持标签/属性/样式块/自闭合标签/注释
     - 构建器：AST → Godot Control 节点树，支持容器/控件实例化、属性设置、StyleBoxFlat 样式、信号绑定
-    - 主题系统：内置卡通风格配色方案（cartoon），GML 中通过 `$var_name` 引用主题变量，GDScript 通过 `apply_theme("cartoon")` 一键切换主题
+    - 主题变量系统（无内置主题）：GML `<theme>` 块 / set_theme_var() 注入变量，样式值中 `$var_name` 引用
     - 支持的容器：VBoxContainer、HBoxContainer、GridContainer、MarginContainer、ScrollContainer、TabContainer、CenterContainer、PanelContainer、Tab
     - 支持的控件：Label、Button、TextureButton、CheckButton、HSlider、ColorRect、OptionButton、Panel、TextureRect、RichTextLabel、LineEdit、ProgressBar、SpinBox、HSeparator、VSeparator、NinePatchRect、PopupPanel、Tooltip、Drawer、NavMenu
     - 样式系统：通过 `<style>` 块定义 CSS 类样式，映射到 Godot StyleBoxFlat，支持 `$var` 主题变量引用
     - 信号绑定：通过 `on_xxx` 属性声明，`connect_signals()` 方法批量连接
-    - 方法：parse_string、parse_file、connect_signals、validate、set_theme、get_theme、get_builtin_themes、set_theme_var、clear_custom_theme_vars
+    - 方法：parse_string、parse_file、connect_signals、validate、set_theme_var、clear_custom_theme_vars
     - 列表扩展节点（翻译自 C++ gmlc/）：
       - GdUIHList：水平列表（继承 HBoxContainer），支持 slot 模板复制、点击高亮、填充效果
       - GdUIVList：垂直列表（继承 VBoxContainer），同上 + 鼠标进入/离开事件 + 随机高度
@@ -815,16 +815,14 @@ GdUiBuilder 是一个继承 RefCounted 的 Godot 类，在 GDScript 中通过 `G
 | `parse_file(path: String) -> Control` | 解析 .gml 文件，返回 Control 节点树 |
 | `connect_signals(root: Control, target: Object)` | 递归连接 UI 节点树中的信号到目标脚本 |
 | `validate(markup: String) -> String` | 验证标记语法，返回错误信息（空字符串表示无错误） |
-| `set_theme(theme_name: String)` | 设置内置主题名称（cartoon） |
 | `get_theme() -> String` | 获取当前主题名称 |
-| `get_builtin_themes() -> PackedStringArray` | 获取所有内置主题名称列表 |
 | `set_theme_var(key: String, value: String)` | 设置自定义主题变量（覆盖内置主题同名变量） |
 | `clear_custom_theme_vars()` | 清除所有自定义主题变量 |
 
 ### 标记语言语法
 
 ```html
-<ui theme="cartoon">
+<ui>
   <style>
     .button-primary {
         background: $bg_button_primary;
@@ -896,7 +894,7 @@ GdUiBuilder 是一个继承 RefCounted 的 Godot 类，在 GDScript 中通过 `G
 
 GML 支持通过主题变量引用颜色值，实现一键切换配色方案。
 
-**内置主题：** cartoon（卡通亮色风格，默认）
+**主题变量：** 无内置主题；变量来自 GML `<theme>` 块或 `set_theme_var()` 注入，`<style>` 值中 `$var` 引用
 
 **主题变量列表：**
 
@@ -954,7 +952,7 @@ GML 支持通过主题变量引用颜色值，实现一键切换配色方案。
 **GML 中使用主题变量：**
 
 ```html
-<ui theme="cartoon">
+<ui>
   <style>
     .my-panel {
       background: $bg_primary;
@@ -971,7 +969,7 @@ GML 支持通过主题变量引用颜色值，实现一键切换配色方案。
 **GML 中自定义主题变量（覆盖内置主题）：**
 
 ```html
-<ui theme="cartoon">
+<ui>
   <theme>
     bg_primary: #f0e6ff;
     my_custom_color: #ff8800;
@@ -995,17 +993,13 @@ func _ready():
     load_from_string(UI)
 
 func _on_switch_theme():
-    apply_theme("cartoon")  # 一键切换为 cartoon 主题（自动修改 GML 中的 theme 属性并重新加载）
+    # 修改 <theme> 块变量后重新加载（无内置主题，切换配色即替换变量表）
+    reload_gml()
 
-# 方式2：GdUiBuilder
+# 方式2：自定义变量注入
 var builder = GdUiBuilder.new()
-builder.set_theme("cartoon")
-var ui = builder.parse_string(gml_content)
-
-# 方式3：自定义变量覆盖
-builder.set_theme("cartoon")
-builder.set_theme_var("bg_primary", "#f0e6ff")  # 覆盖内置变量
-builder.set_theme_var("my_color", "#ff8800")     # 新增自定义变量
+builder.set_theme_var("bg_primary", "#f0e6ff")   # 覆盖/新增主题变量
+builder.set_theme_var("my_color", "#ff8800")     # 样式值中 $my_color 引用
 var ui = builder.parse_string(gml_content)
 ```
 
@@ -1303,8 +1297,6 @@ GdGmlScene 是一个继承 Control 的 GML 文件加载节点，位于 `rust/src
 | `find_node(name: String) -> Control` | 按 name 查找内容中的子节点 |
 | `clear_content()` | 清除已加载的内容 |
 | `is_loaded() -> bool` | 是否已加载 |
-| `apply_theme(theme_name: String)` | 切换主题并重新加载（修改 GML 中的 theme 属性，重新解析构建） |
-| `get_builtin_themes() -> PackedStringArray` | 获取所有内置主题名称列表 |
 | `on_bean_data_changed(node_name: String, data: Variant)` | GdBean 响应式回调，属性变更时自动更新对应节点 |
 | `on_bean_data_changed_bound(data: Variant, _metas: Variant, node_name: String)` | GdBean 响应式回调（bind 版），通过 callable.bind() 注册时使用 |
 

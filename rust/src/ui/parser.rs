@@ -55,7 +55,6 @@ pub struct ParseResult {
     /// 主题变量（来自 <theme> 块和内置主题）
     pub theme_vars: HashMap<String, String>,
     /// 主题名称（来自 <ui theme="xxx">）
-    pub theme_name: Option<String>,
     /// <script> 块定义的数据变量（供节点 data="变量名" 绑定）
     pub script_vars: HashMap<String, DataValue>,
     /// <ui script="xxx.gd"> 声明的脚本（构建期自动挂载到内容根节点）
@@ -94,7 +93,6 @@ impl UiParser {
         let mut styles = Vec::new();
         let mut theme_vars = HashMap::new();
         let mut script_vars = HashMap::new();
-        let mut theme_name: Option<String> = None;
         let mut ui_script: Option<String> = None;
         let mut root_children = Vec::new();
 
@@ -111,11 +109,9 @@ impl UiParser {
         // 解析 <ui> 的属性
         let ui_attrs = self.parse_attributes()?;
 
-        // 提取 theme 属性
+        // 提取 script 属性
         for (key, value) in &ui_attrs {
-            if key == "theme" {
-                theme_name = Some(value.clone());
-            } else if key == "script" {
+            if key == "script" {
                 // <ui script="xxx.gd">：脚本随本文件构建结果自动挂载
                 ui_script = Some(value.clone());
             }
@@ -210,7 +206,7 @@ impl UiParser {
             children: root_children,
         };
 
-        Ok(ParseResult { root, styles, theme_vars, theme_name, script_vars, ui_script })
+        Ok(ParseResult { root, styles, theme_vars, script_vars, ui_script })
     }
 
     /// 解析一个节点（标签 + 属性 + 子节点）
@@ -926,7 +922,7 @@ mod tests {
 
     #[test]
     fn test_parse_ui_script() {
-        let input = r#"<ui theme="cartoon" script="task_item.gd">
+        let input = r#"<ui script="task_item.gd">
             <Panel name="ItemRoot" />
         </ui>"#;
         let result = UiParser::new(input).parse().unwrap();
@@ -1060,17 +1056,16 @@ mod tests {
 
     #[test]
     fn test_parse_ui_attributes() {
-        let input = r#"<ui theme="cartoon">
+        let input = r#"<ui title="demo">
             <Label text="test" />
         </ui>"#;
         let result = UiParser::new(input).parse().unwrap();
-        assert_eq!(result.root.attributes[0], ("theme".to_string(), "cartoon".to_string()));
-        assert_eq!(result.theme_name, Some("cartoon".to_string()));
+        assert_eq!(result.root.attributes[0], ("title".to_string(), "demo".to_string()));
     }
 
     #[test]
     fn test_parse_theme_block() {
-        let input = r#"<ui theme="cartoon">
+        let input = r#"<ui>
             <theme>
                 bg_primary: #f8f4ff;
                 text_primary: #3a2d5c;
@@ -1078,7 +1073,6 @@ mod tests {
             <Label text="test" />
         </ui>"#;
         let result = UiParser::new(input).parse().unwrap();
-        assert_eq!(result.theme_name, Some("cartoon".to_string()));
         assert_eq!(result.theme_vars.get("bg_primary").unwrap(), "#f8f4ff");
         assert_eq!(result.theme_vars.get("text_primary").unwrap(), "#3a2d5c");
     }

@@ -7,39 +7,39 @@ extends GdGmlScene
 var scene_main = SUIMain.ins()
 
 var ui = """
-<ui theme="cartoon">
+<ui>
   <style>
     .equip-slot {
-      background: $bg_primary;
+      background: #f8f4ff;
       border_radius: 4;
-      border_color: $border_default;
+      border_color: #c5b3e6;
       border_width: 1;
       padding: 4;
     }
     .equip-slot-icon {
-      color: $text_accent;
+      color: #7c4dff;
     }
     .equip-slot-count {
-      color: $text_primary;
+      color: #3a2d5c;
     }
     .drawer-btn {
-      background: $bg_button;
-      color: $text_primary;
+      background: #e8dff5;
+      color: #3a2d5c;
       border_radius: 4;
       padding: 8;
     }
     .grid-item {
-      background: $bg_primary;
+      background: #f8f4ff;
       border_radius: 4;
-      border_color: $border_default;
+      border_color: #c5b3e6;
       border_width: 1;
       padding: 8;
     }
     .grid-item-name {
-      color: $text_primary;
+      color: #3a2d5c;
     }
     .grid-item-desc {
-      color: $text_secondary;
+      color: #7b6fa0;
     }
   </style>
   <Control anchor="full">

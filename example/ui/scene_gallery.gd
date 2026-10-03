@@ -5,29 +5,29 @@
 extends GdGmlScene
 
 var UI = """
-<ui theme="cartoon">
+<ui>
   <style>
     .gallery-btn {
-      background: $bg_primary;
+      background: #f8f4ff;
       border_radius: 6;
       border_width: 1;
       padding: 12;
     }
     .tab-desc {
-      color: $text_secondary;
+      color: #7b6fa0;
     }
     .grid-item {
-      background: $bg_primary;
+      background: #f8f4ff;
       border_radius: 4;
-      border_color: $border_default;
+      border_color: #c5b3e6;
       border_width: 1;
       padding: 8;
     }
     .grid-item-name {
-      color: $text_primary;
+      color: #3a2d5c;
     }
     .grid-item-desc {
-      color: $text_secondary;
+      color: #7b6fa0;
     }
   </style>
   <VBoxContainer anchor="full">

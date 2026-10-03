@@ -1,4 +1,4 @@
-<ui theme="cartoon">
+<ui>
   <!-- 顶部资源栏：货币显示 + 右上角关闭按钮
        两侧 expand 占位使货币面板保持居中 -->
   <style>

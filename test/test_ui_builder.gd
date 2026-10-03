@@ -82,23 +82,15 @@ func test_validate() -> void:
 		assert_contains_str(no_root, "ui", "错误信息应提示 ui 根元素")
 
 
-func test_builtin_themes() -> void:
+func test_custom_theme_vars() -> void:
 	var builder := _make_builder()
-	var themes := builder.get_builtin_themes()
-	assert_true(themes.size() > 0, "应存在内置主题")
-	assert_true(Array(themes).has("cartoon"), "内置主题应包含 cartoon")
-
-	builder.set_theme("cartoon")
-	assert_eq(builder.get_theme(), "cartoon", "set_theme 后 get_theme 应返回主题名")
-
-	# 自定义主题变量覆盖
+	# 自定义主题变量注入（<style> 值中 $var 引用，无内置主题）
 	builder.set_theme_var("primary_color", "#ff0000")
 	builder.clear_custom_theme_vars()
 
 
 func test_parse_with_theme() -> void:
 	var builder := _make_builder()
-	builder.set_theme("cartoon")
 	var markup := """
 	<ui>
 		<PanelContainer>
