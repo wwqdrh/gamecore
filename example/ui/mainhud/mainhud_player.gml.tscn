@@ -1,0 +1,121 @@
+[gd_scene format=3]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_x45xf"]
+bg_color = Color(0.18039216, 0.2901961, 0.22745098, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.9098039, 0.7254902, 0.24313726, 1)
+corner_radius_top_left = 44
+corner_radius_top_right = 44
+corner_radius_bottom_right = 44
+corner_radius_bottom_left = 44
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xq1m0"]
+bg_color = Color(0.9098039, 0.8509804, 0.65882355, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.5411765, 0.41568628, 0.11764706, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p85qb"]
+bg_color = Color(0.14117648, 0.23529412, 0.18039216, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2i8ik"]
+bg_color = Color(0.37254903, 0.68235296, 0.41568628, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[node name="PlayerBadge" type="HBoxContainer" unique_id=1141676761]
+metadata/__script_vars = {}
+
+[node name="AvatarRing" type="Panel" parent="." unique_id=429317518]
+custom_minimum_size = Vector2(88, 88)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_x45xf")
+metadata/__script_vars = {}
+
+[node name="AvatarIcon" type="Label" parent="AvatarRing" unique_id=55365477]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🧙"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="PlayerInfo" type="VBoxContainer" parent="." unique_id=748214441]
+layout_mode = 2
+size_flags_vertical = 4
+metadata/__script_vars = {}
+
+[node name="@Panel@63" type="Panel" parent="PlayerInfo" unique_id=494710223]
+custom_minimum_size = Vector2(210, 42)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_xq1m0")
+
+[node name="@HBoxContainer@62" type="HBoxContainer" parent="PlayerInfo/@Panel@63" unique_id=1035679383]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 6.0
+offset_right = -8.0
+offset_bottom = -6.0
+metadata/__anchor = "full"
+
+[node name="@Label@59" type="Label" parent="PlayerInfo/@Panel@63/@HBoxContainer@62" unique_id=418735710]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.41960785, 0.2901961, 0.11764706, 1)
+text = "炼气三层"
+vertical_alignment = 1
+
+[node name="@Control@60" type="Control" parent="PlayerInfo/@Panel@63/@HBoxContainer@62" unique_id=962998206]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="@Label@61" type="Label" parent="PlayerInfo/@Panel@63/@HBoxContainer@62" unique_id=1260969987]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "最高境界"
+vertical_alignment = 1
+
+[node name="@HBoxContainer@68" type="HBoxContainer" parent="PlayerInfo" unique_id=231288911]
+layout_mode = 2
+
+[node name="@Label@64" type="Label" parent="PlayerInfo/@HBoxContainer@68" unique_id=1134334729]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9098039, 0.7254902, 0.24313726, 1)
+text = "Lv.12"
+vertical_alignment = 1
+
+[node name="@Panel@66" type="Panel" parent="PlayerInfo/@HBoxContainer@68" unique_id=1773328930]
+custom_minimum_size = Vector2(90, 10)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_p85qb")
+
+[node name="@Panel@65" type="Panel" parent="PlayerInfo/@HBoxContainer@68/@Panel@66" unique_id=1140676788]
+custom_minimum_size = Vector2(30, 10)
+layout_mode = 0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_2i8ik")
+metadata/__anchor = "left_wide"
+
+[node name="@Label@67" type="Label" parent="PlayerInfo/@HBoxContainer@68" unique_id=1889683361]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8117647, 0.8901961, 0.78431374, 1)
+text = "22"
+vertical_alignment = 1

@@ -1,0 +1,79 @@
+[gd_scene format=3]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gs6bl"]
+bg_color = Color(0.41960785, 0.2901961, 0.11764706, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.2901961, 0.19607843, 0.07058824, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5pf5m"]
+bg_color = Color(0.9098039, 0.8509804, 0.65882355, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.5411765, 0.41568628, 0.11764706, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ji2ga"]
+bg_color = Color(0.41960785, 0.2901961, 0.11764706, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.2901961, 0.19607843, 0.07058824, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[node name="QuestBanner" type="HBoxContainer" unique_id=1633198767]
+metadata/__script_vars = {}
+
+[node name="@Panel@79" type="Panel" parent="." unique_id=1597261727]
+custom_minimum_size = Vector2(12, 48)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_gs6bl")
+metadata/__script_vars = {}
+
+[node name="@Panel@83" type="Panel" parent="." unique_id=1648598463]
+custom_minimum_size = Vector2(226, 48)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_5pf5m")
+metadata/__script_vars = {}
+
+[node name="@HBoxContainer@82" type="HBoxContainer" parent="@Panel@83" unique_id=1090006890]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 8.0
+offset_right = -12.0
+offset_bottom = -8.0
+metadata/__anchor = "full"
+
+[node name="@Label@80" type="Label" parent="@Panel@83/@HBoxContainer@82" unique_id=1037871807]
+layout_mode = 2
+text = "📜"
+vertical_alignment = 1
+
+[node name="@Label@81" type="Label" parent="@Panel@83/@HBoxContainer@82" unique_id=266867230]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "击败山中妖狼 3/5"
+vertical_alignment = 1
+
+[node name="@Panel@84" type="Panel" parent="." unique_id=1924046495]
+custom_minimum_size = Vector2(12, 48)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_ji2ga")
+metadata/__script_vars = {}

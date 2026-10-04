@@ -39,9 +39,10 @@
 	<!-- 锁定图标（locked 契约联动显示，配合整格置灰） -->
 	<Label name="LockIcon" class="lock-icon" text="🔒" anchor="full"
 	       align="center" valign="center" visible="false" />
-	<!-- 数量角标：右下（count 契约非空时显示） -->
+	<!-- 数量角标：右下（count 契约非空时显示；bottom_wide + align right，
+	     点锚 bottom_right 会把节点推出格子右/下边界外） -->
 	<Label name="CountLabel" class="count-text" text="{{count}}"
-	       anchor="bottom_right" margin="2 0 4 2" visible="false" />
+	       anchor="bottom_wide" margin="0 -18 4 2" align="right" visible="false" />
 	<!-- 选中金边框（selected 契约联动显示，置于最上层） -->
 	<Panel name="SelectedFrame" class="sel-frame" anchor="full" visible="false" />
   </Panel>

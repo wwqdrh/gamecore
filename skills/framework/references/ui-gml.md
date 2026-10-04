@@ -512,6 +512,28 @@ func _ready() -> void:
 - 当前引擎 TabContainer 仅支持顶部/底部页签（`tabs_position` 无 LEFT/RIGHT）；
   设计图样式的左侧竖排页签需用自定义按钮列表 + 数据驱动高亮实现
 
+### HUD 覆盖层：全屏 UI 的鼠标穿透（mainhud 模式）
+
+覆盖在游戏世界之上的 HUD（主界面/战斗 UI）用无包装层模式编写：根 `<Control anchor="full">`
++ 多个 `anchor="full"` 的 MarginContainer 布局层（margin 收窄各层活动范围），
+用 HBox/VBox + `expand_fill` spacer + `shrink_begin/shrink_center` 实现四角与居中停靠。
+**GML 无 mouse_filter 属性**，穿透在根控制器 `_ready` 里统一设置：
+
+```gdscript
+func _ready() -> void:
+    mouse_filter = Control.MOUSE_FILTER_IGNORE          # 根穿透
+    for layer in ["TopLayer", "MidLayer", "BottomLayer"]:  # 各布局层穿透
+        (find_child(layer, true, false) as Control).mouse_filter = Control.MOUSE_FILTER_IGNORE
+```
+
+- `IGNORE` 只作用于节点自身，**子交互节点（功能按钮/技能格）不受影响照常可点**
+- 行内子项用 `size_flags_vertical="shrink_begin"` 防止被行高（最高子项）拉伸
+- `size_flags_*` 支持值：`fill` / `expand` / `expand_fill` / `shrink_begin` /
+  `shrink_center` / `shrink_end`；**不认识的值静默回退 FILL**（容器子节点默认
+  FILL 会被拉伸到容器尺寸——组件"撑满整屏高"先查这里是不是值拼错/框架过旧）
+- 布局断言用 `global_position`（子节点 `position` 是父容器相对坐标，跨容器比较会错）
+- 参考 `example/ui/mainhud/`（含 check_mainhud_ui.gd 端到端验收）
+
 ### 必踩的坑（重要）
 
 1. **`<ui>` 下必须恰好一个根元素**（`<style>`/`<script>` 是数据块不算元素），
@@ -539,3 +561,12 @@ func _ready() -> void:
 7. **条目契约 setter 的 `is_node_ready()` 时序**：列表构建期注入发生在条目挂树前，
    setter 里的 `is_node_ready()` 为 false 会跳过 UI 联动——`_ready()` 必须统一
    补偿调用全部 `_apply_xxx()`（注入状态才能生效）。
+8. **点/边锚（top_right/bottom_right/bottom_wide…）+ margin 会把节点推出父容器**：
+   margin 语义是 `(left, top, -right, -bottom)` 直接写 offset——对 l/r 锚=1 的
+   预设，`offset_left=正数` 起点已在父容器右边界之外（如 top_right 的红点
+   `margin="0 6 10 0"` 实际 pos.x=父宽，完全看不见）；bottom_wide 的文字
+   `margin top=0` 起点 y=父高，落在容器正下方。**角标/文字优先用容器结构**
+   （`anchor="full"` 的 VBox：图标 `expand_fill` + 文字贴底），确实要锚点时：
+   - 右上/右下角标 → `anchor="top_wide"/"bottom_wide"` + `align="right"` + 负 right margin
+   - bottom_wide 贴底文字 → 负 top margin（如 `margin="14 -24 14 2"`，
+     注意 Label 行高比 font_size 大，留余量）

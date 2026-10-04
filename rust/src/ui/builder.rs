@@ -2320,14 +2320,15 @@ fn get_stylebox_name_for_tag(tag: &str) -> &'static str {
 }
 
 /// 应用 size_flags_horizontal
-/// 支持格式: "fill" (SIZE_FILL), "expand" (SIZE_EXPAND), "expand_fill" (SIZE_EXPAND_FILL)
-/// 或 Godot 原始整数值
+/// 支持格式: "fill" (SIZE_FILL), "expand" (SIZE_EXPAND), "expand_fill" (SIZE_EXPAND_FILL),
+/// "shrink_begin" (SIZE_SHRINK_BEGIN), "shrink_center", "shrink_end"；未知值回退 FILL
 fn apply_size_flags_horizontal(control: &mut Gd<Control>, value: &str) {
     use godot::classes::control::SizeFlags;
     let flag = match value {
         "fill" => SizeFlags::FILL,
         "expand" => SizeFlags::EXPAND,
         "expand_fill" => SizeFlags::EXPAND_FILL,
+        "shrink_begin" => SizeFlags::SHRINK_BEGIN,
         "shrink_center" => SizeFlags::SHRINK_CENTER,
         "shrink_end" => SizeFlags::SHRINK_END,
         _ => SizeFlags::FILL,
@@ -2343,6 +2344,7 @@ fn apply_size_flags_vertical(control: &mut Gd<Control>, value: &str) {
         "fill" => SizeFlags::FILL,
         "expand" => SizeFlags::EXPAND,
         "expand_fill" => SizeFlags::EXPAND_FILL,
+        "shrink_begin" => SizeFlags::SHRINK_BEGIN,
         "shrink_center" => SizeFlags::SHRINK_CENTER,
         "shrink_end" => SizeFlags::SHRINK_END,
         _ => SizeFlags::FILL,

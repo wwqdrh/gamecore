@@ -1,0 +1,178 @@
+[gd_scene format=3]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gl6lb"]
+bg_color = Color(0.18039216, 0.2901961, 0.22745098, 0.8)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.9098039, 0.7254902, 0.24313726, 1)
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+corner_radius_bottom_right = 22
+corner_radius_bottom_left = 22
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tqcsx"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.37254903, 0.68235296, 0.41568628, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qbdke"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.27254903, 0.58235294, 0.3156863, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_aisuv"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.49254903, 0.80235296, 0.53568625, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_62cp0"]
+bg_color = Color(0.18039216, 0.2901961, 0.22745098, 0.8)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.9098039, 0.7254902, 0.24313726, 1)
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+corner_radius_bottom_right = 22
+corner_radius_bottom_left = 22
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wg84m"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.37254903, 0.68235296, 0.41568628, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xahal"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.27254903, 0.58235294, 0.3156863, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jsrp6"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.49254903, 0.80235296, 0.53568625, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[node name="ResourceBar" type="HBoxContainer" unique_id=662636365]
+metadata/__script_vars = {}
+
+[node name="@Panel@73" type="Panel" parent="." unique_id=766637180]
+custom_minimum_size = Vector2(168, 44)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_gl6lb")
+metadata/__script_vars = {}
+
+[node name="@HBoxContainer@72" type="HBoxContainer" parent="@Panel@73" unique_id=399264622]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 6.0
+offset_right = -8.0
+offset_bottom = -6.0
+metadata/__anchor = "full"
+
+[node name="@Label@69" type="Label" parent="@Panel@73/@HBoxContainer@72" unique_id=246145150]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "💎"
+vertical_alignment = 1
+
+[node name="@Label@70" type="Label" parent="@Panel@73/@HBoxContainer@72" unique_id=582847356]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "12,800"
+vertical_alignment = 1
+
+[node name="@Control@71" type="Control" parent="@Panel@73/@HBoxContainer@72" unique_id=510173976]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="AddStoneBtn" type="Button" parent="@Panel@73/@HBoxContainer@72" unique_id=943740120]
+custom_minimum_size = Vector2(26, 26)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_tqcsx")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_qbdke")
+theme_override_styles/hover = SubResource("StyleBoxFlat_aisuv")
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "＋"
+metadata/__signal_pressed = "_on_res_add"
+
+[node name="@Panel@78" type="Panel" parent="." unique_id=1937405228]
+custom_minimum_size = Vector2(140, 44)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_62cp0")
+metadata/__script_vars = {}
+
+[node name="@HBoxContainer@77" type="HBoxContainer" parent="@Panel@78" unique_id=201495062]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 6.0
+offset_right = -8.0
+offset_bottom = -6.0
+metadata/__anchor = "full"
+
+[node name="@Label@74" type="Label" parent="@Panel@78/@HBoxContainer@77" unique_id=1317298142]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "🧪"
+vertical_alignment = 1
+
+[node name="@Label@75" type="Label" parent="@Panel@78/@HBoxContainer@77" unique_id=269583170]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "3/36"
+vertical_alignment = 1
+
+[node name="@Control@76" type="Control" parent="@Panel@78/@HBoxContainer@77" unique_id=203938667]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="AddPillBtn" type="Button" parent="@Panel@78/@HBoxContainer@77" unique_id=2107587556]
+custom_minimum_size = Vector2(26, 26)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_wg84m")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_xahal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_jsrp6")
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "＋"
+metadata/__signal_pressed = "_on_res_add"

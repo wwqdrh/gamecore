@@ -1,0 +1,86 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://example/ui/mainhud/skill_item.gd" id="1_y7mpy"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_y43h5"]
+bg_color = Color(0.14117648, 0.23529412, 0.18039216, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_scpik"]
+bg_color = Color(0.039215688, 0.078431375, 0.0627451, 0.7529412)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[node name="SkillSlot" type="Panel" unique_id=403518555]
+custom_minimum_size = Vector2(56, 56)
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_y43h5")
+script = ExtResource("1_y7mpy")
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "key", "cd")
+
+[node name="IconBox" type="CenterContainer" parent="." unique_id=141122226]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="SlotIcon" type="Label" parent="IconBox" unique_id=1984875181]
+layout_mode = 2
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="CdMask" type="Panel" parent="." unique_id=1252028909]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_scpik")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CdText" type="Label" parent="." unique_id=280752004]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__tpl_text = "cd"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="KeyBadge" type="Label" parent="." unique_id=747494270]
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = -24.0
+offset_right = -14.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+horizontal_alignment = 1
+metadata/__tpl_text = "key"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}

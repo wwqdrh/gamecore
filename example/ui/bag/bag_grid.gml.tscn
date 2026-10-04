@@ -51,7 +51,7 @@ corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
-[node name="GoodsPanel" type="Panel" unique_id=1543363307]
+[node name="GoodsPanel" type="Panel" unique_id=131838966]
 anchor_right = 1.0
 anchor_bottom = 1.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_xl32i")
@@ -362,7 +362,7 @@ metadata/__script_vars = {
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray()
 
-[node name="GoodsScroll" type="ScrollContainer" parent="." unique_id=975114436]
+[node name="GoodsScroll" type="ScrollContainer" parent="." unique_id=99176053]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -674,7 +674,7 @@ metadata/__script_vars = {
 }]
 }
 
-[node name="GoodsGrid" type="GdUIGrid" parent="GoodsScroll" unique_id=138032323]
+[node name="GoodsGrid" type="GdUIGrid" parent="GoodsScroll" unique_id=1143785831]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -984,7 +984,7 @@ metadata/__script_data = [{
 "name": "封印格"
 }]
 
-[node name="BagCell" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1127605466]
+[node name="BagCell" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1428863151]
 visible = false
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
@@ -996,7 +996,7 @@ metadata/__script_vars = {}
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/BagCell" unique_id=1582181392]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/BagCell" unique_id=1203279565]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1005,7 +1005,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/BagCell" unique_id=1084201764]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/BagCell" unique_id=1853728840]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1016,12 +1016,12 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/BagCell/IconBox" unique_id=710712063]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/BagCell/IconBox" unique_id=1168151209]
 layout_mode = 2
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/BagCell" unique_id=131195116]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/BagCell" unique_id=1477626800]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1032,23 +1032,23 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/BagCell" unique_id=2128520342]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/BagCell" unique_id=1087461082]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/BagCell" unique_id=1311198584]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/BagCell" unique_id=1899262462]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1057,7 +1057,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@123" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1427750268]
+[node name="@Panel@123" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=474568065]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -1083,7 +1083,7 @@ metadata/__item_data = {
 "selected": true
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@123" unique_id=1424609556]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@123" unique_id=1834253623]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1092,7 +1092,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@123" unique_id=1064198618]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@123" unique_id=1731366790]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1103,13 +1103,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@123/IconBox" unique_id=552465731]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@123/IconBox" unique_id=1390234041]
 layout_mode = 2
 text = "🏺"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@123" unique_id=525370906]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@123" unique_id=457641090]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1120,24 +1120,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@123" unique_id=1931312036]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@123" unique_id=1568858784]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x1"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@123" unique_id=1818205323]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@123" unique_id=2015072783]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1146,7 +1146,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@124" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=488867004]
+[node name="@Panel@124" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1302009673]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -1172,7 +1172,7 @@ metadata/__item_data = {
 "quality": "稀有"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@124" unique_id=1931312304]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@124" unique_id=869827037]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1181,7 +1181,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@124" unique_id=1558662489]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@124" unique_id=1741467337]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1192,13 +1192,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@124/IconBox" unique_id=1823138645]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@124/IconBox" unique_id=248715652]
 layout_mode = 2
 text = "⚔️"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@124" unique_id=1842029001]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@124" unique_id=998317081]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1209,24 +1209,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@124" unique_id=1969299998]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@124" unique_id=1347011751]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x1"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@124" unique_id=401433511]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@124" unique_id=1554294910]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1235,7 +1235,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@125" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1293789555]
+[node name="@Panel@125" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=878989423]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -1258,7 +1258,7 @@ metadata/__item_data = {
 "name": "清心草"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@125" unique_id=345105622]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@125" unique_id=1528038602]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1267,7 +1267,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@125" unique_id=1035750553]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@125" unique_id=1773743475]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1278,13 +1278,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@125/IconBox" unique_id=1683934154]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@125/IconBox" unique_id=388174091]
 layout_mode = 2
 text = "🌿"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@125" unique_id=1541974748]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@125" unique_id=1806265000]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1295,24 +1295,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@125" unique_id=1895713304]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@125" unique_id=1600720505]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x16"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@125" unique_id=1722510079]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@125" unique_id=1441079995]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1321,7 +1321,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@126" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=689420948]
+[node name="@Panel@126" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=165788130]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -1344,7 +1344,7 @@ metadata/__item_data = {
 "name": "灵酒"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@126" unique_id=1929873730]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@126" unique_id=638065502]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1353,7 +1353,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@126" unique_id=1991200361]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@126" unique_id=1502611300]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1364,13 +1364,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@126/IconBox" unique_id=1616420112]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@126/IconBox" unique_id=1371935869]
 layout_mode = 2
 text = "🍶"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@126" unique_id=1207658205]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@126" unique_id=1707542395]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1381,24 +1381,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@126" unique_id=1818602205]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@126" unique_id=1779057275]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x5"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@126" unique_id=1299179494]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@126" unique_id=1953528609]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1407,7 +1407,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@127" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=561826232]
+[node name="@Panel@127" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=948487848]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -1430,7 +1430,7 @@ metadata/__item_data = {
 "name": "符篆"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@127" unique_id=111013711]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@127" unique_id=937701358]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1439,7 +1439,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@127" unique_id=234156320]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@127" unique_id=775690582]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1450,13 +1450,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@127/IconBox" unique_id=529223040]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@127/IconBox" unique_id=255136544]
 layout_mode = 2
 text = "📜"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@127" unique_id=1568711095]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@127" unique_id=1760955234]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1467,24 +1467,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@127" unique_id=1627010450]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@127" unique_id=1172839933]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x6"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@127" unique_id=2078866213]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@127" unique_id=1531372618]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1493,7 +1493,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@128" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1862327037]
+[node name="@Panel@128" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1315558215]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -1516,7 +1516,7 @@ metadata/__item_data = {
 "name": "灵石"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@128" unique_id=90618433]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@128" unique_id=872720208]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1525,7 +1525,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@128" unique_id=1344903376]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@128" unique_id=1313676668]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1536,13 +1536,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@128/IconBox" unique_id=724289139]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@128/IconBox" unique_id=1644182500]
 layout_mode = 2
 text = "💎"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@128" unique_id=468757902]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@128" unique_id=1426067814]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1553,24 +1553,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@128" unique_id=1876305814]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@128" unique_id=440552038]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x24"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@128" unique_id=16235041]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@128" unique_id=1046982236]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1579,7 +1579,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@129" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=254926381]
+[node name="@Panel@129" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=248467226]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -1602,7 +1602,7 @@ metadata/__item_data = {
 "name": "清心草"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@129" unique_id=990657489]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@129" unique_id=1590297142]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1611,7 +1611,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@129" unique_id=181287289]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@129" unique_id=1904341751]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1622,13 +1622,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@129/IconBox" unique_id=914699548]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@129/IconBox" unique_id=708740126]
 layout_mode = 2
 text = "🌿"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@129" unique_id=1587483017]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@129" unique_id=1446324269]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1639,24 +1639,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@129" unique_id=470857722]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@129" unique_id=784843649]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x16"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@129" unique_id=2129592120]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@129" unique_id=1927161825]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1665,7 +1665,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@130" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1186737374]
+[node name="@Panel@130" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1736482437]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -1691,7 +1691,7 @@ metadata/__item_data = {
 "quality": "稀有"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@130" unique_id=1258116112]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@130" unique_id=226444404]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1700,7 +1700,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@130" unique_id=1753333469]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@130" unique_id=1656709822]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1711,13 +1711,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@130/IconBox" unique_id=1844251948]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@130/IconBox" unique_id=2007835594]
 layout_mode = 2
 text = "🪷"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@130" unique_id=1385283532]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@130" unique_id=2122728250]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1728,24 +1728,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@130" unique_id=408633469]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@130" unique_id=545626075]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x4"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@130" unique_id=1291898910]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@130" unique_id=2064452378]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1754,7 +1754,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@131" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1599947502]
+[node name="@Panel@131" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1204266058]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -1777,7 +1777,7 @@ metadata/__item_data = {
 "name": "灵酒"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@131" unique_id=1603993938]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@131" unique_id=264634656]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1786,7 +1786,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@131" unique_id=412779775]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@131" unique_id=1229122901]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1797,13 +1797,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@131/IconBox" unique_id=837663515]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@131/IconBox" unique_id=1350012731]
 layout_mode = 2
 text = "🍶"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@131" unique_id=2064436799]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@131" unique_id=1436289996]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1814,24 +1814,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@131" unique_id=1774003487]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@131" unique_id=7497343]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x35"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@131" unique_id=1771348391]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@131" unique_id=1144004681]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1840,7 +1840,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@132" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1443576399]
+[node name="@Panel@132" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=899587770]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -1863,7 +1863,7 @@ metadata/__item_data = {
 "name": "精铁剑"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@132" unique_id=116089336]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@132" unique_id=277025481]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1872,7 +1872,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@132" unique_id=425890304]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@132" unique_id=1705260297]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1883,13 +1883,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@132/IconBox" unique_id=1951802031]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@132/IconBox" unique_id=2139552367]
 layout_mode = 2
 text = "⚔️"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@132" unique_id=1251581601]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@132" unique_id=1445157385]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1900,24 +1900,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@132" unique_id=2069879778]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@132" unique_id=1462399517]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x1"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@132" unique_id=1997971610]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@132" unique_id=1559104970]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1926,7 +1926,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@133" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=589567473]
+[node name="@Panel@133" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=452290724]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -1949,7 +1949,7 @@ metadata/__item_data = {
 "name": "灵桃花"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@133" unique_id=1823817065]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@133" unique_id=1696902258]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1958,7 +1958,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@133" unique_id=306613414]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@133" unique_id=459800108]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1969,13 +1969,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@133/IconBox" unique_id=520093745]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@133/IconBox" unique_id=1236738937]
 layout_mode = 2
 text = "🌸"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@133" unique_id=795382599]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@133" unique_id=2144701888]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1986,24 +1986,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@133" unique_id=1110714158]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@133" unique_id=231977490]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x26"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@133" unique_id=1202054055]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@133" unique_id=1922283836]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -2012,7 +2012,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@134" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=2115758687]
+[node name="@Panel@134" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1131180884]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -2038,7 +2038,7 @@ metadata/__item_data = {
 "quality": "稀有"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@134" unique_id=1535794202]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@134" unique_id=393128236]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -2047,7 +2047,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@134" unique_id=1935495733]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@134" unique_id=2041318008]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -2058,13 +2058,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@134/IconBox" unique_id=637982792]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@134/IconBox" unique_id=893217893]
 layout_mode = 2
 text = "🍶"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@134" unique_id=892594148]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@134" unique_id=220966042]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -2075,24 +2075,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@134" unique_id=1866517977]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@134" unique_id=884101550]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x15"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@134" unique_id=923843417]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@134" unique_id=455193308]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -2101,7 +2101,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@135" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=909920918]
+[node name="@Panel@135" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1870879672]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -2124,7 +2124,7 @@ metadata/__item_data = {
 "name": "凝魂露"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@135" unique_id=1451978407]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@135" unique_id=2075163623]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -2133,7 +2133,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@135" unique_id=1105218793]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@135" unique_id=1052654805]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -2144,13 +2144,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@135/IconBox" unique_id=1764078969]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@135/IconBox" unique_id=1686869366]
 layout_mode = 2
 text = "🧪"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@135" unique_id=2055694325]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@135" unique_id=605898480]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -2161,24 +2161,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@135" unique_id=1395671226]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@135" unique_id=914537600]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x6"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@135" unique_id=398431535]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@135" unique_id=653006852]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -2187,7 +2187,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@136" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1696142196]
+[node name="@Panel@136" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1320439468]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -2210,7 +2210,7 @@ metadata/__item_data = {
 "name": "符篆"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@136" unique_id=929401921]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@136" unique_id=1714861764]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -2219,7 +2219,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@136" unique_id=1093939797]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@136" unique_id=1014274003]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -2230,13 +2230,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@136/IconBox" unique_id=589303295]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@136/IconBox" unique_id=1414456622]
 layout_mode = 2
 text = "📜"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@136" unique_id=515447269]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@136" unique_id=1982629049]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -2247,24 +2247,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@136" unique_id=732242254]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@136" unique_id=712744369]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x3"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@136" unique_id=1767914038]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@136" unique_id=1650273038]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -2273,7 +2273,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@137" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1073579746]
+[node name="@Panel@137" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1412246094]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -2296,7 +2296,7 @@ metadata/__item_data = {
 "name": "清心草"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@137" unique_id=1804340431]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@137" unique_id=1154783022]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -2305,7 +2305,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@137" unique_id=1801291018]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@137" unique_id=691042642]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -2316,13 +2316,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@137/IconBox" unique_id=325166167]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@137/IconBox" unique_id=122101480]
 layout_mode = 2
 text = "🌿"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@137" unique_id=1933352644]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@137" unique_id=411095924]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -2333,24 +2333,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@137" unique_id=1867921301]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@137" unique_id=1842831869]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x33"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@137" unique_id=694108648]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@137" unique_id=1218311965]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -2359,7 +2359,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@138" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=979696239]
+[node name="@Panel@138" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1617166827]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -2382,7 +2382,7 @@ metadata/__item_data = {
 "name": "灵石"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@138" unique_id=1018043484]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@138" unique_id=950101790]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -2391,7 +2391,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@138" unique_id=507068440]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@138" unique_id=1332092152]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -2402,13 +2402,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@138/IconBox" unique_id=1494343019]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@138/IconBox" unique_id=468134901]
 layout_mode = 2
 text = "💎"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@138" unique_id=1113003983]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@138" unique_id=1530859235]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -2419,24 +2419,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@138" unique_id=1008891001]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@138" unique_id=2012884753]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x11"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@138" unique_id=246036625]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@138" unique_id=118839321]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -2445,7 +2445,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@139" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=573885686]
+[node name="@Panel@139" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=391563692]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -2471,7 +2471,7 @@ metadata/__item_data = {
 "quality": "稀有"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@139" unique_id=1002826139]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@139" unique_id=1756039830]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -2480,7 +2480,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@139" unique_id=1169844257]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@139" unique_id=848280190]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -2491,13 +2491,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@139/IconBox" unique_id=1287822287]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@139/IconBox" unique_id=1980257773]
 layout_mode = 2
 text = "🍄"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@139" unique_id=1577795773]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@139" unique_id=542672742]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -2508,24 +2508,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@139" unique_id=24233638]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@139" unique_id=1611990418]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x11"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@139" unique_id=521825821]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@139" unique_id=1234580219]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -2534,7 +2534,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@140" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1915184825]
+[node name="@Panel@140" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=378073252]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -2557,7 +2557,7 @@ metadata/__item_data = {
 "name": "精铁剑"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@140" unique_id=2088487005]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@140" unique_id=1369533767]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -2566,7 +2566,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@140" unique_id=37172350]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@140" unique_id=5866868]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -2577,13 +2577,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@140/IconBox" unique_id=1583720050]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@140/IconBox" unique_id=1093238061]
 layout_mode = 2
 text = "⚔️"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@140" unique_id=1486953057]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@140" unique_id=2017095620]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -2594,24 +2594,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@140" unique_id=1110956107]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@140" unique_id=1706848507]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x3"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@140" unique_id=263063550]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@140" unique_id=1548652999]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -2620,7 +2620,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@141" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=291897955]
+[node name="@Panel@141" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=2140923758]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -2646,7 +2646,7 @@ metadata/__item_data = {
 "quality": "稀有"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@141" unique_id=964505392]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@141" unique_id=527668560]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -2655,7 +2655,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@141" unique_id=913488287]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@141" unique_id=689780769]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -2666,13 +2666,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@141/IconBox" unique_id=313451936]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@141/IconBox" unique_id=579703890]
 layout_mode = 2
 text = "🪙"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@141" unique_id=1626876559]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@141" unique_id=399065187]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -2683,24 +2683,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@141" unique_id=1725465989]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@141" unique_id=2055540951]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x3"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@141" unique_id=1429803186]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@141" unique_id=993147533]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -2709,7 +2709,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@142" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=910732669]
+[node name="@Panel@142" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=303671338]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -2732,7 +2732,7 @@ metadata/__item_data = {
 "name": "灵酒"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@142" unique_id=1470853357]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@142" unique_id=409199960]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -2741,7 +2741,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@142" unique_id=259424416]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@142" unique_id=293219320]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -2752,13 +2752,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@142/IconBox" unique_id=2135766737]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@142/IconBox" unique_id=748816006]
 layout_mode = 2
 text = "🍶"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@142" unique_id=1633244789]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@142" unique_id=1415088792]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -2769,24 +2769,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@142" unique_id=1912309881]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@142" unique_id=1670011888]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x23"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@142" unique_id=1297922948]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@142" unique_id=228516082]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -2795,7 +2795,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@143" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1631889501]
+[node name="@Panel@143" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=566343363]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -2818,7 +2818,7 @@ metadata/__item_data = {
 "name": "灵桃花"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@143" unique_id=1253848423]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@143" unique_id=1554200598]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -2827,7 +2827,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@143" unique_id=1405660122]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@143" unique_id=1973721740]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -2838,13 +2838,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@143/IconBox" unique_id=1795331775]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@143/IconBox" unique_id=1881857862]
 layout_mode = 2
 text = "🌸"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@143" unique_id=1156086701]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@143" unique_id=1116179799]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -2855,24 +2855,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@143" unique_id=1828765099]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@143" unique_id=1154798138]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x16"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@143" unique_id=212406643]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@143" unique_id=1838211231]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -2881,7 +2881,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@144" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1693258692]
+[node name="@Panel@144" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1655789362]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -2904,7 +2904,7 @@ metadata/__item_data = {
 "name": "灵酒"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@144" unique_id=2117443375]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@144" unique_id=796855576]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -2913,7 +2913,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@144" unique_id=1904584346]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@144" unique_id=1897226756]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -2924,13 +2924,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@144/IconBox" unique_id=1222960761]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@144/IconBox" unique_id=583635158]
 layout_mode = 2
 text = "🍶"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@144" unique_id=829666683]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@144" unique_id=1212084373]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -2941,24 +2941,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@144" unique_id=1761279700]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@144" unique_id=1701602582]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x3"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@144" unique_id=1095703728]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@144" unique_id=1390988424]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -2967,7 +2967,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@145" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=923308196]
+[node name="@Panel@145" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=145555296]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -2990,7 +2990,7 @@ metadata/__item_data = {
 "name": "灵桃花"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@145" unique_id=101220319]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@145" unique_id=1383600515]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -2999,7 +2999,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@145" unique_id=1972868949]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@145" unique_id=1332646143]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -3010,13 +3010,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@145/IconBox" unique_id=2059860765]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@145/IconBox" unique_id=1810686862]
 layout_mode = 2
 text = "🌸"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@145" unique_id=335668587]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@145" unique_id=127444641]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -3027,24 +3027,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@145" unique_id=406890897]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@145" unique_id=1827160470]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x31"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@145" unique_id=909751365]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@145" unique_id=1260586108]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -3053,7 +3053,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@146" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=2087619959]
+[node name="@Panel@146" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1805578734]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -3076,7 +3076,7 @@ metadata/__item_data = {
 "name": "灵酒"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@146" unique_id=1588454225]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@146" unique_id=915686618]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -3085,7 +3085,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@146" unique_id=2010854868]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@146" unique_id=874170279]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -3096,13 +3096,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@146/IconBox" unique_id=1585289302]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@146/IconBox" unique_id=214847539]
 layout_mode = 2
 text = "🍶"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@146" unique_id=1162573982]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@146" unique_id=1926562172]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -3113,24 +3113,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@146" unique_id=952206587]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@146" unique_id=97489760]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x9"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@146" unique_id=543617171]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@146" unique_id=1054701185]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -3139,7 +3139,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@147" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=443534117]
+[node name="@Panel@147" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1627667633]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -3162,7 +3162,7 @@ metadata/__item_data = {
 "name": "符篆"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@147" unique_id=819044221]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@147" unique_id=321752498]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -3171,7 +3171,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@147" unique_id=1570954304]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@147" unique_id=158124557]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -3182,13 +3182,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@147/IconBox" unique_id=902884230]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@147/IconBox" unique_id=487629248]
 layout_mode = 2
 text = "📜"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@147" unique_id=475078535]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@147" unique_id=1396336314]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -3199,24 +3199,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@147" unique_id=1996018743]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@147" unique_id=2084543507]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x16"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@147" unique_id=942302867]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@147" unique_id=1591442484]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -3225,7 +3225,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@148" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=54880268]
+[node name="@Panel@148" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=587449398]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -3248,7 +3248,7 @@ metadata/__item_data = {
 "name": "清心草"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@148" unique_id=1933560004]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@148" unique_id=1803817458]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -3257,7 +3257,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@148" unique_id=381995886]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@148" unique_id=277662398]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -3268,13 +3268,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@148/IconBox" unique_id=1505716409]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@148/IconBox" unique_id=1269081280]
 layout_mode = 2
 text = "🌿"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@148" unique_id=1683411625]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@148" unique_id=336218343]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -3285,24 +3285,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@148" unique_id=981913049]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@148" unique_id=1956602020]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x24"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@148" unique_id=228361411]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@148" unique_id=269947197]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -3311,7 +3311,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@149" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=738195125]
+[node name="@Panel@149" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=358655103]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -3334,7 +3334,7 @@ metadata/__item_data = {
 "name": "精铁剑"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@149" unique_id=873009468]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@149" unique_id=1933792329]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -3343,7 +3343,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@149" unique_id=1437952526]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@149" unique_id=688390520]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -3354,13 +3354,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@149/IconBox" unique_id=1279811556]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@149/IconBox" unique_id=1367921953]
 layout_mode = 2
 text = "⚔️"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@149" unique_id=2057860437]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@149" unique_id=1116274988]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -3371,24 +3371,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@149" unique_id=1125900642]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@149" unique_id=1615258523]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x3"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@149" unique_id=793654274]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@149" unique_id=353386023]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -3397,7 +3397,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@150" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=848702101]
+[node name="@Panel@150" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=468489799]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -3420,7 +3420,7 @@ metadata/__item_data = {
 "name": "灵酒"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@150" unique_id=681732672]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@150" unique_id=1215744227]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -3429,7 +3429,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@150" unique_id=1856140881]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@150" unique_id=1224178406]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -3440,13 +3440,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@150/IconBox" unique_id=6879653]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@150/IconBox" unique_id=975903214]
 layout_mode = 2
 text = "🍶"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@150" unique_id=1659364703]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@150" unique_id=157902706]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -3457,24 +3457,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@150" unique_id=869568394]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@150" unique_id=1702076207]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x10"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@150" unique_id=1585356217]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@150" unique_id=1144740641]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -3483,7 +3483,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@151" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1313920193]
+[node name="@Panel@151" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=956340488]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -3506,7 +3506,7 @@ metadata/__item_data = {
 "name": "灵桃花"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@151" unique_id=894101190]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@151" unique_id=1188898453]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -3515,7 +3515,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@151" unique_id=1594887538]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@151" unique_id=1345270714]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -3526,13 +3526,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@151/IconBox" unique_id=1785405977]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@151/IconBox" unique_id=1358149982]
 layout_mode = 2
 text = "🌸"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@151" unique_id=136685200]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@151" unique_id=876237559]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -3543,24 +3543,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@151" unique_id=1557010755]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@151" unique_id=823845404]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x26"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@151" unique_id=85538715]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@151" unique_id=411735790]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -3569,7 +3569,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@152" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1616759837]
+[node name="@Panel@152" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=2068338756]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -3592,7 +3592,7 @@ metadata/__item_data = {
 "name": "符篆"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@152" unique_id=297540534]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@152" unique_id=1262373829]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -3601,7 +3601,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@152" unique_id=170491299]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@152" unique_id=1766668919]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -3612,13 +3612,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@152/IconBox" unique_id=171790195]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@152/IconBox" unique_id=584014922]
 layout_mode = 2
 text = "📜"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@152" unique_id=89444273]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@152" unique_id=1737361042]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -3629,24 +3629,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@152" unique_id=1045666167]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@152" unique_id=836646962]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x6"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@152" unique_id=1986982306]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@152" unique_id=2084342142]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -3655,7 +3655,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@153" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1923520531]
+[node name="@Panel@153" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=981065258]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -3678,7 +3678,7 @@ metadata/__item_data = {
 "name": "净灵水"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@153" unique_id=308703583]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@153" unique_id=1755174778]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -3687,7 +3687,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@153" unique_id=1172112197]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@153" unique_id=2054951010]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -3698,13 +3698,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@153/IconBox" unique_id=607677921]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@153/IconBox" unique_id=1051120096]
 layout_mode = 2
 text = "💧"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@153" unique_id=1267781004]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@153" unique_id=725405675]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -3715,24 +3715,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@153" unique_id=2075588423]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@153" unique_id=2145907603]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x14"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@153" unique_id=1415204853]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@153" unique_id=880463106]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -3741,7 +3741,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@154" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1904689888]
+[node name="@Panel@154" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=878564726]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -3764,7 +3764,7 @@ metadata/__item_data = {
 "name": "清心草"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@154" unique_id=1625970119]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@154" unique_id=605230038]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -3773,7 +3773,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@154" unique_id=983486480]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@154" unique_id=1756080053]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -3784,13 +3784,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@154/IconBox" unique_id=595578644]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@154/IconBox" unique_id=268104776]
 layout_mode = 2
 text = "🌿"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@154" unique_id=1380108753]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@154" unique_id=1747541249]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -3801,24 +3801,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@154" unique_id=268772490]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@154" unique_id=1405312219]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x17"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@154" unique_id=1115810206]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@154" unique_id=1769846885]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -3827,7 +3827,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@155" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1796553138]
+[node name="@Panel@155" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=615889455]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -3853,7 +3853,7 @@ metadata/__item_data = {
 "quality": "稀有"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@155" unique_id=824075897]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@155" unique_id=1923431103]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -3862,7 +3862,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@155" unique_id=1690209041]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@155" unique_id=1084828825]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -3873,13 +3873,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@155/IconBox" unique_id=2104625957]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@155/IconBox" unique_id=1587468680]
 layout_mode = 2
 text = "🍶"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@155" unique_id=363597758]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@155" unique_id=162388369]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -3890,24 +3890,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@155" unique_id=1726687095]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@155" unique_id=716866183]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x7"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@155" unique_id=1544609377]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@155" unique_id=603360222]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -3916,7 +3916,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@156" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1292890069]
+[node name="@Panel@156" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=346827784]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -3939,7 +3939,7 @@ metadata/__item_data = {
 "name": "赤焰花"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@156" unique_id=1056482178]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@156" unique_id=147885837]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -3948,7 +3948,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@156" unique_id=1691782385]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@156" unique_id=86399272]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -3959,13 +3959,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@156/IconBox" unique_id=190475019]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@156/IconBox" unique_id=73503556]
 layout_mode = 2
 text = "🌺"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@156" unique_id=172038715]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@156" unique_id=2062520957]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -3976,24 +3976,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@156" unique_id=2100127744]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@156" unique_id=1023892216]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x16"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@156" unique_id=269763309]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@156" unique_id=633740513]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -4002,7 +4002,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@157" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1183007102]
+[node name="@Panel@157" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1467710082]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -4025,7 +4025,7 @@ metadata/__item_data = {
 "name": "精铁剑"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@157" unique_id=2095157726]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@157" unique_id=1885023161]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -4034,7 +4034,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@157" unique_id=1305577397]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@157" unique_id=1439775895]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -4045,13 +4045,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@157/IconBox" unique_id=1403146412]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@157/IconBox" unique_id=1756297]
 layout_mode = 2
 text = "⚔️"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@157" unique_id=1498873149]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@157" unique_id=1882504699]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -4062,24 +4062,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@157" unique_id=377371107]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@157" unique_id=1932497469]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x1"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@157" unique_id=1475703756]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@157" unique_id=429974230]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -4088,7 +4088,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@158" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=2107268336]
+[node name="@Panel@158" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=906772574]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -4111,7 +4111,7 @@ metadata/__item_data = {
 "name": "灵酒"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@158" unique_id=1355615512]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@158" unique_id=960469159]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -4120,7 +4120,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@158" unique_id=827708123]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@158" unique_id=1942300509]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -4131,13 +4131,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@158/IconBox" unique_id=1061606140]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@158/IconBox" unique_id=1743469274]
 layout_mode = 2
 text = "🍶"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@158" unique_id=1248513856]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@158" unique_id=1407288126]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -4148,24 +4148,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@158" unique_id=564055479]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@158" unique_id=950463734]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x4"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@158" unique_id=1426715659]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@158" unique_id=582630948]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -4174,7 +4174,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@159" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1281716678]
+[node name="@Panel@159" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=760273269]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -4197,7 +4197,7 @@ metadata/__item_data = {
 "name": "符篆"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@159" unique_id=1588018108]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@159" unique_id=265126435]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -4206,7 +4206,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@159" unique_id=245882630]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@159" unique_id=1928997557]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -4217,13 +4217,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@159/IconBox" unique_id=534309993]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@159/IconBox" unique_id=2052555682]
 layout_mode = 2
 text = "📜"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@159" unique_id=4319188]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@159" unique_id=197645907]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -4234,24 +4234,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@159" unique_id=1141434461]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@159" unique_id=2065058375]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x12"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@159" unique_id=1601655139]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@159" unique_id=1523285426]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -4260,7 +4260,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@160" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=629745567]
+[node name="@Panel@160" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=590487266]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -4283,7 +4283,7 @@ metadata/__item_data = {
 "name": "翠灵菜"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@160" unique_id=1848184182]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@160" unique_id=347257722]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -4292,7 +4292,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@160" unique_id=1766106273]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@160" unique_id=120776361]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -4303,13 +4303,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@160/IconBox" unique_id=1714144489]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@160/IconBox" unique_id=2097483603]
 layout_mode = 2
 text = "🥬"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@160" unique_id=80345919]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@160" unique_id=1125263335]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -4320,24 +4320,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@160" unique_id=487351554]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@160" unique_id=1112337008]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x26"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@160" unique_id=1701085204]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@160" unique_id=337706238]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -4346,7 +4346,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@161" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=368935487]
+[node name="@Panel@161" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=350695651]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -4372,7 +4372,7 @@ metadata/__item_data = {
 "quality": "稀有"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@161" unique_id=2136359364]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@161" unique_id=313845043]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -4381,7 +4381,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@161" unique_id=2117414080]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@161" unique_id=757508374]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -4392,13 +4392,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@161/IconBox" unique_id=1909205653]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@161/IconBox" unique_id=1428832464]
 layout_mode = 2
 text = "⚔️"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@161" unique_id=297078631]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@161" unique_id=1528876767]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -4409,24 +4409,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@161" unique_id=263712192]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@161" unique_id=1908907066]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x2"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@161" unique_id=1784026449]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@161" unique_id=341268840]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -4435,7 +4435,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@162" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=938500088]
+[node name="@Panel@162" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1227372486]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -4458,7 +4458,7 @@ metadata/__item_data = {
 "name": "灵石"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@162" unique_id=1252385031]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@162" unique_id=1078877808]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -4467,7 +4467,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@162" unique_id=2014303125]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@162" unique_id=1579693898]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -4478,13 +4478,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@162/IconBox" unique_id=2146262300]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@162/IconBox" unique_id=1573457109]
 layout_mode = 2
 text = "💎"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@162" unique_id=45856788]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@162" unique_id=223262882]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -4495,24 +4495,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@162" unique_id=833390192]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@162" unique_id=195841254]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x3"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@162" unique_id=1060331088]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@162" unique_id=307608186]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -4521,7 +4521,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@163" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1915762185]
+[node name="@Panel@163" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=666394948]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -4544,7 +4544,7 @@ metadata/__item_data = {
 "name": "金盏菊"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@163" unique_id=68468261]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@163" unique_id=505239456]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -4553,7 +4553,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@163" unique_id=1471618411]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@163" unique_id=1794185880]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -4564,13 +4564,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@163/IconBox" unique_id=854495332]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@163/IconBox" unique_id=1028465792]
 layout_mode = 2
 text = "🌼"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@163" unique_id=1079543289]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@163" unique_id=447806515]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -4581,24 +4581,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@163" unique_id=742730384]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@163" unique_id=440862555]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x21"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@163" unique_id=2066527074]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@163" unique_id=488829046]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -4607,7 +4607,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@164" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=103456484]
+[node name="@Panel@164" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=559874993]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -4630,7 +4630,7 @@ metadata/__item_data = {
 "name": "土灵参"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@164" unique_id=1753775731]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@164" unique_id=1057853903]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -4639,7 +4639,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@164" unique_id=163179045]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@164" unique_id=2130638635]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -4650,13 +4650,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@164/IconBox" unique_id=1496955763]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@164/IconBox" unique_id=1942611261]
 layout_mode = 2
 text = "🥕"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@164" unique_id=2091341797]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@164" unique_id=1939849431]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -4667,24 +4667,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@164" unique_id=679262775]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@164" unique_id=758526762]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x16"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@164" unique_id=7928005]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@164" unique_id=1770436730]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -4693,7 +4693,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@165" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=2072333087]
+[node name="@Panel@165" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1092049935]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -4716,7 +4716,7 @@ metadata/__item_data = {
 "name": "灵酒"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@165" unique_id=1609874625]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@165" unique_id=791954502]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -4725,7 +4725,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@165" unique_id=1695291434]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@165" unique_id=908508041]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -4736,13 +4736,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@165/IconBox" unique_id=368621151]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@165/IconBox" unique_id=1633619861]
 layout_mode = 2
 text = "🍶"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@165" unique_id=2140709987]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@165" unique_id=1227598648]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -4753,24 +4753,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@165" unique_id=118506640]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@165" unique_id=1758311479]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x6"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@165" unique_id=1601390285]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@165" unique_id=1028088288]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -4779,7 +4779,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@166" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=619341988]
+[node name="@Panel@166" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1544660208]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -4802,7 +4802,7 @@ metadata/__item_data = {
 "name": "清心草"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@166" unique_id=1982332971]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@166" unique_id=124423365]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -4811,7 +4811,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@166" unique_id=718297309]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@166" unique_id=689842710]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -4822,13 +4822,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@166/IconBox" unique_id=1959198749]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@166/IconBox" unique_id=1693848706]
 layout_mode = 2
 text = "🌿"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@166" unique_id=1486678991]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@166" unique_id=1073356653]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -4839,24 +4839,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@166" unique_id=912243821]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@166" unique_id=966314828]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x33"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@166" unique_id=1500418148]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@166" unique_id=8582633]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -4865,7 +4865,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@167" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=183616169]
+[node name="@Panel@167" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=2004490532]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -4891,7 +4891,7 @@ metadata/__item_data = {
 "quality": "稀有"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@167" unique_id=1867710501]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@167" unique_id=777590114]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -4900,7 +4900,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@167" unique_id=586801800]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@167" unique_id=897666036]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -4911,13 +4911,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@167/IconBox" unique_id=1984951487]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@167/IconBox" unique_id=1518004079]
 layout_mode = 2
 text = "🍄"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@167" unique_id=192039687]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@167" unique_id=476581328]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -4928,24 +4928,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@167" unique_id=976044326]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@167" unique_id=466471633]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x4"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@167" unique_id=1055754915]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@167" unique_id=732704679]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -4954,7 +4954,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@168" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=476529028]
+[node name="@Panel@168" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=478466124]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -4977,7 +4977,7 @@ metadata/__item_data = {
 "name": "灵酒"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@168" unique_id=449719680]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@168" unique_id=1308146202]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -4986,7 +4986,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@168" unique_id=561001911]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@168" unique_id=485656521]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -4997,13 +4997,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@168/IconBox" unique_id=34159944]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@168/IconBox" unique_id=623274221]
 layout_mode = 2
 text = "🍶"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@168" unique_id=2033066625]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@168" unique_id=2057020255]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -5014,24 +5014,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@168" unique_id=532608729]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@168" unique_id=2069845157]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x11"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@168" unique_id=960260425]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@168" unique_id=1798746028]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -5040,7 +5040,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@169" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1782693445]
+[node name="@Panel@169" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=717484786]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -5063,7 +5063,7 @@ metadata/__item_data = {
 "name": "符篆"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@169" unique_id=1120138497]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@169" unique_id=1162275609]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -5072,7 +5072,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@169" unique_id=997584637]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@169" unique_id=1372523629]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -5083,13 +5083,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@169/IconBox" unique_id=2101389675]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@169/IconBox" unique_id=2076010465]
 layout_mode = 2
 text = "📜"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@169" unique_id=47556432]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@169" unique_id=2109465231]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -5100,24 +5100,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@169" unique_id=1539966124]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@169" unique_id=928309282]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x3"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@169" unique_id=1695416931]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@169" unique_id=1460277890]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -5126,7 +5126,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_gaoam")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@170" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=660624953]
+[node name="@Panel@170" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1793549476]
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -5152,7 +5152,7 @@ metadata/__item_data = {
 "name": "封印格"
 }
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@170" unique_id=620013503]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@170" unique_id=505582388]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -5161,7 +5161,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0y8o3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@170" unique_id=1430597443]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@170" unique_id=566903887]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -5172,13 +5172,13 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@170/IconBox" unique_id=566119489]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@170/IconBox" unique_id=1251863776]
 layout_mode = 2
 text = "🔒"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@170" unique_id=489146373]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@170" unique_id=2028202187]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -5189,24 +5189,24 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@170" unique_id=1681126299]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@170" unique_id=891899229]
 visible = false
 layout_mode = 0
-anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 2.0
+offset_top = -18.0
 offset_right = -4.0
 offset_bottom = -2.0
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "x5"
+horizontal_alignment = 2
 metadata/__tpl_text = "count"
 metadata/__tpl_keys = "text"
-metadata/__anchor = "bottom_right"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@170" unique_id=1893123821]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@170" unique_id=213178881]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
