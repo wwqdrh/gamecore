@@ -55,29 +55,25 @@ corner_radius_top_right = 22
 corner_radius_bottom_right = 22
 corner_radius_bottom_left = 22
 
-[node name="UiRoot" type="Control" unique_id=1909555783]
-layout_mode = 3
-anchors_preset = 0
-metadata/__script_vars = {}
-
-[node name="TopBar" type="HBoxContainer" parent="." unique_id=1875424585]
-layout_mode = 0
+[node name="TopBar" type="HBoxContainer" unique_id=1283062605]
 anchor_right = 1.0
 anchor_bottom = 1.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Control@126" type="Control" parent="TopBar" unique_id=1400129191]
+[node name="@Control@143" type="Control" parent="." unique_id=2007361666]
 layout_mode = 2
 size_flags_horizontal = 3
+metadata/__script_vars = {}
 
-[node name="@Panel@138" type="Panel" parent="TopBar" unique_id=168754105]
+[node name="@Panel@155" type="Panel" parent="." unique_id=1161980213]
 custom_minimum_size = Vector2(380, 52)
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_styles/panel = SubResource("StyleBoxFlat_rh84m")
+metadata/__script_vars = {}
 
-[node name="@MarginContainer@137" type="MarginContainer" parent="TopBar/@Panel@138" unique_id=474528395]
+[node name="@MarginContainer@154" type="MarginContainer" parent="@Panel@155" unique_id=588998387]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -87,74 +83,75 @@ offset_right = -10.0
 offset_bottom = -8.0
 metadata/__anchor = "full"
 
-[node name="@HBoxContainer@136" type="HBoxContainer" parent="TopBar/@Panel@138/@MarginContainer@137" unique_id=1288782009]
+[node name="@HBoxContainer@153" type="HBoxContainer" parent="@Panel@155/@MarginContainer@154" unique_id=782607201]
 layout_mode = 2
 
-[node name="@Label@127" type="Label" parent="TopBar/@Panel@138/@MarginContainer@137/@HBoxContainer@136" unique_id=102617831]
+[node name="@Label@144" type="Label" parent="@Panel@155/@MarginContainer@154/@HBoxContainer@153" unique_id=1624773375]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "💎"
 vertical_alignment = 1
 
-[node name="@Control@128" type="Control" parent="TopBar/@Panel@138/@MarginContainer@137/@HBoxContainer@136" unique_id=516830902]
+[node name="@Control@145" type="Control" parent="@Panel@155/@MarginContainer@154/@HBoxContainer@153" unique_id=257312923]
 custom_minimum_size = Vector2(6, 0)
 layout_mode = 2
 
-[node name="@Label@129" type="Label" parent="TopBar/@Panel@138/@MarginContainer@137/@HBoxContainer@136" unique_id=299167989]
+[node name="@Label@146" type="Label" parent="@Panel@155/@MarginContainer@154/@HBoxContainer@153" unique_id=1407667193]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 theme_override_colors/font_color = Color(0.8039216, 0.7490196, 0.6039216, 1)
 text = "灵石"
 vertical_alignment = 1
 
-[node name="@Control@130" type="Control" parent="TopBar/@Panel@138/@MarginContainer@137/@HBoxContainer@136" unique_id=1879095339]
+[node name="@Control@147" type="Control" parent="@Panel@155/@MarginContainer@154/@HBoxContainer@153" unique_id=30055804]
 custom_minimum_size = Vector2(8, 0)
 layout_mode = 2
 
-[node name="LingShiNum" type="Label" parent="TopBar/@Panel@138/@MarginContainer@137/@HBoxContainer@136" unique_id=1391302119]
+[node name="LingShiNum" type="Label" parent="@Panel@155/@MarginContainer@154/@HBoxContainer@153" unique_id=1952425881]
 layout_mode = 2
 theme_override_font_sizes/font_size = 17
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 text = "1,240"
 vertical_alignment = 1
 
-[node name="@Control@131" type="Control" parent="TopBar/@Panel@138/@MarginContainer@137/@HBoxContainer@136" unique_id=1901429331]
+[node name="@Control@148" type="Control" parent="@Panel@155/@MarginContainer@154/@HBoxContainer@153" unique_id=1292886126]
 custom_minimum_size = Vector2(28, 0)
 layout_mode = 2
 
-[node name="@Label@132" type="Label" parent="TopBar/@Panel@138/@MarginContainer@137/@HBoxContainer@136" unique_id=1669852895]
+[node name="@Label@149" type="Label" parent="@Panel@155/@MarginContainer@154/@HBoxContainer@153" unique_id=1321925407]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "🪙"
 vertical_alignment = 1
 
-[node name="@Control@133" type="Control" parent="TopBar/@Panel@138/@MarginContainer@137/@HBoxContainer@136" unique_id=442598274]
+[node name="@Control@150" type="Control" parent="@Panel@155/@MarginContainer@154/@HBoxContainer@153" unique_id=169019189]
 custom_minimum_size = Vector2(6, 0)
 layout_mode = 2
 
-[node name="@Label@134" type="Label" parent="TopBar/@Panel@138/@MarginContainer@137/@HBoxContainer@136" unique_id=1957487857]
+[node name="@Label@151" type="Label" parent="@Panel@155/@MarginContainer@154/@HBoxContainer@153" unique_id=1150028764]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 theme_override_colors/font_color = Color(0.8039216, 0.7490196, 0.6039216, 1)
 text = "宗门贡献"
 vertical_alignment = 1
 
-[node name="@Control@135" type="Control" parent="TopBar/@Panel@138/@MarginContainer@137/@HBoxContainer@136" unique_id=1813903580]
+[node name="@Control@152" type="Control" parent="@Panel@155/@MarginContainer@154/@HBoxContainer@153" unique_id=2045108378]
 custom_minimum_size = Vector2(8, 0)
 layout_mode = 2
 
-[node name="GongXianNum" type="Label" parent="TopBar/@Panel@138/@MarginContainer@137/@HBoxContainer@136" unique_id=1814288423]
+[node name="GongXianNum" type="Label" parent="@Panel@155/@MarginContainer@154/@HBoxContainer@153" unique_id=1026111969]
 layout_mode = 2
 theme_override_font_sizes/font_size = 17
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 text = "1,240"
 vertical_alignment = 1
 
-[node name="@Control@139" type="Control" parent="TopBar" unique_id=324156572]
+[node name="@Control@156" type="Control" parent="." unique_id=1665764421]
 layout_mode = 2
 size_flags_horizontal = 3
+metadata/__script_vars = {}
 
-[node name="CloseBtn" type="Button" parent="TopBar" unique_id=295736925]
+[node name="CloseBtn" type="Button" parent="." unique_id=1309603303]
 custom_minimum_size = Vector2(44, 44)
 layout_mode = 2
 size_flags_vertical = 4
@@ -165,3 +162,4 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_a46mk")
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 text = "✕"
 metadata/__signal_pressed = "_on_close_pressed"
+metadata/__script_vars = {}

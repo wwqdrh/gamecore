@@ -55,66 +55,7 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[node name="UiRoot" type="Control" unique_id=640766255]
-layout_mode = 3
-anchors_preset = 0
-metadata/__script_vars = {
-"category": "",
-"tasks": [{
-"btn_state": "go",
-"btn_text": "前往",
-"category": "daily",
-"desc": "task_list.gml 内置默认数据",
-"icon": "📦",
-"progress": "1/2",
-"reward1": "💎 10",
-"reward2": "🪙 5",
-"title": "日常·示例任务"
-}, {
-"btn_state": "go",
-"btn_text": "前往",
-"category": "daily",
-"desc": "后山采集 5 株灵草",
-"icon": "🌿",
-"progress": "3/5",
-"reward1": "💎 15",
-"reward2": "🪙 8",
-"title": "日常·采集灵草"
-}, {
-"btn_state": "go",
-"btn_text": "前往",
-"category": "main",
-"desc": "击败 10 只怪物",
-"icon": "⚔️",
-"progress": "0/10",
-"reward1": "💎 20",
-"reward2": "🪙 8",
-"title": "主线·击杀小怪"
-}, {
-"btn_state": "go",
-"btn_text": "捐献",
-"category": "guild",
-"desc": "捐献木材 100 单位",
-"icon": "🏯",
-"progress": "60/100",
-"reward1": "💎 30",
-"reward2": "🪙 12",
-"title": "宗门·修建大殿"
-}, {
-"btn_state": "go",
-"btn_text": "追击",
-"category": "bounty",
-"desc": "黑风寨方向追击",
-"icon": "📜",
-"progress": "0/1",
-"reward1": "💎 50",
-"reward2": "🪙 20",
-"title": "悬赏·缉拿逃犯"
-}]
-}
-
-[node name="TaskScroll" type="ScrollContainer" parent="." unique_id=1050868790]
-layout_mode = 0
+[node name="TaskScroll" type="ScrollContainer" unique_id=884764504]
 size_flags_vertical = 3
 script = ExtResource("1_drpk1")
 metadata/__script_vars = {
@@ -173,14 +114,68 @@ metadata/__script_vars = {
 }
 metadata/__data_contract = PackedStringArray()
 
-[node name="TaskList" type="GdUIVList" parent="TaskScroll" unique_id=2112019096]
+[node name="TaskList" type="GdUIVList" parent="." unique_id=776256]
 layout_mode = 2
 size_flags_horizontal = 3
 metadata/__data_var = "bean:task_list:tasks"
 metadata/__filter_key = "category"
+metadata/__script_vars = {
+"category": "",
+"tasks": [{
+"btn_state": "go",
+"btn_text": "前往",
+"category": "daily",
+"desc": "task_list.gml 内置默认数据",
+"icon": "📦",
+"progress": "1/2",
+"reward1": "💎 10",
+"reward2": "🪙 5",
+"title": "日常·示例任务"
+}, {
+"btn_state": "go",
+"btn_text": "前往",
+"category": "daily",
+"desc": "后山采集 5 株灵草",
+"icon": "🌿",
+"progress": "3/5",
+"reward1": "💎 15",
+"reward2": "🪙 8",
+"title": "日常·采集灵草"
+}, {
+"btn_state": "go",
+"btn_text": "前往",
+"category": "main",
+"desc": "击败 10 只怪物",
+"icon": "⚔️",
+"progress": "0/10",
+"reward1": "💎 20",
+"reward2": "🪙 8",
+"title": "主线·击杀小怪"
+}, {
+"btn_state": "go",
+"btn_text": "捐献",
+"category": "guild",
+"desc": "捐献木材 100 单位",
+"icon": "🏯",
+"progress": "60/100",
+"reward1": "💎 30",
+"reward2": "🪙 12",
+"title": "宗门·修建大殿"
+}, {
+"btn_state": "go",
+"btn_text": "追击",
+"category": "bounty",
+"desc": "黑风寨方向追击",
+"icon": "📜",
+"progress": "0/1",
+"reward1": "💎 50",
+"reward2": "🪙 20",
+"title": "悬赏·缉拿逃犯"
+}]
+}
 metadata/__filter_value = ""
 
-[node name="ItemRoot" type="Panel" parent="TaskScroll/TaskList" unique_id=406014371]
+[node name="ItemRoot" type="Panel" parent="TaskList" unique_id=1857740376]
 visible = false
 custom_minimum_size = Vector2(0, 84)
 layout_mode = 2
@@ -189,7 +184,7 @@ script = ExtResource("2_asuml")
 metadata/__script_vars = {}
 metadata/__data_contract = PackedStringArray("icon", "title", "desc", "progress", "reward1", "reward2", "btn_text", "btn_state")
 
-[node name="ItemMargin" type="MarginContainer" parent="TaskScroll/TaskList/ItemRoot" unique_id=632551989]
+[node name="ItemMargin" type="MarginContainer" parent="TaskList/ItemRoot" unique_id=1457134920]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -198,17 +193,18 @@ offset_top = 8.0
 offset_right = -12.0
 offset_bottom = -8.0
 metadata/__anchor = "full"
+metadata/__script_vars = {}
 
-[node name="ItemRow" type="HBoxContainer" parent="TaskScroll/TaskList/ItemRoot/ItemMargin" unique_id=533049819]
+[node name="ItemRow" type="HBoxContainer" parent="TaskList/ItemRoot/ItemMargin" unique_id=1333275104]
 layout_mode = 2
 
-[node name="@Panel@42" type="Panel" parent="TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1506965911]
+[node name="@Panel@137" type="Panel" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1724340844]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_styles/panel = SubResource("StyleBoxFlat_ut37u")
 
-[node name="ItemIcon" type="Label" parent="TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow/@Panel@42" unique_id=1612207477]
+[node name="ItemIcon" type="Label" parent="TaskList/ItemRoot/ItemMargin/ItemRow/@Panel@137" unique_id=995876699]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -219,30 +215,30 @@ metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 metadata/__anchor = "full"
 
-[node name="@Control@43" type="Control" parent="TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=2127485401]
+[node name="@Control@138" type="Control" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=384158530]
 custom_minimum_size = Vector2(10, 0)
 layout_mode = 2
 
-[node name="@VBoxContainer@44" type="VBoxContainer" parent="TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1675485670]
+[node name="@VBoxContainer@139" type="VBoxContainer" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=912234258]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 
-[node name="ItemTitle" type="Label" parent="TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow/@VBoxContainer@44" unique_id=169199617]
+[node name="ItemTitle" type="Label" parent="TaskList/ItemRoot/ItemMargin/ItemRow/@VBoxContainer@139" unique_id=144092324]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
 metadata/__tpl_text = "title"
 metadata/__tpl_keys = "text"
 
-[node name="ItemDesc" type="Label" parent="TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow/@VBoxContainer@44" unique_id=813241571]
+[node name="ItemDesc" type="Label" parent="TaskList/ItemRoot/ItemMargin/ItemRow/@VBoxContainer@139" unique_id=1497356287]
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
 theme_override_colors/font_color = Color(0.5411765, 0.47843137, 0.34509805, 1)
 metadata/__tpl_text = "desc"
 metadata/__tpl_keys = "text"
 
-[node name="ItemProgress" type="Label" parent="TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1887016090]
+[node name="ItemProgress" type="Label" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=730818877]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.36078432, 0.3019608, 0.18039216, 1)
@@ -250,11 +246,11 @@ vertical_alignment = 1
 metadata/__tpl_text = "progress"
 metadata/__tpl_keys = "text"
 
-[node name="@Control@45" type="Control" parent="TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1269579134]
+[node name="@Control@140" type="Control" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=705746728]
 custom_minimum_size = Vector2(14, 0)
 layout_mode = 2
 
-[node name="Reward1" type="Label" parent="TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1184034094]
+[node name="Reward1" type="Label" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=335375610]
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
 theme_override_colors/font_color = Color(0.2901961, 0.3529412, 0.22745098, 1)
@@ -262,11 +258,11 @@ vertical_alignment = 1
 metadata/__tpl_text = "reward1"
 metadata/__tpl_keys = "text"
 
-[node name="@Control@46" type="Control" parent="TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1753874045]
+[node name="@Control@141" type="Control" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1936535461]
 custom_minimum_size = Vector2(12, 0)
 layout_mode = 2
 
-[node name="Reward2" type="Label" parent="TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1198939838]
+[node name="Reward2" type="Label" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1749023627]
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
 theme_override_colors/font_color = Color(0.2901961, 0.3529412, 0.22745098, 1)
@@ -274,11 +270,11 @@ vertical_alignment = 1
 metadata/__tpl_text = "reward2"
 metadata/__tpl_keys = "text"
 
-[node name="@Control@47" type="Control" parent="TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1389638728]
+[node name="@Control@142" type="Control" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=113400850]
 custom_minimum_size = Vector2(14, 0)
 layout_mode = 2
 
-[node name="ItemBtn" type="Button" parent="TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=87496128]
+[node name="ItemBtn" type="Button" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1235378448]
 custom_minimum_size = Vector2(84, 40)
 layout_mode = 2
 size_flags_vertical = 4

@@ -26,36 +26,33 @@ corner_radius_top_right = 9
 corner_radius_bottom_right = 9
 corner_radius_bottom_left = 9
 
-[node name="UiRoot" type="Control" unique_id=447362340]
-layout_mode = 3
-anchors_preset = 0
-metadata/__script_vars = {}
-
-[node name="ActivityRoot" type="HBoxContainer" parent="." unique_id=1821787556]
-layout_mode = 0
+[node name="ActivityRoot" type="HBoxContainer" unique_id=257473287]
 anchor_right = 1.0
 anchor_bottom = 1.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Label@140" type="Label" parent="ActivityRoot" unique_id=1875142129]
+[node name="@Label@157" type="Label" parent="." unique_id=766544018]
 layout_mode = 2
 theme_override_font_sizes/font_size = 17
 theme_override_colors/font_color = Color(0.9098039, 0.8627451, 0.72156864, 1)
 text = "今日活跃度"
 vertical_alignment = 1
+metadata/__script_vars = {}
 
-[node name="@Control@141" type="Control" parent="ActivityRoot" unique_id=1835440716]
+[node name="@Control@158" type="Control" parent="." unique_id=362248898]
 custom_minimum_size = Vector2(10, 0)
 layout_mode = 2
+metadata/__script_vars = {}
 
-[node name="@Panel@142" type="Panel" parent="ActivityRoot" unique_id=158693881]
+[node name="@Panel@159" type="Panel" parent="." unique_id=1140944220]
 custom_minimum_size = Vector2(52, 36)
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_styles/panel = SubResource("StyleBoxFlat_go40a")
+metadata/__script_vars = {}
 
-[node name="ActValue" type="Label" parent="ActivityRoot/@Panel@142" unique_id=1688855319]
+[node name="ActValue" type="Label" parent="@Panel@159" unique_id=1043867746]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -65,89 +62,91 @@ horizontal_alignment = 1
 vertical_alignment = 1
 metadata/__anchor = "full"
 
-[node name="@Control@143" type="Control" parent="ActivityRoot" unique_id=2046941833]
+[node name="@Control@160" type="Control" parent="." unique_id=675254510]
 custom_minimum_size = Vector2(14, 0)
 layout_mode = 2
+metadata/__script_vars = {}
 
-[node name="@VBoxContainer@156" type="VBoxContainer" parent="ActivityRoot" unique_id=1815462260]
+[node name="@VBoxContainer@173" type="VBoxContainer" parent="." unique_id=138579195]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
+metadata/__script_vars = {}
 
-[node name="ActivityBar" type="ProgressBar" parent="ActivityRoot/@VBoxContainer@156" unique_id=1501176127]
+[node name="ActivityBar" type="ProgressBar" parent="@VBoxContainer@173" unique_id=1628844642]
 custom_minimum_size = Vector2(0, 18)
 layout_mode = 2
 theme_override_styles/background = SubResource("StyleBoxFlat_e0lrm")
 theme_override_styles/fill = SubResource("StyleBoxFlat_1lqa2")
 value = 65.0
 
-[node name="@Control@144" type="Control" parent="ActivityRoot/@VBoxContainer@156" unique_id=1832387294]
+[node name="@Control@161" type="Control" parent="@VBoxContainer@173" unique_id=852995990]
 custom_minimum_size = Vector2(0, 6)
 layout_mode = 2
 
-[node name="@HBoxContainer@155" type="HBoxContainer" parent="ActivityRoot/@VBoxContainer@156" unique_id=2139661234]
+[node name="@HBoxContainer@172" type="HBoxContainer" parent="@VBoxContainer@173" unique_id=1711812890]
 layout_mode = 2
 
-[node name="@Control@145" type="Control" parent="ActivityRoot/@VBoxContainer@156/@HBoxContainer@155" unique_id=1029487543]
+[node name="@Control@162" type="Control" parent="@VBoxContainer@173/@HBoxContainer@172" unique_id=1616712413]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Chest1" type="VBoxContainer" parent="ActivityRoot/@VBoxContainer@156/@HBoxContainer@155" unique_id=317016783]
+[node name="Chest1" type="VBoxContainer" parent="@VBoxContainer@173/@HBoxContainer@172" unique_id=2090770659]
 layout_mode = 2
 
-[node name="@Label@146" type="Label" parent="ActivityRoot/@VBoxContainer@156/@HBoxContainer@155/Chest1" unique_id=166547489]
+[node name="@Label@163" type="Label" parent="@VBoxContainer@173/@HBoxContainer@172/Chest1" unique_id=1830569190]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "🎁"
 horizontal_alignment = 1
 
-[node name="@Label@147" type="Label" parent="ActivityRoot/@VBoxContainer@156/@HBoxContainer@155/Chest1" unique_id=1161556094]
+[node name="@Label@164" type="Label" parent="@VBoxContainer@173/@HBoxContainer@172/Chest1" unique_id=1273655489]
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
 theme_override_colors/font_color = Color(0.8039216, 0.7490196, 0.6039216, 1)
 text = "30"
 horizontal_alignment = 1
 
-[node name="@Control@148" type="Control" parent="ActivityRoot/@VBoxContainer@156/@HBoxContainer@155" unique_id=882107573]
+[node name="@Control@165" type="Control" parent="@VBoxContainer@173/@HBoxContainer@172" unique_id=607543171]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Chest2" type="VBoxContainer" parent="ActivityRoot/@VBoxContainer@156/@HBoxContainer@155" unique_id=439616285]
+[node name="Chest2" type="VBoxContainer" parent="@VBoxContainer@173/@HBoxContainer@172" unique_id=526543261]
 layout_mode = 2
 
-[node name="@Label@149" type="Label" parent="ActivityRoot/@VBoxContainer@156/@HBoxContainer@155/Chest2" unique_id=373311811]
+[node name="@Label@166" type="Label" parent="@VBoxContainer@173/@HBoxContainer@172/Chest2" unique_id=811441521]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "🔒"
 horizontal_alignment = 1
 
-[node name="@Label@150" type="Label" parent="ActivityRoot/@VBoxContainer@156/@HBoxContainer@155/Chest2" unique_id=1217175725]
+[node name="@Label@167" type="Label" parent="@VBoxContainer@173/@HBoxContainer@172/Chest2" unique_id=930083067]
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
 theme_override_colors/font_color = Color(0.8039216, 0.7490196, 0.6039216, 1)
 text = "60"
 horizontal_alignment = 1
 
-[node name="@Control@151" type="Control" parent="ActivityRoot/@VBoxContainer@156/@HBoxContainer@155" unique_id=79936753]
+[node name="@Control@168" type="Control" parent="@VBoxContainer@173/@HBoxContainer@172" unique_id=1476241695]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Chest3" type="VBoxContainer" parent="ActivityRoot/@VBoxContainer@156/@HBoxContainer@155" unique_id=1116086434]
+[node name="Chest3" type="VBoxContainer" parent="@VBoxContainer@173/@HBoxContainer@172" unique_id=1572745981]
 layout_mode = 2
 
-[node name="@Label@152" type="Label" parent="ActivityRoot/@VBoxContainer@156/@HBoxContainer@155/Chest3" unique_id=578065488]
+[node name="@Label@169" type="Label" parent="@VBoxContainer@173/@HBoxContainer@172/Chest3" unique_id=370560757]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "🔒"
 horizontal_alignment = 1
 
-[node name="@Label@153" type="Label" parent="ActivityRoot/@VBoxContainer@156/@HBoxContainer@155/Chest3" unique_id=1500289579]
+[node name="@Label@170" type="Label" parent="@VBoxContainer@173/@HBoxContainer@172/Chest3" unique_id=1835491724]
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
 theme_override_colors/font_color = Color(0.8039216, 0.7490196, 0.6039216, 1)
 text = "90"
 horizontal_alignment = 1
 
-[node name="@Control@154" type="Control" parent="ActivityRoot/@VBoxContainer@156/@HBoxContainer@155" unique_id=810539585]
+[node name="@Control@171" type="Control" parent="@VBoxContainer@173/@HBoxContainer@172" unique_id=2060461509]
 layout_mode = 2
 size_flags_horizontal = 3

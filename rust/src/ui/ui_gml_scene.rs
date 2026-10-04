@@ -131,6 +131,10 @@ impl GdGmlScene {
     #[func]
     fn find_node(&self, name: GString) -> Option<Gd<Control>> {
         if let Some(ref root) = self.content_root {
+            // 无包装层：gml 根元素自身也可能是查找目标（如根即列表/按钮）
+            if root.get_name().to_string() == name.to_string() {
+                return root.clone().try_cast::<Control>().ok();
+            }
             let found = root.find_child_ex(&name).recursive(true).owned(false).done();
             if let Some(node) = found {
                 return node.try_cast::<Control>().ok();
@@ -462,11 +466,20 @@ impl GdGmlScene {
                             &GString::from(content).to_variant(),
                         );
 
-                        // 设置内容根节点占满 GmlScene
-                        control.set_anchors_and_offsets_preset(
-                            godot::classes::control::LayoutPreset::FULL_RECT,
-                        );
-                        control.set_name("GmlContent");
+                        // 无包装层：gml 根元素即内容根。布局尊重 gml 根元素自身的
+                        // anchor/margin 声明（__anchor/__pct_margin meta 存在时不动），
+                        // 未声明时默认占满 GmlScene（兼容旧语义）；节点名保留 gml 声明，
+                        // 仅未命名时回退 GmlContent（避免 @Class@id 自动名）
+                        if !control.has_meta(&StringName::from("__anchor"))
+                            && !control.has_meta(&StringName::from("__pct_margin"))
+                        {
+                            control.set_anchors_and_offsets_preset(
+                                godot::classes::control::LayoutPreset::FULL_RECT,
+                            );
+                        }
+                        if control.get_name().to_string().contains('@') {
+                            control.set_name("GmlContent");
+                        }
 
                         {
                             let mut base = self.base_mut();

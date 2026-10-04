@@ -1,0 +1,97 @@
+[gd_scene format=3]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_eh26b"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.41960785, 0.3529412, 0.24313726, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p215l"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.31960785, 0.2529412, 0.14313725, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qp5iw"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.5396078, 0.4729412, 0.36313725, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hct8i"]
+bg_color = Color(0.36862746, 0.5529412, 0.47843137, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[node name="TopBar" type="VBoxContainer" unique_id=74303252]
+metadata/__script_vars = {}
+
+[node name="TitleRow" type="HBoxContainer" parent="." unique_id=1998804238]
+layout_mode = 2
+metadata/__script_vars = {}
+
+[node name="@Control@57" type="Control" parent="TitleRow" unique_id=1264332000]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TitleLabel" type="Label" parent="TitleRow" unique_id=708536860]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+text = "道友 · 云无涯"
+vertical_alignment = 1
+
+[node name="@Control@58" type="Control" parent="TitleRow" unique_id=1146100855]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CloseBtn" type="Button" parent="TitleRow" unique_id=1978641803]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_eh26b")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_p215l")
+theme_override_styles/hover = SubResource("StyleBoxFlat_qp5iw")
+theme_override_colors/font_color = Color(0.9490196, 0.9254902, 0.8509804, 1)
+text = "✕"
+metadata/__signal_pressed = "_on_close_pressed"
+
+[node name="@Control@59" type="Control" parent="." unique_id=99469017]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+metadata/__script_vars = {}
+
+[node name="BadgeRow" type="CenterContainer" parent="." unique_id=2032275867]
+layout_mode = 2
+metadata/__script_vars = {}
+
+[node name="@Panel@60" type="Panel" parent="BadgeRow" unique_id=551807312]
+custom_minimum_size = Vector2(120, 30)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_hct8i")
+
+[node name="RealmBadgeText" type="Label" parent="BadgeRow/@Panel@60" unique_id=135041478]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 15
+text = "炼气三层"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"

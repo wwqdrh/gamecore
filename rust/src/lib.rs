@@ -40,6 +40,7 @@ unsafe impl ExtensionLibrary for GameKitCore {
     fn on_stage_init(stage: InitStage) {
         if stage == InitStage::Scene {
             state::gdcore::register_gdcore_singleton();
+            state::state_store::register_gdstate_singleton();
             console::register_gdconsole_singleton();
             event::event_bus::register_gdeventbus_singleton();
             pool::spawn_pool::register_gdspawnpool_singleton();
@@ -51,12 +52,19 @@ unsafe impl ExtensionLibrary for GameKitCore {
         }
     }
 
+    // gml 自举钩子：Scene stage init 时 main loop 尚未创建，延迟到首帧连接
+    // node_added 监听（幂等，连接成功后立即返回）
+    fn on_main_loop_frame() {
+        state::gdcore::connect_gml_auto_connect_hook();
+    }
+
     fn on_stage_deinit(stage: InitStage) {
         if stage == InitStage::Scene {
             debug::debug_draw::unregister_gddebugdraw_singleton();
             pool::spawn_pool::unregister_gdspawnpool_singleton();
             event::event_bus::unregister_gdeventbus_singleton();
             console::unregister_gdconsole_singleton();
+            state::state_store::unregister_gdstate_singleton();
             state::gdcore::unregister_gdcore_singleton();
         }
     }

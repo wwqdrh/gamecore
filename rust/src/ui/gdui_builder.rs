@@ -9,7 +9,7 @@
 
 use godot::prelude::*;
 use godot::builtin::{GString, StringName, PackedStringArray};
-use godot::classes::{IRefCounted, Control, FileAccess, Node, PackedScene};
+use godot::classes::{IRefCounted, Control, Engine, FileAccess, Node, PackedScene};
 use godot::global::Error;
 
 use super::parser::UiParser;
@@ -310,4 +310,64 @@ pub(crate) fn get_signal_meta_list(node: &Gd<Control>) -> Vec<(String, String)> 
     }
 
     result
+}
+
+/// gml 树挂树自动连接信号（无包装层自举）：
+/// `<ui script>` 声明的树根挂有 __gml_root 标记，节点挂树（SceneTree.node_added）
+/// 时框架自动对整树执行 connect_signals_recursive（target = 树根自身）——
+/// 编辑器生成的 .gml.tscn 直开运行即完整可用，无需 GdGmlScene 壳场景或手动
+/// connect_signals。回调目标仍按"就近解析"优先各 <ui script> 脚本节点。
+/// 由 GDCORE 单例驱动；编辑器模式下跳过（连接属运行时行为）。
+pub fn auto_connect_gml_tree(node: Gd<Node>) {
+    if Engine::singleton().is_editor_hint() {
+        return;
+    }
+    // 向上找最外层 gml 树根（子文件 <ui script> 根也带标记，但整树只需连接一次；
+    // 先触发的连接会打 __gml_signals_connected，后续节点触发时直接跳过）
+    let mut root: Option<Gd<Node>> = None;
+    let mut cur = Some(node);
+    while let Some(n) = cur {
+        let parent = n.get_parent();
+        if n.has_meta(&StringName::from("__gml_root")) {
+            root = Some(n.clone());
+        }
+        cur = parent;
+    }
+    let Some(mut root) = root else { return };
+    connect_gml_tree_root(&mut root);
+}
+
+/// 对一棵 gml 树根执行信号自动连接（幂等：__gml_signals_connected 防重）
+fn connect_gml_tree_root(root: &mut Gd<Node>) {
+    let connected_key = StringName::from("__gml_signals_connected");
+    if root.has_meta(&connected_key) {
+        return;
+    }
+    let Ok(mut ctrl) = root.clone().try_cast::<Control>() else {
+        return;
+    };
+    root.set_meta(&connected_key, &true.to_variant());
+    let target = root.clone().upcast::<Object>();
+    connect_signals_recursive(&mut ctrl, &target);
+}
+
+/// 补扫已在树上的节点树（自举钩子在首帧才连上 node_added，而 F6/主场景
+/// 在首帧之前就已挂树——从树根向下扫描，遇到 __gml_root 即整树连接并跳过
+/// 其子树）。由 GDCORE 钩子连接成功后立即调用一次。
+pub fn scan_and_connect_gml_trees(node: &Gd<Node>) {
+    if Engine::singleton().is_editor_hint() {
+        return;
+    }
+    if node.has_meta(&StringName::from("__gml_root")) {
+        // 最先遇到的就是最外层 gml 根（从树顶向下），整树连接后子树无需再扫
+        let mut root = node.clone();
+        connect_gml_tree_root(&mut root);
+        return;
+    }
+    let children = node.get_children();
+    for i in 0..children.len() {
+        if let Some(child) = children.get(i) {
+            scan_and_connect_gml_trees(&child);
+        }
+    }
 }

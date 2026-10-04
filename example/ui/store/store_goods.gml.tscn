@@ -1,0 +1,4738 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://example/ui/store/store_item.gd" id="1_t6iq7"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fkch1"]
+bg_color = Color(0.9647059, 0.9411765, 0.87058824, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ehn7u"]
+bg_color = Color(0.98039216, 0.95686275, 0.8862745, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.72156864, 0.627451, 0.41568628, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ypm4c"]
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_umxfb"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.9098039, 0.7254902, 0.24313726, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.5411765, 0.41568628, 0.11764706, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mq104"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.8098039, 0.6254902, 0.14313725, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.5411765, 0.41568628, 0.11764706, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_at3bq"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(1, 0.8454902, 0.36313725, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lcvmo"]
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.6901961, 0.22745098, 0.18039216, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="GoodsPanel" type="Panel" unique_id=1177133553]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_fkch1")
+metadata/__anchor = "full"
+metadata/__script_vars = {
+"category": "",
+"goods": [{
+"category": "herb",
+"icon": "🍄",
+"price": "800",
+"quality": "珍品",
+"title": "千年灵芝"
+}, {
+"category": "herb",
+"icon": "🏺",
+"price": "800",
+"quality": "上品",
+"title": "聚气丹瓶"
+}, {
+"category": "herb",
+"icon": "⚔️",
+"price": "800",
+"quality": "上品",
+"title": "飞剑"
+}, {
+"category": "herb",
+"countdown": "⏱ 04:32:10",
+"icon": "📜",
+"price": "800",
+"price_old": "¥1200",
+"quality": "限时",
+"title": "天雷符箓"
+}, {
+"category": "herb",
+"icon": "🌸",
+"price": "800",
+"quality": "下品",
+"title": "九转还魂草"
+}, {
+"category": "herb",
+"icon": "🪷",
+"price": "800",
+"quality": "上品",
+"sold_out": true,
+"title": "玄冰雪莲"
+}, {
+"category": "tool",
+"icon": "⚔️",
+"price": "1200",
+"quality": "上品",
+"title": "寒光剑"
+}, {
+"category": "tool",
+"icon": "🏺",
+"price": "2600",
+"quality": "极品",
+"title": "紫金葫芦"
+}, {
+"category": "tool",
+"icon": "🪢",
+"price": "300",
+"quality": "下品",
+"title": "缚灵索"
+}, {
+"category": "tool",
+"icon": "🗡️",
+"price": "4800",
+"quality": "珍品",
+"title": "诛仙剑"
+}, {
+"category": "tool",
+"icon": "🪞",
+"price": "1500",
+"quality": "上品",
+"title": "八卦镜"
+}, {
+"category": "tool",
+"countdown": "⏱ 02:15:30",
+"icon": "🔥",
+"price": "1800",
+"price_old": "¥2600",
+"quality": "限时",
+"title": "风火轮"
+}, {
+"category": "skill",
+"icon": "📖",
+"price": "1500",
+"quality": "上品",
+"title": "吐纳诀"
+}, {
+"category": "skill",
+"icon": "🌀",
+"price": "900",
+"quality": "下品",
+"title": "御风术"
+}, {
+"category": "skill",
+"icon": "🛡️",
+"price": "3200",
+"quality": "珍品",
+"title": "金钟罩"
+}, {
+"category": "skill",
+"icon": "📜",
+"price": "5200",
+"quality": "极品",
+"title": "大衍诀"
+}, {
+"category": "skill",
+"icon": "💨",
+"price": "2000",
+"quality": "上品",
+"title": "五行遁术"
+}, {
+"category": "skill",
+"icon": "🪶",
+"price": "600",
+"quality": "下品",
+"title": "轻身术"
+}, {
+"category": "limited",
+"countdown": "⏱ 04:32:10",
+"icon": "📜",
+"price": "800",
+"price_old": "¥1200",
+"quality": "限时",
+"title": "天雷符箓"
+}, {
+"category": "limited",
+"icon": "🏺",
+"price": "2600",
+"quality": "极品",
+"title": "紫金葫芦"
+}, {
+"category": "limited",
+"countdown": "⏱ 01:12:45",
+"icon": "🗿",
+"price": "1800",
+"price_old": "¥2600",
+"quality": "限时",
+"title": "九阳残卷"
+}, {
+"category": "limited",
+"icon": "🔮",
+"price": "8800",
+"quality": "珍品",
+"title": "混沌珠"
+}, {
+"category": "limited",
+"countdown": "⏱ 00:48:20",
+"icon": "💊",
+"price": "600",
+"price_old": "¥800",
+"quality": "限时",
+"title": "丹药礼包"
+}, {
+"category": "limited",
+"icon": "👝",
+"price": "1200",
+"quality": "上品",
+"sold_out": true,
+"title": "储物戒指"
+}]
+}
+
+[node name="GoodsScroll" type="ScrollContainer" parent="." unique_id=712141210]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+metadata/__anchor = "full"
+metadata/__script_vars = {
+"category": "",
+"goods": [{
+"category": "herb",
+"icon": "🍄",
+"price": "800",
+"quality": "珍品",
+"title": "千年灵芝"
+}, {
+"category": "herb",
+"icon": "🏺",
+"price": "800",
+"quality": "上品",
+"title": "聚气丹瓶"
+}, {
+"category": "herb",
+"icon": "⚔️",
+"price": "800",
+"quality": "上品",
+"title": "飞剑"
+}, {
+"category": "herb",
+"countdown": "⏱ 04:32:10",
+"icon": "📜",
+"price": "800",
+"price_old": "¥1200",
+"quality": "限时",
+"title": "天雷符箓"
+}, {
+"category": "herb",
+"icon": "🌸",
+"price": "800",
+"quality": "下品",
+"title": "九转还魂草"
+}, {
+"category": "herb",
+"icon": "🪷",
+"price": "800",
+"quality": "上品",
+"sold_out": true,
+"title": "玄冰雪莲"
+}, {
+"category": "tool",
+"icon": "⚔️",
+"price": "1200",
+"quality": "上品",
+"title": "寒光剑"
+}, {
+"category": "tool",
+"icon": "🏺",
+"price": "2600",
+"quality": "极品",
+"title": "紫金葫芦"
+}, {
+"category": "tool",
+"icon": "🪢",
+"price": "300",
+"quality": "下品",
+"title": "缚灵索"
+}, {
+"category": "tool",
+"icon": "🗡️",
+"price": "4800",
+"quality": "珍品",
+"title": "诛仙剑"
+}, {
+"category": "tool",
+"icon": "🪞",
+"price": "1500",
+"quality": "上品",
+"title": "八卦镜"
+}, {
+"category": "tool",
+"countdown": "⏱ 02:15:30",
+"icon": "🔥",
+"price": "1800",
+"price_old": "¥2600",
+"quality": "限时",
+"title": "风火轮"
+}, {
+"category": "skill",
+"icon": "📖",
+"price": "1500",
+"quality": "上品",
+"title": "吐纳诀"
+}, {
+"category": "skill",
+"icon": "🌀",
+"price": "900",
+"quality": "下品",
+"title": "御风术"
+}, {
+"category": "skill",
+"icon": "🛡️",
+"price": "3200",
+"quality": "珍品",
+"title": "金钟罩"
+}, {
+"category": "skill",
+"icon": "📜",
+"price": "5200",
+"quality": "极品",
+"title": "大衍诀"
+}, {
+"category": "skill",
+"icon": "💨",
+"price": "2000",
+"quality": "上品",
+"title": "五行遁术"
+}, {
+"category": "skill",
+"icon": "🪶",
+"price": "600",
+"quality": "下品",
+"title": "轻身术"
+}, {
+"category": "limited",
+"countdown": "⏱ 04:32:10",
+"icon": "📜",
+"price": "800",
+"price_old": "¥1200",
+"quality": "限时",
+"title": "天雷符箓"
+}, {
+"category": "limited",
+"icon": "🏺",
+"price": "2600",
+"quality": "极品",
+"title": "紫金葫芦"
+}, {
+"category": "limited",
+"countdown": "⏱ 01:12:45",
+"icon": "🗿",
+"price": "1800",
+"price_old": "¥2600",
+"quality": "限时",
+"title": "九阳残卷"
+}, {
+"category": "limited",
+"icon": "🔮",
+"price": "8800",
+"quality": "珍品",
+"title": "混沌珠"
+}, {
+"category": "limited",
+"countdown": "⏱ 00:48:20",
+"icon": "💊",
+"price": "600",
+"price_old": "¥800",
+"quality": "限时",
+"title": "丹药礼包"
+}, {
+"category": "limited",
+"icon": "👝",
+"price": "1200",
+"quality": "上品",
+"sold_out": true,
+"title": "储物戒指"
+}]
+}
+
+[node name="GoodsGrid" type="GdUIGrid" parent="GoodsScroll" unique_id=2044930216]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
+columns = 3
+metadata/__filter_key = "category"
+metadata/__filter_value = ""
+metadata/__script_data = [{
+"category": "herb",
+"icon": "🍄",
+"price": "800",
+"quality": "珍品",
+"title": "千年灵芝"
+}, {
+"category": "herb",
+"icon": "🏺",
+"price": "800",
+"quality": "上品",
+"title": "聚气丹瓶"
+}, {
+"category": "herb",
+"icon": "⚔️",
+"price": "800",
+"quality": "上品",
+"title": "飞剑"
+}, {
+"category": "herb",
+"countdown": "⏱ 04:32:10",
+"icon": "📜",
+"price": "800",
+"price_old": "¥1200",
+"quality": "限时",
+"title": "天雷符箓"
+}, {
+"category": "herb",
+"icon": "🌸",
+"price": "800",
+"quality": "下品",
+"title": "九转还魂草"
+}, {
+"category": "herb",
+"icon": "🪷",
+"price": "800",
+"quality": "上品",
+"sold_out": true,
+"title": "玄冰雪莲"
+}, {
+"category": "tool",
+"icon": "⚔️",
+"price": "1200",
+"quality": "上品",
+"title": "寒光剑"
+}, {
+"category": "tool",
+"icon": "🏺",
+"price": "2600",
+"quality": "极品",
+"title": "紫金葫芦"
+}, {
+"category": "tool",
+"icon": "🪢",
+"price": "300",
+"quality": "下品",
+"title": "缚灵索"
+}, {
+"category": "tool",
+"icon": "🗡️",
+"price": "4800",
+"quality": "珍品",
+"title": "诛仙剑"
+}, {
+"category": "tool",
+"icon": "🪞",
+"price": "1500",
+"quality": "上品",
+"title": "八卦镜"
+}, {
+"category": "tool",
+"countdown": "⏱ 02:15:30",
+"icon": "🔥",
+"price": "1800",
+"price_old": "¥2600",
+"quality": "限时",
+"title": "风火轮"
+}, {
+"category": "skill",
+"icon": "📖",
+"price": "1500",
+"quality": "上品",
+"title": "吐纳诀"
+}, {
+"category": "skill",
+"icon": "🌀",
+"price": "900",
+"quality": "下品",
+"title": "御风术"
+}, {
+"category": "skill",
+"icon": "🛡️",
+"price": "3200",
+"quality": "珍品",
+"title": "金钟罩"
+}, {
+"category": "skill",
+"icon": "📜",
+"price": "5200",
+"quality": "极品",
+"title": "大衍诀"
+}, {
+"category": "skill",
+"icon": "💨",
+"price": "2000",
+"quality": "上品",
+"title": "五行遁术"
+}, {
+"category": "skill",
+"icon": "🪶",
+"price": "600",
+"quality": "下品",
+"title": "轻身术"
+}, {
+"category": "limited",
+"countdown": "⏱ 04:32:10",
+"icon": "📜",
+"price": "800",
+"price_old": "¥1200",
+"quality": "限时",
+"title": "天雷符箓"
+}, {
+"category": "limited",
+"icon": "🏺",
+"price": "2600",
+"quality": "极品",
+"title": "紫金葫芦"
+}, {
+"category": "limited",
+"countdown": "⏱ 01:12:45",
+"icon": "🗿",
+"price": "1800",
+"price_old": "¥2600",
+"quality": "限时",
+"title": "九阳残卷"
+}, {
+"category": "limited",
+"icon": "🔮",
+"price": "8800",
+"quality": "珍品",
+"title": "混沌珠"
+}, {
+"category": "limited",
+"countdown": "⏱ 00:48:20",
+"icon": "💊",
+"price": "600",
+"price_old": "¥800",
+"quality": "限时",
+"title": "丹药礼包"
+}, {
+"category": "limited",
+"icon": "👝",
+"price": "1200",
+"quality": "上品",
+"sold_out": true,
+"title": "储物戒指"
+}]
+
+[node name="GoodsCard" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=669418168]
+visible = false
+custom_minimum_size = Vector2(205, 190)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_ehn7u")
+script = ExtResource("1_t6iq7")
+metadata/__script_vars = {}
+metadata/__data_contract = PackedStringArray("quality", "icon", "title", "price", "price_old", "countdown", "sold_out")
+
+[node name="QualityTag" type="Panel" parent="GoodsScroll/GoodsGrid/GoodsCard" unique_id=2143718754]
+custom_minimum_size = Vector2(26, 54)
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ypm4c")
+metadata/__anchor = "top_left"
+metadata/__script_vars = {}
+
+[node name="QualityText" type="Label" parent="GoodsScroll/GoodsGrid/GoodsCard/QualityTag" unique_id=522019257]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="CountdownLabel" type="Label" parent="GoodsScroll/GoodsGrid/GoodsCard" unique_id=1082062113]
+visible = false
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_top = 8.0
+offset_right = -8.0
+theme_override_colors/font_color = Color(0.76862746, 0.47843137, 0.16470589, 1)
+metadata/__tpl_text = "countdown"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "top_right"
+metadata/__script_vars = {}
+
+[node name="CardColumn" type="VBoxContainer" parent="GoodsScroll/GoodsGrid/GoodsCard" unique_id=1137607430]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = -14.0
+offset_bottom = -12.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/GoodsCard/CardColumn" unique_id=962077524]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="GoodsIcon" type="Label" parent="GoodsScroll/GoodsGrid/GoodsCard/CardColumn/IconRow" unique_id=218639826]
+layout_mode = 2
+theme_override_font_sizes/font_size = 54
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="GoodsTitle" type="Label" parent="GoodsScroll/GoodsGrid/GoodsCard/CardColumn" unique_id=1813632019]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+horizontal_alignment = 1
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="@Control@240" type="Control" parent="GoodsScroll/GoodsGrid/GoodsCard/CardColumn" unique_id=279625601]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="PriceRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/GoodsCard/CardColumn" unique_id=1438565693]
+layout_mode = 2
+
+[node name="@HBoxContainer@245" type="HBoxContainer" parent="GoodsScroll/GoodsGrid/GoodsCard/CardColumn/PriceRow" unique_id=453076559]
+layout_mode = 2
+
+[node name="@Label@241" type="Label" parent="GoodsScroll/GoodsGrid/GoodsCard/CardColumn/PriceRow/@HBoxContainer@245" unique_id=1637287086]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "💎"
+vertical_alignment = 1
+
+[node name="@Control@242" type="Control" parent="GoodsScroll/GoodsGrid/GoodsCard/CardColumn/PriceRow/@HBoxContainer@245" unique_id=2140650165]
+custom_minimum_size = Vector2(4, 0)
+layout_mode = 2
+
+[node name="@Label@243" type="Label" parent="GoodsScroll/GoodsGrid/GoodsCard/CardColumn/PriceRow/@HBoxContainer@245" unique_id=34158794]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "price"
+metadata/__tpl_keys = "text"
+
+[node name="@Label@244" type="Label" parent="GoodsScroll/GoodsGrid/GoodsCard/CardColumn/PriceRow/@HBoxContainer@245" unique_id=374618477]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = " 灵石"
+vertical_alignment = 1
+
+[node name="PriceOld" type="Label" parent="GoodsScroll/GoodsGrid/GoodsCard/CardColumn/PriceRow/@HBoxContainer@245" unique_id=1424498333]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65882355, 0.59607846, 0.5019608, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "price_old"
+metadata/__tpl_keys = "text"
+
+[node name="@Control@246" type="Control" parent="GoodsScroll/GoodsGrid/GoodsCard/CardColumn" unique_id=1248304871]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="BuyRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/GoodsCard/CardColumn" unique_id=2058890258]
+layout_mode = 2
+
+[node name="BuyBtn" type="Button" parent="GoodsScroll/GoodsGrid/GoodsCard/CardColumn/BuyRow" unique_id=1396645097]
+custom_minimum_size = Vector2(110, 36)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_umxfb")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_mq104")
+theme_override_styles/hover = SubResource("StyleBoxFlat_at3bq")
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
+text = "购  买"
+metadata/__signal_pressed = "_on_buy_pressed"
+
+[node name="SoldOutStamp" type="Panel" parent="GoodsScroll/GoodsGrid/GoodsCard" unique_id=131970779]
+visible = false
+custom_minimum_size = Vector2(110, 52)
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+theme_override_styles/panel = SubResource("StyleBoxFlat_lcvmo")
+metadata/__anchor = "center"
+metadata/__script_vars = {}
+
+[node name="StampText" type="Label" parent="GoodsScroll/GoodsGrid/GoodsCard/SoldOutStamp" unique_id=429861517]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.6901961, 0.22745098, 0.18039216, 1)
+text = "售  罄"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="@Panel@247" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=2034003701]
+custom_minimum_size = Vector2(205, 190)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_ehn7u")
+script = ExtResource("1_t6iq7")
+quality = "珍品"
+icon = "🍄"
+title = "千年灵芝"
+price = "800"
+metadata/__script_vars = {}
+metadata/__data_contract = PackedStringArray("quality", "icon", "title", "price", "price_old", "countdown", "sold_out")
+metadata/category = "herb"
+metadata/quality = "珍品"
+metadata/__item_data = {
+"category": "herb",
+"icon": "🍄",
+"price": "800",
+"quality": "珍品",
+"title": "千年灵芝"
+}
+
+[node name="QualityTag" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@247" unique_id=1008495074]
+custom_minimum_size = Vector2(26, 54)
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ypm4c")
+metadata/__anchor = "top_left"
+metadata/__script_vars = {}
+
+[node name="QualityText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@247/QualityTag" unique_id=1868392042]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="CountdownLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@247" unique_id=62574637]
+visible = false
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_top = 8.0
+offset_right = -8.0
+theme_override_colors/font_color = Color(0.76862746, 0.47843137, 0.16470589, 1)
+metadata/__tpl_text = "countdown"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "top_right"
+metadata/__script_vars = {}
+
+[node name="CardColumn" type="VBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@247" unique_id=784947124]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = -14.0
+offset_bottom = -12.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@247/CardColumn" unique_id=1090223527]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="GoodsIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@247/CardColumn/IconRow" unique_id=1559362102]
+layout_mode = 2
+theme_override_font_sizes/font_size = 54
+text = "🍄"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="GoodsTitle" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@247/CardColumn" unique_id=1918164263]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "千年灵芝"
+horizontal_alignment = 1
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_240" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@247/CardColumn" unique_id=1555949302]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="PriceRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@247/CardColumn" unique_id=732275441]
+layout_mode = 2
+
+[node name="_HBoxContainer_245" type="HBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@247/CardColumn/PriceRow" unique_id=261884299]
+layout_mode = 2
+
+[node name="_Label_241" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@247/CardColumn/PriceRow/_HBoxContainer_245" unique_id=137502410]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "💎"
+vertical_alignment = 1
+
+[node name="_Control_242" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@247/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1593079520]
+custom_minimum_size = Vector2(4, 0)
+layout_mode = 2
+
+[node name="_Label_243" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@247/CardColumn/PriceRow/_HBoxContainer_245" unique_id=631307278]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = "800"
+vertical_alignment = 1
+metadata/__tpl_text = "price"
+metadata/__tpl_keys = "text"
+
+[node name="_Label_244" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@247/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1464028391]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = " 灵石"
+vertical_alignment = 1
+
+[node name="PriceOld" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@247/CardColumn/PriceRow/_HBoxContainer_245" unique_id=741618886]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65882355, 0.59607846, 0.5019608, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "price_old"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_246" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@247/CardColumn" unique_id=1648322723]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="BuyRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@247/CardColumn" unique_id=1600378054]
+layout_mode = 2
+
+[node name="BuyBtn" type="Button" parent="GoodsScroll/GoodsGrid/@Panel@247/CardColumn/BuyRow" unique_id=947168228]
+custom_minimum_size = Vector2(110, 36)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_umxfb")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_mq104")
+theme_override_styles/hover = SubResource("StyleBoxFlat_at3bq")
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
+text = "购  买"
+metadata/__signal_pressed = "_on_buy_pressed"
+
+[node name="SoldOutStamp" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@247" unique_id=643786420]
+visible = false
+custom_minimum_size = Vector2(110, 52)
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+theme_override_styles/panel = SubResource("StyleBoxFlat_lcvmo")
+metadata/__anchor = "center"
+metadata/__script_vars = {}
+
+[node name="StampText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@247/SoldOutStamp" unique_id=130139497]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.6901961, 0.22745098, 0.18039216, 1)
+text = "售  罄"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="@Panel@248" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1138789778]
+custom_minimum_size = Vector2(205, 190)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_ehn7u")
+script = ExtResource("1_t6iq7")
+quality = "上品"
+icon = "🏺"
+title = "聚气丹瓶"
+price = "800"
+metadata/__script_vars = {}
+metadata/__data_contract = PackedStringArray("quality", "icon", "title", "price", "price_old", "countdown", "sold_out")
+metadata/category = "herb"
+metadata/quality = "上品"
+metadata/__item_data = {
+"category": "herb",
+"icon": "🏺",
+"price": "800",
+"quality": "上品",
+"title": "聚气丹瓶"
+}
+
+[node name="QualityTag" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@248" unique_id=2134594779]
+custom_minimum_size = Vector2(26, 54)
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ypm4c")
+metadata/__anchor = "top_left"
+metadata/__script_vars = {}
+
+[node name="QualityText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@248/QualityTag" unique_id=1979231238]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="CountdownLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@248" unique_id=914559314]
+visible = false
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_top = 8.0
+offset_right = -8.0
+theme_override_colors/font_color = Color(0.76862746, 0.47843137, 0.16470589, 1)
+metadata/__tpl_text = "countdown"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "top_right"
+metadata/__script_vars = {}
+
+[node name="CardColumn" type="VBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@248" unique_id=1051529911]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = -14.0
+offset_bottom = -12.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@248/CardColumn" unique_id=928095897]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="GoodsIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@248/CardColumn/IconRow" unique_id=1566401588]
+layout_mode = 2
+theme_override_font_sizes/font_size = 54
+text = "🏺"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="GoodsTitle" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@248/CardColumn" unique_id=575033706]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "聚气丹瓶"
+horizontal_alignment = 1
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_240" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@248/CardColumn" unique_id=700431440]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="PriceRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@248/CardColumn" unique_id=938616766]
+layout_mode = 2
+
+[node name="_HBoxContainer_245" type="HBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@248/CardColumn/PriceRow" unique_id=1293683176]
+layout_mode = 2
+
+[node name="_Label_241" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@248/CardColumn/PriceRow/_HBoxContainer_245" unique_id=929750130]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "💎"
+vertical_alignment = 1
+
+[node name="_Control_242" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@248/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1305059729]
+custom_minimum_size = Vector2(4, 0)
+layout_mode = 2
+
+[node name="_Label_243" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@248/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1421284998]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = "800"
+vertical_alignment = 1
+metadata/__tpl_text = "price"
+metadata/__tpl_keys = "text"
+
+[node name="_Label_244" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@248/CardColumn/PriceRow/_HBoxContainer_245" unique_id=942022707]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = " 灵石"
+vertical_alignment = 1
+
+[node name="PriceOld" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@248/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1017367120]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65882355, 0.59607846, 0.5019608, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "price_old"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_246" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@248/CardColumn" unique_id=1799688210]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="BuyRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@248/CardColumn" unique_id=1651498565]
+layout_mode = 2
+
+[node name="BuyBtn" type="Button" parent="GoodsScroll/GoodsGrid/@Panel@248/CardColumn/BuyRow" unique_id=1785516395]
+custom_minimum_size = Vector2(110, 36)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_umxfb")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_mq104")
+theme_override_styles/hover = SubResource("StyleBoxFlat_at3bq")
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
+text = "购  买"
+metadata/__signal_pressed = "_on_buy_pressed"
+
+[node name="SoldOutStamp" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@248" unique_id=218010788]
+visible = false
+custom_minimum_size = Vector2(110, 52)
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+theme_override_styles/panel = SubResource("StyleBoxFlat_lcvmo")
+metadata/__anchor = "center"
+metadata/__script_vars = {}
+
+[node name="StampText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@248/SoldOutStamp" unique_id=652522230]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.6901961, 0.22745098, 0.18039216, 1)
+text = "售  罄"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="@Panel@249" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=790589842]
+custom_minimum_size = Vector2(205, 190)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_ehn7u")
+script = ExtResource("1_t6iq7")
+quality = "上品"
+icon = "⚔️"
+title = "飞剑"
+price = "800"
+metadata/__script_vars = {}
+metadata/__data_contract = PackedStringArray("quality", "icon", "title", "price", "price_old", "countdown", "sold_out")
+metadata/category = "herb"
+metadata/quality = "上品"
+metadata/__item_data = {
+"category": "herb",
+"icon": "⚔️",
+"price": "800",
+"quality": "上品",
+"title": "飞剑"
+}
+
+[node name="QualityTag" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@249" unique_id=1826404586]
+custom_minimum_size = Vector2(26, 54)
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ypm4c")
+metadata/__anchor = "top_left"
+metadata/__script_vars = {}
+
+[node name="QualityText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@249/QualityTag" unique_id=560237846]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="CountdownLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@249" unique_id=435773746]
+visible = false
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_top = 8.0
+offset_right = -8.0
+theme_override_colors/font_color = Color(0.76862746, 0.47843137, 0.16470589, 1)
+metadata/__tpl_text = "countdown"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "top_right"
+metadata/__script_vars = {}
+
+[node name="CardColumn" type="VBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@249" unique_id=1342031213]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = -14.0
+offset_bottom = -12.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@249/CardColumn" unique_id=739215150]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="GoodsIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@249/CardColumn/IconRow" unique_id=406275981]
+layout_mode = 2
+theme_override_font_sizes/font_size = 54
+text = "⚔️"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="GoodsTitle" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@249/CardColumn" unique_id=633322711]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "飞剑"
+horizontal_alignment = 1
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_240" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@249/CardColumn" unique_id=788170701]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="PriceRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@249/CardColumn" unique_id=811945621]
+layout_mode = 2
+
+[node name="_HBoxContainer_245" type="HBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@249/CardColumn/PriceRow" unique_id=1144252433]
+layout_mode = 2
+
+[node name="_Label_241" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@249/CardColumn/PriceRow/_HBoxContainer_245" unique_id=2048365771]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "💎"
+vertical_alignment = 1
+
+[node name="_Control_242" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@249/CardColumn/PriceRow/_HBoxContainer_245" unique_id=714340975]
+custom_minimum_size = Vector2(4, 0)
+layout_mode = 2
+
+[node name="_Label_243" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@249/CardColumn/PriceRow/_HBoxContainer_245" unique_id=2091303943]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = "800"
+vertical_alignment = 1
+metadata/__tpl_text = "price"
+metadata/__tpl_keys = "text"
+
+[node name="_Label_244" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@249/CardColumn/PriceRow/_HBoxContainer_245" unique_id=2125609440]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = " 灵石"
+vertical_alignment = 1
+
+[node name="PriceOld" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@249/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1038824438]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65882355, 0.59607846, 0.5019608, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "price_old"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_246" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@249/CardColumn" unique_id=77248913]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="BuyRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@249/CardColumn" unique_id=1253275105]
+layout_mode = 2
+
+[node name="BuyBtn" type="Button" parent="GoodsScroll/GoodsGrid/@Panel@249/CardColumn/BuyRow" unique_id=1745847357]
+custom_minimum_size = Vector2(110, 36)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_umxfb")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_mq104")
+theme_override_styles/hover = SubResource("StyleBoxFlat_at3bq")
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
+text = "购  买"
+metadata/__signal_pressed = "_on_buy_pressed"
+
+[node name="SoldOutStamp" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@249" unique_id=530280265]
+visible = false
+custom_minimum_size = Vector2(110, 52)
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+theme_override_styles/panel = SubResource("StyleBoxFlat_lcvmo")
+metadata/__anchor = "center"
+metadata/__script_vars = {}
+
+[node name="StampText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@249/SoldOutStamp" unique_id=1832492620]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.6901961, 0.22745098, 0.18039216, 1)
+text = "售  罄"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="@Panel@250" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1732374372]
+custom_minimum_size = Vector2(205, 190)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_ehn7u")
+script = ExtResource("1_t6iq7")
+quality = "限时"
+icon = "📜"
+title = "天雷符箓"
+price = "800"
+price_old = "¥1200"
+countdown = "⏱ 04:32:10"
+metadata/__script_vars = {}
+metadata/__data_contract = PackedStringArray("quality", "icon", "title", "price", "price_old", "countdown", "sold_out")
+metadata/category = "herb"
+metadata/quality = "限时"
+metadata/__item_data = {
+"category": "herb",
+"countdown": "⏱ 04:32:10",
+"icon": "📜",
+"price": "800",
+"price_old": "¥1200",
+"quality": "限时",
+"title": "天雷符箓"
+}
+
+[node name="QualityTag" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@250" unique_id=349145074]
+custom_minimum_size = Vector2(26, 54)
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ypm4c")
+metadata/__anchor = "top_left"
+metadata/__script_vars = {}
+
+[node name="QualityText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@250/QualityTag" unique_id=715370489]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="CountdownLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@250" unique_id=1908207913]
+visible = false
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_top = 8.0
+offset_right = -8.0
+theme_override_colors/font_color = Color(0.76862746, 0.47843137, 0.16470589, 1)
+text = "⏱ 04:32:10"
+metadata/__tpl_text = "countdown"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "top_right"
+metadata/__script_vars = {}
+
+[node name="CardColumn" type="VBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@250" unique_id=858450240]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = -14.0
+offset_bottom = -12.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@250/CardColumn" unique_id=1916177410]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="GoodsIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@250/CardColumn/IconRow" unique_id=722803069]
+layout_mode = 2
+theme_override_font_sizes/font_size = 54
+text = "📜"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="GoodsTitle" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@250/CardColumn" unique_id=555713835]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "天雷符箓"
+horizontal_alignment = 1
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_240" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@250/CardColumn" unique_id=1178108834]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="PriceRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@250/CardColumn" unique_id=1925784148]
+layout_mode = 2
+
+[node name="_HBoxContainer_245" type="HBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@250/CardColumn/PriceRow" unique_id=738721360]
+layout_mode = 2
+
+[node name="_Label_241" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@250/CardColumn/PriceRow/_HBoxContainer_245" unique_id=2023975172]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "💎"
+vertical_alignment = 1
+
+[node name="_Control_242" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@250/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1178569824]
+custom_minimum_size = Vector2(4, 0)
+layout_mode = 2
+
+[node name="_Label_243" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@250/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1955762935]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = "800"
+vertical_alignment = 1
+metadata/__tpl_text = "price"
+metadata/__tpl_keys = "text"
+
+[node name="_Label_244" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@250/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1585628432]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = " 灵石"
+vertical_alignment = 1
+
+[node name="PriceOld" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@250/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1610416380]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65882355, 0.59607846, 0.5019608, 1)
+text = "¥1200"
+vertical_alignment = 1
+metadata/__tpl_text = "price_old"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_246" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@250/CardColumn" unique_id=1861681277]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="BuyRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@250/CardColumn" unique_id=266077747]
+layout_mode = 2
+
+[node name="BuyBtn" type="Button" parent="GoodsScroll/GoodsGrid/@Panel@250/CardColumn/BuyRow" unique_id=2071486352]
+custom_minimum_size = Vector2(110, 36)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_umxfb")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_mq104")
+theme_override_styles/hover = SubResource("StyleBoxFlat_at3bq")
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
+text = "购  买"
+metadata/__signal_pressed = "_on_buy_pressed"
+
+[node name="SoldOutStamp" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@250" unique_id=258495278]
+visible = false
+custom_minimum_size = Vector2(110, 52)
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+theme_override_styles/panel = SubResource("StyleBoxFlat_lcvmo")
+metadata/__anchor = "center"
+metadata/__script_vars = {}
+
+[node name="StampText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@250/SoldOutStamp" unique_id=1587004090]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.6901961, 0.22745098, 0.18039216, 1)
+text = "售  罄"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="@Panel@251" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=359645835]
+custom_minimum_size = Vector2(205, 190)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_ehn7u")
+script = ExtResource("1_t6iq7")
+quality = "下品"
+icon = "🌸"
+title = "九转还魂草"
+price = "800"
+metadata/__script_vars = {}
+metadata/__data_contract = PackedStringArray("quality", "icon", "title", "price", "price_old", "countdown", "sold_out")
+metadata/category = "herb"
+metadata/quality = "下品"
+metadata/__item_data = {
+"category": "herb",
+"icon": "🌸",
+"price": "800",
+"quality": "下品",
+"title": "九转还魂草"
+}
+
+[node name="QualityTag" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@251" unique_id=494722617]
+custom_minimum_size = Vector2(26, 54)
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ypm4c")
+metadata/__anchor = "top_left"
+metadata/__script_vars = {}
+
+[node name="QualityText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@251/QualityTag" unique_id=60922173]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="CountdownLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@251" unique_id=2050340037]
+visible = false
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_top = 8.0
+offset_right = -8.0
+theme_override_colors/font_color = Color(0.76862746, 0.47843137, 0.16470589, 1)
+metadata/__tpl_text = "countdown"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "top_right"
+metadata/__script_vars = {}
+
+[node name="CardColumn" type="VBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@251" unique_id=409385369]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = -14.0
+offset_bottom = -12.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@251/CardColumn" unique_id=1108493215]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="GoodsIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@251/CardColumn/IconRow" unique_id=1467545630]
+layout_mode = 2
+theme_override_font_sizes/font_size = 54
+text = "🌸"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="GoodsTitle" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@251/CardColumn" unique_id=1588912467]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "九转还魂草"
+horizontal_alignment = 1
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_240" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@251/CardColumn" unique_id=2116965390]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="PriceRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@251/CardColumn" unique_id=1744970797]
+layout_mode = 2
+
+[node name="_HBoxContainer_245" type="HBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@251/CardColumn/PriceRow" unique_id=998966199]
+layout_mode = 2
+
+[node name="_Label_241" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@251/CardColumn/PriceRow/_HBoxContainer_245" unique_id=485970290]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "💎"
+vertical_alignment = 1
+
+[node name="_Control_242" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@251/CardColumn/PriceRow/_HBoxContainer_245" unique_id=11762370]
+custom_minimum_size = Vector2(4, 0)
+layout_mode = 2
+
+[node name="_Label_243" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@251/CardColumn/PriceRow/_HBoxContainer_245" unique_id=188663333]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = "800"
+vertical_alignment = 1
+metadata/__tpl_text = "price"
+metadata/__tpl_keys = "text"
+
+[node name="_Label_244" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@251/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1549838894]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = " 灵石"
+vertical_alignment = 1
+
+[node name="PriceOld" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@251/CardColumn/PriceRow/_HBoxContainer_245" unique_id=910567212]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65882355, 0.59607846, 0.5019608, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "price_old"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_246" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@251/CardColumn" unique_id=1088111883]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="BuyRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@251/CardColumn" unique_id=1764405366]
+layout_mode = 2
+
+[node name="BuyBtn" type="Button" parent="GoodsScroll/GoodsGrid/@Panel@251/CardColumn/BuyRow" unique_id=1730070841]
+custom_minimum_size = Vector2(110, 36)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_umxfb")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_mq104")
+theme_override_styles/hover = SubResource("StyleBoxFlat_at3bq")
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
+text = "购  买"
+metadata/__signal_pressed = "_on_buy_pressed"
+
+[node name="SoldOutStamp" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@251" unique_id=1700149812]
+visible = false
+custom_minimum_size = Vector2(110, 52)
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+theme_override_styles/panel = SubResource("StyleBoxFlat_lcvmo")
+metadata/__anchor = "center"
+metadata/__script_vars = {}
+
+[node name="StampText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@251/SoldOutStamp" unique_id=102480037]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.6901961, 0.22745098, 0.18039216, 1)
+text = "售  罄"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="@Panel@252" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1477910704]
+custom_minimum_size = Vector2(205, 190)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_ehn7u")
+script = ExtResource("1_t6iq7")
+quality = "上品"
+icon = "🪷"
+title = "玄冰雪莲"
+price = "800"
+sold_out = true
+metadata/__script_vars = {}
+metadata/__data_contract = PackedStringArray("quality", "icon", "title", "price", "price_old", "countdown", "sold_out")
+metadata/category = "herb"
+metadata/quality = "上品"
+metadata/sold_out = true
+metadata/__item_data = {
+"category": "herb",
+"icon": "🪷",
+"price": "800",
+"quality": "上品",
+"sold_out": true,
+"title": "玄冰雪莲"
+}
+
+[node name="QualityTag" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@252" unique_id=1020667132]
+custom_minimum_size = Vector2(26, 54)
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ypm4c")
+metadata/__anchor = "top_left"
+metadata/__script_vars = {}
+
+[node name="QualityText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@252/QualityTag" unique_id=488651411]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="CountdownLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@252" unique_id=1692684913]
+visible = false
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_top = 8.0
+offset_right = -8.0
+theme_override_colors/font_color = Color(0.76862746, 0.47843137, 0.16470589, 1)
+metadata/__tpl_text = "countdown"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "top_right"
+metadata/__script_vars = {}
+
+[node name="CardColumn" type="VBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@252" unique_id=388096564]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = -14.0
+offset_bottom = -12.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@252/CardColumn" unique_id=9727457]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="GoodsIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@252/CardColumn/IconRow" unique_id=1249336977]
+layout_mode = 2
+theme_override_font_sizes/font_size = 54
+text = "🪷"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="GoodsTitle" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@252/CardColumn" unique_id=517280111]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "玄冰雪莲"
+horizontal_alignment = 1
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_240" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@252/CardColumn" unique_id=2088008901]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="PriceRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@252/CardColumn" unique_id=1511274494]
+layout_mode = 2
+
+[node name="_HBoxContainer_245" type="HBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@252/CardColumn/PriceRow" unique_id=340708361]
+layout_mode = 2
+
+[node name="_Label_241" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@252/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1516798492]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "💎"
+vertical_alignment = 1
+
+[node name="_Control_242" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@252/CardColumn/PriceRow/_HBoxContainer_245" unique_id=21600142]
+custom_minimum_size = Vector2(4, 0)
+layout_mode = 2
+
+[node name="_Label_243" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@252/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1289317931]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = "800"
+vertical_alignment = 1
+metadata/__tpl_text = "price"
+metadata/__tpl_keys = "text"
+
+[node name="_Label_244" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@252/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1026232008]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = " 灵石"
+vertical_alignment = 1
+
+[node name="PriceOld" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@252/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1921624212]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65882355, 0.59607846, 0.5019608, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "price_old"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_246" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@252/CardColumn" unique_id=1378172430]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="BuyRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@252/CardColumn" unique_id=563524065]
+layout_mode = 2
+
+[node name="BuyBtn" type="Button" parent="GoodsScroll/GoodsGrid/@Panel@252/CardColumn/BuyRow" unique_id=573112809]
+custom_minimum_size = Vector2(110, 36)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_umxfb")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_mq104")
+theme_override_styles/hover = SubResource("StyleBoxFlat_at3bq")
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
+text = "购  买"
+metadata/__signal_pressed = "_on_buy_pressed"
+
+[node name="SoldOutStamp" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@252" unique_id=965302578]
+visible = false
+custom_minimum_size = Vector2(110, 52)
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+theme_override_styles/panel = SubResource("StyleBoxFlat_lcvmo")
+metadata/__anchor = "center"
+metadata/__script_vars = {}
+
+[node name="StampText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@252/SoldOutStamp" unique_id=2069188351]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.6901961, 0.22745098, 0.18039216, 1)
+text = "售  罄"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="@Panel@253" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=138979977]
+custom_minimum_size = Vector2(205, 190)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_ehn7u")
+script = ExtResource("1_t6iq7")
+quality = "上品"
+icon = "⚔️"
+title = "寒光剑"
+price = "1200"
+metadata/__script_vars = {}
+metadata/__data_contract = PackedStringArray("quality", "icon", "title", "price", "price_old", "countdown", "sold_out")
+metadata/category = "tool"
+metadata/quality = "上品"
+metadata/__item_data = {
+"category": "tool",
+"icon": "⚔️",
+"price": "1200",
+"quality": "上品",
+"title": "寒光剑"
+}
+
+[node name="QualityTag" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@253" unique_id=688668307]
+custom_minimum_size = Vector2(26, 54)
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ypm4c")
+metadata/__anchor = "top_left"
+metadata/__script_vars = {}
+
+[node name="QualityText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@253/QualityTag" unique_id=805145439]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="CountdownLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@253" unique_id=516529193]
+visible = false
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_top = 8.0
+offset_right = -8.0
+theme_override_colors/font_color = Color(0.76862746, 0.47843137, 0.16470589, 1)
+metadata/__tpl_text = "countdown"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "top_right"
+metadata/__script_vars = {}
+
+[node name="CardColumn" type="VBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@253" unique_id=1653843677]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = -14.0
+offset_bottom = -12.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@253/CardColumn" unique_id=1097465082]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="GoodsIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@253/CardColumn/IconRow" unique_id=1334510325]
+layout_mode = 2
+theme_override_font_sizes/font_size = 54
+text = "⚔️"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="GoodsTitle" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@253/CardColumn" unique_id=293051282]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "寒光剑"
+horizontal_alignment = 1
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_240" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@253/CardColumn" unique_id=242237429]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="PriceRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@253/CardColumn" unique_id=945035571]
+layout_mode = 2
+
+[node name="_HBoxContainer_245" type="HBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@253/CardColumn/PriceRow" unique_id=291707980]
+layout_mode = 2
+
+[node name="_Label_241" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@253/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1831736242]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "💎"
+vertical_alignment = 1
+
+[node name="_Control_242" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@253/CardColumn/PriceRow/_HBoxContainer_245" unique_id=422390428]
+custom_minimum_size = Vector2(4, 0)
+layout_mode = 2
+
+[node name="_Label_243" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@253/CardColumn/PriceRow/_HBoxContainer_245" unique_id=672430953]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = "1200"
+vertical_alignment = 1
+metadata/__tpl_text = "price"
+metadata/__tpl_keys = "text"
+
+[node name="_Label_244" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@253/CardColumn/PriceRow/_HBoxContainer_245" unique_id=168050385]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = " 灵石"
+vertical_alignment = 1
+
+[node name="PriceOld" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@253/CardColumn/PriceRow/_HBoxContainer_245" unique_id=529708025]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65882355, 0.59607846, 0.5019608, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "price_old"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_246" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@253/CardColumn" unique_id=1150484371]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="BuyRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@253/CardColumn" unique_id=679705497]
+layout_mode = 2
+
+[node name="BuyBtn" type="Button" parent="GoodsScroll/GoodsGrid/@Panel@253/CardColumn/BuyRow" unique_id=32205024]
+custom_minimum_size = Vector2(110, 36)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_umxfb")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_mq104")
+theme_override_styles/hover = SubResource("StyleBoxFlat_at3bq")
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
+text = "购  买"
+metadata/__signal_pressed = "_on_buy_pressed"
+
+[node name="SoldOutStamp" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@253" unique_id=28984457]
+visible = false
+custom_minimum_size = Vector2(110, 52)
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+theme_override_styles/panel = SubResource("StyleBoxFlat_lcvmo")
+metadata/__anchor = "center"
+metadata/__script_vars = {}
+
+[node name="StampText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@253/SoldOutStamp" unique_id=37782495]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.6901961, 0.22745098, 0.18039216, 1)
+text = "售  罄"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="@Panel@254" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1673871127]
+custom_minimum_size = Vector2(205, 190)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_ehn7u")
+script = ExtResource("1_t6iq7")
+quality = "极品"
+icon = "🏺"
+title = "紫金葫芦"
+price = "2600"
+metadata/__script_vars = {}
+metadata/__data_contract = PackedStringArray("quality", "icon", "title", "price", "price_old", "countdown", "sold_out")
+metadata/category = "tool"
+metadata/quality = "极品"
+metadata/__item_data = {
+"category": "tool",
+"icon": "🏺",
+"price": "2600",
+"quality": "极品",
+"title": "紫金葫芦"
+}
+
+[node name="QualityTag" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@254" unique_id=443231871]
+custom_minimum_size = Vector2(26, 54)
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ypm4c")
+metadata/__anchor = "top_left"
+metadata/__script_vars = {}
+
+[node name="QualityText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@254/QualityTag" unique_id=957325086]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="CountdownLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@254" unique_id=1714575883]
+visible = false
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_top = 8.0
+offset_right = -8.0
+theme_override_colors/font_color = Color(0.76862746, 0.47843137, 0.16470589, 1)
+metadata/__tpl_text = "countdown"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "top_right"
+metadata/__script_vars = {}
+
+[node name="CardColumn" type="VBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@254" unique_id=662336280]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = -14.0
+offset_bottom = -12.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@254/CardColumn" unique_id=876820464]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="GoodsIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@254/CardColumn/IconRow" unique_id=1639791389]
+layout_mode = 2
+theme_override_font_sizes/font_size = 54
+text = "🏺"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="GoodsTitle" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@254/CardColumn" unique_id=839147471]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "紫金葫芦"
+horizontal_alignment = 1
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_240" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@254/CardColumn" unique_id=1767702352]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="PriceRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@254/CardColumn" unique_id=258623599]
+layout_mode = 2
+
+[node name="_HBoxContainer_245" type="HBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@254/CardColumn/PriceRow" unique_id=292721594]
+layout_mode = 2
+
+[node name="_Label_241" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@254/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1639036820]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "💎"
+vertical_alignment = 1
+
+[node name="_Control_242" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@254/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1050926119]
+custom_minimum_size = Vector2(4, 0)
+layout_mode = 2
+
+[node name="_Label_243" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@254/CardColumn/PriceRow/_HBoxContainer_245" unique_id=435515231]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = "2600"
+vertical_alignment = 1
+metadata/__tpl_text = "price"
+metadata/__tpl_keys = "text"
+
+[node name="_Label_244" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@254/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1765373960]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = " 灵石"
+vertical_alignment = 1
+
+[node name="PriceOld" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@254/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1323155622]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65882355, 0.59607846, 0.5019608, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "price_old"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_246" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@254/CardColumn" unique_id=1002873959]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="BuyRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@254/CardColumn" unique_id=298806]
+layout_mode = 2
+
+[node name="BuyBtn" type="Button" parent="GoodsScroll/GoodsGrid/@Panel@254/CardColumn/BuyRow" unique_id=1752266873]
+custom_minimum_size = Vector2(110, 36)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_umxfb")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_mq104")
+theme_override_styles/hover = SubResource("StyleBoxFlat_at3bq")
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
+text = "购  买"
+metadata/__signal_pressed = "_on_buy_pressed"
+
+[node name="SoldOutStamp" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@254" unique_id=152163315]
+visible = false
+custom_minimum_size = Vector2(110, 52)
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+theme_override_styles/panel = SubResource("StyleBoxFlat_lcvmo")
+metadata/__anchor = "center"
+metadata/__script_vars = {}
+
+[node name="StampText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@254/SoldOutStamp" unique_id=351807938]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.6901961, 0.22745098, 0.18039216, 1)
+text = "售  罄"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="@Panel@255" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=2013297698]
+custom_minimum_size = Vector2(205, 190)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_ehn7u")
+script = ExtResource("1_t6iq7")
+quality = "下品"
+icon = "🪢"
+title = "缚灵索"
+price = "300"
+metadata/__script_vars = {}
+metadata/__data_contract = PackedStringArray("quality", "icon", "title", "price", "price_old", "countdown", "sold_out")
+metadata/category = "tool"
+metadata/quality = "下品"
+metadata/__item_data = {
+"category": "tool",
+"icon": "🪢",
+"price": "300",
+"quality": "下品",
+"title": "缚灵索"
+}
+
+[node name="QualityTag" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@255" unique_id=848515350]
+custom_minimum_size = Vector2(26, 54)
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ypm4c")
+metadata/__anchor = "top_left"
+metadata/__script_vars = {}
+
+[node name="QualityText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@255/QualityTag" unique_id=1305891068]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="CountdownLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@255" unique_id=906831569]
+visible = false
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_top = 8.0
+offset_right = -8.0
+theme_override_colors/font_color = Color(0.76862746, 0.47843137, 0.16470589, 1)
+metadata/__tpl_text = "countdown"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "top_right"
+metadata/__script_vars = {}
+
+[node name="CardColumn" type="VBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@255" unique_id=228485179]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = -14.0
+offset_bottom = -12.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@255/CardColumn" unique_id=929862537]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="GoodsIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@255/CardColumn/IconRow" unique_id=961435078]
+layout_mode = 2
+theme_override_font_sizes/font_size = 54
+text = "🪢"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="GoodsTitle" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@255/CardColumn" unique_id=839055383]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "缚灵索"
+horizontal_alignment = 1
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_240" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@255/CardColumn" unique_id=1515404880]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="PriceRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@255/CardColumn" unique_id=1729192940]
+layout_mode = 2
+
+[node name="_HBoxContainer_245" type="HBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@255/CardColumn/PriceRow" unique_id=749968464]
+layout_mode = 2
+
+[node name="_Label_241" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@255/CardColumn/PriceRow/_HBoxContainer_245" unique_id=903599105]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "💎"
+vertical_alignment = 1
+
+[node name="_Control_242" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@255/CardColumn/PriceRow/_HBoxContainer_245" unique_id=178186111]
+custom_minimum_size = Vector2(4, 0)
+layout_mode = 2
+
+[node name="_Label_243" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@255/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1392333304]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = "300"
+vertical_alignment = 1
+metadata/__tpl_text = "price"
+metadata/__tpl_keys = "text"
+
+[node name="_Label_244" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@255/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1490594632]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = " 灵石"
+vertical_alignment = 1
+
+[node name="PriceOld" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@255/CardColumn/PriceRow/_HBoxContainer_245" unique_id=299594059]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65882355, 0.59607846, 0.5019608, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "price_old"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_246" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@255/CardColumn" unique_id=1724267756]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="BuyRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@255/CardColumn" unique_id=1604679793]
+layout_mode = 2
+
+[node name="BuyBtn" type="Button" parent="GoodsScroll/GoodsGrid/@Panel@255/CardColumn/BuyRow" unique_id=1980279107]
+custom_minimum_size = Vector2(110, 36)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_umxfb")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_mq104")
+theme_override_styles/hover = SubResource("StyleBoxFlat_at3bq")
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
+text = "购  买"
+metadata/__signal_pressed = "_on_buy_pressed"
+
+[node name="SoldOutStamp" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@255" unique_id=664550475]
+visible = false
+custom_minimum_size = Vector2(110, 52)
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+theme_override_styles/panel = SubResource("StyleBoxFlat_lcvmo")
+metadata/__anchor = "center"
+metadata/__script_vars = {}
+
+[node name="StampText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@255/SoldOutStamp" unique_id=2624328]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.6901961, 0.22745098, 0.18039216, 1)
+text = "售  罄"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="@Panel@256" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1019982017]
+custom_minimum_size = Vector2(205, 190)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_ehn7u")
+script = ExtResource("1_t6iq7")
+quality = "珍品"
+icon = "🗡️"
+title = "诛仙剑"
+price = "4800"
+metadata/__script_vars = {}
+metadata/__data_contract = PackedStringArray("quality", "icon", "title", "price", "price_old", "countdown", "sold_out")
+metadata/category = "tool"
+metadata/quality = "珍品"
+metadata/__item_data = {
+"category": "tool",
+"icon": "🗡️",
+"price": "4800",
+"quality": "珍品",
+"title": "诛仙剑"
+}
+
+[node name="QualityTag" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@256" unique_id=80387504]
+custom_minimum_size = Vector2(26, 54)
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ypm4c")
+metadata/__anchor = "top_left"
+metadata/__script_vars = {}
+
+[node name="QualityText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@256/QualityTag" unique_id=104451907]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="CountdownLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@256" unique_id=17550540]
+visible = false
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_top = 8.0
+offset_right = -8.0
+theme_override_colors/font_color = Color(0.76862746, 0.47843137, 0.16470589, 1)
+metadata/__tpl_text = "countdown"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "top_right"
+metadata/__script_vars = {}
+
+[node name="CardColumn" type="VBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@256" unique_id=1571401505]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = -14.0
+offset_bottom = -12.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@256/CardColumn" unique_id=1188685948]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="GoodsIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@256/CardColumn/IconRow" unique_id=2050828681]
+layout_mode = 2
+theme_override_font_sizes/font_size = 54
+text = "🗡️"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="GoodsTitle" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@256/CardColumn" unique_id=1686737874]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "诛仙剑"
+horizontal_alignment = 1
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_240" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@256/CardColumn" unique_id=47546257]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="PriceRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@256/CardColumn" unique_id=1989521196]
+layout_mode = 2
+
+[node name="_HBoxContainer_245" type="HBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@256/CardColumn/PriceRow" unique_id=1965673181]
+layout_mode = 2
+
+[node name="_Label_241" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@256/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1382001767]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "💎"
+vertical_alignment = 1
+
+[node name="_Control_242" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@256/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1626170538]
+custom_minimum_size = Vector2(4, 0)
+layout_mode = 2
+
+[node name="_Label_243" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@256/CardColumn/PriceRow/_HBoxContainer_245" unique_id=722651107]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = "4800"
+vertical_alignment = 1
+metadata/__tpl_text = "price"
+metadata/__tpl_keys = "text"
+
+[node name="_Label_244" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@256/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1967199976]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = " 灵石"
+vertical_alignment = 1
+
+[node name="PriceOld" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@256/CardColumn/PriceRow/_HBoxContainer_245" unique_id=2071846234]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65882355, 0.59607846, 0.5019608, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "price_old"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_246" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@256/CardColumn" unique_id=2087292542]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="BuyRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@256/CardColumn" unique_id=1698259969]
+layout_mode = 2
+
+[node name="BuyBtn" type="Button" parent="GoodsScroll/GoodsGrid/@Panel@256/CardColumn/BuyRow" unique_id=939484385]
+custom_minimum_size = Vector2(110, 36)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_umxfb")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_mq104")
+theme_override_styles/hover = SubResource("StyleBoxFlat_at3bq")
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
+text = "购  买"
+metadata/__signal_pressed = "_on_buy_pressed"
+
+[node name="SoldOutStamp" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@256" unique_id=1022808423]
+visible = false
+custom_minimum_size = Vector2(110, 52)
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+theme_override_styles/panel = SubResource("StyleBoxFlat_lcvmo")
+metadata/__anchor = "center"
+metadata/__script_vars = {}
+
+[node name="StampText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@256/SoldOutStamp" unique_id=2021734520]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.6901961, 0.22745098, 0.18039216, 1)
+text = "售  罄"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="@Panel@257" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1200340211]
+custom_minimum_size = Vector2(205, 190)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_ehn7u")
+script = ExtResource("1_t6iq7")
+quality = "上品"
+icon = "🪞"
+title = "八卦镜"
+price = "1500"
+metadata/__script_vars = {}
+metadata/__data_contract = PackedStringArray("quality", "icon", "title", "price", "price_old", "countdown", "sold_out")
+metadata/category = "tool"
+metadata/quality = "上品"
+metadata/__item_data = {
+"category": "tool",
+"icon": "🪞",
+"price": "1500",
+"quality": "上品",
+"title": "八卦镜"
+}
+
+[node name="QualityTag" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@257" unique_id=1442748709]
+custom_minimum_size = Vector2(26, 54)
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ypm4c")
+metadata/__anchor = "top_left"
+metadata/__script_vars = {}
+
+[node name="QualityText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@257/QualityTag" unique_id=1845760589]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="CountdownLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@257" unique_id=1300295794]
+visible = false
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_top = 8.0
+offset_right = -8.0
+theme_override_colors/font_color = Color(0.76862746, 0.47843137, 0.16470589, 1)
+metadata/__tpl_text = "countdown"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "top_right"
+metadata/__script_vars = {}
+
+[node name="CardColumn" type="VBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@257" unique_id=1080669094]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = -14.0
+offset_bottom = -12.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@257/CardColumn" unique_id=1753014056]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="GoodsIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@257/CardColumn/IconRow" unique_id=708824375]
+layout_mode = 2
+theme_override_font_sizes/font_size = 54
+text = "🪞"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="GoodsTitle" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@257/CardColumn" unique_id=1897902873]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "八卦镜"
+horizontal_alignment = 1
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_240" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@257/CardColumn" unique_id=768743492]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="PriceRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@257/CardColumn" unique_id=540589]
+layout_mode = 2
+
+[node name="_HBoxContainer_245" type="HBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@257/CardColumn/PriceRow" unique_id=1248034692]
+layout_mode = 2
+
+[node name="_Label_241" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@257/CardColumn/PriceRow/_HBoxContainer_245" unique_id=213581985]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "💎"
+vertical_alignment = 1
+
+[node name="_Control_242" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@257/CardColumn/PriceRow/_HBoxContainer_245" unique_id=430969545]
+custom_minimum_size = Vector2(4, 0)
+layout_mode = 2
+
+[node name="_Label_243" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@257/CardColumn/PriceRow/_HBoxContainer_245" unique_id=2133180936]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = "1500"
+vertical_alignment = 1
+metadata/__tpl_text = "price"
+metadata/__tpl_keys = "text"
+
+[node name="_Label_244" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@257/CardColumn/PriceRow/_HBoxContainer_245" unique_id=531324086]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = " 灵石"
+vertical_alignment = 1
+
+[node name="PriceOld" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@257/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1501747319]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65882355, 0.59607846, 0.5019608, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "price_old"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_246" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@257/CardColumn" unique_id=892109285]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="BuyRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@257/CardColumn" unique_id=520675145]
+layout_mode = 2
+
+[node name="BuyBtn" type="Button" parent="GoodsScroll/GoodsGrid/@Panel@257/CardColumn/BuyRow" unique_id=602478557]
+custom_minimum_size = Vector2(110, 36)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_umxfb")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_mq104")
+theme_override_styles/hover = SubResource("StyleBoxFlat_at3bq")
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
+text = "购  买"
+metadata/__signal_pressed = "_on_buy_pressed"
+
+[node name="SoldOutStamp" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@257" unique_id=1504464512]
+visible = false
+custom_minimum_size = Vector2(110, 52)
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+theme_override_styles/panel = SubResource("StyleBoxFlat_lcvmo")
+metadata/__anchor = "center"
+metadata/__script_vars = {}
+
+[node name="StampText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@257/SoldOutStamp" unique_id=617646846]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.6901961, 0.22745098, 0.18039216, 1)
+text = "售  罄"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="@Panel@258" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1044338084]
+custom_minimum_size = Vector2(205, 190)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_ehn7u")
+script = ExtResource("1_t6iq7")
+quality = "限时"
+icon = "🔥"
+title = "风火轮"
+price = "1800"
+price_old = "¥2600"
+countdown = "⏱ 02:15:30"
+metadata/__script_vars = {}
+metadata/__data_contract = PackedStringArray("quality", "icon", "title", "price", "price_old", "countdown", "sold_out")
+metadata/category = "tool"
+metadata/quality = "限时"
+metadata/__item_data = {
+"category": "tool",
+"countdown": "⏱ 02:15:30",
+"icon": "🔥",
+"price": "1800",
+"price_old": "¥2600",
+"quality": "限时",
+"title": "风火轮"
+}
+
+[node name="QualityTag" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@258" unique_id=206105946]
+custom_minimum_size = Vector2(26, 54)
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ypm4c")
+metadata/__anchor = "top_left"
+metadata/__script_vars = {}
+
+[node name="QualityText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@258/QualityTag" unique_id=1705464880]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="CountdownLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@258" unique_id=337021552]
+visible = false
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_top = 8.0
+offset_right = -8.0
+theme_override_colors/font_color = Color(0.76862746, 0.47843137, 0.16470589, 1)
+text = "⏱ 02:15:30"
+metadata/__tpl_text = "countdown"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "top_right"
+metadata/__script_vars = {}
+
+[node name="CardColumn" type="VBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@258" unique_id=1021734261]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = -14.0
+offset_bottom = -12.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@258/CardColumn" unique_id=1585905038]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="GoodsIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@258/CardColumn/IconRow" unique_id=460057553]
+layout_mode = 2
+theme_override_font_sizes/font_size = 54
+text = "🔥"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="GoodsTitle" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@258/CardColumn" unique_id=402527599]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "风火轮"
+horizontal_alignment = 1
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_240" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@258/CardColumn" unique_id=1875391216]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="PriceRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@258/CardColumn" unique_id=1723925568]
+layout_mode = 2
+
+[node name="_HBoxContainer_245" type="HBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@258/CardColumn/PriceRow" unique_id=203638637]
+layout_mode = 2
+
+[node name="_Label_241" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@258/CardColumn/PriceRow/_HBoxContainer_245" unique_id=242005946]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "💎"
+vertical_alignment = 1
+
+[node name="_Control_242" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@258/CardColumn/PriceRow/_HBoxContainer_245" unique_id=359035854]
+custom_minimum_size = Vector2(4, 0)
+layout_mode = 2
+
+[node name="_Label_243" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@258/CardColumn/PriceRow/_HBoxContainer_245" unique_id=2065383112]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = "1800"
+vertical_alignment = 1
+metadata/__tpl_text = "price"
+metadata/__tpl_keys = "text"
+
+[node name="_Label_244" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@258/CardColumn/PriceRow/_HBoxContainer_245" unique_id=446419631]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = " 灵石"
+vertical_alignment = 1
+
+[node name="PriceOld" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@258/CardColumn/PriceRow/_HBoxContainer_245" unique_id=456240741]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65882355, 0.59607846, 0.5019608, 1)
+text = "¥2600"
+vertical_alignment = 1
+metadata/__tpl_text = "price_old"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_246" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@258/CardColumn" unique_id=1043796443]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="BuyRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@258/CardColumn" unique_id=595507186]
+layout_mode = 2
+
+[node name="BuyBtn" type="Button" parent="GoodsScroll/GoodsGrid/@Panel@258/CardColumn/BuyRow" unique_id=543400582]
+custom_minimum_size = Vector2(110, 36)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_umxfb")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_mq104")
+theme_override_styles/hover = SubResource("StyleBoxFlat_at3bq")
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
+text = "购  买"
+metadata/__signal_pressed = "_on_buy_pressed"
+
+[node name="SoldOutStamp" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@258" unique_id=450326327]
+visible = false
+custom_minimum_size = Vector2(110, 52)
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+theme_override_styles/panel = SubResource("StyleBoxFlat_lcvmo")
+metadata/__anchor = "center"
+metadata/__script_vars = {}
+
+[node name="StampText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@258/SoldOutStamp" unique_id=1514735020]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.6901961, 0.22745098, 0.18039216, 1)
+text = "售  罄"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="@Panel@259" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1303081346]
+custom_minimum_size = Vector2(205, 190)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_ehn7u")
+script = ExtResource("1_t6iq7")
+quality = "上品"
+icon = "📖"
+title = "吐纳诀"
+price = "1500"
+metadata/__script_vars = {}
+metadata/__data_contract = PackedStringArray("quality", "icon", "title", "price", "price_old", "countdown", "sold_out")
+metadata/category = "skill"
+metadata/quality = "上品"
+metadata/__item_data = {
+"category": "skill",
+"icon": "📖",
+"price": "1500",
+"quality": "上品",
+"title": "吐纳诀"
+}
+
+[node name="QualityTag" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@259" unique_id=602792058]
+custom_minimum_size = Vector2(26, 54)
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ypm4c")
+metadata/__anchor = "top_left"
+metadata/__script_vars = {}
+
+[node name="QualityText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@259/QualityTag" unique_id=1195681486]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="CountdownLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@259" unique_id=1491990763]
+visible = false
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_top = 8.0
+offset_right = -8.0
+theme_override_colors/font_color = Color(0.76862746, 0.47843137, 0.16470589, 1)
+metadata/__tpl_text = "countdown"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "top_right"
+metadata/__script_vars = {}
+
+[node name="CardColumn" type="VBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@259" unique_id=1450565880]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = -14.0
+offset_bottom = -12.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@259/CardColumn" unique_id=1366148020]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="GoodsIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@259/CardColumn/IconRow" unique_id=751746946]
+layout_mode = 2
+theme_override_font_sizes/font_size = 54
+text = "📖"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="GoodsTitle" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@259/CardColumn" unique_id=1239572136]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "吐纳诀"
+horizontal_alignment = 1
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_240" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@259/CardColumn" unique_id=526815194]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="PriceRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@259/CardColumn" unique_id=150477404]
+layout_mode = 2
+
+[node name="_HBoxContainer_245" type="HBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@259/CardColumn/PriceRow" unique_id=1729286120]
+layout_mode = 2
+
+[node name="_Label_241" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@259/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1745093380]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "💎"
+vertical_alignment = 1
+
+[node name="_Control_242" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@259/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1677664920]
+custom_minimum_size = Vector2(4, 0)
+layout_mode = 2
+
+[node name="_Label_243" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@259/CardColumn/PriceRow/_HBoxContainer_245" unique_id=2067503454]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = "1500"
+vertical_alignment = 1
+metadata/__tpl_text = "price"
+metadata/__tpl_keys = "text"
+
+[node name="_Label_244" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@259/CardColumn/PriceRow/_HBoxContainer_245" unique_id=729364471]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = " 灵石"
+vertical_alignment = 1
+
+[node name="PriceOld" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@259/CardColumn/PriceRow/_HBoxContainer_245" unique_id=307202099]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65882355, 0.59607846, 0.5019608, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "price_old"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_246" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@259/CardColumn" unique_id=138836218]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="BuyRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@259/CardColumn" unique_id=1679099336]
+layout_mode = 2
+
+[node name="BuyBtn" type="Button" parent="GoodsScroll/GoodsGrid/@Panel@259/CardColumn/BuyRow" unique_id=2021039540]
+custom_minimum_size = Vector2(110, 36)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_umxfb")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_mq104")
+theme_override_styles/hover = SubResource("StyleBoxFlat_at3bq")
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
+text = "购  买"
+metadata/__signal_pressed = "_on_buy_pressed"
+
+[node name="SoldOutStamp" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@259" unique_id=1723626002]
+visible = false
+custom_minimum_size = Vector2(110, 52)
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+theme_override_styles/panel = SubResource("StyleBoxFlat_lcvmo")
+metadata/__anchor = "center"
+metadata/__script_vars = {}
+
+[node name="StampText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@259/SoldOutStamp" unique_id=1689712028]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.6901961, 0.22745098, 0.18039216, 1)
+text = "售  罄"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="@Panel@260" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1902357101]
+custom_minimum_size = Vector2(205, 190)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_ehn7u")
+script = ExtResource("1_t6iq7")
+quality = "下品"
+icon = "🌀"
+title = "御风术"
+price = "900"
+metadata/__script_vars = {}
+metadata/__data_contract = PackedStringArray("quality", "icon", "title", "price", "price_old", "countdown", "sold_out")
+metadata/category = "skill"
+metadata/quality = "下品"
+metadata/__item_data = {
+"category": "skill",
+"icon": "🌀",
+"price": "900",
+"quality": "下品",
+"title": "御风术"
+}
+
+[node name="QualityTag" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@260" unique_id=1919208520]
+custom_minimum_size = Vector2(26, 54)
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ypm4c")
+metadata/__anchor = "top_left"
+metadata/__script_vars = {}
+
+[node name="QualityText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@260/QualityTag" unique_id=2085083903]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="CountdownLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@260" unique_id=905104366]
+visible = false
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_top = 8.0
+offset_right = -8.0
+theme_override_colors/font_color = Color(0.76862746, 0.47843137, 0.16470589, 1)
+metadata/__tpl_text = "countdown"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "top_right"
+metadata/__script_vars = {}
+
+[node name="CardColumn" type="VBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@260" unique_id=598629506]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = -14.0
+offset_bottom = -12.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@260/CardColumn" unique_id=1221869376]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="GoodsIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@260/CardColumn/IconRow" unique_id=1341519593]
+layout_mode = 2
+theme_override_font_sizes/font_size = 54
+text = "🌀"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="GoodsTitle" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@260/CardColumn" unique_id=1169004585]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "御风术"
+horizontal_alignment = 1
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_240" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@260/CardColumn" unique_id=1939789718]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="PriceRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@260/CardColumn" unique_id=1574872649]
+layout_mode = 2
+
+[node name="_HBoxContainer_245" type="HBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@260/CardColumn/PriceRow" unique_id=1215786334]
+layout_mode = 2
+
+[node name="_Label_241" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@260/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1696814629]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "💎"
+vertical_alignment = 1
+
+[node name="_Control_242" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@260/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1257921057]
+custom_minimum_size = Vector2(4, 0)
+layout_mode = 2
+
+[node name="_Label_243" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@260/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1416662156]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = "900"
+vertical_alignment = 1
+metadata/__tpl_text = "price"
+metadata/__tpl_keys = "text"
+
+[node name="_Label_244" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@260/CardColumn/PriceRow/_HBoxContainer_245" unique_id=804798098]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = " 灵石"
+vertical_alignment = 1
+
+[node name="PriceOld" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@260/CardColumn/PriceRow/_HBoxContainer_245" unique_id=977936955]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65882355, 0.59607846, 0.5019608, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "price_old"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_246" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@260/CardColumn" unique_id=1288663642]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="BuyRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@260/CardColumn" unique_id=508459956]
+layout_mode = 2
+
+[node name="BuyBtn" type="Button" parent="GoodsScroll/GoodsGrid/@Panel@260/CardColumn/BuyRow" unique_id=817960139]
+custom_minimum_size = Vector2(110, 36)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_umxfb")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_mq104")
+theme_override_styles/hover = SubResource("StyleBoxFlat_at3bq")
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
+text = "购  买"
+metadata/__signal_pressed = "_on_buy_pressed"
+
+[node name="SoldOutStamp" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@260" unique_id=379582459]
+visible = false
+custom_minimum_size = Vector2(110, 52)
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+theme_override_styles/panel = SubResource("StyleBoxFlat_lcvmo")
+metadata/__anchor = "center"
+metadata/__script_vars = {}
+
+[node name="StampText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@260/SoldOutStamp" unique_id=1008080346]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.6901961, 0.22745098, 0.18039216, 1)
+text = "售  罄"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="@Panel@261" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=2003713816]
+custom_minimum_size = Vector2(205, 190)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_ehn7u")
+script = ExtResource("1_t6iq7")
+quality = "珍品"
+icon = "🛡️"
+title = "金钟罩"
+price = "3200"
+metadata/__script_vars = {}
+metadata/__data_contract = PackedStringArray("quality", "icon", "title", "price", "price_old", "countdown", "sold_out")
+metadata/category = "skill"
+metadata/quality = "珍品"
+metadata/__item_data = {
+"category": "skill",
+"icon": "🛡️",
+"price": "3200",
+"quality": "珍品",
+"title": "金钟罩"
+}
+
+[node name="QualityTag" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@261" unique_id=407027691]
+custom_minimum_size = Vector2(26, 54)
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ypm4c")
+metadata/__anchor = "top_left"
+metadata/__script_vars = {}
+
+[node name="QualityText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@261/QualityTag" unique_id=1904152379]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="CountdownLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@261" unique_id=1869140921]
+visible = false
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_top = 8.0
+offset_right = -8.0
+theme_override_colors/font_color = Color(0.76862746, 0.47843137, 0.16470589, 1)
+metadata/__tpl_text = "countdown"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "top_right"
+metadata/__script_vars = {}
+
+[node name="CardColumn" type="VBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@261" unique_id=1282284962]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = -14.0
+offset_bottom = -12.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@261/CardColumn" unique_id=224417371]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="GoodsIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@261/CardColumn/IconRow" unique_id=1414233382]
+layout_mode = 2
+theme_override_font_sizes/font_size = 54
+text = "🛡️"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="GoodsTitle" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@261/CardColumn" unique_id=1749651464]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "金钟罩"
+horizontal_alignment = 1
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_240" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@261/CardColumn" unique_id=999979221]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="PriceRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@261/CardColumn" unique_id=1049248553]
+layout_mode = 2
+
+[node name="_HBoxContainer_245" type="HBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@261/CardColumn/PriceRow" unique_id=326284188]
+layout_mode = 2
+
+[node name="_Label_241" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@261/CardColumn/PriceRow/_HBoxContainer_245" unique_id=368389426]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "💎"
+vertical_alignment = 1
+
+[node name="_Control_242" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@261/CardColumn/PriceRow/_HBoxContainer_245" unique_id=725005141]
+custom_minimum_size = Vector2(4, 0)
+layout_mode = 2
+
+[node name="_Label_243" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@261/CardColumn/PriceRow/_HBoxContainer_245" unique_id=878461910]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = "3200"
+vertical_alignment = 1
+metadata/__tpl_text = "price"
+metadata/__tpl_keys = "text"
+
+[node name="_Label_244" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@261/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1210557490]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = " 灵石"
+vertical_alignment = 1
+
+[node name="PriceOld" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@261/CardColumn/PriceRow/_HBoxContainer_245" unique_id=105267973]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65882355, 0.59607846, 0.5019608, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "price_old"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_246" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@261/CardColumn" unique_id=255617632]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="BuyRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@261/CardColumn" unique_id=328670734]
+layout_mode = 2
+
+[node name="BuyBtn" type="Button" parent="GoodsScroll/GoodsGrid/@Panel@261/CardColumn/BuyRow" unique_id=496413370]
+custom_minimum_size = Vector2(110, 36)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_umxfb")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_mq104")
+theme_override_styles/hover = SubResource("StyleBoxFlat_at3bq")
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
+text = "购  买"
+metadata/__signal_pressed = "_on_buy_pressed"
+
+[node name="SoldOutStamp" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@261" unique_id=216870678]
+visible = false
+custom_minimum_size = Vector2(110, 52)
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+theme_override_styles/panel = SubResource("StyleBoxFlat_lcvmo")
+metadata/__anchor = "center"
+metadata/__script_vars = {}
+
+[node name="StampText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@261/SoldOutStamp" unique_id=948780526]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.6901961, 0.22745098, 0.18039216, 1)
+text = "售  罄"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="@Panel@262" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=706118625]
+custom_minimum_size = Vector2(205, 190)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_ehn7u")
+script = ExtResource("1_t6iq7")
+quality = "极品"
+icon = "📜"
+title = "大衍诀"
+price = "5200"
+metadata/__script_vars = {}
+metadata/__data_contract = PackedStringArray("quality", "icon", "title", "price", "price_old", "countdown", "sold_out")
+metadata/category = "skill"
+metadata/quality = "极品"
+metadata/__item_data = {
+"category": "skill",
+"icon": "📜",
+"price": "5200",
+"quality": "极品",
+"title": "大衍诀"
+}
+
+[node name="QualityTag" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@262" unique_id=928238741]
+custom_minimum_size = Vector2(26, 54)
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ypm4c")
+metadata/__anchor = "top_left"
+metadata/__script_vars = {}
+
+[node name="QualityText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@262/QualityTag" unique_id=513692810]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="CountdownLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@262" unique_id=758848099]
+visible = false
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_top = 8.0
+offset_right = -8.0
+theme_override_colors/font_color = Color(0.76862746, 0.47843137, 0.16470589, 1)
+metadata/__tpl_text = "countdown"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "top_right"
+metadata/__script_vars = {}
+
+[node name="CardColumn" type="VBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@262" unique_id=1226001423]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = -14.0
+offset_bottom = -12.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@262/CardColumn" unique_id=2095524311]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="GoodsIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@262/CardColumn/IconRow" unique_id=1984361480]
+layout_mode = 2
+theme_override_font_sizes/font_size = 54
+text = "📜"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="GoodsTitle" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@262/CardColumn" unique_id=1977377757]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "大衍诀"
+horizontal_alignment = 1
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_240" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@262/CardColumn" unique_id=113757545]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="PriceRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@262/CardColumn" unique_id=720011749]
+layout_mode = 2
+
+[node name="_HBoxContainer_245" type="HBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@262/CardColumn/PriceRow" unique_id=1951213649]
+layout_mode = 2
+
+[node name="_Label_241" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@262/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1946122747]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "💎"
+vertical_alignment = 1
+
+[node name="_Control_242" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@262/CardColumn/PriceRow/_HBoxContainer_245" unique_id=650805301]
+custom_minimum_size = Vector2(4, 0)
+layout_mode = 2
+
+[node name="_Label_243" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@262/CardColumn/PriceRow/_HBoxContainer_245" unique_id=582532718]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = "5200"
+vertical_alignment = 1
+metadata/__tpl_text = "price"
+metadata/__tpl_keys = "text"
+
+[node name="_Label_244" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@262/CardColumn/PriceRow/_HBoxContainer_245" unique_id=494976184]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = " 灵石"
+vertical_alignment = 1
+
+[node name="PriceOld" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@262/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1054271553]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65882355, 0.59607846, 0.5019608, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "price_old"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_246" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@262/CardColumn" unique_id=1093102523]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="BuyRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@262/CardColumn" unique_id=1596579790]
+layout_mode = 2
+
+[node name="BuyBtn" type="Button" parent="GoodsScroll/GoodsGrid/@Panel@262/CardColumn/BuyRow" unique_id=38958399]
+custom_minimum_size = Vector2(110, 36)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_umxfb")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_mq104")
+theme_override_styles/hover = SubResource("StyleBoxFlat_at3bq")
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
+text = "购  买"
+metadata/__signal_pressed = "_on_buy_pressed"
+
+[node name="SoldOutStamp" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@262" unique_id=1144380264]
+visible = false
+custom_minimum_size = Vector2(110, 52)
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+theme_override_styles/panel = SubResource("StyleBoxFlat_lcvmo")
+metadata/__anchor = "center"
+metadata/__script_vars = {}
+
+[node name="StampText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@262/SoldOutStamp" unique_id=456682672]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.6901961, 0.22745098, 0.18039216, 1)
+text = "售  罄"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="@Panel@263" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=2068142182]
+custom_minimum_size = Vector2(205, 190)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_ehn7u")
+script = ExtResource("1_t6iq7")
+quality = "上品"
+icon = "💨"
+title = "五行遁术"
+price = "2000"
+metadata/__script_vars = {}
+metadata/__data_contract = PackedStringArray("quality", "icon", "title", "price", "price_old", "countdown", "sold_out")
+metadata/category = "skill"
+metadata/quality = "上品"
+metadata/__item_data = {
+"category": "skill",
+"icon": "💨",
+"price": "2000",
+"quality": "上品",
+"title": "五行遁术"
+}
+
+[node name="QualityTag" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@263" unique_id=1328551692]
+custom_minimum_size = Vector2(26, 54)
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ypm4c")
+metadata/__anchor = "top_left"
+metadata/__script_vars = {}
+
+[node name="QualityText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@263/QualityTag" unique_id=1244167460]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="CountdownLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@263" unique_id=168760823]
+visible = false
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_top = 8.0
+offset_right = -8.0
+theme_override_colors/font_color = Color(0.76862746, 0.47843137, 0.16470589, 1)
+metadata/__tpl_text = "countdown"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "top_right"
+metadata/__script_vars = {}
+
+[node name="CardColumn" type="VBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@263" unique_id=1602144831]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = -14.0
+offset_bottom = -12.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@263/CardColumn" unique_id=1224440596]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="GoodsIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@263/CardColumn/IconRow" unique_id=154432116]
+layout_mode = 2
+theme_override_font_sizes/font_size = 54
+text = "💨"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="GoodsTitle" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@263/CardColumn" unique_id=1178050228]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "五行遁术"
+horizontal_alignment = 1
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_240" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@263/CardColumn" unique_id=1765923500]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="PriceRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@263/CardColumn" unique_id=947940945]
+layout_mode = 2
+
+[node name="_HBoxContainer_245" type="HBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@263/CardColumn/PriceRow" unique_id=44337034]
+layout_mode = 2
+
+[node name="_Label_241" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@263/CardColumn/PriceRow/_HBoxContainer_245" unique_id=89480996]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "💎"
+vertical_alignment = 1
+
+[node name="_Control_242" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@263/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1623151881]
+custom_minimum_size = Vector2(4, 0)
+layout_mode = 2
+
+[node name="_Label_243" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@263/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1500006808]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = "2000"
+vertical_alignment = 1
+metadata/__tpl_text = "price"
+metadata/__tpl_keys = "text"
+
+[node name="_Label_244" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@263/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1984324270]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = " 灵石"
+vertical_alignment = 1
+
+[node name="PriceOld" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@263/CardColumn/PriceRow/_HBoxContainer_245" unique_id=406356503]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65882355, 0.59607846, 0.5019608, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "price_old"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_246" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@263/CardColumn" unique_id=1910714773]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="BuyRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@263/CardColumn" unique_id=1112510820]
+layout_mode = 2
+
+[node name="BuyBtn" type="Button" parent="GoodsScroll/GoodsGrid/@Panel@263/CardColumn/BuyRow" unique_id=1695338014]
+custom_minimum_size = Vector2(110, 36)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_umxfb")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_mq104")
+theme_override_styles/hover = SubResource("StyleBoxFlat_at3bq")
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
+text = "购  买"
+metadata/__signal_pressed = "_on_buy_pressed"
+
+[node name="SoldOutStamp" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@263" unique_id=668637829]
+visible = false
+custom_minimum_size = Vector2(110, 52)
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+theme_override_styles/panel = SubResource("StyleBoxFlat_lcvmo")
+metadata/__anchor = "center"
+metadata/__script_vars = {}
+
+[node name="StampText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@263/SoldOutStamp" unique_id=582444112]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.6901961, 0.22745098, 0.18039216, 1)
+text = "售  罄"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="@Panel@264" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1621549992]
+custom_minimum_size = Vector2(205, 190)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_ehn7u")
+script = ExtResource("1_t6iq7")
+quality = "下品"
+icon = "🪶"
+title = "轻身术"
+price = "600"
+metadata/__script_vars = {}
+metadata/__data_contract = PackedStringArray("quality", "icon", "title", "price", "price_old", "countdown", "sold_out")
+metadata/category = "skill"
+metadata/quality = "下品"
+metadata/__item_data = {
+"category": "skill",
+"icon": "🪶",
+"price": "600",
+"quality": "下品",
+"title": "轻身术"
+}
+
+[node name="QualityTag" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@264" unique_id=1691527441]
+custom_minimum_size = Vector2(26, 54)
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ypm4c")
+metadata/__anchor = "top_left"
+metadata/__script_vars = {}
+
+[node name="QualityText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@264/QualityTag" unique_id=683436704]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="CountdownLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@264" unique_id=1532582926]
+visible = false
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_top = 8.0
+offset_right = -8.0
+theme_override_colors/font_color = Color(0.76862746, 0.47843137, 0.16470589, 1)
+metadata/__tpl_text = "countdown"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "top_right"
+metadata/__script_vars = {}
+
+[node name="CardColumn" type="VBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@264" unique_id=943625925]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = -14.0
+offset_bottom = -12.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@264/CardColumn" unique_id=2012787943]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="GoodsIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@264/CardColumn/IconRow" unique_id=1609637625]
+layout_mode = 2
+theme_override_font_sizes/font_size = 54
+text = "🪶"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="GoodsTitle" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@264/CardColumn" unique_id=1274699922]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "轻身术"
+horizontal_alignment = 1
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_240" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@264/CardColumn" unique_id=1999273910]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="PriceRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@264/CardColumn" unique_id=1719090414]
+layout_mode = 2
+
+[node name="_HBoxContainer_245" type="HBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@264/CardColumn/PriceRow" unique_id=1973209213]
+layout_mode = 2
+
+[node name="_Label_241" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@264/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1498490737]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "💎"
+vertical_alignment = 1
+
+[node name="_Control_242" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@264/CardColumn/PriceRow/_HBoxContainer_245" unique_id=601410343]
+custom_minimum_size = Vector2(4, 0)
+layout_mode = 2
+
+[node name="_Label_243" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@264/CardColumn/PriceRow/_HBoxContainer_245" unique_id=338561966]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = "600"
+vertical_alignment = 1
+metadata/__tpl_text = "price"
+metadata/__tpl_keys = "text"
+
+[node name="_Label_244" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@264/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1023002326]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = " 灵石"
+vertical_alignment = 1
+
+[node name="PriceOld" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@264/CardColumn/PriceRow/_HBoxContainer_245" unique_id=327062665]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65882355, 0.59607846, 0.5019608, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "price_old"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_246" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@264/CardColumn" unique_id=229169400]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="BuyRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@264/CardColumn" unique_id=320765798]
+layout_mode = 2
+
+[node name="BuyBtn" type="Button" parent="GoodsScroll/GoodsGrid/@Panel@264/CardColumn/BuyRow" unique_id=1496989173]
+custom_minimum_size = Vector2(110, 36)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_umxfb")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_mq104")
+theme_override_styles/hover = SubResource("StyleBoxFlat_at3bq")
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
+text = "购  买"
+metadata/__signal_pressed = "_on_buy_pressed"
+
+[node name="SoldOutStamp" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@264" unique_id=888526015]
+visible = false
+custom_minimum_size = Vector2(110, 52)
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+theme_override_styles/panel = SubResource("StyleBoxFlat_lcvmo")
+metadata/__anchor = "center"
+metadata/__script_vars = {}
+
+[node name="StampText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@264/SoldOutStamp" unique_id=867992498]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.6901961, 0.22745098, 0.18039216, 1)
+text = "售  罄"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="@Panel@265" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1825873257]
+custom_minimum_size = Vector2(205, 190)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_ehn7u")
+script = ExtResource("1_t6iq7")
+quality = "限时"
+icon = "📜"
+title = "天雷符箓"
+price = "800"
+price_old = "¥1200"
+countdown = "⏱ 04:32:10"
+metadata/__script_vars = {}
+metadata/__data_contract = PackedStringArray("quality", "icon", "title", "price", "price_old", "countdown", "sold_out")
+metadata/category = "limited"
+metadata/quality = "限时"
+metadata/__item_data = {
+"category": "limited",
+"countdown": "⏱ 04:32:10",
+"icon": "📜",
+"price": "800",
+"price_old": "¥1200",
+"quality": "限时",
+"title": "天雷符箓"
+}
+
+[node name="QualityTag" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@265" unique_id=1267224653]
+custom_minimum_size = Vector2(26, 54)
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ypm4c")
+metadata/__anchor = "top_left"
+metadata/__script_vars = {}
+
+[node name="QualityText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@265/QualityTag" unique_id=2121554435]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="CountdownLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@265" unique_id=921319157]
+visible = false
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_top = 8.0
+offset_right = -8.0
+theme_override_colors/font_color = Color(0.76862746, 0.47843137, 0.16470589, 1)
+text = "⏱ 04:32:10"
+metadata/__tpl_text = "countdown"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "top_right"
+metadata/__script_vars = {}
+
+[node name="CardColumn" type="VBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@265" unique_id=1568649888]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = -14.0
+offset_bottom = -12.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@265/CardColumn" unique_id=855718917]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="GoodsIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@265/CardColumn/IconRow" unique_id=1232671570]
+layout_mode = 2
+theme_override_font_sizes/font_size = 54
+text = "📜"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="GoodsTitle" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@265/CardColumn" unique_id=942017127]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "天雷符箓"
+horizontal_alignment = 1
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_240" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@265/CardColumn" unique_id=991042009]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="PriceRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@265/CardColumn" unique_id=847352668]
+layout_mode = 2
+
+[node name="_HBoxContainer_245" type="HBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@265/CardColumn/PriceRow" unique_id=1420828295]
+layout_mode = 2
+
+[node name="_Label_241" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@265/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1984103015]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "💎"
+vertical_alignment = 1
+
+[node name="_Control_242" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@265/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1801902708]
+custom_minimum_size = Vector2(4, 0)
+layout_mode = 2
+
+[node name="_Label_243" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@265/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1180351178]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = "800"
+vertical_alignment = 1
+metadata/__tpl_text = "price"
+metadata/__tpl_keys = "text"
+
+[node name="_Label_244" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@265/CardColumn/PriceRow/_HBoxContainer_245" unique_id=774764760]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = " 灵石"
+vertical_alignment = 1
+
+[node name="PriceOld" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@265/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1709244284]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65882355, 0.59607846, 0.5019608, 1)
+text = "¥1200"
+vertical_alignment = 1
+metadata/__tpl_text = "price_old"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_246" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@265/CardColumn" unique_id=1047295022]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="BuyRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@265/CardColumn" unique_id=699865256]
+layout_mode = 2
+
+[node name="BuyBtn" type="Button" parent="GoodsScroll/GoodsGrid/@Panel@265/CardColumn/BuyRow" unique_id=1998638196]
+custom_minimum_size = Vector2(110, 36)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_umxfb")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_mq104")
+theme_override_styles/hover = SubResource("StyleBoxFlat_at3bq")
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
+text = "购  买"
+metadata/__signal_pressed = "_on_buy_pressed"
+
+[node name="SoldOutStamp" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@265" unique_id=904107163]
+visible = false
+custom_minimum_size = Vector2(110, 52)
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+theme_override_styles/panel = SubResource("StyleBoxFlat_lcvmo")
+metadata/__anchor = "center"
+metadata/__script_vars = {}
+
+[node name="StampText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@265/SoldOutStamp" unique_id=496347040]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.6901961, 0.22745098, 0.18039216, 1)
+text = "售  罄"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="@Panel@266" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1563429013]
+custom_minimum_size = Vector2(205, 190)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_ehn7u")
+script = ExtResource("1_t6iq7")
+quality = "极品"
+icon = "🏺"
+title = "紫金葫芦"
+price = "2600"
+metadata/__script_vars = {}
+metadata/__data_contract = PackedStringArray("quality", "icon", "title", "price", "price_old", "countdown", "sold_out")
+metadata/category = "limited"
+metadata/quality = "极品"
+metadata/__item_data = {
+"category": "limited",
+"icon": "🏺",
+"price": "2600",
+"quality": "极品",
+"title": "紫金葫芦"
+}
+
+[node name="QualityTag" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@266" unique_id=1332177240]
+custom_minimum_size = Vector2(26, 54)
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ypm4c")
+metadata/__anchor = "top_left"
+metadata/__script_vars = {}
+
+[node name="QualityText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@266/QualityTag" unique_id=634067822]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="CountdownLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@266" unique_id=580410545]
+visible = false
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_top = 8.0
+offset_right = -8.0
+theme_override_colors/font_color = Color(0.76862746, 0.47843137, 0.16470589, 1)
+metadata/__tpl_text = "countdown"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "top_right"
+metadata/__script_vars = {}
+
+[node name="CardColumn" type="VBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@266" unique_id=340643911]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = -14.0
+offset_bottom = -12.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@266/CardColumn" unique_id=1342091901]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="GoodsIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@266/CardColumn/IconRow" unique_id=110124077]
+layout_mode = 2
+theme_override_font_sizes/font_size = 54
+text = "🏺"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="GoodsTitle" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@266/CardColumn" unique_id=1161623822]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "紫金葫芦"
+horizontal_alignment = 1
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_240" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@266/CardColumn" unique_id=2022847856]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="PriceRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@266/CardColumn" unique_id=42883315]
+layout_mode = 2
+
+[node name="_HBoxContainer_245" type="HBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@266/CardColumn/PriceRow" unique_id=1339152132]
+layout_mode = 2
+
+[node name="_Label_241" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@266/CardColumn/PriceRow/_HBoxContainer_245" unique_id=868308721]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "💎"
+vertical_alignment = 1
+
+[node name="_Control_242" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@266/CardColumn/PriceRow/_HBoxContainer_245" unique_id=40916576]
+custom_minimum_size = Vector2(4, 0)
+layout_mode = 2
+
+[node name="_Label_243" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@266/CardColumn/PriceRow/_HBoxContainer_245" unique_id=922892567]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = "2600"
+vertical_alignment = 1
+metadata/__tpl_text = "price"
+metadata/__tpl_keys = "text"
+
+[node name="_Label_244" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@266/CardColumn/PriceRow/_HBoxContainer_245" unique_id=862455490]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = " 灵石"
+vertical_alignment = 1
+
+[node name="PriceOld" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@266/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1487197332]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65882355, 0.59607846, 0.5019608, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "price_old"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_246" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@266/CardColumn" unique_id=1407684030]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="BuyRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@266/CardColumn" unique_id=1556292311]
+layout_mode = 2
+
+[node name="BuyBtn" type="Button" parent="GoodsScroll/GoodsGrid/@Panel@266/CardColumn/BuyRow" unique_id=613199921]
+custom_minimum_size = Vector2(110, 36)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_umxfb")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_mq104")
+theme_override_styles/hover = SubResource("StyleBoxFlat_at3bq")
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
+text = "购  买"
+metadata/__signal_pressed = "_on_buy_pressed"
+
+[node name="SoldOutStamp" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@266" unique_id=573826321]
+visible = false
+custom_minimum_size = Vector2(110, 52)
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+theme_override_styles/panel = SubResource("StyleBoxFlat_lcvmo")
+metadata/__anchor = "center"
+metadata/__script_vars = {}
+
+[node name="StampText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@266/SoldOutStamp" unique_id=1588745616]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.6901961, 0.22745098, 0.18039216, 1)
+text = "售  罄"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="@Panel@267" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=366947353]
+custom_minimum_size = Vector2(205, 190)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_ehn7u")
+script = ExtResource("1_t6iq7")
+quality = "限时"
+icon = "🗿"
+title = "九阳残卷"
+price = "1800"
+price_old = "¥2600"
+countdown = "⏱ 01:12:45"
+metadata/__script_vars = {}
+metadata/__data_contract = PackedStringArray("quality", "icon", "title", "price", "price_old", "countdown", "sold_out")
+metadata/category = "limited"
+metadata/quality = "限时"
+metadata/__item_data = {
+"category": "limited",
+"countdown": "⏱ 01:12:45",
+"icon": "🗿",
+"price": "1800",
+"price_old": "¥2600",
+"quality": "限时",
+"title": "九阳残卷"
+}
+
+[node name="QualityTag" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@267" unique_id=869501385]
+custom_minimum_size = Vector2(26, 54)
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ypm4c")
+metadata/__anchor = "top_left"
+metadata/__script_vars = {}
+
+[node name="QualityText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@267/QualityTag" unique_id=1475804127]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="CountdownLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@267" unique_id=1804781313]
+visible = false
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_top = 8.0
+offset_right = -8.0
+theme_override_colors/font_color = Color(0.76862746, 0.47843137, 0.16470589, 1)
+text = "⏱ 01:12:45"
+metadata/__tpl_text = "countdown"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "top_right"
+metadata/__script_vars = {}
+
+[node name="CardColumn" type="VBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@267" unique_id=2109685705]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = -14.0
+offset_bottom = -12.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@267/CardColumn" unique_id=543458167]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="GoodsIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@267/CardColumn/IconRow" unique_id=883032539]
+layout_mode = 2
+theme_override_font_sizes/font_size = 54
+text = "🗿"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="GoodsTitle" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@267/CardColumn" unique_id=1746833913]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "九阳残卷"
+horizontal_alignment = 1
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_240" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@267/CardColumn" unique_id=595306161]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="PriceRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@267/CardColumn" unique_id=1654004924]
+layout_mode = 2
+
+[node name="_HBoxContainer_245" type="HBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@267/CardColumn/PriceRow" unique_id=719530447]
+layout_mode = 2
+
+[node name="_Label_241" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@267/CardColumn/PriceRow/_HBoxContainer_245" unique_id=661093471]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "💎"
+vertical_alignment = 1
+
+[node name="_Control_242" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@267/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1219164038]
+custom_minimum_size = Vector2(4, 0)
+layout_mode = 2
+
+[node name="_Label_243" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@267/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1806997737]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = "1800"
+vertical_alignment = 1
+metadata/__tpl_text = "price"
+metadata/__tpl_keys = "text"
+
+[node name="_Label_244" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@267/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1157499720]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = " 灵石"
+vertical_alignment = 1
+
+[node name="PriceOld" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@267/CardColumn/PriceRow/_HBoxContainer_245" unique_id=351076156]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65882355, 0.59607846, 0.5019608, 1)
+text = "¥2600"
+vertical_alignment = 1
+metadata/__tpl_text = "price_old"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_246" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@267/CardColumn" unique_id=355749766]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="BuyRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@267/CardColumn" unique_id=810438072]
+layout_mode = 2
+
+[node name="BuyBtn" type="Button" parent="GoodsScroll/GoodsGrid/@Panel@267/CardColumn/BuyRow" unique_id=1684507736]
+custom_minimum_size = Vector2(110, 36)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_umxfb")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_mq104")
+theme_override_styles/hover = SubResource("StyleBoxFlat_at3bq")
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
+text = "购  买"
+metadata/__signal_pressed = "_on_buy_pressed"
+
+[node name="SoldOutStamp" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@267" unique_id=1465308032]
+visible = false
+custom_minimum_size = Vector2(110, 52)
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+theme_override_styles/panel = SubResource("StyleBoxFlat_lcvmo")
+metadata/__anchor = "center"
+metadata/__script_vars = {}
+
+[node name="StampText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@267/SoldOutStamp" unique_id=709029374]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.6901961, 0.22745098, 0.18039216, 1)
+text = "售  罄"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="@Panel@268" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=980977124]
+custom_minimum_size = Vector2(205, 190)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_ehn7u")
+script = ExtResource("1_t6iq7")
+quality = "珍品"
+icon = "🔮"
+title = "混沌珠"
+price = "8800"
+metadata/__script_vars = {}
+metadata/__data_contract = PackedStringArray("quality", "icon", "title", "price", "price_old", "countdown", "sold_out")
+metadata/category = "limited"
+metadata/quality = "珍品"
+metadata/__item_data = {
+"category": "limited",
+"icon": "🔮",
+"price": "8800",
+"quality": "珍品",
+"title": "混沌珠"
+}
+
+[node name="QualityTag" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@268" unique_id=1718108494]
+custom_minimum_size = Vector2(26, 54)
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ypm4c")
+metadata/__anchor = "top_left"
+metadata/__script_vars = {}
+
+[node name="QualityText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@268/QualityTag" unique_id=831286871]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="CountdownLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@268" unique_id=1703406794]
+visible = false
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_top = 8.0
+offset_right = -8.0
+theme_override_colors/font_color = Color(0.76862746, 0.47843137, 0.16470589, 1)
+metadata/__tpl_text = "countdown"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "top_right"
+metadata/__script_vars = {}
+
+[node name="CardColumn" type="VBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@268" unique_id=1767004589]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = -14.0
+offset_bottom = -12.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@268/CardColumn" unique_id=1599709017]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="GoodsIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@268/CardColumn/IconRow" unique_id=1732714177]
+layout_mode = 2
+theme_override_font_sizes/font_size = 54
+text = "🔮"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="GoodsTitle" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@268/CardColumn" unique_id=1092978569]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "混沌珠"
+horizontal_alignment = 1
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_240" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@268/CardColumn" unique_id=1962605805]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="PriceRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@268/CardColumn" unique_id=1953950161]
+layout_mode = 2
+
+[node name="_HBoxContainer_245" type="HBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@268/CardColumn/PriceRow" unique_id=1308469149]
+layout_mode = 2
+
+[node name="_Label_241" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@268/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1616040899]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "💎"
+vertical_alignment = 1
+
+[node name="_Control_242" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@268/CardColumn/PriceRow/_HBoxContainer_245" unique_id=686262321]
+custom_minimum_size = Vector2(4, 0)
+layout_mode = 2
+
+[node name="_Label_243" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@268/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1552340116]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = "8800"
+vertical_alignment = 1
+metadata/__tpl_text = "price"
+metadata/__tpl_keys = "text"
+
+[node name="_Label_244" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@268/CardColumn/PriceRow/_HBoxContainer_245" unique_id=385237230]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = " 灵石"
+vertical_alignment = 1
+
+[node name="PriceOld" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@268/CardColumn/PriceRow/_HBoxContainer_245" unique_id=1650397289]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65882355, 0.59607846, 0.5019608, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "price_old"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_246" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@268/CardColumn" unique_id=1421742638]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="BuyRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@268/CardColumn" unique_id=36604686]
+layout_mode = 2
+
+[node name="BuyBtn" type="Button" parent="GoodsScroll/GoodsGrid/@Panel@268/CardColumn/BuyRow" unique_id=337920617]
+custom_minimum_size = Vector2(110, 36)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_umxfb")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_mq104")
+theme_override_styles/hover = SubResource("StyleBoxFlat_at3bq")
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
+text = "购  买"
+metadata/__signal_pressed = "_on_buy_pressed"
+
+[node name="SoldOutStamp" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@268" unique_id=1825042945]
+visible = false
+custom_minimum_size = Vector2(110, 52)
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+theme_override_styles/panel = SubResource("StyleBoxFlat_lcvmo")
+metadata/__anchor = "center"
+metadata/__script_vars = {}
+
+[node name="StampText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@268/SoldOutStamp" unique_id=17161920]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.6901961, 0.22745098, 0.18039216, 1)
+text = "售  罄"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="@Panel@269" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=165141254]
+custom_minimum_size = Vector2(205, 190)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_ehn7u")
+script = ExtResource("1_t6iq7")
+quality = "限时"
+icon = "💊"
+title = "丹药礼包"
+price = "600"
+price_old = "¥800"
+countdown = "⏱ 00:48:20"
+metadata/__script_vars = {}
+metadata/__data_contract = PackedStringArray("quality", "icon", "title", "price", "price_old", "countdown", "sold_out")
+metadata/category = "limited"
+metadata/quality = "限时"
+metadata/__item_data = {
+"category": "limited",
+"countdown": "⏱ 00:48:20",
+"icon": "💊",
+"price": "600",
+"price_old": "¥800",
+"quality": "限时",
+"title": "丹药礼包"
+}
+
+[node name="QualityTag" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@269" unique_id=1381128276]
+custom_minimum_size = Vector2(26, 54)
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ypm4c")
+metadata/__anchor = "top_left"
+metadata/__script_vars = {}
+
+[node name="QualityText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@269/QualityTag" unique_id=1708918813]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="CountdownLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@269" unique_id=1178156860]
+visible = false
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_top = 8.0
+offset_right = -8.0
+theme_override_colors/font_color = Color(0.76862746, 0.47843137, 0.16470589, 1)
+text = "⏱ 00:48:20"
+metadata/__tpl_text = "countdown"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "top_right"
+metadata/__script_vars = {}
+
+[node name="CardColumn" type="VBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@269" unique_id=731641736]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = -14.0
+offset_bottom = -12.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@269/CardColumn" unique_id=2128870464]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="GoodsIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@269/CardColumn/IconRow" unique_id=626854139]
+layout_mode = 2
+theme_override_font_sizes/font_size = 54
+text = "💊"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="GoodsTitle" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@269/CardColumn" unique_id=163185470]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "丹药礼包"
+horizontal_alignment = 1
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_240" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@269/CardColumn" unique_id=1456942220]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="PriceRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@269/CardColumn" unique_id=1067987816]
+layout_mode = 2
+
+[node name="_HBoxContainer_245" type="HBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@269/CardColumn/PriceRow" unique_id=354067676]
+layout_mode = 2
+
+[node name="_Label_241" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@269/CardColumn/PriceRow/_HBoxContainer_245" unique_id=672575272]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "💎"
+vertical_alignment = 1
+
+[node name="_Control_242" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@269/CardColumn/PriceRow/_HBoxContainer_245" unique_id=288750168]
+custom_minimum_size = Vector2(4, 0)
+layout_mode = 2
+
+[node name="_Label_243" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@269/CardColumn/PriceRow/_HBoxContainer_245" unique_id=645627312]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = "600"
+vertical_alignment = 1
+metadata/__tpl_text = "price"
+metadata/__tpl_keys = "text"
+
+[node name="_Label_244" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@269/CardColumn/PriceRow/_HBoxContainer_245" unique_id=733539266]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = " 灵石"
+vertical_alignment = 1
+
+[node name="PriceOld" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@269/CardColumn/PriceRow/_HBoxContainer_245" unique_id=174571486]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65882355, 0.59607846, 0.5019608, 1)
+text = "¥800"
+vertical_alignment = 1
+metadata/__tpl_text = "price_old"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_246" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@269/CardColumn" unique_id=148452726]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="BuyRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@269/CardColumn" unique_id=220202556]
+layout_mode = 2
+
+[node name="BuyBtn" type="Button" parent="GoodsScroll/GoodsGrid/@Panel@269/CardColumn/BuyRow" unique_id=519222243]
+custom_minimum_size = Vector2(110, 36)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_umxfb")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_mq104")
+theme_override_styles/hover = SubResource("StyleBoxFlat_at3bq")
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
+text = "购  买"
+metadata/__signal_pressed = "_on_buy_pressed"
+
+[node name="SoldOutStamp" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@269" unique_id=1694491818]
+visible = false
+custom_minimum_size = Vector2(110, 52)
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+theme_override_styles/panel = SubResource("StyleBoxFlat_lcvmo")
+metadata/__anchor = "center"
+metadata/__script_vars = {}
+
+[node name="StampText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@269/SoldOutStamp" unique_id=827366677]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.6901961, 0.22745098, 0.18039216, 1)
+text = "售  罄"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="@Panel@270" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=2009896409]
+custom_minimum_size = Vector2(205, 190)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_ehn7u")
+script = ExtResource("1_t6iq7")
+quality = "上品"
+icon = "👝"
+title = "储物戒指"
+price = "1200"
+sold_out = true
+metadata/__script_vars = {}
+metadata/__data_contract = PackedStringArray("quality", "icon", "title", "price", "price_old", "countdown", "sold_out")
+metadata/category = "limited"
+metadata/quality = "上品"
+metadata/sold_out = true
+metadata/__item_data = {
+"category": "limited",
+"icon": "👝",
+"price": "1200",
+"quality": "上品",
+"sold_out": true,
+"title": "储物戒指"
+}
+
+[node name="QualityTag" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@270" unique_id=1915478499]
+custom_minimum_size = Vector2(26, 54)
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ypm4c")
+metadata/__anchor = "top_left"
+metadata/__script_vars = {}
+
+[node name="QualityText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@270/QualityTag" unique_id=1359326862]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="CountdownLabel" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@270" unique_id=1668626434]
+visible = false
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_top = 8.0
+offset_right = -8.0
+theme_override_colors/font_color = Color(0.76862746, 0.47843137, 0.16470589, 1)
+metadata/__tpl_text = "countdown"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "top_right"
+metadata/__script_vars = {}
+
+[node name="CardColumn" type="VBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@270" unique_id=1600084076]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = -14.0
+offset_bottom = -12.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@270/CardColumn" unique_id=1960295452]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="GoodsIcon" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@270/CardColumn/IconRow" unique_id=1809350457]
+layout_mode = 2
+theme_override_font_sizes/font_size = 54
+text = "👝"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="GoodsTitle" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@270/CardColumn" unique_id=961631898]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "储物戒指"
+horizontal_alignment = 1
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_240" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@270/CardColumn" unique_id=585032605]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="PriceRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@270/CardColumn" unique_id=1376968712]
+layout_mode = 2
+
+[node name="_HBoxContainer_245" type="HBoxContainer" parent="GoodsScroll/GoodsGrid/@Panel@270/CardColumn/PriceRow" unique_id=701275848]
+layout_mode = 2
+
+[node name="_Label_241" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@270/CardColumn/PriceRow/_HBoxContainer_245" unique_id=430913432]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "💎"
+vertical_alignment = 1
+
+[node name="_Control_242" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@270/CardColumn/PriceRow/_HBoxContainer_245" unique_id=965626897]
+custom_minimum_size = Vector2(4, 0)
+layout_mode = 2
+
+[node name="_Label_243" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@270/CardColumn/PriceRow/_HBoxContainer_245" unique_id=764418494]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = "1200"
+vertical_alignment = 1
+metadata/__tpl_text = "price"
+metadata/__tpl_keys = "text"
+
+[node name="_Label_244" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@270/CardColumn/PriceRow/_HBoxContainer_245" unique_id=674092266]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = " 灵石"
+vertical_alignment = 1
+
+[node name="PriceOld" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@270/CardColumn/PriceRow/_HBoxContainer_245" unique_id=741873936]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65882355, 0.59607846, 0.5019608, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "price_old"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_246" type="Control" parent="GoodsScroll/GoodsGrid/@Panel@270/CardColumn" unique_id=2024513252]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="BuyRow" type="CenterContainer" parent="GoodsScroll/GoodsGrid/@Panel@270/CardColumn" unique_id=315013073]
+layout_mode = 2
+
+[node name="BuyBtn" type="Button" parent="GoodsScroll/GoodsGrid/@Panel@270/CardColumn/BuyRow" unique_id=771445049]
+custom_minimum_size = Vector2(110, 36)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_umxfb")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_mq104")
+theme_override_styles/hover = SubResource("StyleBoxFlat_at3bq")
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
+text = "购  买"
+metadata/__signal_pressed = "_on_buy_pressed"
+
+[node name="SoldOutStamp" type="Panel" parent="GoodsScroll/GoodsGrid/@Panel@270" unique_id=837701106]
+visible = false
+custom_minimum_size = Vector2(110, 52)
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+theme_override_styles/panel = SubResource("StyleBoxFlat_lcvmo")
+metadata/__anchor = "center"
+metadata/__script_vars = {}
+
+[node name="StampText" type="Label" parent="GoodsScroll/GoodsGrid/@Panel@270/SoldOutStamp" unique_id=697486688]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.6901961, 0.22745098, 0.18039216, 1)
+text = "售  罄"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"

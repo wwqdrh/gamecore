@@ -32,8 +32,10 @@ func _setup_fixtures() -> void:
 """)
 	_write("cycle_b.gml", """
 <ui>
-	<Label text="B"/>
-	<Gml src="cycle_a.gml"/>
+	<VBoxContainer>
+		<Label text="B"/>
+		<Gml src="cycle_a.gml"/>
+	</VBoxContainer>
 </ui>
 """)
 

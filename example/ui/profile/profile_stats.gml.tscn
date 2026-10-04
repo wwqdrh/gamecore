@@ -1,0 +1,165 @@
+[gd_scene format=3]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2l87p"]
+bg_color = Color(0.9137255, 0.8745098, 0.76862746, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.72156864, 0.6509804, 0.47058824, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[node name="StatsBar" type="Panel" unique_id=868331291]
+custom_minimum_size = Vector2(0, 56)
+theme_override_styles/panel = SubResource("StyleBoxFlat_2l87p")
+metadata/__script_vars = {}
+
+[node name="StatsRow" type="HBoxContainer" parent="." unique_id=786730769]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="StatAttack" type="HBoxContainer" parent="StatsRow" unique_id=1768196067]
+layout_mode = 2
+
+[node name="@Label@91" type="Label" parent="StatsRow/StatAttack" unique_id=2141351533]
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+text = "⚔️"
+vertical_alignment = 1
+
+[node name="@Control@92" type="Control" parent="StatsRow/StatAttack" unique_id=1093995682]
+custom_minimum_size = Vector2(6, 0)
+layout_mode = 2
+
+[node name="@Label@93" type="Label" parent="StatsRow/StatAttack" unique_id=515774941]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.41960785, 0.3529412, 0.24313726, 1)
+text = "攻击"
+vertical_alignment = 1
+
+[node name="@Control@94" type="Control" parent="StatsRow/StatAttack" unique_id=1187211516]
+custom_minimum_size = Vector2(6, 0)
+layout_mode = 2
+
+[node name="AttackValue" type="Label" parent="StatsRow/StatAttack" unique_id=1390608305]
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+text = "128"
+vertical_alignment = 1
+
+[node name="@Control@95" type="Control" parent="StatsRow" unique_id=774157519]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="StatDefense" type="HBoxContainer" parent="StatsRow" unique_id=528322154]
+layout_mode = 2
+
+[node name="@Label@96" type="Label" parent="StatsRow/StatDefense" unique_id=1864817348]
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+text = "🛡️"
+vertical_alignment = 1
+
+[node name="@Control@97" type="Control" parent="StatsRow/StatDefense" unique_id=1947000135]
+custom_minimum_size = Vector2(6, 0)
+layout_mode = 2
+
+[node name="@Label@98" type="Label" parent="StatsRow/StatDefense" unique_id=708501318]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.41960785, 0.3529412, 0.24313726, 1)
+text = "防御"
+vertical_alignment = 1
+
+[node name="@Control@99" type="Control" parent="StatsRow/StatDefense" unique_id=1980929969]
+custom_minimum_size = Vector2(6, 0)
+layout_mode = 2
+
+[node name="DefenseValue" type="Label" parent="StatsRow/StatDefense" unique_id=2077853014]
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+text = "86"
+vertical_alignment = 1
+
+[node name="@Control@100" type="Control" parent="StatsRow" unique_id=1332288931]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="StatHealth" type="HBoxContainer" parent="StatsRow" unique_id=417837715]
+layout_mode = 2
+
+[node name="@Label@101" type="Label" parent="StatsRow/StatHealth" unique_id=1634297536]
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+text = "❤️"
+vertical_alignment = 1
+
+[node name="@Control@102" type="Control" parent="StatsRow/StatHealth" unique_id=1563122588]
+custom_minimum_size = Vector2(6, 0)
+layout_mode = 2
+
+[node name="@Label@103" type="Label" parent="StatsRow/StatHealth" unique_id=675847243]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.41960785, 0.3529412, 0.24313726, 1)
+text = "气血"
+vertical_alignment = 1
+
+[node name="@Control@104" type="Control" parent="StatsRow/StatHealth" unique_id=561577402]
+custom_minimum_size = Vector2(6, 0)
+layout_mode = 2
+
+[node name="HealthValue" type="Label" parent="StatsRow/StatHealth" unique_id=1197581476]
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+text = "756"
+vertical_alignment = 1
+
+[node name="@Control@105" type="Control" parent="StatsRow" unique_id=440907259]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="StatMana" type="HBoxContainer" parent="StatsRow" unique_id=383779204]
+layout_mode = 2
+
+[node name="@Label@106" type="Label" parent="StatsRow/StatMana" unique_id=917217023]
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+text = "💧"
+vertical_alignment = 1
+
+[node name="@Control@107" type="Control" parent="StatsRow/StatMana" unique_id=1109328122]
+custom_minimum_size = Vector2(6, 0)
+layout_mode = 2
+
+[node name="@Label@108" type="Label" parent="StatsRow/StatMana" unique_id=272832798]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.41960785, 0.3529412, 0.24313726, 1)
+text = "灵力"
+vertical_alignment = 1
+
+[node name="@Control@109" type="Control" parent="StatsRow/StatMana" unique_id=1428011866]
+custom_minimum_size = Vector2(6, 0)
+layout_mode = 2
+
+[node name="ManaValue" type="Label" parent="StatsRow/StatMana" unique_id=1491858099]
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+text = "214"
+vertical_alignment = 1

@@ -70,7 +70,7 @@ func test_at_pressed_list_items_build_time() -> void:
 """)
 	assert_not_null(root, "解析不应失败")
 	var target := _make_target()
-	var list: GdUIVList = root.find_child("List", true, false)
+	var list: GdUIVList = root if String(root.name) == "List" else root.find_child("List", true, false)
 	assert_not_null(list, "列表应存在")
 	if list == null:
 		root.free()

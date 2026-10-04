@@ -4,9 +4,10 @@
 // 存档文件路径：user://coredata_{id}.data（id 为空时为 user://coredata.data）
 
 use std::collections::HashMap;
+use std::sync::atomic::{AtomicBool, Ordering};
 
 use godot::prelude::*;
-use godot::classes::{Engine, IObject, Object};
+use godot::classes::{Engine, IObject, Object, Node, SceneTree};
 use godot::builtin::{StringName, VarDictionary};
 
 use super::coredata::GdCoreData;
@@ -134,6 +135,43 @@ pub fn register_gdcore_singleton() {
     let name = StringName::from("GDCORE");
     Engine::singleton().register_singleton(&name, &instance);
     std::mem::forget(instance);
+}
+
+/// gml 自举钩子是否已连接（on_main_loop_frame 每帧探测，连接成功即停止）
+static GML_HOOK_CONNECTED: AtomicBool = AtomicBool::new(false);
+
+/// 连接 gml 树挂树自动连接钩子（幂等）：监听 SceneTree.node_added，
+/// 带标记的 gml 树根挂树后自动连接全部信号绑定（@pressed/@s_click_item 等）——
+/// 编辑器生成的 .gml.tscn 直开运行即完整可用（见 ui::gdui_builder::auto_connect_gml_tree）。
+/// 由 on_main_loop_frame 首帧调用（Scene stage init 时 main loop 尚未创建）
+pub fn connect_gml_auto_connect_hook() {
+    if GML_HOOK_CONNECTED.load(Ordering::Relaxed) {
+        return;
+    }
+    let Some(main_loop) = Engine::singleton().get_main_loop() else {
+        return;
+    };
+    if let Ok(mut tree) = main_loop.try_cast::<SceneTree>() {
+        tree.connect(
+            &StringName::from("node_added"),
+            &Callable::from_fn("gml_auto_connect", move |args: &[&Variant]| {
+                if let Some(v) = args.first() {
+                    if let Ok(n) = v.try_to::<Gd<Node>>() {
+                        crate::ui::gdui_builder::auto_connect_gml_tree(n);
+                    }
+                }
+                Variant::nil()
+            }),
+        );
+        GML_HOOK_CONNECTED.store(true, Ordering::Relaxed);
+        // 关键兜底：钩子在首帧才连上 node_added，而 F6/主场景在首帧之前
+        // 就已挂树（node_added 已错过）——补扫现有树，否则主场景内的 gml
+        // 面板信号全部不会连接
+        if let Some(root) = tree.get_root() {
+            let root_node = root.upcast::<Node>();
+            crate::ui::gdui_builder::scan_and_connect_gml_trees(&root_node);
+        }
+    }
 }
 
 pub fn unregister_gdcore_singleton() {

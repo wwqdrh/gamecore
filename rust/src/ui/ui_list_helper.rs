@@ -6,9 +6,10 @@
 use godot::prelude::*;
 use godot::builtin::{GString, StringName, Color, Variant, Array, Dictionary, NodePath};
 use godot::classes::{
-    Control, ColorRect, Shader, ShaderMaterial, ResourceLoader,
+    Control, ColorRect, InputEvent, InputEventMouseButton, Shader, ShaderMaterial, ResourceLoader,
 };
 use godot::classes::control::{LayoutPreset, MouseFilter};
+use godot::global::MouseButton;
 use godot::obj::NewGd;
 
 /// 方形高亮 Shader 代码
@@ -648,6 +649,10 @@ fn resolve_target_for_method(
 /// 连接单个节点上声明的全部 __signal_xxx 信号绑定（@pressed / on_pressed）
 /// 目标方法要求的参数多于信号提供的参数时，补绑发出节点——
 /// 条目回调可写成 _on_item(btn) 直接拿到按钮引用（与 allbind_signal 语义一致）
+///
+/// 点击回退：节点没有原生 pressed 信号时（Panel/Control 等任意控件声明
+/// @pressed），监听 gui_input 模拟 Button——左键按下触发目标方法，
+/// 参数补绑语义与原生信号一致（回调 _on_x(btn) 拿到声明节点）
 pub fn connect_node_signal_meta(node: &mut Gd<Control>, fallback: &Gd<Object>) {
     for (signal_name, method_name) in crate::ui::gdui_builder::get_signal_meta_list(node) {
         let method_sn = StringName::from(method_name.as_str());
@@ -661,24 +666,71 @@ pub fn connect_node_signal_meta(node: &mut Gd<Control>, fallback: &Gd<Object>) {
             continue;
         }
         let sig_sn = StringName::from(signal_name.as_str());
-        let callable = Callable::from_object_method(&target, &method_sn);
-        let extra = required_arg_count(&target, &method_sn)
-            .map(|req| req.saturating_sub(signal_arg_count(node, signal_name.as_str())))
-            .unwrap_or(0);
-        let bound = if extra > 0 {
-            let mut bind_args: Vec<Variant> = Vec::new();
-            bind_args.push(node.clone().to_variant());
-            for _ in 1..extra {
-                bind_args.push(Variant::nil());
+        if node.has_signal(&sig_sn) {
+            let callable = Callable::from_object_method(&target, &method_sn);
+            let extra = required_arg_count(&target, &method_sn)
+                .map(|req| req.saturating_sub(signal_arg_count(node, signal_name.as_str())))
+                .unwrap_or(0);
+            let bound = if extra > 0 {
+                let mut bind_args: Vec<Variant> = Vec::new();
+                bind_args.push(node.clone().to_variant());
+                for _ in 1..extra {
+                    bind_args.push(Variant::nil());
+                }
+                callable.bind(&bind_args)
+            } else {
+                callable
+            };
+            if !node.is_connected(&sig_sn, &bound) {
+                node.connect(&sig_sn, &bound);
             }
-            callable.bind(&bind_args)
+        } else if signal_name == "pressed" {
+            // 非 Button 控件的 @pressed 声明：gui_input 点击回退
+            connect_gui_input_click(node, &target, &method_sn);
         } else {
-            callable
-        };
-        if !node.is_connected(&sig_sn, &bound) {
-            node.connect(&sig_sn, &bound);
+            godot_warn!(
+                "[GdUiBuilder] 节点 {}({}) 不存在信号 {}，绑定 {}() 被跳过",
+                node.get_name(),
+                node.get_class(),
+                signal_name,
+                method_name
+            );
         }
     }
+}
+
+/// gui_input 点击回退：为没有 pressed 信号的控件（Panel/Control 等）模拟
+/// Button 点击——左键按下调用目标方法，补绑发出节点（原生 Button 语义一致）。
+/// meta __gml_click_fallback 防重复连接（from_fn 自定义 Callable 不相等，
+/// 无法用 is_connected 判重）
+fn connect_gui_input_click(node: &mut Gd<Control>, target: &Gd<Object>, method_sn: &StringName) {
+    let guard = StringName::from("__gml_click_fallback");
+    if node.has_meta(&guard) {
+        return;
+    }
+    node.set_meta(&guard, &true.to_variant());
+    let node_cb = node.clone();
+    let target_cb = target.clone();
+    let method_cb = method_sn.clone();
+    node.connect(
+        &StringName::from("gui_input"),
+        &Callable::from_fn("gml_click_fallback", move |args: &[&Variant]| {
+            if let Some(ev_var) = args.first() {
+                if let Ok(ev) = ev_var.try_to::<Gd<InputEvent>>() {
+                    if let Ok(mb) = ev.try_cast::<InputEventMouseButton>() {
+                        if mb.is_pressed() && mb.get_button_index() == MouseButton::LEFT {
+                            if target_cb.is_instance_valid() {
+                                let mut t = target_cb.clone();
+                                let emitter = node_cb.clone().to_variant();
+                                t.call(&method_cb, &[emitter]);
+                            }
+                        }
+                    }
+                }
+            }
+            Variant::nil()
+        }),
+    );
 }
 
 /// 递归连接节点树中带 __signal_xxx 元数据的节点到目标脚本

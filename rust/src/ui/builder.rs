@@ -104,20 +104,33 @@ impl UiBuilder {
             self.script_vars.insert(name.clone(), value.clone());
         }
 
-        // 创建根 Control 节点
-        let mut root = Control::new_alloc();
-        root.set_name("UiRoot");
-
-        // 应用 <ui> 根属性
-        for (key, value) in &parse_result.root.attributes {
-            apply_root_attribute(&mut root, key, value);
+        // 无包装层：<ui> 下必须恰好一个根元素节点（<style>/<script> 是数据块不算元素），
+        // 该元素直接作为解析结果的根节点——布局属性（anchor/margin/size）写在根元素上，
+        // gml 自身完整约定布局，产物 tscn 可直接在编辑器打开预览（根节点锚点相对视口生效）
+        let root_children = &parse_result.root.children;
+        if root_children.is_empty() {
+            return Err("GML <ui> 下没有根元素节点".to_string());
+        }
+        if root_children.len() > 1 {
+            return Err(format!(
+                "GML <ui> 下存在 {} 个根元素，必须唯一（多节点请包一层容器）",
+                root_children.len()
+            ));
         }
 
-        // 递归构建子节点
-        for child_node in &parse_result.root.children {
-            let mut child_control = self.build_node(child_node)?;
-            root.add_child(&child_control);
-            child_control.set_owner(&root);
+        // 构建根元素节点（含其全部子树）
+        let mut root = self.build_node(&root_children[0])?;
+
+        // <ui> 根属性作为根元素的布局默认值（根元素自身声明的同名属性优先）
+        let declared: std::collections::HashSet<&str> = root_children[0]
+            .attributes
+            .iter()
+            .map(|(k, _)| k.as_str())
+            .collect();
+        for (key, value) in &parse_result.root.attributes {
+            if !declared.contains(key.as_str()) {
+                apply_root_attribute(&mut root, key, value);
+            }
         }
 
         // 后处理：解析内部信号绑定（show:/hide:/toggle:NodeName）
@@ -342,8 +355,8 @@ impl UiBuilder {
         Ok(control)
     }
 
-    /// 构建 <Gml src="..."> 引用：解析目标 gml → 构建子树 → 剥掉 UiRoot 包装层，
-    /// 返回真正的根控件（由调用方挂到引用位置的父节点上）。
+    /// 构建 <Gml src="..."> 引用：解析目标 gml → 构建子树，返回根元素节点
+    /// （由调用方挂到引用位置的父节点上）。
     /// Gml 标签上的其余属性（name/anchor/margin/class/on_xxx 等）会覆盖式地
     /// 应用到被引用文件的根节点上。
     /// 主题与样式继承：子文件继承引用方的主题变量与 class 样式；
@@ -422,18 +435,8 @@ impl UiBuilder {
             pending_data: RefCell::new(Vec::new()),
             pending_filter: RefCell::new(Vec::new()),
         };
-        let mut wrapper = sub.build(&parse_result)?;
-
-        // 剥壳：UiRoot 包装层是构建器的实现细节，引用场景只保留根控件
-        let grafted_node = wrapper
-            .get_child(0)
-            .ok_or_else(|| format!("GML 引用文件为空: {}", path))?;
-        let mut grafted = grafted_node
-            .try_cast::<Control>()
-            .map_err(|_| format!("GML 引用根节点不是 Control: {}", path))?;
-        wrapper.remove_child(&grafted.clone().upcast::<godot::classes::Node>());
-        // pack 后包装层不再需要（Node 为手动内存，需显式释放）
-        wrapper.free();
+        // 无包装层：子构建结果即被引用文件的根元素节点，直接嫁接
+        let mut grafted = sub.build(&parse_result)?;
 
         // Gml 标签上的其余属性覆盖式应用到被引用根节点
         for (key, value) in &node.attributes {
@@ -474,20 +477,13 @@ impl UiBuilder {
     /// - 列表节点（UIVList/UIHList/UIGrid）+ 数组变量：直接 update(data, false) 驱动条目
     /// - 其他节点：变量存为节点 meta "__script_data"
     /// - 所有变量同时挂到根节点 meta "__script_vars"（含每个顶层子节点），控制器可读取
-    /// 挂载 <ui script="xxx.gd"> 声明的脚本到本文件的内容根节点
-    /// 挂载目标是 UiRoot 包装层的顶层子节点——<Gml> 嫁接与场景打包均保留该节点，
-    /// 条目被列表 duplicate 时脚本随节点复制，条目内 @pressed 声明可就近绑定自身脚本
+    /// 挂载 <ui script="xxx.gd"> 声明的脚本到根元素节点（gml 根即内容根，无包装层）——
+    /// <Gml> 嫁接与场景打包均保留该节点，条目被列表 duplicate 时脚本随节点复制，
+    /// 条目内 @pressed 声明可就近绑定自身脚本
     fn attach_ui_script(&self, root: &mut Gd<Control>) {
         let Some(rel) = &self.ui_script else { return; };
         let path = resolve_include_path(rel, self.base_dir.as_deref());
-        let Some(child) = root.get_child(0) else {
-            godot_warn!("[GdUiBuilder] <ui script=\"{}\"> 无顶层节点可挂载", rel);
-            return;
-        };
-        let Ok(mut target) = child.try_cast::<Control>() else {
-            godot_warn!("[GdUiBuilder] <ui script=\"{}\"> 顶层节点不是 Control，跳过挂载", rel);
-            return;
-        };
+        let mut target = root.clone();
         // 外部已挂脚本（如 GdGmlScene 场景脚本）时不覆盖
         if target.get_script().is_some() {
             godot_warn!(
@@ -502,6 +498,9 @@ impl UiBuilder {
                     // set_script 的类型安全包装对 Option<Gd<Script>> 的 AsArg 判定有
                     // corner case，走通用 call（Variant 签名）最稳
                     target.call(&StringName::from("set_script"), &[script.to_variant()]);
+                    // gml 树根标记：GDCORE 监听 node_added 时据此识别 gml 树，
+                    // 挂树后自动连接信号绑定（无包装层自举，tscn 直开运行即完整可用）
+                    target.set_meta(&StringName::from("__gml_root"), &true.to_variant());
                     // 数据契约 meta：记录脚本 @export 变量名列表（编辑器/检查工具可读取，
                     // 运行时注入由列表 update 按属性表实时收集，不依赖本 meta）
                     let contract = crate::ui::ui_list_helper::collect_export_var_names(&target);
@@ -1715,6 +1714,13 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
         }
         "size_flags_vertical" => {
             apply_size_flags_vertical(&mut control, value);
+        }
+        "stretch_ratio" => {
+            // 容器子节点的比例分配（配合 expand_fill）： stretch_ratio="3"
+            // 构建期静态生效（写入 size_flags_stretch_ratio），编辑器直开 tscn 即正确布局
+            if let Ok(ratio) = value.parse::<f32>() {
+                control.set_stretch_ratio(ratio);
+            }
         }
         "color" => {
             if tag == "ColorRect" {

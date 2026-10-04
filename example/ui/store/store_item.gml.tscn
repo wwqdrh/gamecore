@@ -1,0 +1,225 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://example/ui/store/store_item.gd" id="1_fgfgs"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vcxf3"]
+bg_color = Color(0.98039216, 0.95686275, 0.8862745, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.72156864, 0.627451, 0.41568628, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8s61o"]
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dxlsp"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.9098039, 0.7254902, 0.24313726, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.5411765, 0.41568628, 0.11764706, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_l7g75"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.8098039, 0.6254902, 0.14313725, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.5411765, 0.41568628, 0.11764706, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vqass"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(1, 0.8454902, 0.36313725, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3udni"]
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.6901961, 0.22745098, 0.18039216, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="GoodsCard" type="Panel" unique_id=674236054]
+custom_minimum_size = Vector2(205, 190)
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_vcxf3")
+script = ExtResource("1_fgfgs")
+metadata/__script_vars = {}
+metadata/__data_contract = PackedStringArray("quality", "icon", "title", "price", "price_old", "countdown", "sold_out")
+
+[node name="QualityTag" type="Panel" parent="." unique_id=772068430]
+custom_minimum_size = Vector2(26, 54)
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_8s61o")
+metadata/__anchor = "top_left"
+metadata/__script_vars = {}
+
+[node name="QualityText" type="Label" parent="QualityTag" unique_id=1977888395]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="CountdownLabel" type="Label" parent="." unique_id=225280711]
+visible = false
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_top = 8.0
+offset_right = -8.0
+theme_override_colors/font_color = Color(0.76862746, 0.47843137, 0.16470589, 1)
+metadata/__tpl_text = "countdown"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "top_right"
+metadata/__script_vars = {}
+
+[node name="CardColumn" type="VBoxContainer" parent="." unique_id=1809423191]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = -14.0
+offset_bottom = -12.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconRow" type="CenterContainer" parent="CardColumn" unique_id=582725476]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="GoodsIcon" type="Label" parent="CardColumn/IconRow" unique_id=1821933574]
+layout_mode = 2
+theme_override_font_sizes/font_size = 54
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="GoodsTitle" type="Label" parent="CardColumn" unique_id=1337910118]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+horizontal_alignment = 1
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="@Control@271" type="Control" parent="CardColumn" unique_id=1591753140]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="PriceRow" type="CenterContainer" parent="CardColumn" unique_id=1791291724]
+layout_mode = 2
+
+[node name="@HBoxContainer@276" type="HBoxContainer" parent="CardColumn/PriceRow" unique_id=1629279739]
+layout_mode = 2
+
+[node name="@Label@272" type="Label" parent="CardColumn/PriceRow/@HBoxContainer@276" unique_id=2090528608]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "💎"
+vertical_alignment = 1
+
+[node name="@Control@273" type="Control" parent="CardColumn/PriceRow/@HBoxContainer@276" unique_id=169956130]
+custom_minimum_size = Vector2(4, 0)
+layout_mode = 2
+
+[node name="@Label@274" type="Label" parent="CardColumn/PriceRow/@HBoxContainer@276" unique_id=410019868]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "price"
+metadata/__tpl_keys = "text"
+
+[node name="@Label@275" type="Label" parent="CardColumn/PriceRow/@HBoxContainer@276" unique_id=855352428]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = " 灵石"
+vertical_alignment = 1
+
+[node name="PriceOld" type="Label" parent="CardColumn/PriceRow/@HBoxContainer@276" unique_id=1914159005]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65882355, 0.59607846, 0.5019608, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "price_old"
+metadata/__tpl_keys = "text"
+
+[node name="@Control@277" type="Control" parent="CardColumn" unique_id=581588899]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="BuyRow" type="CenterContainer" parent="CardColumn" unique_id=1629320104]
+layout_mode = 2
+
+[node name="BuyBtn" type="Button" parent="CardColumn/BuyRow" unique_id=394315307]
+custom_minimum_size = Vector2(110, 36)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_dxlsp")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_l7g75")
+theme_override_styles/hover = SubResource("StyleBoxFlat_vqass")
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
+text = "购  买"
+metadata/__signal_pressed = "_on_buy_pressed"
+
+[node name="SoldOutStamp" type="Panel" parent="." unique_id=1471991239]
+visible = false
+custom_minimum_size = Vector2(110, 52)
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+theme_override_styles/panel = SubResource("StyleBoxFlat_3udni")
+metadata/__anchor = "center"
+metadata/__script_vars = {}
+
+[node name="StampText" type="Label" parent="SoldOutStamp" unique_id=1059522694]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.6901961, 0.22745098, 0.18039216, 1)
+text = "售  罄"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"

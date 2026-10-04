@@ -22,7 +22,8 @@ func test_script_array_binds_vlist() -> void:
 </ui>
 """)
 	assert_not_null(root, "解析不应失败")
-	var list := root.find_child("List", true, false)
+	# 无包装层：gml 根元素即解析结果根节点（本例根就是列表）
+	var list: Control = root if String(root.name) == "List" else root.find_child("List", true, false)
 	assert_not_null(list, "UIVList 应存在")
 	if list:
 		var item0 = list.get_at(0)
@@ -63,7 +64,7 @@ func test_script_vars_meta_and_dict_data() -> void:
 	assert_eq(info.get("level", 0), 3, "数字变量类型应保留")
 	assert_eq(info.get("open", false), true, "布尔变量类型应保留")
 	# data 属性节点：变量存为 __script_data meta
-	var panel := root.find_child("InfoPanel", true, false)
+	var panel: Control = root if String(root.name) == "InfoPanel" else root.find_child("InfoPanel", true, false)
 	assert_not_null(panel, "InfoPanel 应存在")
 	if panel:
 		assert_true(panel.has_meta("__script_data"), "data 节点应挂 __script_data meta")

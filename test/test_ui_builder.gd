@@ -20,8 +20,9 @@ func test_parse_string_basic_tree() -> void:
 	"""
 	var root: Control = builder.parse_string(markup)
 	assert_not_null(root, "解析结果不应为 null")
-	var vbox := root.get_child(0) if root.get_child_count() > 0 else null
-	assert_not_null(vbox, "ui 根下应有 VBoxContainer")
+	# 无包装层：<ui> 根元素直接作为解析结果根节点
+	var vbox: Control = root
+	assert_true(vbox is VBoxContainer, "根元素应为 VBoxContainer（无 UiRoot 包装层）")
 	if vbox is VBoxContainer:
 		assert_eq(vbox.get_child_count(), 2, "VBoxContainer 应有 2 个子节点")
 

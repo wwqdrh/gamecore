@@ -1,0 +1,559 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://example/ui/profile/skill_item.gd" id="1_rlw4h"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_w2mka"]
+bg_color = Color(0.9647059, 0.9411765, 0.87058824, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_f5ly7"]
+bg_color = Color(0.36862746, 0.5529412, 0.47843137, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vnwxo"]
+bg_color = Color(0.9372549, 0.9019608, 0.8039216, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0t6ts"]
+bg_color = Color(0.2901961, 0.47843137, 0.40784314, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.20784314, 0.34901962, 0.29411766, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_78sjv"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.9098039, 0.7254902, 0.24313726, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.5411765, 0.41568628, 0.11764706, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pot2f"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.8098039, 0.6254902, 0.14313725, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.5411765, 0.41568628, 0.11764706, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kgxyf"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(1, 0.8454902, 0.36313725, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[node name="SkillsPanel" type="Panel" unique_id=421016439]
+theme_override_styles/panel = SubResource("StyleBoxFlat_w2mka")
+metadata/__script_vars = {
+"skills": [{
+"btn_text": "升级",
+"icon": "🌀",
+"level": "Lv.4",
+"locked": false,
+"title": "吐纳诀"
+}, {
+"btn_text": "升级",
+"icon": "⚔️",
+"level": "Lv.2",
+"locked": false,
+"title": "青木剑诀"
+}, {
+"btn_text": "🔒",
+"icon": "🌪️",
+"level": "未习得",
+"locked": true,
+"title": "御风术"
+}]
+}
+
+[node name="SkillsColumn" type="VBoxContainer" parent="." unique_id=1178056193]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+metadata/__anchor = "full"
+metadata/__script_vars = {
+"skills": [{
+"btn_text": "升级",
+"icon": "🌀",
+"level": "Lv.4",
+"locked": false,
+"title": "吐纳诀"
+}, {
+"btn_text": "升级",
+"icon": "⚔️",
+"level": "Lv.2",
+"locked": false,
+"title": "青木剑诀"
+}, {
+"btn_text": "🔒",
+"icon": "🌪️",
+"level": "未习得",
+"locked": true,
+"title": "御风术"
+}]
+}
+
+[node name="SkillsHeader" type="Panel" parent="SkillsColumn" unique_id=437632329]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_f5ly7")
+
+[node name="SkillsHeaderText" type="Label" parent="SkillsColumn/SkillsHeader" unique_id=851630427]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 17
+theme_override_colors/font_color = Color(0.9490196, 0.9254902, 0.8509804, 1)
+text = "功法列表"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="@Control@81" type="Control" parent="SkillsColumn" unique_id=1524760386]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+
+[node name="SkillsScroll" type="ScrollContainer" parent="SkillsColumn" unique_id=2113640264]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="SkillList" type="GdUIVList" parent="SkillsColumn/SkillsScroll" unique_id=1768925501]
+layout_mode = 2
+size_flags_horizontal = 3
+metadata/__script_data = [{
+"btn_text": "升级",
+"icon": "🌀",
+"level": "Lv.4",
+"locked": false,
+"title": "吐纳诀"
+}, {
+"btn_text": "升级",
+"icon": "⚔️",
+"level": "Lv.2",
+"locked": false,
+"title": "青木剑诀"
+}, {
+"btn_text": "🔒",
+"icon": "🌪️",
+"level": "未习得",
+"locked": true,
+"title": "御风术"
+}]
+
+[node name="SkillItemRoot" type="Panel" parent="SkillsColumn/SkillsScroll/SkillList" unique_id=1827596597]
+visible = false
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_vnwxo")
+script = ExtResource("1_rlw4h")
+metadata/__script_vars = {}
+metadata/__data_contract = PackedStringArray("icon", "title", "level", "btn_text", "locked")
+
+[node name="SkillMargin" type="MarginContainer" parent="SkillsColumn/SkillsScroll/SkillList/SkillItemRoot" unique_id=849299919]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="SkillRow" type="HBoxContainer" parent="SkillsColumn/SkillsScroll/SkillList/SkillItemRoot/SkillMargin" unique_id=539849133]
+layout_mode = 2
+
+[node name="SkillIconBg" type="Panel" parent="SkillsColumn/SkillsScroll/SkillList/SkillItemRoot/SkillMargin/SkillRow" unique_id=1005557980]
+custom_minimum_size = Vector2(52, 52)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_0t6ts")
+
+[node name="SkillIcon" type="Label" parent="SkillsColumn/SkillsScroll/SkillList/SkillItemRoot/SkillMargin/SkillRow/SkillIconBg" unique_id=1226115302]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "full"
+
+[node name="@Control@84" type="Control" parent="SkillsColumn/SkillsScroll/SkillList/SkillItemRoot/SkillMargin/SkillRow" unique_id=2078879837]
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 2
+
+[node name="SkillInfo" type="VBoxContainer" parent="SkillsColumn/SkillsScroll/SkillList/SkillItemRoot/SkillMargin/SkillRow" unique_id=1707124685]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+
+[node name="SkillTitle" type="Label" parent="SkillsColumn/SkillsScroll/SkillList/SkillItemRoot/SkillMargin/SkillRow/SkillInfo" unique_id=32668524]
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="SkillLevel" type="Label" parent="SkillsColumn/SkillsScroll/SkillList/SkillItemRoot/SkillMargin/SkillRow/SkillInfo" unique_id=1529396723]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.5411765, 0.47843137, 0.34509805, 1)
+metadata/__tpl_text = "level"
+metadata/__tpl_keys = "text"
+
+[node name="@Control@85" type="Control" parent="SkillsColumn/SkillsScroll/SkillList/SkillItemRoot/SkillMargin/SkillRow" unique_id=620426371]
+custom_minimum_size = Vector2(8, 0)
+layout_mode = 2
+
+[node name="SkillBtn" type="Button" parent="SkillsColumn/SkillsScroll/SkillList/SkillItemRoot/SkillMargin/SkillRow" unique_id=768456668]
+custom_minimum_size = Vector2(76, 40)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/normal = SubResource("StyleBoxFlat_78sjv")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_pot2f")
+theme_override_styles/hover = SubResource("StyleBoxFlat_kgxyf")
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
+metadata/__tpl_text = "btn_text"
+metadata/__tpl_keys = "text"
+metadata/__signal_pressed = "_on_skill_action"
+
+[node name="@Panel@86" type="Panel" parent="SkillsColumn/SkillsScroll/SkillList" unique_id=538136048]
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_vnwxo")
+script = ExtResource("1_rlw4h")
+icon = "🌀"
+title = "吐纳诀"
+level = "Lv.4"
+btn_text = "升级"
+metadata/__script_vars = {}
+metadata/__data_contract = PackedStringArray("icon", "title", "level", "btn_text", "locked")
+metadata/locked = false
+metadata/__item_data = {
+"btn_text": "升级",
+"icon": "🌀",
+"level": "Lv.4",
+"locked": false,
+"title": "吐纳诀"
+}
+
+[node name="SkillMargin" type="MarginContainer" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@86" unique_id=628924677]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="SkillRow" type="HBoxContainer" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@86/SkillMargin" unique_id=615456350]
+layout_mode = 2
+
+[node name="SkillIconBg" type="Panel" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@86/SkillMargin/SkillRow" unique_id=799815364]
+custom_minimum_size = Vector2(52, 52)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_0t6ts")
+
+[node name="SkillIcon" type="Label" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@86/SkillMargin/SkillRow/SkillIconBg" unique_id=972316866]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 24
+text = "🌀"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "full"
+
+[node name="_Control_84" type="Control" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@86/SkillMargin/SkillRow" unique_id=1704482259]
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 2
+
+[node name="SkillInfo" type="VBoxContainer" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@86/SkillMargin/SkillRow" unique_id=752757914]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+
+[node name="SkillTitle" type="Label" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@86/SkillMargin/SkillRow/SkillInfo" unique_id=876228541]
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+text = "吐纳诀"
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="SkillLevel" type="Label" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@86/SkillMargin/SkillRow/SkillInfo" unique_id=1990789434]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.5411765, 0.47843137, 0.34509805, 1)
+text = "Lv.4"
+metadata/__tpl_text = "level"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_85" type="Control" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@86/SkillMargin/SkillRow" unique_id=1149829402]
+custom_minimum_size = Vector2(8, 0)
+layout_mode = 2
+
+[node name="SkillBtn" type="Button" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@86/SkillMargin/SkillRow" unique_id=1702917350]
+custom_minimum_size = Vector2(76, 40)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/normal = SubResource("StyleBoxFlat_78sjv")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_pot2f")
+theme_override_styles/hover = SubResource("StyleBoxFlat_kgxyf")
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
+text = "升级"
+metadata/__tpl_text = "btn_text"
+metadata/__tpl_keys = "text"
+metadata/__signal_pressed = "_on_skill_action"
+
+[node name="@Panel@87" type="Panel" parent="SkillsColumn/SkillsScroll/SkillList" unique_id=1449560266]
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_vnwxo")
+script = ExtResource("1_rlw4h")
+icon = "⚔️"
+title = "青木剑诀"
+level = "Lv.2"
+btn_text = "升级"
+metadata/__script_vars = {}
+metadata/__data_contract = PackedStringArray("icon", "title", "level", "btn_text", "locked")
+metadata/locked = false
+metadata/__item_data = {
+"btn_text": "升级",
+"icon": "⚔️",
+"level": "Lv.2",
+"locked": false,
+"title": "青木剑诀"
+}
+
+[node name="SkillMargin" type="MarginContainer" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@87" unique_id=104629562]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="SkillRow" type="HBoxContainer" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@87/SkillMargin" unique_id=1356173370]
+layout_mode = 2
+
+[node name="SkillIconBg" type="Panel" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@87/SkillMargin/SkillRow" unique_id=808279063]
+custom_minimum_size = Vector2(52, 52)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_0t6ts")
+
+[node name="SkillIcon" type="Label" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@87/SkillMargin/SkillRow/SkillIconBg" unique_id=1768071544]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 24
+text = "⚔️"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "full"
+
+[node name="_Control_84" type="Control" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@87/SkillMargin/SkillRow" unique_id=87691648]
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 2
+
+[node name="SkillInfo" type="VBoxContainer" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@87/SkillMargin/SkillRow" unique_id=562649505]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+
+[node name="SkillTitle" type="Label" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@87/SkillMargin/SkillRow/SkillInfo" unique_id=1078561289]
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+text = "青木剑诀"
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="SkillLevel" type="Label" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@87/SkillMargin/SkillRow/SkillInfo" unique_id=1304011119]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.5411765, 0.47843137, 0.34509805, 1)
+text = "Lv.2"
+metadata/__tpl_text = "level"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_85" type="Control" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@87/SkillMargin/SkillRow" unique_id=1456732263]
+custom_minimum_size = Vector2(8, 0)
+layout_mode = 2
+
+[node name="SkillBtn" type="Button" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@87/SkillMargin/SkillRow" unique_id=945113727]
+custom_minimum_size = Vector2(76, 40)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/normal = SubResource("StyleBoxFlat_78sjv")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_pot2f")
+theme_override_styles/hover = SubResource("StyleBoxFlat_kgxyf")
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
+text = "升级"
+metadata/__tpl_text = "btn_text"
+metadata/__tpl_keys = "text"
+metadata/__signal_pressed = "_on_skill_action"
+
+[node name="@Panel@88" type="Panel" parent="SkillsColumn/SkillsScroll/SkillList" unique_id=890753769]
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_vnwxo")
+script = ExtResource("1_rlw4h")
+icon = "🌪️"
+title = "御风术"
+level = "未习得"
+btn_text = "🔒"
+locked = true
+metadata/__script_vars = {}
+metadata/__data_contract = PackedStringArray("icon", "title", "level", "btn_text", "locked")
+metadata/locked = true
+metadata/__item_data = {
+"btn_text": "🔒",
+"icon": "🌪️",
+"level": "未习得",
+"locked": true,
+"title": "御风术"
+}
+
+[node name="SkillMargin" type="MarginContainer" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@88" unique_id=2039635661]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="SkillRow" type="HBoxContainer" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@88/SkillMargin" unique_id=290168513]
+layout_mode = 2
+
+[node name="SkillIconBg" type="Panel" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@88/SkillMargin/SkillRow" unique_id=1283695035]
+custom_minimum_size = Vector2(52, 52)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_0t6ts")
+
+[node name="SkillIcon" type="Label" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@88/SkillMargin/SkillRow/SkillIconBg" unique_id=560014552]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 24
+text = "🌪️"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "full"
+
+[node name="_Control_84" type="Control" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@88/SkillMargin/SkillRow" unique_id=977084433]
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 2
+
+[node name="SkillInfo" type="VBoxContainer" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@88/SkillMargin/SkillRow" unique_id=1219925222]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+
+[node name="SkillTitle" type="Label" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@88/SkillMargin/SkillRow/SkillInfo" unique_id=290086006]
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+text = "御风术"
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="SkillLevel" type="Label" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@88/SkillMargin/SkillRow/SkillInfo" unique_id=1613325036]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.5411765, 0.47843137, 0.34509805, 1)
+text = "未习得"
+metadata/__tpl_text = "level"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_85" type="Control" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@88/SkillMargin/SkillRow" unique_id=1840398495]
+custom_minimum_size = Vector2(8, 0)
+layout_mode = 2
+
+[node name="SkillBtn" type="Button" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@88/SkillMargin/SkillRow" unique_id=1765646857]
+custom_minimum_size = Vector2(76, 40)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/normal = SubResource("StyleBoxFlat_78sjv")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_pot2f")
+theme_override_styles/hover = SubResource("StyleBoxFlat_kgxyf")
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
+text = "🔒"
+metadata/__tpl_text = "btn_text"
+metadata/__tpl_keys = "text"
+metadata/__signal_pressed = "_on_skill_action"

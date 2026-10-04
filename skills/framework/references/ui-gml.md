@@ -15,6 +15,23 @@
 - 删除 `.gml` 前手动删掉对应 `.gml.tscn`（插件不做自动删除，防止误删手动挂载的引用）
 - 运行时（非编辑器）加载 GML 仍走 `GdUiBuilder.parse_file` / `GdGmlScene.load_gml`
 
+### 无包装层运行（推荐）：`<ui script>` 根挂载，直开 tscn 即完整应用
+
+gml 根声明 `<ui script="面板控制器.gd">`（脚本 extends gml 根元素的实际类型，如根是
+`<Panel>` 则 `extends Panel`），构建期脚本自动挂到根元素——**不要再用 GdGmlScene
+壳场景包装面板**，`bag_panel.gml.tscn` 直开 F6 运行即完整可用：
+
+- 信号绑定（`@pressed` / `@s_click_item` / …）**挂树自动连接**：GDCORE 监听
+  `node_added`，识别带 `__gml_root` 标记的 gml 树根后自动连接整树（运行时自举，
+  编辑器下跳过）；子文件 `<ui script>` 的回调按就近解析落在各自脚本。
+  兜底：钩子在首帧才连上 `node_added`，F6/主场景在首帧前已挂树会错过——
+  钩子连接成功后立即对现有树做一次补扫，两种时序均覆盖
+- 回调就近解析：声明节点沿父链向上找最近"挂脚本且实现该方法"的节点，区块回调落在
+  区块脚本，场景级回调（如关闭按钮）回退面板根脚本——控制器零绑定代码
+- 注意：控制器脚本类型必须与 gml 根元素匹配（根 `<Panel>` → `extends Panel`），
+  类型不符会在脚本挂载时报错
+- GdGmlScene 壳场景仅保留给**动态加载**场景（运行中 `load_gml` 换页面 / bean 响应式绑定）
+
 需要把 GML 转成场景资源（运行中动态构建）时：
 
 ```gdscript
@@ -128,9 +145,11 @@ popup.is_popup_visible()
 
 ## 推荐架构
 
-页面控制器 `extends GdGmlScene`（GML 内嵌字符串或文件）+ 数据源继承 `GdBean`，
-属性变更 `emit([keys])` 自动刷新绑定 UI——业务代码只操作数据，不碰控件。
-参考 `example/ui/scene_main_bean.gd`。
+**静态面板（推荐）**：gml 根声明 `<ui script="面板.gd">` 挂控制器，直开 `.gml.tscn`
+运行，区块拆分 `<Gml>` 引用 + 各自 `<ui script>` 回调就近绑定，数据源按需继承 `GdBean`。
+**动态页面**（运行中换页 / bean 响应式绑定）：页面控制器 `extends GdGmlScene`
+（GML 内嵌字符串或文件）+ 数据源继承 `GdBean`，属性变更 `emit([keys])` 自动刷新绑定
+UI——业务代码只操作数据，不碰控件。参考 `example/ui/scene_main_bean.gd`。
 
 ## 多 GML 组合实战（example/ui/task/ 宗门任务面板）
 
@@ -139,6 +158,9 @@ popup.is_popup_visible()
 验收脚本 `check_task_ui.gd`（无头跑：`godot --headless --path . -s res://example/ui/task/check_task_ui.gd`）。
 
 拆分方式：`task_panel.gml` 骨架布局，各功能区块独立成文件，条目模板再单独一个文件。
+运行入口推荐无包装层模式：骨架根 `<ui script="task_panel.gd">` 挂控制器、直开生成的
+tscn 运行（参考 `example/ui/bag/bag_panel.gml`）；task/profile 示例中的 GdGmlScene
+壳场景为历史写法，仍兼容。
 
 ### `<Gml>` 标签：引用另一个 gml 文件（构建期嫁接，推荐）
 
@@ -154,15 +176,88 @@ popup.is_popup_visible()
 </ui>
 ```
 
-- 构建期解析 src 指向的文件、构建子树、**自动剥掉 UiRoot 包装层**并嫁接到引用位置
-  （`parse_file` 手动组合时才需要自己剥壳，见下方坑 1）
+- 构建期解析 src 指向的文件、构建子树并嫁接到引用位置（无包装层，嫁接的就是
+  被引用文件的根元素节点；`parse_string/parse_file` 返回的也是根元素节点本身）
 - src 支持相对路径（基于引用方文件所在目录）与 `res://` 绝对路径；同一文件可引用多次（各自独立实例）
-- Gml 标签上的其余属性（`name`/`anchor`/`margin`/`size_flags_*`/`class`/`on_xxx`）
+- Gml 标签上的其余属性（`name`/`anchor`/`margin`/`size_flags_*`/`stretch_ratio`/`class`/`on_xxx`）
   会覆盖式应用到被引用文件的根节点上
+- **容器内多列/多行比例分配用 `stretch_ratio`**（配合 `size_flags_*="expand_fill"`）：
+  `<Gml src="a.gml" size_flags_horizontal="expand_fill" stretch_ratio="3" />`——
+  构建期写入 `size_flags_stretch_ratio`，静态生效（编辑器直开 tscn 也正确）。
+  **不要用 `custom_minimum_size="30%,0"` 做容器内列宽**：百分比 min-size 存为
+  `__pct_min_size` meta 延迟解析，仅在 GdGmlScene 场景链路生效（相对场景根），
+  直开 tscn / 非 GdGmlScene 场景下解析为 0 宽
 - 主题与样式继承：子文件继承引用方的主题变量与 `<style>` class；子文件自己的
   `<theme>` 块 / `<style>` 块优先
 - 信号（`on_pressed` 等）照常写在子文件里，由控制器的 `connect_signals` / `allbind_signal` 统一连接
 - 循环引用（A 引 B、B 引 A、自引用）构建期报错，不会卡死
+
+### 跨区块联动：GdState 临时状态总线（推荐，单向数据流）
+
+多个 `<Gml>` 区块组合成一个面板时，区块间的联动（点选物品更新详情卡、切分类
+过滤网格…）**不要让区块互相调用**（A 沿父链 find_child 找 B 再调它的方法——
+强耦合、链路隐蔽、加区块要改所有旧代码），也**不要用 GDScript signal**——
+用框架的 **GdState 临时状态总线**（Engine 单例 `GDSTATE`，Rust 侧
+`state/state_store.rs`）：键值状态 + 按键监听，专为 UI 联动等**进程内临时状态**
+设计，不落盘（与 GdBean 分工：GdBean 存可持久化游戏状态，随存档恢复）。
+参考 `example/ui/bag/`：
+
+```gdscript
+# ---- 写入方（命令上行）：把用户操作写进总线，不碰兄弟区块 ----
+# bag_categories.gd：点击分类
+_state().set_state("bag.category", NAME_TO_CAT.get(String(btn.name), ""))
+# bag_grid.gd：点选物品（__item_data 是列表写入条目的完整数据字典）
+_state().set_state("bag.selected_item", item.get_meta("__item_data", {}))
+
+func _state():
+    return Engine.get_singleton("GDSTATE")
+```
+
+```gdscript
+# ---- 监听方（状态下行）：只 watch 自己关心的键，各自更新自己 ----
+# bag_grid.gd：watch 分类 -> 更新过滤；bag_detail.gd：watch 选中 -> 填详情
+func _ready() -> void:
+    _state().watch(KEY_CATEGORY, _on_category_changed)
+
+func _on_category_changed(value: Variant) -> void:
+    if value == null:
+        return  # 注册即回调当前值，未初始化时为 nil，跳过等写入方
+    grid.set_meta("__filter_value", str(value))
+    grid.call("update", grid.get_meta("__script_data"), false)
+```
+
+GdState API 语义（与 GdBean.watch 对齐）：
+
+- `set_state(key, value)`：写入并通知该键全部监听者；**值未变化（Variant 深比较）
+  自动跳过通知**——写入方无需判重；`get_state`（未设置返回 nil）/ `has_state` /
+  `erase_state`（移除值，不触发回调）
+- `watch(key, callback)`：**注册即用当前值回调一次**（未设置为 nil）——UI 初始
+  填充零样板；同一 Callable 重复注册自动去重；回调参数 1 参收 value，
+  2+ 参收 `(value, key)`；`unwatch(key, callback)` 取消
+- 键名约定 `"<面板>.<状态>"`（如 `bag.category`），跨面板不冲突
+
+时序要点：
+
+- 子区块 `_ready` 自底向上**先于面板根**执行：面板根 `_ready` 写初始状态
+  （如 bag_panel 写 `bag.category`），此时监听已全部就位
+- 网格上报"初始选中"用 `call_deferred`（等面板初始写入与详情卡监听就绪）
+
+**红线：watch 回调内禁止同步再调用 GDSTATE 任何方法**（set_state/get_state/watch
+…）——godot-rust 实例方法执行期间持有 GdCell 单借用，重入直接 panic
+（GdBean/GdEventBus 同限制）。需要级联状态时用 `call_deferred` 包一层：
+
+```gdscript
+func _on_selection_changed(item: Variant) -> void:
+    # 想在响应选中时联动写别的状态 -> 延迟一拍
+    _state_other.call_deferred("set_state", "bag.xxx", item)
+```
+
+数据完整性归数据管：展示所需字段（name/desc/…）直接放进数据源（`<script>`
+块条目 / 配置表 / bean），**消费方不做映射补全**（不要写 `ICON_INFO` 这类
+"图标猜名字"表）。展示规则（locked→封印态、缺省→普通）才归展示视图所有。
+
+好处：新增联动区块只需"watch 键"，零改现有代码；面板状态天然支持重开恢复
+（GDSTATE 进程级存活，watch 注册即回调上次值）。
 
 ### 列表模板注入：条目 gml 复用为 UIVList slot 模板
 
@@ -187,8 +282,8 @@ list.update(data, false)
 
 ### 信号绑定：`@信号名=方法名`（推荐，零控制器绑定代码）
 
-GML 内直接声明信号绑定，`GdGmlScene` 加载时自动连接到场景脚本方法，无需在控制器里写
-`connect_signals` / `allbind_signal`：
+GML 内直接声明信号绑定，挂树时由框架自动连接（GDCORE `node_added` 自举，见工作流
+小节；GdGmlScene 动态加载路径兼容），无需在控制器里写 `connect_signals` / `allbind_signal`：
 
 ```xml
 <!-- 静态节点：0 参方法 -->
@@ -199,6 +294,10 @@ GML 内直接声明信号绑定，`GdGmlScene` 加载时自动连接到场景脚
 ```
 
 - 任意信号均可：`@pressed` / `@text_changed` / `@toggled` …（等价于旧 `on_pressed` 写法）
+- **非按钮控件的点击回退**：`@pressed` 声明在 Panel/Control 等没有原生 `pressed` 信号的
+  控件上时，框架自动监听 `gui_input` 模拟 Button（左键按下触发，回调补绑语义不变）——
+  可点击面板直接写 `<Panel @pressed="_on_x" mouse_default_cursor_shape="pointing_hand">`，
+  无需包一层 Button（注意面板内子节点不能是 mouse_filter=STOP 的满铺节点，会挡点击）
 - **条目内声明**会随 slot 复制自动存活：构建期条目由 `connect_signals` 走树连接；
   运行时 `update()` 重建条目后由列表 `bind_events` 自动重连——控制器全程零绑定代码
 - 参数自动匹配：方法要求的参数多于信号提供时，补绑发出节点
@@ -210,8 +309,8 @@ GML 内直接声明信号绑定，`GdGmlScene` 加载时自动连接到场景脚
 
 ### `<ui script="xxx.gd">`：脚本声明与自动挂载（组件自带控制器）
 
-gml 根标签声明 `script` 属性，构建期自动把脚本挂到本文件的**内容根节点**
-（UiRoot 包装层的顶层子节点；`<Gml>` 引用嫁接与 tscn 打包均保留该节点）：
+gml 根标签声明 `script` 属性，构建期自动把脚本挂到本文件的**根元素节点**
+（gml 根即内容根，无包装层；`<Gml>` 引用嫁接与 tscn 打包均保留该节点）：
 
 ```xml
 <!-- task_item.gml：条目组件自带控制器，可独立预览/独立回调 -->
@@ -415,11 +514,13 @@ func _ready() -> void:
 
 ### 必踩的坑（重要）
 
-1. **`parse_string/parse_file` 返回 UiRoot 包装层**：真正的根控件是它的子节点。
-   包装层是普通 Control、无尺寸语义——直接当 slot 子节点或列表模板用会导致
-   锚点失效、条目高度塌陷为 0；内部未命名节点是 `@Class@id` 形式，NodePath 无法命中。
-   手动组合场景一律剥壳（`wrapper.get_child(0)`）；`<Gml>` 标签已内置剥壳，无需处理。
-   结构节点在 GML 中务必**显式命名**。
+1. **`<ui>` 下必须恰好一个根元素**（`<style>`/`<script>` 是数据块不算元素），
+   该根元素直接作为 `parse_string/parse_file`/`build_scene_*` 的返回根节点——
+   **无包装层**，布局属性（anchor/margin）写在根元素上即完整约定布局，
+   产物 `.gml.tscn` 可直接在编辑器打开预览（根锚点相对视口生效）。
+   多根/无根会构建报错；结构节点在 GML 中务必**显式命名**（未命名节点是
+   `@Class@id` 形式，NodePath 无法命中）。GdGmlScene 场景加载时：根元素未声明
+   anchor/margin 则默认占满场景（兼容旧语义），声明了则完全尊重 gml 的布局。
 2. **`UIVList/UIGrid.update(data, force)` 的 force 语义**：`force=true` 会把内部 count
    固定为数据长度——首次调用时（列表为空）两个增删分支都不命中，**一个条目都不会创建**。
    纯数据驱动列表保持 `count<=0`（GML 不写 count 属性），统一用 `update(data, false)`。
@@ -433,3 +534,8 @@ func _ready() -> void:
    （`call("update", data, true)`），包成数组等于只传 1 个 Array 参数，
    对 Rust `#[func]` 方法直接报"N parameters, M arguments"。类型明确时直接
    `node.update(data, true)` 动态调用，别绕 call。
+6. **`{{模板}}` 只支持整值插值**：`text="{{key}}"` 整个属性值替换；混合文本
+   `⏱ {{countdown}}` 不会解析——前缀写在数据值里，或拆成兄弟节点。
+7. **条目契约 setter 的 `is_node_ready()` 时序**：列表构建期注入发生在条目挂树前，
+   setter 里的 `is_node_ready()` 为 false 会跳过 UI 联动——`_ready()` 必须统一
+   补偿调用全部 `_apply_xxx()`（注入状态才能生效）。
