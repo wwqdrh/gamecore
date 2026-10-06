@@ -709,9 +709,16 @@ pub fn connect_node_signal_meta(node: &mut Gd<Control>, fallback: &Gd<Object>) {
     }
 }
 
-/// 内部动作连接：show:/hide:/toggle:/open:/close: → 目标节点的方法。
+/// 内部动作连接：show:/hide:/toggle:/open:/close: → 目标组件的方法。
 /// Show/Hide/Toggle 优先用 PopupPanel 语义（show_popup/hide_popup/toggle_popup），
-/// 目标无该方法时回退 open/close/toggle（Drawer 等控件）
+/// 目标无该方法时回退 open/close/toggle（Drawer 等控件）。
+///
+/// 目标解析**延迟到触发时**（from_fn 闭包捕获目标名，按下时再查）：
+/// 先按节点名在本地 gml 树内找，找不到再查统一 UI 管理层注册表（ui_id）——
+/// 支持跨文件夹/跨面板组件调用（mainhud 按钮 → task 抽屉），且对挂载顺序
+/// 无要求（按钮先连接、目标组件后挂树也能命中）。
+/// 无原生 pressed 信号的控件（Panel/Control）走 gui_input 点击模拟，
+/// 与方法绑定的模拟语义一致。
 fn connect_internal_action(
     node: &mut Gd<Control>,
     fallback: &Gd<Object>,
@@ -719,55 +726,86 @@ fn connect_internal_action(
     action: crate::ui::builder::InternalAction,
     target_name: &str,
 ) {
-    use crate::ui::builder::InternalAction;
-    let sig_sn = StringName::from(signal_name);
-    if !node.has_signal(&sig_sn) {
-        godot_warn!(
-            "[GdUiBuilder] 节点 {}({}) 不存在信号 {}，内部动作绑定被跳过",
-            node.get_name(),
-            node.get_class(),
-            signal_name
-        );
+    // from_fn 产生的 Callable 不相等（is_connected 判不了重），meta 防重
+    let guard = StringName::from(format!("__gml_internal_done_{}", signal_name).as_str());
+    if node.has_meta(&guard) {
         return;
     }
-    // 从 gml 树根（场景脚本节点）向下查找目标节点
-    let Ok(fnode) = fallback.clone().try_cast::<godot::classes::Node>() else {
-        godot_error!(
-            "[UiBuilder] Cannot resolve internal action '{}' target '{}' (fallback is not a Node)",
-            signal_name, target_name
+    node.set_meta(&guard, &true.to_variant());
+
+    let sig_sn = StringName::from(signal_name);
+    if node.has_signal(&sig_sn) {
+        // 原生信号（Button.pressed 等）：直接连延迟分发
+        node.connect(&sig_sn, &internal_action_callable(action, target_name, fallback));
+    } else {
+        // 点击模拟：无 pressed 信号的控件（Panel/Control 等），gui_input 左键按下触发
+        let node_cb = node.clone();
+        let action_cb = action;
+        let target_cb = target_name.to_string();
+        let fb_cb = fallback.clone();
+        node.connect(
+            &StringName::from("gui_input"),
+            &Callable::from_fn("gml_internal_click", move |args: &[&Variant]| {
+                if let Some(ev_var) = args.first() {
+                    if let Ok(ev) = ev_var.try_to::<Gd<InputEvent>>() {
+                        if let Ok(mb) = ev.try_cast::<InputEventMouseButton>() {
+                            if mb.is_pressed() && mb.get_button_index() == MouseButton::LEFT {
+                                run_internal_action(action_cb, &target_cb, &fb_cb);
+                            }
+                        }
+                    }
+                }
+                Variant::nil()
+            }),
         );
-        return;
-    };
-    let Some(target) = fnode
-        .find_child_ex(&GString::from(target_name))
-        .recursive(true)
-        .owned(false)
-        .done()
-    else {
+    }
+}
+
+/// 触发内部动作：本地 gml 树按节点名优先 → 统一 UI 管理层注册表（ui_id）→ 报错
+fn run_internal_action(
+    action: crate::ui::builder::InternalAction,
+    target_name: &str,
+    fallback: &Gd<Object>,
+) {
+    use crate::ui::builder::InternalAction;
+    // 1) 本地 gml 树（同树目标零注册成本，按节点名查找）
+    let local = fallback
+        .clone()
+        .try_cast::<godot::classes::Node>()
+        .ok()
+        .and_then(|n| {
+            n.find_child_ex(&GString::from(target_name))
+                .recursive(true)
+                .owned(false)
+                .done()
+        });
+    // 2) 统一 UI 管理层注册表（ui_id 声明的跨组件目标）
+    let target = local.or_else(|| crate::ui::ui_manager::find_ui(target_name));
+    let Some(mut target) = target else {
         godot_error!(
-            "[UiBuilder] Cannot find target node '{}' for internal signal binding",
+            "[UIManager] 内部动作目标未找到: '{}'（不在当前 gml 树，也未注册 ui_id）",
             target_name
         );
         return;
     };
-    let target_obj = target.clone().upcast::<godot::classes::Object>();
+    let mut obj = target.upcast::<godot::classes::Object>();
     let method = match action {
         InternalAction::Show => {
-            if target_obj.has_method(&StringName::from("show_popup")) {
+            if obj.has_method(&StringName::from("show_popup")) {
                 "show_popup"
             } else {
                 "open"
             }
         }
         InternalAction::Hide => {
-            if target_obj.has_method(&StringName::from("hide_popup")) {
+            if obj.has_method(&StringName::from("hide_popup")) {
                 "hide_popup"
             } else {
                 "close"
             }
         }
         InternalAction::Toggle => {
-            if target_obj.has_method(&StringName::from("toggle_popup")) {
+            if obj.has_method(&StringName::from("toggle_popup")) {
                 "toggle_popup"
             } else {
                 "toggle"
@@ -776,10 +814,21 @@ fn connect_internal_action(
         InternalAction::Open => "open",
         InternalAction::Close => "close",
     };
-    let callable = Callable::from_object_method(&target, &StringName::from(method));
-    if !node.is_connected(&sig_sn, &callable) {
-        node.connect(&sig_sn, &callable);
-    }
+    obj.call(&StringName::from(method), &[]);
+}
+
+/// 内部动作的延迟分发 Callable：按下时才解析目标（对挂载顺序无要求）
+fn internal_action_callable(
+    action: crate::ui::builder::InternalAction,
+    target_name: &str,
+    fallback: &Gd<Object>,
+) -> Callable {
+    let target_cb = target_name.to_string();
+    let fb_cb = fallback.clone();
+    Callable::from_fn("gml_internal_action", move |_args: &[&Variant]| {
+        run_internal_action(action, &target_cb, &fb_cb);
+        Variant::nil()
+    })
 }
 
 /// gui_input 点击回退：为没有 pressed 信号的控件（Panel/Control 等）模拟

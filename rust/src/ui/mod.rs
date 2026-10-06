@@ -16,3 +16,4 @@ mod ui_tooltip;
 mod ui_drawer;
 mod ui_nav_menu;
 mod ui_gml_scene;
+pub mod ui_manager;

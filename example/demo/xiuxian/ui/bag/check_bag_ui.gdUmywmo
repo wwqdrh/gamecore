@@ -1,12 +1,12 @@
 # 校验脚本：修仙储物袋 GML 结构验证
-# 运行：godot --headless --path . -s res://example/demo/xiuxian/ui/bag/check_bag_ui.gd
+# 运行：godot --headless --path . -s res://example/ui/bag/check_bag_ui.gd
 # 职责：1) 全部 gml 构建校验并重生成同名 tscn（等效编辑器插件产物）
 #       2) 实例化主面板验证 <Gml> 组合 / 8x6 网格 / 条目契约（数量/品质/锁定/选中）
 #          / 分类点击联动过滤（含 @pressed gui_input 点击回退）
 #          / 物品点选联动详情（选中互斥 + 详情卡填充）/ 三列布局比例
 extends SceneTree
 
-const DIR := "res://example/demo/xiuxian/ui/bag/"
+const DIR := "res://example/ui/bag/"
 const GML_FILES := [
 	"bag_panel.gml", "bag_topbar.gml", "bag_categories.gml",
 	"bag_grid.gml", "bag_item.gml", "bag_detail.gml",

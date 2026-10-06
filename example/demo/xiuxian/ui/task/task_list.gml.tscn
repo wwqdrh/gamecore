@@ -55,7 +55,7 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[node name="TaskScroll" type="ScrollContainer" unique_id=755873270]
+[node name="TaskScroll" type="ScrollContainer" unique_id=2127717767]
 size_flags_vertical = 3
 script = ExtResource("1_1464p")
 metadata/__script_vars = {
@@ -115,7 +115,7 @@ metadata/__script_vars = {
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray()
 
-[node name="TaskList" type="GdUIVList" parent="." unique_id=446781844]
+[node name="TaskList" type="GdUIVList" parent="." unique_id=851454375]
 layout_mode = 2
 size_flags_horizontal = 3
 metadata/__data_var = "bean:task_list:tasks"
@@ -176,7 +176,7 @@ metadata/__script_vars = {
 }
 metadata/__filter_value = ""
 
-[node name="ItemRoot" type="Panel" parent="TaskList" unique_id=532020468]
+[node name="ItemRoot" type="Panel" parent="TaskList" unique_id=2049087325]
 visible = false
 custom_minimum_size = Vector2(0, 84)
 layout_mode = 2
@@ -186,7 +186,7 @@ metadata/__script_vars = {}
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray("icon", "title", "desc", "progress", "reward1", "reward2", "btn_text", "btn_state")
 
-[node name="ItemMargin" type="MarginContainer" parent="TaskList/ItemRoot" unique_id=1359205120]
+[node name="ItemMargin" type="MarginContainer" parent="TaskList/ItemRoot" unique_id=1504595702]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -197,16 +197,16 @@ offset_bottom = -8.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="ItemRow" type="HBoxContainer" parent="TaskList/ItemRoot/ItemMargin" unique_id=405027311]
+[node name="ItemRow" type="HBoxContainer" parent="TaskList/ItemRoot/ItemMargin" unique_id=1484291549]
 layout_mode = 2
 
-[node name="@Panel@133" type="Panel" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1783285435]
+[node name="@Panel@81" type="Panel" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=2099148100]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_styles/panel = SubResource("StyleBoxFlat_syqan")
 
-[node name="ItemIcon" type="Label" parent="TaskList/ItemRoot/ItemMargin/ItemRow/@Panel@133" unique_id=668731011]
+[node name="ItemIcon" type="Label" parent="TaskList/ItemRoot/ItemMargin/ItemRow/@Panel@81" unique_id=1093481399]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -217,30 +217,30 @@ metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 metadata/__anchor = "full"
 
-[node name="@Control@134" type="Control" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=999973719]
+[node name="@Control@82" type="Control" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1549054964]
 custom_minimum_size = Vector2(10, 0)
 layout_mode = 2
 
-[node name="@VBoxContainer@135" type="VBoxContainer" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=213688497]
+[node name="@VBoxContainer@83" type="VBoxContainer" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=2090440196]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 
-[node name="ItemTitle" type="Label" parent="TaskList/ItemRoot/ItemMargin/ItemRow/@VBoxContainer@135" unique_id=1387781098]
+[node name="ItemTitle" type="Label" parent="TaskList/ItemRoot/ItemMargin/ItemRow/@VBoxContainer@83" unique_id=1521785950]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
 metadata/__tpl_text = "title"
 metadata/__tpl_keys = "text"
 
-[node name="ItemDesc" type="Label" parent="TaskList/ItemRoot/ItemMargin/ItemRow/@VBoxContainer@135" unique_id=323355582]
+[node name="ItemDesc" type="Label" parent="TaskList/ItemRoot/ItemMargin/ItemRow/@VBoxContainer@83" unique_id=862849414]
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
 theme_override_colors/font_color = Color(0.5411765, 0.47843137, 0.34509805, 1)
 metadata/__tpl_text = "desc"
 metadata/__tpl_keys = "text"
 
-[node name="ItemProgress" type="Label" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=831640295]
+[node name="ItemProgress" type="Label" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1420180431]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.36078432, 0.3019608, 0.18039216, 1)
@@ -248,11 +248,11 @@ vertical_alignment = 1
 metadata/__tpl_text = "progress"
 metadata/__tpl_keys = "text"
 
-[node name="@Control@136" type="Control" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=259993284]
+[node name="@Control@84" type="Control" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=12120532]
 custom_minimum_size = Vector2(14, 0)
 layout_mode = 2
 
-[node name="Reward1" type="Label" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=2051397126]
+[node name="Reward1" type="Label" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1971083104]
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
 theme_override_colors/font_color = Color(0.2901961, 0.3529412, 0.22745098, 1)
@@ -260,11 +260,11 @@ vertical_alignment = 1
 metadata/__tpl_text = "reward1"
 metadata/__tpl_keys = "text"
 
-[node name="@Control@137" type="Control" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=2033023811]
+[node name="@Control@85" type="Control" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=999080956]
 custom_minimum_size = Vector2(12, 0)
 layout_mode = 2
 
-[node name="Reward2" type="Label" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1427287821]
+[node name="Reward2" type="Label" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=430693768]
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
 theme_override_colors/font_color = Color(0.2901961, 0.3529412, 0.22745098, 1)
@@ -272,11 +272,11 @@ vertical_alignment = 1
 metadata/__tpl_text = "reward2"
 metadata/__tpl_keys = "text"
 
-[node name="@Control@138" type="Control" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=170761877]
+[node name="@Control@86" type="Control" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=355734331]
 custom_minimum_size = Vector2(14, 0)
 layout_mode = 2
 
-[node name="ItemBtn" type="Button" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=518399616]
+[node name="ItemBtn" type="Button" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=2109079145]
 custom_minimum_size = Vector2(84, 40)
 layout_mode = 2
 size_flags_vertical = 4

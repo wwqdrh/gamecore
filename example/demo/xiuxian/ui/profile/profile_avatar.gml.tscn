@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3bygo"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_exkfm"]
 bg_color = Color(0.9647059, 0.9411765, 0.87058824, 1)
 border_width_left = 2
 border_width_top = 2
@@ -12,7 +12,7 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_owrmv"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5cwvl"]
 bg_color = Color(0.84705883, 0.89411765, 0.84705883, 1)
 border_width_left = 2
 border_width_top = 2
@@ -24,29 +24,29 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_l20tj"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hjdiy"]
 bg_color = Color(0.65882355, 0.26666668, 0.22745098, 1)
 corner_radius_top_left = 6
 corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1uyky"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0joo0"]
 bg_color = Color(0.8862745, 0.84705883, 0.7372549, 1)
 corner_radius_top_left = 6
 corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_appsc"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gtej3"]
 bg_color = Color(0.36862746, 0.6117647, 0.5254902, 1)
 corner_radius_top_left = 6
 corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
-[node name="AvatarPanel" type="Panel" unique_id=346301301]
-theme_override_styles/panel = SubResource("StyleBoxFlat_3bygo")
+[node name="AvatarPanel" type="Panel" unique_id=1975297360]
+theme_override_styles/panel = SubResource("StyleBoxFlat_exkfm")
 metadata/__script_vars = {
 "spirit_roots": [{
 "element": "金",
@@ -75,8 +75,9 @@ metadata/__script_vars = {
 "value": 16.0
 }]
 }
+metadata/__gml_root = true
 
-[node name="AvatarColumn" type="VBoxContainer" parent="." unique_id=307244694]
+[node name="AvatarColumn" type="VBoxContainer" parent="." unique_id=1132348957]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -114,12 +115,12 @@ metadata/__script_vars = {
 }]
 }
 
-[node name="PortraitArea" type="Panel" parent="AvatarColumn" unique_id=886216989]
+[node name="PortraitArea" type="Panel" parent="AvatarColumn" unique_id=1236641324]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_owrmv")
+theme_override_styles/panel = SubResource("StyleBoxFlat_5cwvl")
 
-[node name="PortraitPlaceholder" type="Label" parent="AvatarColumn/PortraitArea" unique_id=1537832456]
+[node name="PortraitPlaceholder" type="Label" parent="AvatarColumn/PortraitArea" unique_id=2031984425]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -129,21 +130,21 @@ horizontal_alignment = 1
 vertical_alignment = 1
 metadata/__anchor = "full"
 
-[node name="XianBadge" type="Panel" parent="AvatarColumn/PortraitArea" unique_id=1691958567]
+[node name="XianBadge" type="Panel" parent="AvatarColumn/PortraitArea" unique_id=1552841651]
 custom_minimum_size = Vector2(28, 64)
 layout_mode = 0
 offset_left = 8.0
 offset_top = 8.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_l20tj")
+theme_override_styles/panel = SubResource("StyleBoxFlat_hjdiy")
 metadata/__anchor = "top_left"
 
-[node name="XianText" type="VBoxContainer" parent="AvatarColumn/PortraitArea/XianBadge" unique_id=1455327308]
+[node name="XianText" type="VBoxContainer" parent="AvatarColumn/PortraitArea/XianBadge" unique_id=1950424866]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 metadata/__anchor = "full"
 
-[node name="@Label@61" type="Label" parent="AvatarColumn/PortraitArea/XianBadge/XianText" unique_id=366759732]
+[node name="@Label@61" type="Label" parent="AvatarColumn/PortraitArea/XianBadge/XianText" unique_id=991022487]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_font_sizes/font_size = 14
@@ -151,7 +152,7 @@ text = "修"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="@Label@62" type="Label" parent="AvatarColumn/PortraitArea/XianBadge/XianText" unique_id=848908866]
+[node name="@Label@62" type="Label" parent="AvatarColumn/PortraitArea/XianBadge/XianText" unique_id=1599600053]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_font_sizes/font_size = 14
@@ -159,22 +160,22 @@ text = "仙"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="@Control@63" type="Control" parent="AvatarColumn" unique_id=1652335479]
+[node name="@Control@63" type="Control" parent="AvatarColumn" unique_id=1136412754]
 custom_minimum_size = Vector2(0, 8)
 layout_mode = 2
 
-[node name="RootSectionTitle" type="Label" parent="AvatarColumn" unique_id=125077743]
+[node name="RootSectionTitle" type="Label" parent="AvatarColumn" unique_id=1937286035]
 layout_mode = 2
 theme_override_font_sizes/font_size = 17
 theme_override_colors/font_color = Color(0.41960785, 0.3529412, 0.24313726, 1)
 text = "五行灵根"
 horizontal_alignment = 1
 
-[node name="@Control@64" type="Control" parent="AvatarColumn" unique_id=574406964]
+[node name="@Control@64" type="Control" parent="AvatarColumn" unique_id=276361572]
 custom_minimum_size = Vector2(0, 4)
 layout_mode = 2
 
-[node name="SpiritRootList" type="GdUIVList" parent="AvatarColumn" unique_id=1733160271]
+[node name="SpiritRootList" type="GdUIVList" parent="AvatarColumn" unique_id=1584449080]
 layout_mode = 2
 size_flags_horizontal = 3
 metadata/__script_data = [{
@@ -204,27 +205,28 @@ metadata/__script_data = [{
 "value": 16.0
 }]
 
-[node name="RootItem" type="Panel" parent="AvatarColumn/SpiritRootList" unique_id=1599584376]
+[node name="RootItem" type="Panel" parent="AvatarColumn/SpiritRootList" unique_id=599237716]
 visible = false
 custom_minimum_size = Vector2(0, 26)
 layout_mode = 2
 metadata/__script_vars = {}
+metadata/__gml_root = true
 
-[node name="RootRow" type="HBoxContainer" parent="AvatarColumn/SpiritRootList/RootItem" unique_id=548087151]
+[node name="RootRow" type="HBoxContainer" parent="AvatarColumn/SpiritRootList/RootItem" unique_id=1300899868]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="RootIcon" type="Label" parent="AvatarColumn/SpiritRootList/RootItem/RootRow" unique_id=949026867]
+[node name="RootIcon" type="Label" parent="AvatarColumn/SpiritRootList/RootItem/RootRow" unique_id=931592203]
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 vertical_alignment = 1
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="RootName" type="Label" parent="AvatarColumn/SpiritRootList/RootItem/RootRow" unique_id=421693234]
+[node name="RootName" type="Label" parent="AvatarColumn/SpiritRootList/RootItem/RootRow" unique_id=870543479]
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
 theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
@@ -232,27 +234,27 @@ vertical_alignment = 1
 metadata/__tpl_text = "element"
 metadata/__tpl_keys = "text"
 
-[node name="@Control@65" type="Control" parent="AvatarColumn/SpiritRootList/RootItem/RootRow" unique_id=616437361]
+[node name="@Control@65" type="Control" parent="AvatarColumn/SpiritRootList/RootItem/RootRow" unique_id=487316776]
 custom_minimum_size = Vector2(6, 0)
 layout_mode = 2
 
-[node name="RootBar" type="ProgressBar" parent="AvatarColumn/SpiritRootList/RootItem/RootRow" unique_id=1287892213]
+[node name="RootBar" type="ProgressBar" parent="AvatarColumn/SpiritRootList/RootItem/RootRow" unique_id=95967307]
 custom_minimum_size = Vector2(0, 12)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
-theme_override_styles/background = SubResource("StyleBoxFlat_1uyky")
-theme_override_styles/fill = SubResource("StyleBoxFlat_appsc")
+theme_override_styles/background = SubResource("StyleBoxFlat_0joo0")
+theme_override_styles/fill = SubResource("StyleBoxFlat_gtej3")
 show_percentage = false
 metadata/__tpl_value = "value"
 metadata/__tpl_keys = "value,max_value"
 metadata/__tpl_max_value = "max"
 
-[node name="@Control@66" type="Control" parent="AvatarColumn/SpiritRootList/RootItem/RootRow" unique_id=838684850]
+[node name="@Control@66" type="Control" parent="AvatarColumn/SpiritRootList/RootItem/RootRow" unique_id=2052057137]
 custom_minimum_size = Vector2(8, 0)
 layout_mode = 2
 
-[node name="RootValue" type="Label" parent="AvatarColumn/SpiritRootList/RootItem/RootRow" unique_id=1485769791]
+[node name="RootValue" type="Label" parent="AvatarColumn/SpiritRootList/RootItem/RootRow" unique_id=488384959]
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
 theme_override_colors/font_color = Color(0.41960785, 0.3529412, 0.24313726, 1)
@@ -260,10 +262,11 @@ vertical_alignment = 1
 metadata/__tpl_text = "value"
 metadata/__tpl_keys = "text"
 
-[node name="@Panel@67" type="Panel" parent="AvatarColumn/SpiritRootList" unique_id=1266272295]
+[node name="@Panel@67" type="Panel" parent="AvatarColumn/SpiritRootList" unique_id=1865225756]
 custom_minimum_size = Vector2(0, 26)
 layout_mode = 2
 metadata/__script_vars = {}
+metadata/__gml_root = true
 metadata/__item_data = {
 "element": "金",
 "icon": "🟡",
@@ -271,14 +274,14 @@ metadata/__item_data = {
 "value": 28.0
 }
 
-[node name="RootRow" type="HBoxContainer" parent="AvatarColumn/SpiritRootList/@Panel@67" unique_id=11800850]
+[node name="RootRow" type="HBoxContainer" parent="AvatarColumn/SpiritRootList/@Panel@67" unique_id=1793441958]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="RootIcon" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@67/RootRow" unique_id=1679024185]
+[node name="RootIcon" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@67/RootRow" unique_id=951179169]
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "🟡"
@@ -286,7 +289,7 @@ vertical_alignment = 1
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="RootName" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@67/RootRow" unique_id=1272778456]
+[node name="RootName" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@67/RootRow" unique_id=1176118925]
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
 theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
@@ -295,28 +298,28 @@ vertical_alignment = 1
 metadata/__tpl_text = "element"
 metadata/__tpl_keys = "text"
 
-[node name="_Control_65" type="Control" parent="AvatarColumn/SpiritRootList/@Panel@67/RootRow" unique_id=1179551953]
+[node name="_Control_65" type="Control" parent="AvatarColumn/SpiritRootList/@Panel@67/RootRow" unique_id=314667596]
 custom_minimum_size = Vector2(6, 0)
 layout_mode = 2
 
-[node name="RootBar" type="ProgressBar" parent="AvatarColumn/SpiritRootList/@Panel@67/RootRow" unique_id=692738118]
+[node name="RootBar" type="ProgressBar" parent="AvatarColumn/SpiritRootList/@Panel@67/RootRow" unique_id=1828049263]
 custom_minimum_size = Vector2(0, 12)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
-theme_override_styles/background = SubResource("StyleBoxFlat_1uyky")
-theme_override_styles/fill = SubResource("StyleBoxFlat_appsc")
+theme_override_styles/background = SubResource("StyleBoxFlat_0joo0")
+theme_override_styles/fill = SubResource("StyleBoxFlat_gtej3")
 value = 28.0
 show_percentage = false
 metadata/__tpl_value = "value"
 metadata/__tpl_keys = "value,max_value"
 metadata/__tpl_max_value = "max"
 
-[node name="_Control_66" type="Control" parent="AvatarColumn/SpiritRootList/@Panel@67/RootRow" unique_id=1355816684]
+[node name="_Control_66" type="Control" parent="AvatarColumn/SpiritRootList/@Panel@67/RootRow" unique_id=998132765]
 custom_minimum_size = Vector2(8, 0)
 layout_mode = 2
 
-[node name="RootValue" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@67/RootRow" unique_id=1383698466]
+[node name="RootValue" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@67/RootRow" unique_id=1476636636]
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
 theme_override_colors/font_color = Color(0.41960785, 0.3529412, 0.24313726, 1)
@@ -325,10 +328,11 @@ vertical_alignment = 1
 metadata/__tpl_text = "value"
 metadata/__tpl_keys = "text"
 
-[node name="@Panel@68" type="Panel" parent="AvatarColumn/SpiritRootList" unique_id=861904036]
+[node name="@Panel@68" type="Panel" parent="AvatarColumn/SpiritRootList" unique_id=32361835]
 custom_minimum_size = Vector2(0, 26)
 layout_mode = 2
 metadata/__script_vars = {}
+metadata/__gml_root = true
 metadata/__item_data = {
 "element": "木",
 "icon": "🟢",
@@ -336,14 +340,14 @@ metadata/__item_data = {
 "value": 32.0
 }
 
-[node name="RootRow" type="HBoxContainer" parent="AvatarColumn/SpiritRootList/@Panel@68" unique_id=1956493516]
+[node name="RootRow" type="HBoxContainer" parent="AvatarColumn/SpiritRootList/@Panel@68" unique_id=748390772]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="RootIcon" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@68/RootRow" unique_id=218685990]
+[node name="RootIcon" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@68/RootRow" unique_id=1503044146]
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "🟢"
@@ -351,7 +355,7 @@ vertical_alignment = 1
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="RootName" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@68/RootRow" unique_id=310932342]
+[node name="RootName" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@68/RootRow" unique_id=1189813161]
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
 theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
@@ -360,28 +364,28 @@ vertical_alignment = 1
 metadata/__tpl_text = "element"
 metadata/__tpl_keys = "text"
 
-[node name="_Control_65" type="Control" parent="AvatarColumn/SpiritRootList/@Panel@68/RootRow" unique_id=1006022554]
+[node name="_Control_65" type="Control" parent="AvatarColumn/SpiritRootList/@Panel@68/RootRow" unique_id=671951859]
 custom_minimum_size = Vector2(6, 0)
 layout_mode = 2
 
-[node name="RootBar" type="ProgressBar" parent="AvatarColumn/SpiritRootList/@Panel@68/RootRow" unique_id=1004017800]
+[node name="RootBar" type="ProgressBar" parent="AvatarColumn/SpiritRootList/@Panel@68/RootRow" unique_id=57331831]
 custom_minimum_size = Vector2(0, 12)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
-theme_override_styles/background = SubResource("StyleBoxFlat_1uyky")
-theme_override_styles/fill = SubResource("StyleBoxFlat_appsc")
+theme_override_styles/background = SubResource("StyleBoxFlat_0joo0")
+theme_override_styles/fill = SubResource("StyleBoxFlat_gtej3")
 value = 32.0
 show_percentage = false
 metadata/__tpl_value = "value"
 metadata/__tpl_keys = "value,max_value"
 metadata/__tpl_max_value = "max"
 
-[node name="_Control_66" type="Control" parent="AvatarColumn/SpiritRootList/@Panel@68/RootRow" unique_id=615220062]
+[node name="_Control_66" type="Control" parent="AvatarColumn/SpiritRootList/@Panel@68/RootRow" unique_id=1295705609]
 custom_minimum_size = Vector2(8, 0)
 layout_mode = 2
 
-[node name="RootValue" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@68/RootRow" unique_id=1430193732]
+[node name="RootValue" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@68/RootRow" unique_id=287831510]
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
 theme_override_colors/font_color = Color(0.41960785, 0.3529412, 0.24313726, 1)
@@ -390,10 +394,11 @@ vertical_alignment = 1
 metadata/__tpl_text = "value"
 metadata/__tpl_keys = "text"
 
-[node name="@Panel@69" type="Panel" parent="AvatarColumn/SpiritRootList" unique_id=1743061491]
+[node name="@Panel@69" type="Panel" parent="AvatarColumn/SpiritRootList" unique_id=1746063636]
 custom_minimum_size = Vector2(0, 26)
 layout_mode = 2
 metadata/__script_vars = {}
+metadata/__gml_root = true
 metadata/__item_data = {
 "element": "水",
 "icon": "🔵",
@@ -401,14 +406,14 @@ metadata/__item_data = {
 "value": 24.0
 }
 
-[node name="RootRow" type="HBoxContainer" parent="AvatarColumn/SpiritRootList/@Panel@69" unique_id=1510207550]
+[node name="RootRow" type="HBoxContainer" parent="AvatarColumn/SpiritRootList/@Panel@69" unique_id=1417257931]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="RootIcon" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@69/RootRow" unique_id=539068896]
+[node name="RootIcon" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@69/RootRow" unique_id=687625112]
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "🔵"
@@ -416,7 +421,7 @@ vertical_alignment = 1
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="RootName" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@69/RootRow" unique_id=714982469]
+[node name="RootName" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@69/RootRow" unique_id=501763921]
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
 theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
@@ -425,28 +430,28 @@ vertical_alignment = 1
 metadata/__tpl_text = "element"
 metadata/__tpl_keys = "text"
 
-[node name="_Control_65" type="Control" parent="AvatarColumn/SpiritRootList/@Panel@69/RootRow" unique_id=2091434090]
+[node name="_Control_65" type="Control" parent="AvatarColumn/SpiritRootList/@Panel@69/RootRow" unique_id=678016256]
 custom_minimum_size = Vector2(6, 0)
 layout_mode = 2
 
-[node name="RootBar" type="ProgressBar" parent="AvatarColumn/SpiritRootList/@Panel@69/RootRow" unique_id=1643770779]
+[node name="RootBar" type="ProgressBar" parent="AvatarColumn/SpiritRootList/@Panel@69/RootRow" unique_id=1675676217]
 custom_minimum_size = Vector2(0, 12)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
-theme_override_styles/background = SubResource("StyleBoxFlat_1uyky")
-theme_override_styles/fill = SubResource("StyleBoxFlat_appsc")
+theme_override_styles/background = SubResource("StyleBoxFlat_0joo0")
+theme_override_styles/fill = SubResource("StyleBoxFlat_gtej3")
 value = 24.0
 show_percentage = false
 metadata/__tpl_value = "value"
 metadata/__tpl_keys = "value,max_value"
 metadata/__tpl_max_value = "max"
 
-[node name="_Control_66" type="Control" parent="AvatarColumn/SpiritRootList/@Panel@69/RootRow" unique_id=1886705398]
+[node name="_Control_66" type="Control" parent="AvatarColumn/SpiritRootList/@Panel@69/RootRow" unique_id=1809829047]
 custom_minimum_size = Vector2(8, 0)
 layout_mode = 2
 
-[node name="RootValue" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@69/RootRow" unique_id=1013511687]
+[node name="RootValue" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@69/RootRow" unique_id=665793243]
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
 theme_override_colors/font_color = Color(0.41960785, 0.3529412, 0.24313726, 1)
@@ -455,10 +460,11 @@ vertical_alignment = 1
 metadata/__tpl_text = "value"
 metadata/__tpl_keys = "text"
 
-[node name="@Panel@70" type="Panel" parent="AvatarColumn/SpiritRootList" unique_id=854644180]
+[node name="@Panel@70" type="Panel" parent="AvatarColumn/SpiritRootList" unique_id=1112419968]
 custom_minimum_size = Vector2(0, 26)
 layout_mode = 2
 metadata/__script_vars = {}
+metadata/__gml_root = true
 metadata/__item_data = {
 "element": "火",
 "icon": "🔴",
@@ -466,14 +472,14 @@ metadata/__item_data = {
 "value": 18.0
 }
 
-[node name="RootRow" type="HBoxContainer" parent="AvatarColumn/SpiritRootList/@Panel@70" unique_id=296955967]
+[node name="RootRow" type="HBoxContainer" parent="AvatarColumn/SpiritRootList/@Panel@70" unique_id=1109908691]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="RootIcon" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@70/RootRow" unique_id=2036700164]
+[node name="RootIcon" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@70/RootRow" unique_id=30494271]
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "🔴"
@@ -481,7 +487,7 @@ vertical_alignment = 1
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="RootName" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@70/RootRow" unique_id=383195637]
+[node name="RootName" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@70/RootRow" unique_id=1459533302]
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
 theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
@@ -490,28 +496,28 @@ vertical_alignment = 1
 metadata/__tpl_text = "element"
 metadata/__tpl_keys = "text"
 
-[node name="_Control_65" type="Control" parent="AvatarColumn/SpiritRootList/@Panel@70/RootRow" unique_id=643299671]
+[node name="_Control_65" type="Control" parent="AvatarColumn/SpiritRootList/@Panel@70/RootRow" unique_id=111215906]
 custom_minimum_size = Vector2(6, 0)
 layout_mode = 2
 
-[node name="RootBar" type="ProgressBar" parent="AvatarColumn/SpiritRootList/@Panel@70/RootRow" unique_id=553549849]
+[node name="RootBar" type="ProgressBar" parent="AvatarColumn/SpiritRootList/@Panel@70/RootRow" unique_id=685428376]
 custom_minimum_size = Vector2(0, 12)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
-theme_override_styles/background = SubResource("StyleBoxFlat_1uyky")
-theme_override_styles/fill = SubResource("StyleBoxFlat_appsc")
+theme_override_styles/background = SubResource("StyleBoxFlat_0joo0")
+theme_override_styles/fill = SubResource("StyleBoxFlat_gtej3")
 value = 18.0
 show_percentage = false
 metadata/__tpl_value = "value"
 metadata/__tpl_keys = "value,max_value"
 metadata/__tpl_max_value = "max"
 
-[node name="_Control_66" type="Control" parent="AvatarColumn/SpiritRootList/@Panel@70/RootRow" unique_id=2038673523]
+[node name="_Control_66" type="Control" parent="AvatarColumn/SpiritRootList/@Panel@70/RootRow" unique_id=703647311]
 custom_minimum_size = Vector2(8, 0)
 layout_mode = 2
 
-[node name="RootValue" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@70/RootRow" unique_id=462821764]
+[node name="RootValue" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@70/RootRow" unique_id=227255230]
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
 theme_override_colors/font_color = Color(0.41960785, 0.3529412, 0.24313726, 1)
@@ -520,10 +526,11 @@ vertical_alignment = 1
 metadata/__tpl_text = "value"
 metadata/__tpl_keys = "text"
 
-[node name="@Panel@71" type="Panel" parent="AvatarColumn/SpiritRootList" unique_id=70005999]
+[node name="@Panel@71" type="Panel" parent="AvatarColumn/SpiritRootList" unique_id=707887038]
 custom_minimum_size = Vector2(0, 26)
 layout_mode = 2
 metadata/__script_vars = {}
+metadata/__gml_root = true
 metadata/__item_data = {
 "element": "土",
 "icon": "🟤",
@@ -531,14 +538,14 @@ metadata/__item_data = {
 "value": 16.0
 }
 
-[node name="RootRow" type="HBoxContainer" parent="AvatarColumn/SpiritRootList/@Panel@71" unique_id=713186651]
+[node name="RootRow" type="HBoxContainer" parent="AvatarColumn/SpiritRootList/@Panel@71" unique_id=232093516]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="RootIcon" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@71/RootRow" unique_id=1923227910]
+[node name="RootIcon" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@71/RootRow" unique_id=176524209]
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "🟤"
@@ -546,7 +553,7 @@ vertical_alignment = 1
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="RootName" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@71/RootRow" unique_id=776252844]
+[node name="RootName" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@71/RootRow" unique_id=761375988]
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
 theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
@@ -555,28 +562,28 @@ vertical_alignment = 1
 metadata/__tpl_text = "element"
 metadata/__tpl_keys = "text"
 
-[node name="_Control_65" type="Control" parent="AvatarColumn/SpiritRootList/@Panel@71/RootRow" unique_id=1839683163]
+[node name="_Control_65" type="Control" parent="AvatarColumn/SpiritRootList/@Panel@71/RootRow" unique_id=1221987678]
 custom_minimum_size = Vector2(6, 0)
 layout_mode = 2
 
-[node name="RootBar" type="ProgressBar" parent="AvatarColumn/SpiritRootList/@Panel@71/RootRow" unique_id=1085806046]
+[node name="RootBar" type="ProgressBar" parent="AvatarColumn/SpiritRootList/@Panel@71/RootRow" unique_id=335938820]
 custom_minimum_size = Vector2(0, 12)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
-theme_override_styles/background = SubResource("StyleBoxFlat_1uyky")
-theme_override_styles/fill = SubResource("StyleBoxFlat_appsc")
+theme_override_styles/background = SubResource("StyleBoxFlat_0joo0")
+theme_override_styles/fill = SubResource("StyleBoxFlat_gtej3")
 value = 16.0
 show_percentage = false
 metadata/__tpl_value = "value"
 metadata/__tpl_keys = "value,max_value"
 metadata/__tpl_max_value = "max"
 
-[node name="_Control_66" type="Control" parent="AvatarColumn/SpiritRootList/@Panel@71/RootRow" unique_id=1854144561]
+[node name="_Control_66" type="Control" parent="AvatarColumn/SpiritRootList/@Panel@71/RootRow" unique_id=1642869512]
 custom_minimum_size = Vector2(8, 0)
 layout_mode = 2
 
-[node name="RootValue" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@71/RootRow" unique_id=1834270768]
+[node name="RootValue" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@71/RootRow" unique_id=934317857]
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
 theme_override_colors/font_color = Color(0.41960785, 0.3529412, 0.24313726, 1)

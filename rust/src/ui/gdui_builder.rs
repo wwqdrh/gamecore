@@ -347,8 +347,25 @@ fn connect_gml_tree_root(root: &mut Gd<Node>) {
         return;
     };
     root.set_meta(&connected_key, &true.to_variant());
+    // 统一 UI 管理层：先注册树上全部 ui_id 组件（先于信号连接，
+    // 保证同树内后连接的按钮按 id 能查到目标）
+    register_ui_ids(root);
     let target = root.clone().upcast::<Object>();
     connect_signals_recursive(&mut ctrl, &target);
+}
+
+/// 递归注册树上全部带 __ui_id meta 的节点到统一 UI 管理层
+fn register_ui_ids(node: &Gd<Node>) {
+    if node.has_meta(&StringName::from("__ui_id")) {
+        let id = node.get_meta(&StringName::from("__ui_id")).to_string();
+        crate::ui::ui_manager::register_ui(&id, node);
+    }
+    let children = node.get_children();
+    for i in 0..children.len() {
+        if let Some(child) = children.get(i) {
+            register_ui_ids(&child);
+        }
+    }
 }
 
 /// 补扫已在树上的节点树（自举钩子在首帧才连上 node_added，而 F6/主场景

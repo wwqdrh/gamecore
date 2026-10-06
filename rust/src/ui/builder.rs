@@ -484,6 +484,11 @@ impl UiBuilder {
     /// <Gml> 嫁接与场景打包均保留该节点，条目被列表 duplicate 时脚本随节点复制，
     /// 条目内 @pressed 声明可就近绑定自身脚本
     fn attach_ui_script(&self, root: &mut Gd<Control>) {
+        // gml 树根标记：**无条件打**（不依赖 <ui script> 是否存在）——
+        // GDCORE 挂树自举据此识别 gml 树：信号自动连接 + 统一 UI 管理层
+        // ui_id 组件注册（ui_manager.rs）。无脚本组件（纯 Rust 类根如 Drawer、
+        // 纯布局文件）挂树后同样完整可用
+        root.set_meta(&StringName::from("__gml_root"), &true.to_variant());
         let Some(rel) = &self.ui_script else { return; };
         let path = resolve_include_path(rel, self.base_dir.as_deref());
         let mut target = root.clone();
@@ -501,9 +506,6 @@ impl UiBuilder {
                     // set_script 的类型安全包装对 Option<Gd<Script>> 的 AsArg 判定有
                     // corner case，走通用 call（Variant 签名）最稳
                     target.call(&StringName::from("set_script"), &[script.to_variant()]);
-                    // gml 树根标记：GDCORE 监听 node_added 时据此识别 gml 树，
-                    // 挂树后自动连接信号绑定（无包装层自举，tscn 直开运行即完整可用）
-                    target.set_meta(&StringName::from("__gml_root"), &true.to_variant());
                     // 数据契约 meta：记录脚本 @export 变量名列表（编辑器/检查工具可读取，
                     // 运行时注入由列表 update 按属性表实时收集，不依赖本 meta）
                     let contract = crate::ui::ui_list_helper::collect_export_var_names(&target);
@@ -1997,6 +1999,12 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
         "anim_click" => {
             // 值为 "true" 启用点击反馈
             control.set_meta(&StringName::from("__anim_click"), &true.to_variant());
+        }
+        // 统一 UI 管理层：ui_id="TaskDrawer" —— 组件唯一身份声明，
+        // 存 meta 随 tscn 序列化；挂树自举时注册进全局注册表（ui_manager.rs），
+        // 其他组件通过 @pressed="show:TaskDrawer" / GdUIManager.find_ui() 跨组件调用
+        "ui_id" => {
+            control.set_meta(&StringName::from("__ui_id"), &value.to_variant());
         }
         _ => {
             // //godot_print!("[UiBuilder] Unhandled attribute: {}='{}' on <{}>", key, value, tag);
