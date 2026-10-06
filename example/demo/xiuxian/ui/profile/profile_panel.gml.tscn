@@ -1,0 +1,1694 @@
+[gd_scene format=3 uid="uid://ceqvq6uyxn63t"]
+
+[ext_resource type="Script" uid="uid://qxl64qh8gm52" path="res://example/demo/xiuxian/ui/profile/skill_item.gd" id="1_3w6sp"]
+[ext_resource type="Script" uid="uid://cf45ox222tlm6" path="res://example/demo/xiuxian/ui/profile/profile_panel.gd" id="1_ks0ag"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_q21dp"]
+bg_color = Color(0.9411765, 0.9098039, 0.8235294, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.47843137, 0.41568628, 0.2901961, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5hq8l"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.41960785, 0.3529412, 0.24313726, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5lb3h"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.31960785, 0.2529412, 0.14313725, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ausai"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.5396078, 0.4729412, 0.36313725, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yjfye"]
+bg_color = Color(0.36862746, 0.5529412, 0.47843137, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qnhy3"]
+bg_color = Color(0.9647059, 0.9411765, 0.87058824, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_g184c"]
+bg_color = Color(0.84705883, 0.89411765, 0.84705883, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.6901961, 0.7607843, 0.6901961, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_evo5f"]
+bg_color = Color(0.65882355, 0.26666668, 0.22745098, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_n6chc"]
+bg_color = Color(0.8862745, 0.84705883, 0.7372549, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_psakg"]
+bg_color = Color(0.36862746, 0.6117647, 0.5254902, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pgcx1"]
+bg_color = Color(0.9647059, 0.9411765, 0.87058824, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_domdv"]
+bg_color = Color(0.8509804, 0.78431374, 0.57254905, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.72156864, 0.627451, 0.41568628, 1)
+corner_radius_top_left = 90
+corner_radius_top_right = 90
+corner_radius_bottom_right = 90
+corner_radius_bottom_left = 90
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_swvnw"]
+bg_color = Color(0.9137255, 0.9411765, 0.9019608, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.36862746, 0.6117647, 0.5254902, 1)
+corner_radius_top_left = 74
+corner_radius_top_right = 74
+corner_radius_bottom_right = 74
+corner_radius_bottom_left = 74
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4xfc8"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.9098039, 0.7254902, 0.24313726, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.5411765, 0.41568628, 0.11764706, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ykq2g"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.8098039, 0.6254902, 0.14313725, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.5411765, 0.41568628, 0.11764706, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4l31j"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(1, 0.8454902, 0.36313725, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_oo5id"]
+bg_color = Color(0.9372549, 0.89411765, 0.76862746, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tfr1t"]
+bg_color = Color(0.9647059, 0.9411765, 0.87058824, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_17grw"]
+bg_color = Color(0.36862746, 0.5529412, 0.47843137, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wnnk6"]
+bg_color = Color(0.9372549, 0.9019608, 0.8039216, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bc8xf"]
+bg_color = Color(0.2901961, 0.47843137, 0.40784314, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.20784314, 0.34901962, 0.29411766, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_j3lm0"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.9098039, 0.7254902, 0.24313726, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.5411765, 0.41568628, 0.11764706, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_611ic"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.8098039, 0.6254902, 0.14313725, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.5411765, 0.41568628, 0.11764706, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pvp1l"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(1, 0.8454902, 0.36313725, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_y7csv"]
+bg_color = Color(0.9137255, 0.8745098, 0.76862746, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.72156864, 0.6509804, 0.47058824, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[node name="ProfilePanel" type="Panel" unique_id=2047679757]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_q21dp")
+script = ExtResource("1_ks0ag")
+metadata/__anchor = "full"
+metadata/__pct_margin = "2%"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray()
+
+[node name="MainMargin" type="MarginContainer" parent="." unique_id=851710376]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = -16.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="MainColumn" type="VBoxContainer" parent="MainMargin" unique_id=257972748]
+layout_mode = 2
+
+[node name="TopBar" type="VBoxContainer" parent="MainMargin/MainColumn" unique_id=1181024640]
+layout_mode = 2
+metadata/__script_vars = {}
+
+[node name="TitleRow" type="HBoxContainer" parent="MainMargin/MainColumn/TopBar" unique_id=774336361]
+layout_mode = 2
+metadata/__script_vars = {}
+
+[node name="@Control@25219" type="Control" parent="MainMargin/MainColumn/TopBar/TitleRow" unique_id=359158700]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TitleLabel" type="Label" parent="MainMargin/MainColumn/TopBar/TitleRow" unique_id=1045044796]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+theme_override_font_sizes/font_size = 30
+text = "道友 · 云无涯"
+vertical_alignment = 1
+
+[node name="@Control@25220" type="Control" parent="MainMargin/MainColumn/TopBar/TitleRow" unique_id=1192151375]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CloseBtn" type="Button" parent="MainMargin/MainColumn/TopBar/TitleRow" unique_id=885651895]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.9254902, 0.8509804, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_5hq8l")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_5lb3h")
+theme_override_styles/hover = SubResource("StyleBoxFlat_ausai")
+text = "✕"
+metadata/__signal_pressed = "_on_close_pressed"
+
+[node name="@Control@25221" type="Control" parent="MainMargin/MainColumn/TopBar" unique_id=806844163]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+metadata/__script_vars = {}
+
+[node name="BadgeRow" type="CenterContainer" parent="MainMargin/MainColumn/TopBar" unique_id=780926385]
+layout_mode = 2
+metadata/__script_vars = {}
+
+[node name="@Panel@25222" type="Panel" parent="MainMargin/MainColumn/TopBar/BadgeRow" unique_id=353316777]
+custom_minimum_size = Vector2(120, 30)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_yjfye")
+
+[node name="RealmBadgeText" type="Label" parent="MainMargin/MainColumn/TopBar/BadgeRow/@Panel@25222" unique_id=1457565968]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 15
+text = "炼气三层"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="@Control@25223" type="Control" parent="MainMargin/MainColumn" unique_id=865062867]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+
+[node name="BodyRow" type="HBoxContainer" parent="MainMargin/MainColumn" unique_id=1123156929]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="AvatarPanel" type="Panel" parent="MainMargin/MainColumn/BodyRow" unique_id=1359344628]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 3.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_qnhy3")
+metadata/__script_vars = {
+"spirit_roots": [{
+"element": "金",
+"icon": "🟡",
+"max": 100.0,
+"value": 28.0
+}, {
+"element": "木",
+"icon": "🟢",
+"max": 100.0,
+"value": 32.0
+}, {
+"element": "水",
+"icon": "🔵",
+"max": 100.0,
+"value": 24.0
+}, {
+"element": "火",
+"icon": "🔴",
+"max": 100.0,
+"value": 18.0
+}, {
+"element": "土",
+"icon": "🟤",
+"max": 100.0,
+"value": 16.0
+}]
+}
+
+[node name="AvatarColumn" type="VBoxContainer" parent="MainMargin/MainColumn/BodyRow/AvatarPanel" unique_id=1181018082]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+metadata/__anchor = "full"
+metadata/__script_vars = {
+"spirit_roots": [{
+"element": "金",
+"icon": "🟡",
+"max": 100.0,
+"value": 28.0
+}, {
+"element": "木",
+"icon": "🟢",
+"max": 100.0,
+"value": 32.0
+}, {
+"element": "水",
+"icon": "🔵",
+"max": 100.0,
+"value": 24.0
+}, {
+"element": "火",
+"icon": "🔴",
+"max": 100.0,
+"value": 18.0
+}, {
+"element": "土",
+"icon": "🟤",
+"max": 100.0,
+"value": 16.0
+}]
+}
+
+[node name="PortraitArea" type="Panel" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn" unique_id=1071075043]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_g184c")
+
+[node name="PortraitPlaceholder" type="Label" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/PortraitArea" unique_id=1263945344]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 20
+text = "【立绘】"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="XianBadge" type="Panel" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/PortraitArea" unique_id=152127452]
+custom_minimum_size = Vector2(28, 64)
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_evo5f")
+metadata/__anchor = "top_left"
+
+[node name="XianText" type="VBoxContainer" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/PortraitArea/XianBadge" unique_id=1767524077]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+metadata/__anchor = "full"
+
+[node name="@Label@25224" type="Label" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/PortraitArea/XianBadge/XianText" unique_id=1056717587]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 14
+text = "修"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="@Label@25225" type="Label" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/PortraitArea/XianBadge/XianText" unique_id=556100520]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 14
+text = "仙"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="@Control@25226" type="Control" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn" unique_id=1682145791]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+
+[node name="RootSectionTitle" type="Label" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn" unique_id=673310631]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.41960785, 0.3529412, 0.24313726, 1)
+theme_override_font_sizes/font_size = 17
+text = "五行灵根"
+horizontal_alignment = 1
+
+[node name="@Control@25227" type="Control" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn" unique_id=356725896]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="SpiritRootList" type="GdUIVList" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn" unique_id=945266188]
+layout_mode = 2
+size_flags_horizontal = 3
+metadata/__script_data = [{
+"element": "金",
+"icon": "🟡",
+"max": 100.0,
+"value": 28.0
+}, {
+"element": "木",
+"icon": "🟢",
+"max": 100.0,
+"value": 32.0
+}, {
+"element": "水",
+"icon": "🔵",
+"max": 100.0,
+"value": 24.0
+}, {
+"element": "火",
+"icon": "🔴",
+"max": 100.0,
+"value": 18.0
+}, {
+"element": "土",
+"icon": "🟤",
+"max": 100.0,
+"value": 16.0
+}]
+
+[node name="RootItem" type="Panel" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList" unique_id=1345156411]
+visible = false
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
+metadata/__script_vars = {}
+
+[node name="RootRow" type="HBoxContainer" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/RootItem" unique_id=905861311]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="RootIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/RootItem/RootRow" unique_id=452451515]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+vertical_alignment = 1
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="RootName" type="Label" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/RootItem/RootRow" unique_id=904311159]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+theme_override_font_sizes/font_size = 15
+vertical_alignment = 1
+metadata/__tpl_text = "element"
+metadata/__tpl_keys = "text"
+
+[node name="@Control@25228" type="Control" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/RootItem/RootRow" unique_id=1741782090]
+custom_minimum_size = Vector2(6, 0)
+layout_mode = 2
+
+[node name="RootBar" type="ProgressBar" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/RootItem/RootRow" unique_id=964260625]
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_styles/background = SubResource("StyleBoxFlat_n6chc")
+theme_override_styles/fill = SubResource("StyleBoxFlat_psakg")
+show_percentage = false
+metadata/__tpl_value = "value"
+metadata/__tpl_keys = "value,max_value"
+metadata/__tpl_max_value = "max"
+
+[node name="@Control@25229" type="Control" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/RootItem/RootRow" unique_id=257649428]
+custom_minimum_size = Vector2(8, 0)
+layout_mode = 2
+
+[node name="RootValue" type="Label" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/RootItem/RootRow" unique_id=159883400]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.41960785, 0.3529412, 0.24313726, 1)
+theme_override_font_sizes/font_size = 15
+vertical_alignment = 1
+metadata/__tpl_text = "value"
+metadata/__tpl_keys = "text"
+
+[node name="@Panel@25230" type="Panel" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList" unique_id=61204010]
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
+metadata/__script_vars = {}
+metadata/__item_data = {
+"element": "金",
+"icon": "🟡",
+"max": 100.0,
+"value": 28.0
+}
+
+[node name="RootRow" type="HBoxContainer" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/@Panel@25230" unique_id=1249638385]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="RootIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/@Panel@25230/RootRow" unique_id=1749446814]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "🟡"
+vertical_alignment = 1
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="RootName" type="Label" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/@Panel@25230/RootRow" unique_id=1920427897]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+theme_override_font_sizes/font_size = 15
+text = "金"
+vertical_alignment = 1
+metadata/__tpl_text = "element"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_25228" type="Control" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/@Panel@25230/RootRow" unique_id=879474468]
+custom_minimum_size = Vector2(6, 0)
+layout_mode = 2
+
+[node name="RootBar" type="ProgressBar" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/@Panel@25230/RootRow" unique_id=908024705]
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_styles/background = SubResource("StyleBoxFlat_n6chc")
+theme_override_styles/fill = SubResource("StyleBoxFlat_psakg")
+value = 28.0
+show_percentage = false
+metadata/__tpl_value = "value"
+metadata/__tpl_keys = "value,max_value"
+metadata/__tpl_max_value = "max"
+
+[node name="_Control_25229" type="Control" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/@Panel@25230/RootRow" unique_id=517311064]
+custom_minimum_size = Vector2(8, 0)
+layout_mode = 2
+
+[node name="RootValue" type="Label" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/@Panel@25230/RootRow" unique_id=692421776]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.41960785, 0.3529412, 0.24313726, 1)
+theme_override_font_sizes/font_size = 15
+text = "28.0"
+vertical_alignment = 1
+metadata/__tpl_text = "value"
+metadata/__tpl_keys = "text"
+
+[node name="@Panel@25231" type="Panel" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList" unique_id=810038962]
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
+metadata/__script_vars = {}
+metadata/__item_data = {
+"element": "木",
+"icon": "🟢",
+"max": 100.0,
+"value": 32.0
+}
+
+[node name="RootRow" type="HBoxContainer" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/@Panel@25231" unique_id=1391284360]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="RootIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/@Panel@25231/RootRow" unique_id=1216485072]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "🟢"
+vertical_alignment = 1
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="RootName" type="Label" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/@Panel@25231/RootRow" unique_id=1983465226]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+theme_override_font_sizes/font_size = 15
+text = "木"
+vertical_alignment = 1
+metadata/__tpl_text = "element"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_25228" type="Control" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/@Panel@25231/RootRow" unique_id=114678543]
+custom_minimum_size = Vector2(6, 0)
+layout_mode = 2
+
+[node name="RootBar" type="ProgressBar" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/@Panel@25231/RootRow" unique_id=455355296]
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_styles/background = SubResource("StyleBoxFlat_n6chc")
+theme_override_styles/fill = SubResource("StyleBoxFlat_psakg")
+value = 32.0
+show_percentage = false
+metadata/__tpl_value = "value"
+metadata/__tpl_keys = "value,max_value"
+metadata/__tpl_max_value = "max"
+
+[node name="_Control_25229" type="Control" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/@Panel@25231/RootRow" unique_id=1158173261]
+custom_minimum_size = Vector2(8, 0)
+layout_mode = 2
+
+[node name="RootValue" type="Label" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/@Panel@25231/RootRow" unique_id=1173406480]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.41960785, 0.3529412, 0.24313726, 1)
+theme_override_font_sizes/font_size = 15
+text = "32.0"
+vertical_alignment = 1
+metadata/__tpl_text = "value"
+metadata/__tpl_keys = "text"
+
+[node name="@Panel@25232" type="Panel" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList" unique_id=2084128441]
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
+metadata/__script_vars = {}
+metadata/__item_data = {
+"element": "水",
+"icon": "🔵",
+"max": 100.0,
+"value": 24.0
+}
+
+[node name="RootRow" type="HBoxContainer" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/@Panel@25232" unique_id=231206063]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="RootIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/@Panel@25232/RootRow" unique_id=751245920]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "🔵"
+vertical_alignment = 1
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="RootName" type="Label" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/@Panel@25232/RootRow" unique_id=1189261436]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+theme_override_font_sizes/font_size = 15
+text = "水"
+vertical_alignment = 1
+metadata/__tpl_text = "element"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_25228" type="Control" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/@Panel@25232/RootRow" unique_id=1203113374]
+custom_minimum_size = Vector2(6, 0)
+layout_mode = 2
+
+[node name="RootBar" type="ProgressBar" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/@Panel@25232/RootRow" unique_id=2055263211]
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_styles/background = SubResource("StyleBoxFlat_n6chc")
+theme_override_styles/fill = SubResource("StyleBoxFlat_psakg")
+value = 24.0
+show_percentage = false
+metadata/__tpl_value = "value"
+metadata/__tpl_keys = "value,max_value"
+metadata/__tpl_max_value = "max"
+
+[node name="_Control_25229" type="Control" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/@Panel@25232/RootRow" unique_id=999349948]
+custom_minimum_size = Vector2(8, 0)
+layout_mode = 2
+
+[node name="RootValue" type="Label" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/@Panel@25232/RootRow" unique_id=1528175810]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.41960785, 0.3529412, 0.24313726, 1)
+theme_override_font_sizes/font_size = 15
+text = "24.0"
+vertical_alignment = 1
+metadata/__tpl_text = "value"
+metadata/__tpl_keys = "text"
+
+[node name="@Panel@25233" type="Panel" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList" unique_id=1506697435]
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
+metadata/__script_vars = {}
+metadata/__item_data = {
+"element": "火",
+"icon": "🔴",
+"max": 100.0,
+"value": 18.0
+}
+
+[node name="RootRow" type="HBoxContainer" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/@Panel@25233" unique_id=300915218]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="RootIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/@Panel@25233/RootRow" unique_id=1302232853]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "🔴"
+vertical_alignment = 1
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="RootName" type="Label" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/@Panel@25233/RootRow" unique_id=43654528]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+theme_override_font_sizes/font_size = 15
+text = "火"
+vertical_alignment = 1
+metadata/__tpl_text = "element"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_25228" type="Control" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/@Panel@25233/RootRow" unique_id=108143514]
+custom_minimum_size = Vector2(6, 0)
+layout_mode = 2
+
+[node name="RootBar" type="ProgressBar" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/@Panel@25233/RootRow" unique_id=319310071]
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_styles/background = SubResource("StyleBoxFlat_n6chc")
+theme_override_styles/fill = SubResource("StyleBoxFlat_psakg")
+value = 18.0
+show_percentage = false
+metadata/__tpl_value = "value"
+metadata/__tpl_keys = "value,max_value"
+metadata/__tpl_max_value = "max"
+
+[node name="_Control_25229" type="Control" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/@Panel@25233/RootRow" unique_id=800821834]
+custom_minimum_size = Vector2(8, 0)
+layout_mode = 2
+
+[node name="RootValue" type="Label" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/@Panel@25233/RootRow" unique_id=1883197273]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.41960785, 0.3529412, 0.24313726, 1)
+theme_override_font_sizes/font_size = 15
+text = "18.0"
+vertical_alignment = 1
+metadata/__tpl_text = "value"
+metadata/__tpl_keys = "text"
+
+[node name="@Panel@25234" type="Panel" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList" unique_id=510243654]
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
+metadata/__script_vars = {}
+metadata/__item_data = {
+"element": "土",
+"icon": "🟤",
+"max": 100.0,
+"value": 16.0
+}
+
+[node name="RootRow" type="HBoxContainer" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/@Panel@25234" unique_id=483332995]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="RootIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/@Panel@25234/RootRow" unique_id=1435047797]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "🟤"
+vertical_alignment = 1
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="RootName" type="Label" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/@Panel@25234/RootRow" unique_id=656440362]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+theme_override_font_sizes/font_size = 15
+text = "土"
+vertical_alignment = 1
+metadata/__tpl_text = "element"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_25228" type="Control" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/@Panel@25234/RootRow" unique_id=1302994589]
+custom_minimum_size = Vector2(6, 0)
+layout_mode = 2
+
+[node name="RootBar" type="ProgressBar" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/@Panel@25234/RootRow" unique_id=1890291524]
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_styles/background = SubResource("StyleBoxFlat_n6chc")
+theme_override_styles/fill = SubResource("StyleBoxFlat_psakg")
+value = 16.0
+show_percentage = false
+metadata/__tpl_value = "value"
+metadata/__tpl_keys = "value,max_value"
+metadata/__tpl_max_value = "max"
+
+[node name="_Control_25229" type="Control" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/@Panel@25234/RootRow" unique_id=2003402670]
+custom_minimum_size = Vector2(8, 0)
+layout_mode = 2
+
+[node name="RootValue" type="Label" parent="MainMargin/MainColumn/BodyRow/AvatarPanel/AvatarColumn/SpiritRootList/@Panel@25234/RootRow" unique_id=738924624]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.41960785, 0.3529412, 0.24313726, 1)
+theme_override_font_sizes/font_size = 15
+text = "16.0"
+vertical_alignment = 1
+metadata/__tpl_text = "value"
+metadata/__tpl_keys = "text"
+
+[node name="@Control@25235" type="Control" parent="MainMargin/MainColumn/BodyRow" unique_id=313816556]
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 2
+
+[node name="RealmPanel" type="Panel" parent="MainMargin/MainColumn/BodyRow" unique_id=2115216623]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 4.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_pgcx1")
+metadata/__script_vars = {}
+
+[node name="RealmColumn" type="VBoxContainer" parent="MainMargin/MainColumn/BodyRow/RealmPanel" unique_id=756157694]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = -14.0
+offset_bottom = -14.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="RealmTitleRow" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/RealmPanel/RealmColumn" unique_id=1269582629]
+layout_mode = 2
+
+[node name="@HBoxContainer@25238" type="HBoxContainer" parent="MainMargin/MainColumn/BodyRow/RealmPanel/RealmColumn/RealmTitleRow" unique_id=295116357]
+layout_mode = 2
+
+[node name="RealmNow" type="Label" parent="MainMargin/MainColumn/BodyRow/RealmPanel/RealmColumn/RealmTitleRow/@HBoxContainer@25238" unique_id=1087942737]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+theme_override_font_sizes/font_size = 20
+text = "炼气三层"
+vertical_alignment = 1
+
+[node name="@Control@25236" type="Control" parent="MainMargin/MainColumn/BodyRow/RealmPanel/RealmColumn/RealmTitleRow/@HBoxContainer@25238" unique_id=1575139307]
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 2
+
+[node name="RealmArrow" type="Label" parent="MainMargin/MainColumn/BodyRow/RealmPanel/RealmColumn/RealmTitleRow/@HBoxContainer@25238" unique_id=1954976943]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65882355, 0.26666668, 0.22745098, 1)
+theme_override_font_sizes/font_size = 20
+text = "→"
+vertical_alignment = 1
+
+[node name="@Control@25237" type="Control" parent="MainMargin/MainColumn/BodyRow/RealmPanel/RealmColumn/RealmTitleRow/@HBoxContainer@25238" unique_id=1618758647]
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 2
+
+[node name="RealmNext" type="Label" parent="MainMargin/MainColumn/BodyRow/RealmPanel/RealmColumn/RealmTitleRow/@HBoxContainer@25238" unique_id=796664614]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.36862746, 0.5529412, 0.47843137, 1)
+theme_override_font_sizes/font_size = 20
+text = "炼气四层"
+vertical_alignment = 1
+
+[node name="@Control@25239" type="Control" parent="MainMargin/MainColumn/BodyRow/RealmPanel/RealmColumn" unique_id=1228051359]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+
+[node name="RingRow" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/RealmPanel/RealmColumn" unique_id=674965183]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ProgressRing" type="Panel" parent="MainMargin/MainColumn/BodyRow/RealmPanel/RealmColumn/RingRow" unique_id=2117765476]
+custom_minimum_size = Vector2(160, 160)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_domdv")
+
+[node name="RingInner" type="Panel" parent="MainMargin/MainColumn/BodyRow/RealmPanel/RealmColumn/RingRow/ProgressRing" unique_id=118742379]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = -14.0
+offset_bottom = -14.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_swvnw")
+metadata/__anchor = "full"
+
+[node name="RealmProgress" type="Label" parent="MainMargin/MainColumn/BodyRow/RealmPanel/RealmColumn/RingRow/ProgressRing/RingInner" unique_id=1799292376]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+theme_override_font_sizes/font_size = 34
+text = "62%"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="@Control@25240" type="Control" parent="MainMargin/MainColumn/BodyRow/RealmPanel/RealmColumn" unique_id=339750302]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+
+[node name="BreakthroughRow" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/RealmPanel/RealmColumn" unique_id=524364220]
+layout_mode = 2
+
+[node name="BreakthroughBtn" type="Button" parent="MainMargin/MainColumn/BodyRow/RealmPanel/RealmColumn/BreakthroughRow" unique_id=2107846343]
+custom_minimum_size = Vector2(180, 52)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_4xfc8")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_ykq2g")
+theme_override_styles/hover = SubResource("StyleBoxFlat_4l31j")
+text = "突  破"
+metadata/__signal_pressed = "_on_breakthrough_pressed"
+
+[node name="@Control@25241" type="Control" parent="MainMargin/MainColumn/BodyRow/RealmPanel/RealmColumn" unique_id=1979980137]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+
+[node name="MaterialRow" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/RealmPanel/RealmColumn" unique_id=308892376]
+layout_mode = 2
+
+[node name="MaterialChip" type="Panel" parent="MainMargin/MainColumn/BodyRow/RealmPanel/RealmColumn/MaterialRow" unique_id=1151886362]
+custom_minimum_size = Vector2(130, 40)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_oo5id")
+
+[node name="MaterialChipRow" type="HBoxContainer" parent="MainMargin/MainColumn/BodyRow/RealmPanel/RealmColumn/MaterialRow/MaterialChip" unique_id=2056022384]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_right = -10.0
+metadata/__anchor = "full"
+
+[node name="MaterialIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/RealmPanel/RealmColumn/MaterialRow/MaterialChip/MaterialChipRow" unique_id=393549497]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "🟢"
+vertical_alignment = 1
+
+[node name="@Control@25242" type="Control" parent="MainMargin/MainColumn/BodyRow/RealmPanel/RealmColumn/MaterialRow/MaterialChip/MaterialChipRow" unique_id=278424864]
+custom_minimum_size = Vector2(6, 0)
+layout_mode = 2
+
+[node name="MaterialText" type="Label" parent="MainMargin/MainColumn/BodyRow/RealmPanel/RealmColumn/MaterialRow/MaterialChip/MaterialChipRow" unique_id=1020120305]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.41960785, 0.3529412, 0.24313726, 1)
+theme_override_font_sizes/font_size = 15
+text = "聚气丹 x5"
+vertical_alignment = 1
+
+[node name="@Control@25243" type="Control" parent="MainMargin/MainColumn/BodyRow" unique_id=353742303]
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 2
+
+[node name="SkillsPanel" type="Panel" parent="MainMargin/MainColumn/BodyRow" unique_id=2089790623]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 3.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_tfr1t")
+metadata/__script_vars = {
+"skills": [{
+"btn_text": "升级",
+"icon": "🌀",
+"level": "Lv.4",
+"locked": false,
+"title": "吐纳诀"
+}, {
+"btn_text": "升级",
+"icon": "⚔️",
+"level": "Lv.2",
+"locked": false,
+"title": "青木剑诀"
+}, {
+"btn_text": "🔒",
+"icon": "🌪️",
+"level": "未习得",
+"locked": true,
+"title": "御风术"
+}]
+}
+
+[node name="SkillsColumn" type="VBoxContainer" parent="MainMargin/MainColumn/BodyRow/SkillsPanel" unique_id=2103736655]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+metadata/__anchor = "full"
+metadata/__script_vars = {
+"skills": [{
+"btn_text": "升级",
+"icon": "🌀",
+"level": "Lv.4",
+"locked": false,
+"title": "吐纳诀"
+}, {
+"btn_text": "升级",
+"icon": "⚔️",
+"level": "Lv.2",
+"locked": false,
+"title": "青木剑诀"
+}, {
+"btn_text": "🔒",
+"icon": "🌪️",
+"level": "未习得",
+"locked": true,
+"title": "御风术"
+}]
+}
+
+[node name="SkillsHeader" type="Panel" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn" unique_id=1062251854]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_17grw")
+
+[node name="SkillsHeaderText" type="Label" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsHeader" unique_id=856573384]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.9490196, 0.9254902, 0.8509804, 1)
+theme_override_font_sizes/font_size = 17
+text = "功法列表"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="@Control@25244" type="Control" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn" unique_id=950222409]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+
+[node name="SkillsScroll" type="ScrollContainer" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn" unique_id=106743513]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="SkillList" type="GdUIVList" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll" unique_id=1481558756]
+layout_mode = 2
+size_flags_horizontal = 3
+metadata/__script_data = [{
+"btn_text": "升级",
+"icon": "🌀",
+"level": "Lv.4",
+"locked": false,
+"title": "吐纳诀"
+}, {
+"btn_text": "升级",
+"icon": "⚔️",
+"level": "Lv.2",
+"locked": false,
+"title": "青木剑诀"
+}, {
+"btn_text": "🔒",
+"icon": "🌪️",
+"level": "未习得",
+"locked": true,
+"title": "御风术"
+}]
+
+[node name="SkillItemRoot" type="Panel" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList" unique_id=1402918096]
+visible = false
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_wnnk6")
+script = ExtResource("1_3w6sp")
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray()
+
+[node name="SkillMargin" type="MarginContainer" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/SkillItemRoot" unique_id=318137310]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="SkillRow" type="HBoxContainer" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/SkillItemRoot/SkillMargin" unique_id=37197210]
+layout_mode = 2
+
+[node name="SkillIconBg" type="Panel" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/SkillItemRoot/SkillMargin/SkillRow" unique_id=1935247718]
+custom_minimum_size = Vector2(52, 52)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_bc8xf")
+
+[node name="SkillIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/SkillItemRoot/SkillMargin/SkillRow/SkillIconBg" unique_id=34302576]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "full"
+
+[node name="@Control@25247" type="Control" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/SkillItemRoot/SkillMargin/SkillRow" unique_id=1644608213]
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 2
+
+[node name="SkillInfo" type="VBoxContainer" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/SkillItemRoot/SkillMargin/SkillRow" unique_id=339238962]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+
+[node name="SkillTitle" type="Label" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/SkillItemRoot/SkillMargin/SkillRow/SkillInfo" unique_id=1564377657]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+theme_override_font_sizes/font_size = 17
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="SkillLevel" type="Label" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/SkillItemRoot/SkillMargin/SkillRow/SkillInfo" unique_id=427347383]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5411765, 0.47843137, 0.34509805, 1)
+theme_override_font_sizes/font_size = 13
+metadata/__tpl_text = "level"
+metadata/__tpl_keys = "text"
+
+[node name="@Control@25248" type="Control" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/SkillItemRoot/SkillMargin/SkillRow" unique_id=1576656234]
+custom_minimum_size = Vector2(8, 0)
+layout_mode = 2
+
+[node name="SkillBtn" type="Button" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/SkillItemRoot/SkillMargin/SkillRow" unique_id=1864669408]
+custom_minimum_size = Vector2(76, 40)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_j3lm0")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_611ic")
+theme_override_styles/hover = SubResource("StyleBoxFlat_pvp1l")
+metadata/__tpl_text = "btn_text"
+metadata/__tpl_keys = "text"
+metadata/__signal_pressed = "_on_skill_action"
+
+[node name="@Panel@25249" type="Panel" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList" unique_id=1847388228]
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_wnnk6")
+script = ExtResource("1_3w6sp")
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray()
+metadata/locked = false
+metadata/__item_data = {
+"btn_text": "升级",
+"icon": "🌀",
+"level": "Lv.4",
+"locked": false,
+"title": "吐纳诀"
+}
+
+[node name="SkillMargin" type="MarginContainer" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/@Panel@25249" unique_id=1925353779]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="SkillRow" type="HBoxContainer" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/@Panel@25249/SkillMargin" unique_id=412700102]
+layout_mode = 2
+
+[node name="SkillIconBg" type="Panel" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/@Panel@25249/SkillMargin/SkillRow" unique_id=2007250361]
+custom_minimum_size = Vector2(52, 52)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_bc8xf")
+
+[node name="SkillIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/@Panel@25249/SkillMargin/SkillRow/SkillIconBg" unique_id=1552729533]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 24
+text = "🌀"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "full"
+
+[node name="_Control_25247" type="Control" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/@Panel@25249/SkillMargin/SkillRow" unique_id=1342100687]
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 2
+
+[node name="SkillInfo" type="VBoxContainer" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/@Panel@25249/SkillMargin/SkillRow" unique_id=825664597]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+
+[node name="SkillTitle" type="Label" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/@Panel@25249/SkillMargin/SkillRow/SkillInfo" unique_id=1501764610]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+theme_override_font_sizes/font_size = 17
+text = "吐纳诀"
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="SkillLevel" type="Label" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/@Panel@25249/SkillMargin/SkillRow/SkillInfo" unique_id=214574757]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5411765, 0.47843137, 0.34509805, 1)
+theme_override_font_sizes/font_size = 13
+text = "Lv.4"
+metadata/__tpl_text = "level"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_25248" type="Control" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/@Panel@25249/SkillMargin/SkillRow" unique_id=146299410]
+custom_minimum_size = Vector2(8, 0)
+layout_mode = 2
+
+[node name="SkillBtn" type="Button" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/@Panel@25249/SkillMargin/SkillRow" unique_id=744352561]
+custom_minimum_size = Vector2(76, 40)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_j3lm0")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_611ic")
+theme_override_styles/hover = SubResource("StyleBoxFlat_pvp1l")
+text = "升级"
+metadata/__tpl_text = "btn_text"
+metadata/__tpl_keys = "text"
+metadata/__signal_pressed = "_on_skill_action"
+
+[node name="@Panel@25250" type="Panel" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList" unique_id=721344243]
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_wnnk6")
+script = ExtResource("1_3w6sp")
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray()
+metadata/locked = false
+metadata/__item_data = {
+"btn_text": "升级",
+"icon": "⚔️",
+"level": "Lv.2",
+"locked": false,
+"title": "青木剑诀"
+}
+
+[node name="SkillMargin" type="MarginContainer" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/@Panel@25250" unique_id=1336222081]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="SkillRow" type="HBoxContainer" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/@Panel@25250/SkillMargin" unique_id=1765262561]
+layout_mode = 2
+
+[node name="SkillIconBg" type="Panel" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/@Panel@25250/SkillMargin/SkillRow" unique_id=1813331281]
+custom_minimum_size = Vector2(52, 52)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_bc8xf")
+
+[node name="SkillIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/@Panel@25250/SkillMargin/SkillRow/SkillIconBg" unique_id=1132980535]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 24
+text = "⚔️"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "full"
+
+[node name="_Control_25247" type="Control" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/@Panel@25250/SkillMargin/SkillRow" unique_id=1625679456]
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 2
+
+[node name="SkillInfo" type="VBoxContainer" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/@Panel@25250/SkillMargin/SkillRow" unique_id=421282558]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+
+[node name="SkillTitle" type="Label" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/@Panel@25250/SkillMargin/SkillRow/SkillInfo" unique_id=849463959]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+theme_override_font_sizes/font_size = 17
+text = "青木剑诀"
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="SkillLevel" type="Label" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/@Panel@25250/SkillMargin/SkillRow/SkillInfo" unique_id=1895633766]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5411765, 0.47843137, 0.34509805, 1)
+theme_override_font_sizes/font_size = 13
+text = "Lv.2"
+metadata/__tpl_text = "level"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_25248" type="Control" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/@Panel@25250/SkillMargin/SkillRow" unique_id=963579009]
+custom_minimum_size = Vector2(8, 0)
+layout_mode = 2
+
+[node name="SkillBtn" type="Button" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/@Panel@25250/SkillMargin/SkillRow" unique_id=863899545]
+custom_minimum_size = Vector2(76, 40)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_j3lm0")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_611ic")
+theme_override_styles/hover = SubResource("StyleBoxFlat_pvp1l")
+text = "升级"
+metadata/__tpl_text = "btn_text"
+metadata/__tpl_keys = "text"
+metadata/__signal_pressed = "_on_skill_action"
+
+[node name="@Panel@25251" type="Panel" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList" unique_id=1970916435]
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_wnnk6")
+script = ExtResource("1_3w6sp")
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray()
+metadata/locked = true
+metadata/__item_data = {
+"btn_text": "🔒",
+"icon": "🌪️",
+"level": "未习得",
+"locked": true,
+"title": "御风术"
+}
+
+[node name="SkillMargin" type="MarginContainer" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/@Panel@25251" unique_id=492170096]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="SkillRow" type="HBoxContainer" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/@Panel@25251/SkillMargin" unique_id=1205843713]
+layout_mode = 2
+
+[node name="SkillIconBg" type="Panel" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/@Panel@25251/SkillMargin/SkillRow" unique_id=1602105105]
+custom_minimum_size = Vector2(52, 52)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_bc8xf")
+
+[node name="SkillIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/@Panel@25251/SkillMargin/SkillRow/SkillIconBg" unique_id=1475859162]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 24
+text = "🌪️"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "full"
+
+[node name="_Control_25247" type="Control" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/@Panel@25251/SkillMargin/SkillRow" unique_id=953699106]
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 2
+
+[node name="SkillInfo" type="VBoxContainer" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/@Panel@25251/SkillMargin/SkillRow" unique_id=432288580]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+
+[node name="SkillTitle" type="Label" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/@Panel@25251/SkillMargin/SkillRow/SkillInfo" unique_id=1531264954]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+theme_override_font_sizes/font_size = 17
+text = "御风术"
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="SkillLevel" type="Label" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/@Panel@25251/SkillMargin/SkillRow/SkillInfo" unique_id=1535389868]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5411765, 0.47843137, 0.34509805, 1)
+theme_override_font_sizes/font_size = 13
+text = "未习得"
+metadata/__tpl_text = "level"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_25248" type="Control" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/@Panel@25251/SkillMargin/SkillRow" unique_id=1164269728]
+custom_minimum_size = Vector2(8, 0)
+layout_mode = 2
+
+[node name="SkillBtn" type="Button" parent="MainMargin/MainColumn/BodyRow/SkillsPanel/SkillsColumn/SkillsScroll/SkillList/@Panel@25251/SkillMargin/SkillRow" unique_id=1783419963]
+custom_minimum_size = Vector2(76, 40)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_j3lm0")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_611ic")
+theme_override_styles/hover = SubResource("StyleBoxFlat_pvp1l")
+text = "🔒"
+metadata/__tpl_text = "btn_text"
+metadata/__tpl_keys = "text"
+metadata/__signal_pressed = "_on_skill_action"
+
+[node name="@Control@25252" type="Control" parent="MainMargin/MainColumn" unique_id=546325844]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+
+[node name="StatsBar" type="Panel" parent="MainMargin/MainColumn" unique_id=406550531]
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_y7csv")
+metadata/__script_vars = {}
+
+[node name="StatsRow" type="HBoxContainer" parent="MainMargin/MainColumn/StatsBar" unique_id=799897035]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="StatAttack" type="HBoxContainer" parent="MainMargin/MainColumn/StatsBar/StatsRow" unique_id=493727554]
+layout_mode = 2
+
+[node name="@Label@25253" type="Label" parent="MainMargin/MainColumn/StatsBar/StatsRow/StatAttack" unique_id=362352165]
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+text = "⚔️"
+vertical_alignment = 1
+
+[node name="@Control@25254" type="Control" parent="MainMargin/MainColumn/StatsBar/StatsRow/StatAttack" unique_id=1702608587]
+custom_minimum_size = Vector2(6, 0)
+layout_mode = 2
+
+[node name="@Label@25255" type="Label" parent="MainMargin/MainColumn/StatsBar/StatsRow/StatAttack" unique_id=1586466452]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.41960785, 0.3529412, 0.24313726, 1)
+theme_override_font_sizes/font_size = 16
+text = "攻击"
+vertical_alignment = 1
+
+[node name="@Control@25256" type="Control" parent="MainMargin/MainColumn/StatsBar/StatsRow/StatAttack" unique_id=944853425]
+custom_minimum_size = Vector2(6, 0)
+layout_mode = 2
+
+[node name="AttackValue" type="Label" parent="MainMargin/MainColumn/StatsBar/StatsRow/StatAttack" unique_id=648423333]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+theme_override_font_sizes/font_size = 17
+text = "128"
+vertical_alignment = 1
+
+[node name="@Control@25257" type="Control" parent="MainMargin/MainColumn/StatsBar/StatsRow" unique_id=1084808960]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="StatDefense" type="HBoxContainer" parent="MainMargin/MainColumn/StatsBar/StatsRow" unique_id=1447967072]
+layout_mode = 2
+
+[node name="@Label@25258" type="Label" parent="MainMargin/MainColumn/StatsBar/StatsRow/StatDefense" unique_id=1659775448]
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+text = "🛡️"
+vertical_alignment = 1
+
+[node name="@Control@25259" type="Control" parent="MainMargin/MainColumn/StatsBar/StatsRow/StatDefense" unique_id=1496391781]
+custom_minimum_size = Vector2(6, 0)
+layout_mode = 2
+
+[node name="@Label@25260" type="Label" parent="MainMargin/MainColumn/StatsBar/StatsRow/StatDefense" unique_id=608018945]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.41960785, 0.3529412, 0.24313726, 1)
+theme_override_font_sizes/font_size = 16
+text = "防御"
+vertical_alignment = 1
+
+[node name="@Control@25261" type="Control" parent="MainMargin/MainColumn/StatsBar/StatsRow/StatDefense" unique_id=896658845]
+custom_minimum_size = Vector2(6, 0)
+layout_mode = 2
+
+[node name="DefenseValue" type="Label" parent="MainMargin/MainColumn/StatsBar/StatsRow/StatDefense" unique_id=1102783190]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+theme_override_font_sizes/font_size = 17
+text = "86"
+vertical_alignment = 1
+
+[node name="@Control@25262" type="Control" parent="MainMargin/MainColumn/StatsBar/StatsRow" unique_id=503494994]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="StatHealth" type="HBoxContainer" parent="MainMargin/MainColumn/StatsBar/StatsRow" unique_id=944644760]
+layout_mode = 2
+
+[node name="@Label@25263" type="Label" parent="MainMargin/MainColumn/StatsBar/StatsRow/StatHealth" unique_id=1273369446]
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+text = "❤️"
+vertical_alignment = 1
+
+[node name="@Control@25264" type="Control" parent="MainMargin/MainColumn/StatsBar/StatsRow/StatHealth" unique_id=1866510868]
+custom_minimum_size = Vector2(6, 0)
+layout_mode = 2
+
+[node name="@Label@25265" type="Label" parent="MainMargin/MainColumn/StatsBar/StatsRow/StatHealth" unique_id=1001581063]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.41960785, 0.3529412, 0.24313726, 1)
+theme_override_font_sizes/font_size = 16
+text = "气血"
+vertical_alignment = 1
+
+[node name="@Control@25266" type="Control" parent="MainMargin/MainColumn/StatsBar/StatsRow/StatHealth" unique_id=1667332532]
+custom_minimum_size = Vector2(6, 0)
+layout_mode = 2
+
+[node name="HealthValue" type="Label" parent="MainMargin/MainColumn/StatsBar/StatsRow/StatHealth" unique_id=2098833722]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+theme_override_font_sizes/font_size = 17
+text = "756"
+vertical_alignment = 1
+
+[node name="@Control@25267" type="Control" parent="MainMargin/MainColumn/StatsBar/StatsRow" unique_id=1087754198]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="StatMana" type="HBoxContainer" parent="MainMargin/MainColumn/StatsBar/StatsRow" unique_id=509348130]
+layout_mode = 2
+
+[node name="@Label@25268" type="Label" parent="MainMargin/MainColumn/StatsBar/StatsRow/StatMana" unique_id=11411255]
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+text = "💧"
+vertical_alignment = 1
+
+[node name="@Control@25269" type="Control" parent="MainMargin/MainColumn/StatsBar/StatsRow/StatMana" unique_id=1526261298]
+custom_minimum_size = Vector2(6, 0)
+layout_mode = 2
+
+[node name="@Label@25270" type="Label" parent="MainMargin/MainColumn/StatsBar/StatsRow/StatMana" unique_id=2060276091]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.41960785, 0.3529412, 0.24313726, 1)
+theme_override_font_sizes/font_size = 16
+text = "灵力"
+vertical_alignment = 1
+
+[node name="@Control@25271" type="Control" parent="MainMargin/MainColumn/StatsBar/StatsRow/StatMana" unique_id=1720768531]
+custom_minimum_size = Vector2(6, 0)
+layout_mode = 2
+
+[node name="ManaValue" type="Label" parent="MainMargin/MainColumn/StatsBar/StatsRow/StatMana" unique_id=2034698401]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+theme_override_font_sizes/font_size = 17
+text = "214"
+vertical_alignment = 1

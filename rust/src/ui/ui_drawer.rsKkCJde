@@ -4,36 +4,28 @@
 // GML 标签：<Drawer name="MyDrawer" direction="left" slide_width="50%">
 //   direction: right(0)/left(1)/top(2)/bottom(3)，默认 right
 //   slide_width: 像素值（如 "320"）或视口宽度百分比（如 "50%" → width_ratio=0.5）
-//   width_ratio: >0 时锚点比例定宽（anchor 序列化进 tscn，编辑器/运行期/窗口缩放
-//                全一致，无需像素换算）；0 时退回 slide_width 像素模式
-//   easing: 开合缓动曲线，取值对应 anim/easing.rs 的 Easing 枚举 0~30
-//           （默认 16 = ExpoOut，丝滑滑入；22 = BackOut 带轻微回弹）
+//   width_ratio: >0 时按视口宽度比例覆盖 slide_width，并随视口 resize 自适应
 //   drawer_title: 标题文字（空则不显示标题栏）
 //   close_on_overlay: 点击遮罩关闭，默认 true
-//   编辑器内：静态预览"展开到位"的半宽布局（遮罩透明），便于所见即所得编辑；
-//   运行期：初始隐藏，由 open()/内部动作 show:/toggle: 驱动
 
 use godot::prelude::*;
 use godot::builtin::{GString, StringName, Color, Side};
 use godot::classes::{
     IControl, Control, PanelContainer, VBoxContainer, HBoxContainer,
     MarginContainer, Label, Button, ColorRect, HSeparator, StyleBoxFlat,
-    InputEvent, InputEventMouseButton, Engine,
+    InputEvent, InputEventMouseButton,
 };
 use godot::classes::control::{LayoutPreset, MouseFilter, SizeFlags};
 use godot::global::MouseButton;
 use godot::obj::WithBaseField;
 
-use crate::anim::easing::{Easing, ease_out_cubic};
+use crate::anim::easing::ease_out_cubic;
 
 /// 抽屉方向
 const DIR_RIGHT: i32 = 0;
 const DIR_LEFT: i32 = 1;
 const DIR_TOP: i32 = 2;
 const DIR_BOTTOM: i32 = 3;
-
-/// 默认缓动：ExpoOut（先快后缓收尾，抽屉滑入的标准手感）
-const DEFAULT_EASING: i32 = 16;
 
 #[derive(GodotClass)]
 #[class(base = Control, tool)]
@@ -44,14 +36,11 @@ pub struct GdUIDrawer {
     direction: i32,
     #[export]
     slide_width: i32,
-    /// 抽屉宽度占父级（抽屉根）宽/高的比例（0.0~1.0，0 = 关闭，>0 时覆盖 slide_width）
-    /// slide_width="50%" 经 builder 换算写入本属性——以锚点形式表达
-    /// （如 DIR_LEFT: anchor_right = ratio），随 tscn 序列化、随父级尺寸自适应
+    /// 抽屉宽度占视口宽度的比例（0.0~1.0，0 = 关闭，>0 时覆盖 slide_width）
+    /// slide_width="50%" 经 builder 换算写入本属性——@export 可序列化进 tscn，
+    /// 直开生成场景亦生效，且视口 resize 时自动重算
     #[export]
     width_ratio: f32,
-    /// 开合缓动曲线，取值 0~30 对应 anim/easing.rs 的 Easing 枚举
-    #[export]
-    easing: i32,
     #[export]
     overlay_color: Color,
     #[export]
@@ -87,7 +76,6 @@ impl IControl for GdUIDrawer {
             direction: DIR_RIGHT,
             slide_width: 320,
             width_ratio: 0.0,
-            easing: DEFAULT_EASING,
             overlay_color: Color::from_rgba(0.0, 0.0, 0.0, 0.5),
             drawer_bg_color: Color::from_rgba(0.08, 0.08, 0.14, 0.97),
             drawer_border_color: Color::from_rgb(0.35, 0.4, 0.55),
@@ -111,16 +99,16 @@ impl IControl for GdUIDrawer {
         if !self.ui_built {
             self.build_ui();
         }
-        // 编辑器：静态预览"展开到位"布局（遮罩全透明），所见即所得
-        if Engine::singleton().is_editor_hint() {
-            self.update_layout();
-            if let Some(ref overlay) = self.overlay {
-                let mut o = overlay.clone();
-                o.set_color(Color::from_rgba(0.0, 0.0, 0.0, 0.0));
-            }
-            return;
+        // 百分比宽度：width_ratio>0 时按视口宽度换算 slide_width（含 tscn 直开场景）
+        self.apply_width_ratio();
+        // 视口尺寸变化时重算（抽屉始终保持设定的屏幕比例）
+        let viewport = self.base().get_viewport();
+        if let Some(mut vp) = viewport {
+            let base = self.base();
+            let cb = Callable::from_object_method(&*base, "apply_width_ratio");
+            vp.connect(&StringName::from("size_changed"), &cb);
         }
-        // 运行期：直接隐藏，不走动画（open() 时从 0 滑入）
+        // 直接隐藏，不走动画（close() 在初始状态会跳过）
         self.is_open = false;
         self.animating = false;
         self.anim_progress = 0.0;
@@ -283,122 +271,59 @@ impl GdUIDrawer {
         }
     }
 
-    /// 按宽度比例重新布局（width_ratio > 0 时生效）
-    /// ratio 模式宽度由锚点表达、随父级自适应，无需监听视口变化；
-    /// 保留该方法作为公开 API（外部改 width_ratio 后调用）
+    /// 按视口宽度比例应用抽屉宽度（width_ratio > 0 时覆盖 slide_width）
+    /// GML 写法 slide_width="50%" 由 builder 换算为 width_ratio=0.5（@export 可序列化）；
+    /// 视口 size_changed 时由 ready 里注册的回调再次调用，实现自适应
     #[func]
     fn apply_width_ratio(&mut self) {
-        if self.width_ratio > 0.0 {
+        if self.width_ratio <= 0.0 {
+            return;
+        }
+        let vw = self.base().get_viewport_rect().size.x;
+        if vw <= 0.0 {
+            return;
+        }
+        let w = (vw * self.width_ratio).round() as i32;
+        if w > 0 && w != self.slide_width {
+            self.slide_width = w;
             self.update_layout();
         }
     }
 
-    /// 布局到"展开到位"的静止状态（公开 API，slide_width/width_ratio 变化后调用）
+    /// 重新计算抽屉布局（slide_width 变化后调用）
+    /// 更新 DrawerPanel 的锚点偏移使其匹配新的宽度
     #[func]
     fn update_layout(&mut self) {
-        self.layout_panel(1.0);
-    }
-}
-
-impl GdUIDrawer {
-    /// 计算展开状态的目标布局与滑出方向
-    /// 返回 (锚点 L,T,R,B, 静止偏移 L,T,R,B, 隐藏位移 x, y)
-    /// ratio 模式：宽度由锚点比例表达（offset 0），随父级尺寸自适应；
-    /// 像素模式：锚点贴边 + offset = slide_width
-    fn open_layout(&self) -> (f32, f32, f32, f32, f32, f32, f32, f32, f32, f32) {
-        let ratio_mode = self.width_ratio > 0.0;
-        let ratio = self.width_ratio;
-        let (w, h) = if ratio_mode {
-            let ps = self.base().get_parent_area_size();
-            (ps.x * ratio, ps.y * ratio)
-        } else {
-            (self.slide_width as f32, self.slide_width as f32)
-        };
-
-        match self.direction {
-            DIR_LEFT => (
-                0.0, 0.0, if ratio_mode { ratio } else { 0.0 }, 1.0,
-                0.0, 0.0, if ratio_mode { 0.0 } else { w }, 0.0,
-                -w, 0.0,
-            ),
-            DIR_RIGHT => (
-                if ratio_mode { 1.0 - ratio } else { 1.0 }, 0.0, 1.0, 1.0,
-                if ratio_mode { 0.0 } else { -w }, 0.0, 0.0, 0.0,
-                w, 0.0,
-            ),
-            DIR_TOP => (
-                0.0, 0.0, 1.0, if ratio_mode { ratio } else { 0.0 },
-                0.0, 0.0, 0.0, if ratio_mode { 0.0 } else { h },
-                0.0, -h,
-            ),
-            DIR_BOTTOM => (
-                0.0, if ratio_mode { 1.0 - ratio } else { 1.0 }, 1.0, 1.0,
-                0.0, if ratio_mode { 0.0 } else { -h }, 0.0, 0.0,
-                0.0, h,
-            ),
-            _ => (
-                if ratio_mode { 1.0 - ratio } else { 1.0 }, 0.0, 1.0, 1.0,
-                if ratio_mode { 0.0 } else { -w }, 0.0, 0.0, 0.0,
-                w, 0.0,
-            ),
-        }
-    }
-
-    /// 把抽屉面板布局到动画进度 t（0=完全藏起，1=展开到位）
-    fn layout_panel(&mut self, t: f32) {
-        let Some(panel) = self.drawer_panel.clone() else {
-            return;
-        };
-        let (al, at, ar, ab, ol, ot, orr, ob, tx, ty) = self.open_layout();
-        let k = 1.0 - t;
-        let mut p = panel;
-        p.set_anchor(Side::LEFT, al);
-        p.set_anchor(Side::TOP, at);
-        p.set_anchor(Side::RIGHT, ar);
-        p.set_anchor(Side::BOTTOM, ab);
-        p.set_offset(Side::LEFT, ol + tx * k);
-        p.set_offset(Side::TOP, ot + ty * k);
-        p.set_offset(Side::RIGHT, orr + tx * k);
-        p.set_offset(Side::BOTTOM, ob + ty * k);
-    }
-
-    /// 重连内部回调：遮罩 gui_input → 点击关闭；标题栏关闭按钮 pressed → close
-    /// 构建期 Callable::from_object_method 产生 CallableCustom，ResourceSaver 存
-    /// tscn 时静默丢弃——tscn 实例化（复用路径）必须重连；is_connected 保证幂等，
-    /// 运行期 parse（创建路径已内联连接）调用本方法为空操作
-    fn reconnect_internal_callbacks(&mut self) {
-        // 遮罩点击关闭
-        if let Some(ref overlay) = self.overlay {
-            let base = self.base();
-            let cb = Callable::from_object_method(&*base, "_on_overlay_gui_input");
-            let sig = StringName::from("gui_input");
-            let mut o = overlay.clone();
-            if !o.is_connected(&sig, &cb) {
-                o.connect(&sig, &cb);
-            }
-        }
-        // 标题栏关闭按钮：标题 Label 的同父（HBoxContainer）兄弟 Button
-        if let Some(ref title) = self.title_label {
-            if let Some(parent) = title.clone().get_parent() {
-                if let Ok(hbox) = parent.try_cast::<HBoxContainer>() {
-                    let base = self.base();
-                    let cb = Callable::from_object_method(&*base, "_on_close_pressed");
-                    let sig = StringName::from("pressed");
-                    let kids = hbox.get_children();
-                    for i in 0..kids.len() {
-                        if let Some(k) = kids.get(i) {
-                            if let Ok(mut btn) = k.try_cast::<Button>() {
-                                if !btn.is_connected(&sig, &cb) {
-                                    btn.connect(&sig, &cb);
-                                }
-                            }
-                        }
-                    }
+        if let Some(ref panel) = self.drawer_panel {
+            let mut p = panel.clone();
+            let sw = self.slide_width as f32;
+            match self.direction {
+                DIR_RIGHT => {
+                    p.set_anchor_and_offset(Side::LEFT, 1.0, -sw);
+                    p.set_anchor_and_offset(Side::RIGHT, 1.0, 0.0);
+                }
+                DIR_LEFT => {
+                    p.set_anchor_and_offset(Side::LEFT, 0.0, 0.0);
+                    p.set_anchor_and_offset(Side::RIGHT, 0.0, sw);
+                }
+                DIR_TOP => {
+                    p.set_anchor_and_offset(Side::TOP, 0.0, 0.0);
+                    p.set_anchor_and_offset(Side::BOTTOM, 0.0, sw);
+                }
+                DIR_BOTTOM => {
+                    p.set_anchor_and_offset(Side::TOP, 1.0, -sw);
+                    p.set_anchor_and_offset(Side::BOTTOM, 1.0, 0.0);
+                }
+                _ => {
+                    p.set_anchor_and_offset(Side::LEFT, 1.0, -sw);
+                    p.set_anchor_and_offset(Side::RIGHT, 1.0, 0.0);
                 }
             }
         }
     }
+}
 
+impl GdUIDrawer {
     fn build_ui(&mut self) {
         if self.ui_built {
             return;
@@ -408,18 +333,18 @@ impl GdUIDrawer {
         // 已随场景恢复——重新抓取内部节点引用即可，避免二次创建导致重复遮罩/面板
         {
             let mut base = self.base_mut();
-            let has_existing = base.get_node_or_null(&NodePath::from("Overlay")).is_some()
-                && base.get_node_or_null(&NodePath::from("DrawerPanel")).is_some();
+            let has_existing = base.get_node_or_null(NodePath::from("Overlay")).is_some()
+                && base.get_node_or_null(NodePath::from("DrawerPanel")).is_some();
             if has_existing {
                 drop(base);
                 let mut overlay_ref: Option<Gd<ColorRect>> = None;
-                if let Some(ov) = self.base().get_node_or_null(&NodePath::from("Overlay")) {
+                if let Some(ov) = self.base().get_node_or_null(NodePath::from("Overlay")) {
                     if let Ok(ov) = ov.try_cast::<ColorRect>() {
                         overlay_ref = Some(ov);
                     }
                 }
                 let mut panel_ref: Option<Gd<PanelContainer>> = None;
-                if let Some(p) = self.base().get_node_or_null(&NodePath::from("DrawerPanel")) {
+                if let Some(p) = self.base().get_node_or_null(NodePath::from("DrawerPanel")) {
                     if let Ok(p) = p.try_cast::<PanelContainer>() {
                         panel_ref = Some(p);
                     }
@@ -461,15 +386,13 @@ impl GdUIDrawer {
                 self.content_container = content_ref;
                 self.title_label = title_ref;
                 self.ui_built = true;
-                // 构建期的 CallableCustom 回调不随 tscn 序列化（遮罩点击/关闭按钮），
-                // tscn 实例化走本复用路径，必须重连
-                self.reconnect_internal_callbacks();
                 return;
             }
         }
         self.ui_built = true;
 
         let overlay_color = self.overlay_color;
+        let slide_width = self.slide_width;
         let direction = self.direction;
         let drawer_bg_color = self.drawer_bg_color;
         let drawer_border_color = self.drawer_border_color;
@@ -499,9 +422,44 @@ impl GdUIDrawer {
             base.add_child(&overlay);
             overlay_node = Some(overlay);
 
-            // 抽屉面板：锚点/偏移统一由 layout_panel 决定
+            // 抽屉面板
             let mut panel = PanelContainer::new_alloc();
             panel.set_name("DrawerPanel");
+
+            // 根据方向设置锚点和位置
+            match direction {
+                DIR_RIGHT => {
+                    panel.set_anchor_and_offset(Side::LEFT, 1.0, -(slide_width as f32));
+                    panel.set_anchor_and_offset(Side::RIGHT, 1.0, 0.0);
+                    panel.set_anchor_and_offset(Side::TOP, 0.0, 0.0);
+                    panel.set_anchor_and_offset(Side::BOTTOM, 1.0, 0.0);
+                }
+                DIR_LEFT => {
+                    panel.set_anchor_and_offset(Side::LEFT, 0.0, 0.0);
+                    panel.set_anchor_and_offset(Side::RIGHT, 0.0, slide_width as f32);
+                    panel.set_anchor_and_offset(Side::TOP, 0.0, 0.0);
+                    panel.set_anchor_and_offset(Side::BOTTOM, 1.0, 0.0);
+                }
+                DIR_TOP => {
+                    panel.set_anchor_and_offset(Side::LEFT, 0.0, 0.0);
+                    panel.set_anchor_and_offset(Side::RIGHT, 1.0, 0.0);
+                    panel.set_anchor_and_offset(Side::TOP, 0.0, 0.0);
+                    panel.set_anchor_and_offset(Side::BOTTOM, 0.0, slide_width as f32);
+                }
+                DIR_BOTTOM => {
+                    panel.set_anchor_and_offset(Side::LEFT, 0.0, 0.0);
+                    panel.set_anchor_and_offset(Side::RIGHT, 1.0, 0.0);
+                    panel.set_anchor_and_offset(Side::TOP, 1.0, -(slide_width as f32));
+                    panel.set_anchor_and_offset(Side::BOTTOM, 1.0, 0.0);
+                }
+                _ => {
+                    // 默认右侧
+                    panel.set_anchor_and_offset(Side::LEFT, 1.0, -(slide_width as f32));
+                    panel.set_anchor_and_offset(Side::RIGHT, 1.0, 0.0);
+                    panel.set_anchor_and_offset(Side::TOP, 0.0, 0.0);
+                    panel.set_anchor_and_offset(Side::BOTTOM, 1.0, 0.0);
+                }
+            }
 
             let mut style = StyleBoxFlat::new_gd();
             style.set_bg_color(drawer_bg_color);
@@ -563,20 +521,11 @@ impl GdUIDrawer {
         self.drawer_panel = panel_node;
         self.title_label = title_node;
         self.content_container = content_node;
-
-        // 面板锚点/偏移统一由 layout_panel 决定（ratio 模式以锚点表达，
-        // 构建期即写入正确锚点，随 tscn 序列化）
-        self.layout_panel(1.0);
-        self.reconnect_internal_callbacks();
     }
 
-    /// 应用动画插值（进度 self.anim_progress：0=完全藏起，1=展开到位）
+    /// 应用动画插值
     fn apply_animation(&mut self) {
-        // 缓动曲线：easing 属性指向 anim/easing.rs 的 Easing 枚举（0~30），
-        // 非法值回退 ease_out_cubic
-        let eased = Easing::from_int(self.easing)
-            .map(|e| e.get_progress(self.anim_progress as f32))
-            .unwrap_or_else(|| ease_out_cubic(self.anim_progress as f32)) as f64;
+        let t = ease_out_cubic(self.anim_progress as f32) as f64;
 
         // 更新遮罩透明度
         if let Some(ref overlay) = self.overlay {
@@ -585,12 +534,39 @@ impl GdUIDrawer {
                 self.overlay_color.r,
                 self.overlay_color.g,
                 self.overlay_color.b,
-                self.overlay_color.a * eased as f32,
+                self.overlay_color.a * t as f32,
             ));
         }
 
-        // 更新面板位置（沿滑出方向位移 (1-eased) 比例）
-        self.layout_panel(eased as f32);
+        // 更新面板位置
+        if let Some(ref panel) = self.drawer_panel {
+            let mut p = panel.clone();
+            let slide_width = self.slide_width as f32;
+            let offset = slide_width * (1.0 - t as f32);
+
+            match self.direction {
+                DIR_RIGHT => {
+                    p.set_anchor_and_offset(Side::LEFT, 1.0, -(slide_width) + offset);
+                    p.set_anchor_and_offset(Side::RIGHT, 1.0, offset);
+                }
+                DIR_LEFT => {
+                    p.set_anchor_and_offset(Side::LEFT, 0.0, -offset);
+                    p.set_anchor_and_offset(Side::RIGHT, 0.0, slide_width - offset);
+                }
+                DIR_TOP => {
+                    p.set_anchor_and_offset(Side::TOP, 0.0, -offset);
+                    p.set_anchor_and_offset(Side::BOTTOM, 0.0, slide_width - offset);
+                }
+                DIR_BOTTOM => {
+                    p.set_anchor_and_offset(Side::TOP, 1.0, -(slide_width) + offset);
+                    p.set_anchor_and_offset(Side::BOTTOM, 1.0, offset);
+                }
+                _ => {
+                    p.set_anchor_and_offset(Side::LEFT, 1.0, -(slide_width) + offset);
+                    p.set_anchor_and_offset(Side::RIGHT, 1.0, offset);
+                }
+            }
+        }
 
         // 打开完成时发送信号
         if self.anim_progress >= 1.0 && self.opening {

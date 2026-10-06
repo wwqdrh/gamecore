@@ -1,0 +1,165 @@
+[gd_scene format=3]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wycea"]
+bg_color = Color(0.14117648, 0.20784314, 0.16470589, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.72156864, 0.627451, 0.41568628, 1)
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+corner_radius_bottom_right = 22
+corner_radius_bottom_left = 22
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_25ja0"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.65882355, 0.22745098, 0.18039216, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.47843137, 0.15686275, 0.1254902, 1)
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+corner_radius_bottom_right = 22
+corner_radius_bottom_left = 22
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_klyyx"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.5588235, 0.12745097, 0.08039216, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.47843137, 0.15686275, 0.1254902, 1)
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+corner_radius_bottom_right = 22
+corner_radius_bottom_left = 22
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ory47"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.77882355, 0.34745097, 0.30039215, 1)
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+corner_radius_bottom_right = 22
+corner_radius_bottom_left = 22
+
+[node name="TopBar" type="HBoxContainer" unique_id=509166088]
+anchor_right = 1.0
+anchor_bottom = 1.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Control@83" type="Control" parent="." unique_id=326181168]
+layout_mode = 2
+size_flags_horizontal = 3
+metadata/__script_vars = {}
+
+[node name="@Panel@95" type="Panel" parent="." unique_id=925081283]
+custom_minimum_size = Vector2(380, 52)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_wycea")
+metadata/__script_vars = {}
+
+[node name="@MarginContainer@94" type="MarginContainer" parent="@Panel@95" unique_id=276276769]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 8.0
+offset_right = -10.0
+offset_bottom = -8.0
+metadata/__anchor = "full"
+
+[node name="@HBoxContainer@93" type="HBoxContainer" parent="@Panel@95/@MarginContainer@94" unique_id=1283842765]
+layout_mode = 2
+
+[node name="@Label@84" type="Label" parent="@Panel@95/@MarginContainer@94/@HBoxContainer@93" unique_id=576553359]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "💎"
+vertical_alignment = 1
+
+[node name="@Control@85" type="Control" parent="@Panel@95/@MarginContainer@94/@HBoxContainer@93" unique_id=760583975]
+custom_minimum_size = Vector2(6, 0)
+layout_mode = 2
+
+[node name="@Label@86" type="Label" parent="@Panel@95/@MarginContainer@94/@HBoxContainer@93" unique_id=2010192922]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.8039216, 0.7490196, 0.6039216, 1)
+text = "灵石"
+vertical_alignment = 1
+
+[node name="@Control@87" type="Control" parent="@Panel@95/@MarginContainer@94/@HBoxContainer@93" unique_id=633704378]
+custom_minimum_size = Vector2(8, 0)
+layout_mode = 2
+
+[node name="LingShiNum" type="Label" parent="@Panel@95/@MarginContainer@94/@HBoxContainer@93" unique_id=1605243031]
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+text = "1,240"
+vertical_alignment = 1
+
+[node name="@Control@88" type="Control" parent="@Panel@95/@MarginContainer@94/@HBoxContainer@93" unique_id=1798281247]
+custom_minimum_size = Vector2(28, 0)
+layout_mode = 2
+
+[node name="@Label@89" type="Label" parent="@Panel@95/@MarginContainer@94/@HBoxContainer@93" unique_id=1107655429]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "🪙"
+vertical_alignment = 1
+
+[node name="@Control@90" type="Control" parent="@Panel@95/@MarginContainer@94/@HBoxContainer@93" unique_id=741249626]
+custom_minimum_size = Vector2(6, 0)
+layout_mode = 2
+
+[node name="@Label@91" type="Label" parent="@Panel@95/@MarginContainer@94/@HBoxContainer@93" unique_id=131151361]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.8039216, 0.7490196, 0.6039216, 1)
+text = "宗门贡献"
+vertical_alignment = 1
+
+[node name="@Control@92" type="Control" parent="@Panel@95/@MarginContainer@94/@HBoxContainer@93" unique_id=2037562705]
+custom_minimum_size = Vector2(8, 0)
+layout_mode = 2
+
+[node name="GongXianNum" type="Label" parent="@Panel@95/@MarginContainer@94/@HBoxContainer@93" unique_id=156998230]
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+text = "1,240"
+vertical_alignment = 1
+
+[node name="@Control@96" type="Control" parent="." unique_id=150427296]
+layout_mode = 2
+size_flags_horizontal = 3
+metadata/__script_vars = {}
+
+[node name="CloseBtn" type="Button" parent="." unique_id=1932005848]
+custom_minimum_size = Vector2(44, 44)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_default_cursor_shape = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_25ja0")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_klyyx")
+theme_override_styles/hover = SubResource("StyleBoxFlat_ory47")
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+text = "✕"
+metadata/__signal_pressed = "_on_close_pressed"
+metadata/__script_vars = {}

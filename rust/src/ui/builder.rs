@@ -133,8 +133,11 @@ impl UiBuilder {
             }
         }
 
-        // 后处理：解析内部信号绑定（show:/hide:/toggle:NodeName）
-        resolve_internal_signals(&mut root);
+        // 内部信号绑定（show:/hide:/toggle:/open:/close:NodeName）不在构建期连接：
+        // from_object_method 产生的是 CallableCustom，PackedScene 保存时会静默丢弃，
+        // tscn 直开场景会断链。meta（__signal_xxx）随 tscn 序列化保留，
+        // 统一由运行期信号解析（ui_list_helper::connect_node_signal_meta）按内部动作分支连接
+        // （GdGmlScene connect_signals / <ui script> 挂树自举 / 手动 connect_signals 三条路径均覆盖）
 
         // 后处理：应用 data="变量名" 绑定（<script> 数据 → 列表 update / 节点 meta）
         self.apply_data_bindings(&mut root);
@@ -1941,10 +1944,9 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
         "slide_width" => {
             if tag == "Drawer" {
                 if let Some(pct) = parse_percent(value) {
-                    control.set_meta(
-                        &StringName::from("__pct_slide_width"),
-                        &pct.to_variant(),
-                    );
+                    // 百分比 → width_ratio 导出属性（@export 随 tscn 序列化，
+                    // 直开生成场景亦生效；运行时按视口宽度换算并随 resize 自适应）
+                    control.set(&StringName::from("width_ratio"), &pct.to_variant());
                 } else if let Ok(val) = value.parse::<i32>() {
                     control.set(&StringName::from("slide_width"), &val.to_variant());
                 }
@@ -2353,7 +2355,8 @@ fn apply_size_flags_vertical(control: &mut Gd<Control>, value: &str) {
 }
 
 /// 内部信号动作类型
-enum InternalAction {
+#[derive(Clone, Copy)]
+pub(crate) enum InternalAction {
     Show,
     Hide,
     Toggle,
@@ -2361,86 +2364,9 @@ enum InternalAction {
     Close,
 }
 
-/// 后处理：解析内部信号绑定
-/// 遍历节点树中所有带 __signal_xxx 元数据的节点，
-/// 如果元数据值匹配 "show:NodeName"、"hide:NodeName"、"toggle:NodeName" 格式，
-/// 则在根节点树中查找目标节点并直接连接信号
-fn resolve_internal_signals(root: &mut Gd<Control>) {
-    // 克隆 root 用于不可变引用查找
-    let root_clone = root.clone();
-    resolve_internal_signals_recursive(root, &root_clone);
-}
-
-fn resolve_internal_signals_recursive(node: &mut Gd<Control>, root: &Gd<Control>) {
-    let meta_list = node.get_meta_list();
-    let mut resolved_keys: Vec<StringName> = Vec::new();
-
-    for i in 0..meta_list.len() {
-        if let Some(key_sn) = meta_list.get(i) {
-            let key = key_sn.to_string();
-            if key.starts_with("__signal_") {
-                let signal_name = key[9..].to_string();
-                let method_value = node.get_meta(&StringName::from(key.as_str())).to_string();
-
-                // 检查是否为内部动作绑定
-                if let Some((action, target_name)) = parse_internal_action(&method_value) {
-                    // 在根节点树中查找目标节点
-                    if let Some(target) = root.find_child_ex(&GString::from(target_name.as_str())).recursive(true).owned(false).done() {
-                        let target_obj = target.clone().upcast::<Object>();
-                        let callable = match action {
-                            InternalAction::Show => {
-                                if target_obj.has_method(&StringName::from("show_popup")) {
-                                    Callable::from_object_method(&target, &StringName::from("show_popup"))
-                                } else {
-                                    Callable::from_object_method(&target, &StringName::from("open"))
-                                }
-                            }
-                            InternalAction::Hide => {
-                                if target_obj.has_method(&StringName::from("hide_popup")) {
-                                    Callable::from_object_method(&target, &StringName::from("hide_popup"))
-                                } else {
-                                    Callable::from_object_method(&target, &StringName::from("close"))
-                                }
-                            }
-                            InternalAction::Toggle => {
-                                if target_obj.has_method(&StringName::from("toggle_popup")) {
-                                    Callable::from_object_method(&target, &StringName::from("toggle_popup"))
-                                } else {
-                                    Callable::from_object_method(&target, &StringName::from("toggle"))
-                                }
-                            }
-                            InternalAction::Open => Callable::from_object_method(&target, &StringName::from("open")),
-                            InternalAction::Close => Callable::from_object_method(&target, &StringName::from("close")),
-                        };
-                        node.connect(&StringName::from(signal_name.as_str()), &callable);
-                        resolved_keys.push(key_sn.clone());
-                    } else {
-                        godot_error!("[UiBuilder] Cannot find target node '{}' for internal signal binding", target_name);
-                    }
-                }
-            }
-        }
-    }
-
-    // 移除已解析的内部绑定元数据（不再传递给外部 connect_signals）
-    for key in resolved_keys {
-        node.remove_meta(&key);
-    }
-
-    // 递归处理子节点
-    let children = node.get_children();
-    for i in 0..children.len() {
-        if let Some(child) = children.get(i) {
-            if let Ok(mut control) = child.clone().try_cast::<Control>() {
-                resolve_internal_signals_recursive(&mut control, root);
-            }
-        }
-    }
-}
-
 /// 解析内部动作绑定
 /// 格式: "show:NodeName", "hide:NodeName", "toggle:NodeName", "open:NodeName", "close:NodeName"
-fn parse_internal_action(value: &str) -> Option<(InternalAction, String)> {
+pub(crate) fn parse_internal_action(value: &str) -> Option<(InternalAction, String)> {
     let value = value.trim();
     if let Some(rest) = value.strip_prefix("show:") {
         let name = rest.trim().to_string();

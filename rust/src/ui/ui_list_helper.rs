@@ -656,6 +656,16 @@ fn resolve_target_for_method(
 pub fn connect_node_signal_meta(node: &mut Gd<Control>, fallback: &Gd<Object>) {
     for (signal_name, method_name) in crate::ui::gdui_builder::get_signal_meta_list(node) {
         let method_sn = StringName::from(method_name.as_str());
+        // 内部动作绑定（show:/hide:/toggle:/open:/close:目标节点名）优先识别：
+        // 构建期 from_object_method 连接是 CallableCustom，PackedScene 保存会静默丢弃，
+        // 因此构建期不连接、meta 随 tscn 序列化，统一在运行期（本函数）解析连接——
+        // GdGmlScene connect_signals / <ui script> 挂树自举 / 手动 connect_signals 三条路径均覆盖
+        if let Some((action, target_name)) =
+            crate::ui::builder::parse_internal_action(&method_name)
+        {
+            connect_internal_action(node, fallback, &signal_name, action, &target_name);
+            continue;
+        }
         // 就近解析绑定目标：优先条目自身挂载的脚本（<ui script>），回退场景目标
         let target = resolve_target_for_method(node, &method_sn, fallback);
         if !target.has_method(&method_sn) {
@@ -696,6 +706,79 @@ pub fn connect_node_signal_meta(node: &mut Gd<Control>, fallback: &Gd<Object>) {
                 method_name
             );
         }
+    }
+}
+
+/// 内部动作连接：show:/hide:/toggle:/open:/close: → 目标节点的方法。
+/// Show/Hide/Toggle 优先用 PopupPanel 语义（show_popup/hide_popup/toggle_popup），
+/// 目标无该方法时回退 open/close/toggle（Drawer 等控件）
+fn connect_internal_action(
+    node: &mut Gd<Control>,
+    fallback: &Gd<Object>,
+    signal_name: &str,
+    action: crate::ui::builder::InternalAction,
+    target_name: &str,
+) {
+    use crate::ui::builder::InternalAction;
+    let sig_sn = StringName::from(signal_name);
+    if !node.has_signal(&sig_sn) {
+        godot_warn!(
+            "[GdUiBuilder] 节点 {}({}) 不存在信号 {}，内部动作绑定被跳过",
+            node.get_name(),
+            node.get_class(),
+            signal_name
+        );
+        return;
+    }
+    // 从 gml 树根（场景脚本节点）向下查找目标节点
+    let Ok(fnode) = fallback.clone().try_cast::<godot::classes::Node>() else {
+        godot_error!(
+            "[UiBuilder] Cannot resolve internal action '{}' target '{}' (fallback is not a Node)",
+            signal_name, target_name
+        );
+        return;
+    };
+    let Some(target) = fnode
+        .find_child_ex(&GString::from(target_name))
+        .recursive(true)
+        .owned(false)
+        .done()
+    else {
+        godot_error!(
+            "[UiBuilder] Cannot find target node '{}' for internal signal binding",
+            target_name
+        );
+        return;
+    };
+    let target_obj = target.clone().upcast::<godot::classes::Object>();
+    let method = match action {
+        InternalAction::Show => {
+            if target_obj.has_method(&StringName::from("show_popup")) {
+                "show_popup"
+            } else {
+                "open"
+            }
+        }
+        InternalAction::Hide => {
+            if target_obj.has_method(&StringName::from("hide_popup")) {
+                "hide_popup"
+            } else {
+                "close"
+            }
+        }
+        InternalAction::Toggle => {
+            if target_obj.has_method(&StringName::from("toggle_popup")) {
+                "toggle_popup"
+            } else {
+                "toggle"
+            }
+        }
+        InternalAction::Open => "open",
+        InternalAction::Close => "close",
+    };
+    let callable = Callable::from_object_method(&target, &StringName::from(method));
+    if !node.is_connected(&sig_sn, &callable) {
+        node.connect(&sig_sn, &callable);
     }
 }
 

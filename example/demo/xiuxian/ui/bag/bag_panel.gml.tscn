@@ -1,0 +1,5969 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" uid="uid://defxvw2ev5414" path="res://example/demo/xiuxian/ui/bag/bag_panel.gd" id="1_ka2op"]
+[ext_resource type="Script" uid="uid://c1fkobnxcufcp" path="res://example/demo/xiuxian/ui/bag/bag_categories.gd" id="2_ne1fk"]
+[ext_resource type="Script" uid="uid://t5258loc0f1h" path="res://example/demo/xiuxian/ui/bag/bag_grid.gd" id="3_n1e8k"]
+[ext_resource type="Script" uid="uid://ev012igar36m" path="res://example/demo/xiuxian/ui/bag/bag_item.gd" id="4_wgwwu"]
+[ext_resource type="Script" uid="uid://bul8bbv28by60" path="res://example/demo/xiuxian/ui/bag/bag_detail.gd" id="5_occjv"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7gh3y"]
+bg_color = Color(0.9411765, 0.9098039, 0.8235294, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.47843137, 0.41568628, 0.2901961, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_518gw"]
+bg_color = Color(0.18039216, 0.2901961, 0.22745098, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yvfda"]
+bg_color = Color(0.9098039, 0.8509804, 0.65882355, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.5411765, 0.41568628, 0.11764706, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mo5ck"]
+bg_color = Color(0.14117648, 0.23529412, 0.18039216, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.3372549, 0.4392157, 0.36078432, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6un2g"]
+bg_color = Color(0.14117648, 0.23529412, 0.18039216, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.3372549, 0.4392157, 0.36078432, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6s8c5"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.22745098, 0.47843137, 0.3529412, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yog6s"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.12745097, 0.37843138, 0.2529412, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_84st3"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.34745097, 0.59843135, 0.4729412, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_r81jc"]
+bg_color = Color(0.9137255, 0.8862745, 0.78431374, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nd4bb"]
+bg_color = Color(0.9490196, 0.9254902, 0.83137256, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_u2ft3"]
+bg_color = Color(0.9490196, 0.9254902, 0.83137256, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_oense"]
+bg_color = Color(0.9490196, 0.9254902, 0.83137256, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_41skm"]
+bg_color = Color(0.9490196, 0.9254902, 0.83137256, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mbl2a"]
+bg_color = Color(0.9490196, 0.9254902, 0.83137256, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_iyhoe"]
+bg_color = Color(0.9137255, 0.8862745, 0.78431374, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_a85wb"]
+bg_color = Color(0.8745098, 0.9137255, 0.8, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.65882355, 0.7254902, 0.5411765, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5tu3m"]
+bg_color = Color(0.6901961, 0.5882353, 0.8784314, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.5411765, 0.43529412, 0.7529412, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ss7mo"]
+bg_color = Color(0.9411765, 0.9098039, 0.8235294, 0)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.9098039, 0.7254902, 0.24313726, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_t633n"]
+bg_color = Color(0.9490196, 0.9254902, 0.84705883, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_awdso"]
+bg_color = Color(0.8627451, 0.9098039, 0.9411765, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.7882353, 0.6431373, 0.2901961, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_t7f6o"]
+bg_color = Color(0.83137256, 0.627451, 0.09019608, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.65882355, 0.4862745, 0.0627451, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_iuwgy"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.9098039, 0.7254902, 0.24313726, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.5411765, 0.41568628, 0.11764706, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0fdff"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.8098039, 0.6254902, 0.14313725, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.5411765, 0.41568628, 0.11764706, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_q0vwp"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(1, 0.8454902, 0.36313725, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_87416"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.22745098, 0.3529412, 0.27450982, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ltlwk"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.12745097, 0.2529412, 0.17450982, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dueop"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.34745097, 0.4729412, 0.39450982, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yj4mx"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.22745098, 0.3529412, 0.27450982, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_c5cye"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.12745097, 0.2529412, 0.17450982, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_51r2r"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.34745097, 0.4729412, 0.39450982, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[node name="BagPanel" type="Panel" unique_id=1784695192]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_7gh3y")
+script = ExtResource("1_ka2op")
+metadata/__anchor = "full"
+metadata/__pct_margin = "2%"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray()
+
+[node name="MainMargin" type="MarginContainer" parent="." unique_id=1109955724]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = -14.0
+offset_bottom = -14.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="MainColumn" type="VBoxContainer" parent="MainMargin" unique_id=2118206476]
+layout_mode = 2
+
+[node name="BagTopBar" type="Panel" parent="MainMargin/MainColumn" unique_id=1181485779]
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_518gw")
+metadata/__script_vars = {}
+
+[node name="TopBarRow" type="HBoxContainer" parent="MainMargin/MainColumn/BagTopBar" unique_id=1130249867]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 8.0
+offset_right = -12.0
+offset_bottom = -8.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@3" type="Panel" parent="MainMargin/MainColumn/BagTopBar/TopBarRow" unique_id=1425059961]
+custom_minimum_size = Vector2(140, 40)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_yvfda")
+
+[node name="@Label@2" type="Label" parent="MainMargin/MainColumn/BagTopBar/TopBarRow/@Panel@3" unique_id=1956053648]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.41960785, 0.2901961, 0.11764706, 1)
+text = "储 物 袋"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="@Control@4" type="Control" parent="MainMargin/MainColumn/BagTopBar/TopBarRow" unique_id=1628585557]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="@Panel@8" type="Panel" parent="MainMargin/MainColumn/BagTopBar/TopBarRow" unique_id=1611786867]
+custom_minimum_size = Vector2(150, 36)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_mo5ck")
+
+[node name="@HBoxContainer@7" type="HBoxContainer" parent="MainMargin/MainColumn/BagTopBar/TopBarRow/@Panel@8" unique_id=2109713327]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 4.0
+offset_right = -10.0
+offset_bottom = -4.0
+metadata/__anchor = "full"
+
+[node name="@Label@5" type="Label" parent="MainMargin/MainColumn/BagTopBar/TopBarRow/@Panel@8/@HBoxContainer@7" unique_id=563474746]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "💎"
+vertical_alignment = 1
+
+[node name="@Label@6" type="Label" parent="MainMargin/MainColumn/BagTopBar/TopBarRow/@Panel@8/@HBoxContainer@7" unique_id=1690162308]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "12,800"
+vertical_alignment = 1
+
+[node name="@Control@9" type="Control" parent="MainMargin/MainColumn/BagTopBar/TopBarRow" unique_id=793285614]
+custom_minimum_size = Vector2(8, 0)
+layout_mode = 2
+
+[node name="@Panel@12" type="Panel" parent="MainMargin/MainColumn/BagTopBar/TopBarRow" unique_id=1583305834]
+custom_minimum_size = Vector2(120, 36)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_6un2g")
+
+[node name="@HBoxContainer@11" type="HBoxContainer" parent="MainMargin/MainColumn/BagTopBar/TopBarRow/@Panel@12" unique_id=744005873]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 4.0
+offset_right = -10.0
+offset_bottom = -4.0
+metadata/__anchor = "full"
+
+[node name="@Label@10" type="Label" parent="MainMargin/MainColumn/BagTopBar/TopBarRow/@Panel@12/@HBoxContainer@11" unique_id=766469262]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "👝"
+vertical_alignment = 1
+
+[node name="CapacityText" type="Label" parent="MainMargin/MainColumn/BagTopBar/TopBarRow/@Panel@12/@HBoxContainer@11" unique_id=541332747]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "86/120"
+vertical_alignment = 1
+
+[node name="@Control@13" type="Control" parent="MainMargin/MainColumn/BagTopBar/TopBarRow" unique_id=1798300632]
+custom_minimum_size = Vector2(8, 0)
+layout_mode = 2
+
+[node name="CloseBtn" type="Button" parent="MainMargin/MainColumn/BagTopBar/TopBarRow" unique_id=314617730]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_6s8c5")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_yog6s")
+theme_override_styles/hover = SubResource("StyleBoxFlat_84st3")
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "✕"
+metadata/__signal_pressed = "_on_close_pressed"
+
+[node name="@Control@14" type="Control" parent="MainMargin/MainColumn" unique_id=100463423]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+
+[node name="BodyRow" type="HBoxContainer" parent="MainMargin/MainColumn" unique_id=557131124]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="CategoryPanel" type="Panel" parent="MainMargin/MainColumn/BodyRow" unique_id=1284770702]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_r81jc")
+script = ExtResource("2_ne1fk")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray()
+
+[node name="CatColumn" type="VBoxContainer" parent="MainMargin/MainColumn/BodyRow/CategoryPanel" unique_id=382995186]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 12.0
+offset_right = -10.0
+offset_bottom = -12.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CatAll" type="Panel" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn" unique_id=2079817903]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_nd4bb")
+metadata/__signal_pressed = "_on_category"
+
+[node name="@HBoxContainer@17" type="HBoxContainer" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatAll" unique_id=1818675891]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_right = -8.0
+metadata/__anchor = "full"
+
+[node name="@Label@15" type="Label" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatAll/@HBoxContainer@17" unique_id=882051733]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "🔳"
+vertical_alignment = 1
+
+[node name="@Label@16" type="Label" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatAll/@HBoxContainer@17" unique_id=734009657]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "全部"
+vertical_alignment = 1
+
+[node name="CatTool" type="Panel" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn" unique_id=692901150]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_u2ft3")
+metadata/__signal_pressed = "_on_category"
+
+[node name="@HBoxContainer@20" type="HBoxContainer" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatTool" unique_id=2114944156]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_right = -8.0
+metadata/__anchor = "full"
+
+[node name="@Label@18" type="Label" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatTool/@HBoxContainer@20" unique_id=224286966]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "🗡️"
+vertical_alignment = 1
+
+[node name="@Label@19" type="Label" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatTool/@HBoxContainer@20" unique_id=292869530]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "法器"
+vertical_alignment = 1
+
+[node name="CatPill" type="Panel" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn" unique_id=1329488515]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_oense")
+metadata/__signal_pressed = "_on_category"
+
+[node name="@HBoxContainer@23" type="HBoxContainer" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatPill" unique_id=801575640]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_right = -8.0
+metadata/__anchor = "full"
+
+[node name="@Label@21" type="Label" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatPill/@HBoxContainer@23" unique_id=1254598414]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "⚗️"
+vertical_alignment = 1
+
+[node name="@Label@22" type="Label" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatPill/@HBoxContainer@23" unique_id=21367908]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "丹药"
+vertical_alignment = 1
+
+[node name="CatMaterial" type="Panel" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn" unique_id=1754834412]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_41skm")
+metadata/__signal_pressed = "_on_category"
+
+[node name="@HBoxContainer@26" type="HBoxContainer" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatMaterial" unique_id=1821516448]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_right = -8.0
+metadata/__anchor = "full"
+
+[node name="@Label@24" type="Label" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatMaterial/@HBoxContainer@26" unique_id=78321150]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "🌿"
+vertical_alignment = 1
+
+[node name="@Label@25" type="Label" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatMaterial/@HBoxContainer@26" unique_id=965475618]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "材料"
+vertical_alignment = 1
+
+[node name="CatTalisman" type="Panel" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn" unique_id=771914739]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_mbl2a")
+metadata/__signal_pressed = "_on_category"
+
+[node name="@HBoxContainer@29" type="HBoxContainer" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatTalisman" unique_id=563541363]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_right = -8.0
+metadata/__anchor = "full"
+
+[node name="@Label@27" type="Label" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatTalisman/@HBoxContainer@29" unique_id=1386255038]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "📜"
+vertical_alignment = 1
+
+[node name="@Label@28" type="Label" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatTalisman/@HBoxContainer@29" unique_id=523578314]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "符篆"
+vertical_alignment = 1
+
+[node name="@Control@30" type="Control" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn" unique_id=1354139825]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="@Label@31" type="Label" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn" unique_id=240084156]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6901961, 0.22745098, 0.18039216, 1)
+text = "修
+仙"
+horizontal_alignment = 1
+
+[node name="@Control@32" type="Control" parent="MainMargin/MainColumn/BodyRow" unique_id=1791745517]
+custom_minimum_size = Vector2(12, 0)
+layout_mode = 2
+
+[node name="GoodsPanel" type="Panel" parent="MainMargin/MainColumn/BodyRow" unique_id=487126342]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 4.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_iyhoe")
+script = ExtResource("3_n1e8k")
+metadata/__anchor = "full"
+metadata/__script_vars = {
+"category": "pill",
+"goods": [{
+"category": "pill",
+"count": "x1",
+"desc": "服用后可快速聚集天地灵气，提升修为。是修仙者常用的助修丹药。",
+"icon": "🏺",
+"name": "聚气丹",
+"selected": true
+}, {
+"category": "pill",
+"count": "x1",
+"desc": "修士常用的法器长剑，灌注灵力可斩妖除魔。",
+"icon": "⚔️",
+"name": "精铁剑",
+"quality": "稀有"
+}, {
+"category": "pill",
+"count": "x16",
+"desc": "三阶灵草，炼制清心丹的主药，可安神静气。",
+"icon": "🌿",
+"name": "清心草"
+}, {
+"category": "pill",
+"count": "x5",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒"
+}, {
+"category": "pill",
+"count": "x6",
+"desc": "手绘符篆，激发后可释放一次法术，用后即毁。",
+"icon": "📜",
+"name": "符篆"
+}, {
+"category": "pill",
+"count": "x24",
+"desc": "修仙界通用货币，蕴含精纯灵气，可辅助修炼。",
+"icon": "💎",
+"name": "灵石"
+}, {
+"category": "pill",
+"count": "x16",
+"desc": "三阶灵草，炼制清心丹的主药，可安神静气。",
+"icon": "🌿",
+"name": "清心草"
+}, {
+"category": "pill",
+"count": "x4",
+"desc": "生于灵潭深处的三阶灵莲，百年一开花，珍稀难得。",
+"icon": "🪷",
+"name": "碧水莲",
+"quality": "稀有"
+}, {
+"category": "pill",
+"count": "x35",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒"
+}, {
+"category": "pill",
+"count": "x1",
+"desc": "修士常用的法器长剑，灌注灵力可斩妖除魔。",
+"icon": "⚔️",
+"name": "精铁剑"
+}, {
+"category": "pill",
+"count": "x26",
+"desc": "桃灵树所结之花，可入药，亦可酿制桃花酿。",
+"icon": "🌸",
+"name": "灵桃花"
+}, {
+"category": "pill",
+"count": "x15",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒",
+"quality": "稀有"
+}, {
+"category": "pill",
+"count": "x6",
+"desc": "炼丹辅药，可提升丹药成丹率，炼丹师必备。",
+"icon": "🧪",
+"name": "凝魂露"
+}, {
+"category": "pill",
+"count": "x3",
+"desc": "手绘符篆，激发后可释放一次法术，用后即毁。",
+"icon": "📜",
+"name": "符篆"
+}, {
+"category": "pill",
+"count": "x33",
+"desc": "三阶灵草，炼制清心丹的主药，可安神静气。",
+"icon": "🌿",
+"name": "清心草"
+}, {
+"category": "pill",
+"count": "x11",
+"desc": "修仙界通用货币，蕴含精纯灵气，可辅助修炼。",
+"icon": "💎",
+"name": "灵石"
+}, {
+"category": "pill",
+"count": "x11",
+"desc": "千年灵芝，炼制培元丹不可或缺的药材。",
+"icon": "🍄",
+"name": "千年灵芝",
+"quality": "稀有"
+}, {
+"category": "pill",
+"count": "x3",
+"desc": "修士常用的法器长剑，灌注灵力可斩妖除魔。",
+"icon": "⚔️",
+"name": "精铁剑"
+}, {
+"category": "pill",
+"count": "x3",
+"desc": "前朝遗留的灵钱，据说串成串可以布聚灵阵。",
+"icon": "🪙",
+"name": "古灵钱",
+"quality": "稀有"
+}, {
+"category": "pill",
+"count": "x23",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒"
+}, {
+"category": "pill",
+"count": "x16",
+"desc": "桃灵树所结之花，可入药，亦可酿制桃花酿。",
+"icon": "🌸",
+"name": "灵桃花"
+}, {
+"category": "pill",
+"count": "x3",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒"
+}, {
+"category": "pill",
+"count": "x31",
+"desc": "桃灵树所结之花，可入药，亦可酿制桃花酿。",
+"icon": "🌸",
+"name": "灵桃花"
+}, {
+"category": "pill",
+"count": "x9",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒"
+}, {
+"category": "pill",
+"count": "x16",
+"desc": "手绘符篆，激发后可释放一次法术，用后即毁。",
+"icon": "📜",
+"name": "符篆"
+}, {
+"category": "pill",
+"count": "x24",
+"desc": "三阶灵草，炼制清心丹的主药，可安神静气。",
+"icon": "🌿",
+"name": "清心草"
+}, {
+"category": "pill",
+"count": "x3",
+"desc": "修士常用的法器长剑，灌注灵力可斩妖除魔。",
+"icon": "⚔️",
+"name": "精铁剑"
+}, {
+"category": "pill",
+"count": "x10",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒"
+}, {
+"category": "pill",
+"count": "x26",
+"desc": "桃灵树所结之花，可入药，亦可酿制桃花酿。",
+"icon": "🌸",
+"name": "灵桃花"
+}, {
+"category": "pill",
+"count": "x6",
+"desc": "手绘符篆，激发后可释放一次法术，用后即毁。",
+"icon": "📜",
+"name": "符篆"
+}, {
+"category": "pill",
+"count": "x14",
+"desc": "经灵泉过滤的纯净水，洗炼法器必备。",
+"icon": "💧",
+"name": "净灵水"
+}, {
+"category": "pill",
+"count": "x17",
+"desc": "三阶灵草，炼制清心丹的主药，可安神静气。",
+"icon": "🌿",
+"name": "清心草"
+}, {
+"category": "pill",
+"count": "x7",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒",
+"quality": "稀有"
+}, {
+"category": "pill",
+"count": "x16",
+"desc": "性烈属火，是火系丹药的常用引子。",
+"icon": "🌺",
+"name": "赤焰花"
+}, {
+"category": "pill",
+"count": "x1",
+"desc": "修士常用的法器长剑，灌注灵力可斩妖除魔。",
+"icon": "⚔️",
+"name": "精铁剑"
+}, {
+"category": "pill",
+"count": "x4",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒"
+}, {
+"category": "pill",
+"count": "x12",
+"desc": "手绘符篆，激发后可释放一次法术，用后即毁。",
+"icon": "📜",
+"name": "符篆"
+}, {
+"category": "pill",
+"count": "x26",
+"desc": "灵田所产灵蔬，服食可小补灵气。",
+"icon": "🥬",
+"name": "翠灵菜"
+}, {
+"category": "pill",
+"count": "x2",
+"desc": "修士常用的法器长剑，灌注灵力可斩妖除魔。",
+"icon": "⚔️",
+"name": "精铁剑",
+"quality": "稀有"
+}, {
+"category": "pill",
+"count": "x3",
+"desc": "修仙界通用货币，蕴含精纯灵气，可辅助修炼。",
+"icon": "💎",
+"name": "灵石"
+}, {
+"category": "pill",
+"count": "x21",
+"desc": "二阶灵花，晒干后可泡制灵茶，清目养神。",
+"icon": "🌼",
+"name": "金盏菊"
+}, {
+"category": "pill",
+"count": "x16",
+"desc": "形似萝卜的灵参，药性温和，适合筑基期修士。",
+"icon": "🥕",
+"name": "土灵参"
+}, {
+"category": "pill",
+"count": "x6",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒"
+}, {
+"category": "pill",
+"count": "x33",
+"desc": "三阶灵草，炼制清心丹的主药，可安神静气。",
+"icon": "🌿",
+"name": "清心草"
+}, {
+"category": "pill",
+"count": "x4",
+"desc": "千年灵芝，炼制培元丹不可或缺的药材。",
+"icon": "🍄",
+"name": "千年灵芝",
+"quality": "稀有"
+}, {
+"category": "pill",
+"count": "x11",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒"
+}, {
+"category": "pill",
+"count": "x3",
+"desc": "手绘符篆，激发后可释放一次法术，用后即毁。",
+"icon": "📜",
+"name": "符篆"
+}, {
+"category": "pill",
+"count": "x5",
+"desc": "尚未开启的储物格，修为达标后可解锁。",
+"icon": "🔒",
+"locked": true,
+"name": "封印格"
+}]
+}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray()
+
+[node name="GoodsScroll" type="ScrollContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel" unique_id=1257784956]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+metadata/__anchor = "full"
+metadata/__script_vars = {
+"category": "pill",
+"goods": [{
+"category": "pill",
+"count": "x1",
+"desc": "服用后可快速聚集天地灵气，提升修为。是修仙者常用的助修丹药。",
+"icon": "🏺",
+"name": "聚气丹",
+"selected": true
+}, {
+"category": "pill",
+"count": "x1",
+"desc": "修士常用的法器长剑，灌注灵力可斩妖除魔。",
+"icon": "⚔️",
+"name": "精铁剑",
+"quality": "稀有"
+}, {
+"category": "pill",
+"count": "x16",
+"desc": "三阶灵草，炼制清心丹的主药，可安神静气。",
+"icon": "🌿",
+"name": "清心草"
+}, {
+"category": "pill",
+"count": "x5",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒"
+}, {
+"category": "pill",
+"count": "x6",
+"desc": "手绘符篆，激发后可释放一次法术，用后即毁。",
+"icon": "📜",
+"name": "符篆"
+}, {
+"category": "pill",
+"count": "x24",
+"desc": "修仙界通用货币，蕴含精纯灵气，可辅助修炼。",
+"icon": "💎",
+"name": "灵石"
+}, {
+"category": "pill",
+"count": "x16",
+"desc": "三阶灵草，炼制清心丹的主药，可安神静气。",
+"icon": "🌿",
+"name": "清心草"
+}, {
+"category": "pill",
+"count": "x4",
+"desc": "生于灵潭深处的三阶灵莲，百年一开花，珍稀难得。",
+"icon": "🪷",
+"name": "碧水莲",
+"quality": "稀有"
+}, {
+"category": "pill",
+"count": "x35",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒"
+}, {
+"category": "pill",
+"count": "x1",
+"desc": "修士常用的法器长剑，灌注灵力可斩妖除魔。",
+"icon": "⚔️",
+"name": "精铁剑"
+}, {
+"category": "pill",
+"count": "x26",
+"desc": "桃灵树所结之花，可入药，亦可酿制桃花酿。",
+"icon": "🌸",
+"name": "灵桃花"
+}, {
+"category": "pill",
+"count": "x15",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒",
+"quality": "稀有"
+}, {
+"category": "pill",
+"count": "x6",
+"desc": "炼丹辅药，可提升丹药成丹率，炼丹师必备。",
+"icon": "🧪",
+"name": "凝魂露"
+}, {
+"category": "pill",
+"count": "x3",
+"desc": "手绘符篆，激发后可释放一次法术，用后即毁。",
+"icon": "📜",
+"name": "符篆"
+}, {
+"category": "pill",
+"count": "x33",
+"desc": "三阶灵草，炼制清心丹的主药，可安神静气。",
+"icon": "🌿",
+"name": "清心草"
+}, {
+"category": "pill",
+"count": "x11",
+"desc": "修仙界通用货币，蕴含精纯灵气，可辅助修炼。",
+"icon": "💎",
+"name": "灵石"
+}, {
+"category": "pill",
+"count": "x11",
+"desc": "千年灵芝，炼制培元丹不可或缺的药材。",
+"icon": "🍄",
+"name": "千年灵芝",
+"quality": "稀有"
+}, {
+"category": "pill",
+"count": "x3",
+"desc": "修士常用的法器长剑，灌注灵力可斩妖除魔。",
+"icon": "⚔️",
+"name": "精铁剑"
+}, {
+"category": "pill",
+"count": "x3",
+"desc": "前朝遗留的灵钱，据说串成串可以布聚灵阵。",
+"icon": "🪙",
+"name": "古灵钱",
+"quality": "稀有"
+}, {
+"category": "pill",
+"count": "x23",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒"
+}, {
+"category": "pill",
+"count": "x16",
+"desc": "桃灵树所结之花，可入药，亦可酿制桃花酿。",
+"icon": "🌸",
+"name": "灵桃花"
+}, {
+"category": "pill",
+"count": "x3",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒"
+}, {
+"category": "pill",
+"count": "x31",
+"desc": "桃灵树所结之花，可入药，亦可酿制桃花酿。",
+"icon": "🌸",
+"name": "灵桃花"
+}, {
+"category": "pill",
+"count": "x9",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒"
+}, {
+"category": "pill",
+"count": "x16",
+"desc": "手绘符篆，激发后可释放一次法术，用后即毁。",
+"icon": "📜",
+"name": "符篆"
+}, {
+"category": "pill",
+"count": "x24",
+"desc": "三阶灵草，炼制清心丹的主药，可安神静气。",
+"icon": "🌿",
+"name": "清心草"
+}, {
+"category": "pill",
+"count": "x3",
+"desc": "修士常用的法器长剑，灌注灵力可斩妖除魔。",
+"icon": "⚔️",
+"name": "精铁剑"
+}, {
+"category": "pill",
+"count": "x10",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒"
+}, {
+"category": "pill",
+"count": "x26",
+"desc": "桃灵树所结之花，可入药，亦可酿制桃花酿。",
+"icon": "🌸",
+"name": "灵桃花"
+}, {
+"category": "pill",
+"count": "x6",
+"desc": "手绘符篆，激发后可释放一次法术，用后即毁。",
+"icon": "📜",
+"name": "符篆"
+}, {
+"category": "pill",
+"count": "x14",
+"desc": "经灵泉过滤的纯净水，洗炼法器必备。",
+"icon": "💧",
+"name": "净灵水"
+}, {
+"category": "pill",
+"count": "x17",
+"desc": "三阶灵草，炼制清心丹的主药，可安神静气。",
+"icon": "🌿",
+"name": "清心草"
+}, {
+"category": "pill",
+"count": "x7",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒",
+"quality": "稀有"
+}, {
+"category": "pill",
+"count": "x16",
+"desc": "性烈属火，是火系丹药的常用引子。",
+"icon": "🌺",
+"name": "赤焰花"
+}, {
+"category": "pill",
+"count": "x1",
+"desc": "修士常用的法器长剑，灌注灵力可斩妖除魔。",
+"icon": "⚔️",
+"name": "精铁剑"
+}, {
+"category": "pill",
+"count": "x4",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒"
+}, {
+"category": "pill",
+"count": "x12",
+"desc": "手绘符篆，激发后可释放一次法术，用后即毁。",
+"icon": "📜",
+"name": "符篆"
+}, {
+"category": "pill",
+"count": "x26",
+"desc": "灵田所产灵蔬，服食可小补灵气。",
+"icon": "🥬",
+"name": "翠灵菜"
+}, {
+"category": "pill",
+"count": "x2",
+"desc": "修士常用的法器长剑，灌注灵力可斩妖除魔。",
+"icon": "⚔️",
+"name": "精铁剑",
+"quality": "稀有"
+}, {
+"category": "pill",
+"count": "x3",
+"desc": "修仙界通用货币，蕴含精纯灵气，可辅助修炼。",
+"icon": "💎",
+"name": "灵石"
+}, {
+"category": "pill",
+"count": "x21",
+"desc": "二阶灵花，晒干后可泡制灵茶，清目养神。",
+"icon": "🌼",
+"name": "金盏菊"
+}, {
+"category": "pill",
+"count": "x16",
+"desc": "形似萝卜的灵参，药性温和，适合筑基期修士。",
+"icon": "🥕",
+"name": "土灵参"
+}, {
+"category": "pill",
+"count": "x6",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒"
+}, {
+"category": "pill",
+"count": "x33",
+"desc": "三阶灵草，炼制清心丹的主药，可安神静气。",
+"icon": "🌿",
+"name": "清心草"
+}, {
+"category": "pill",
+"count": "x4",
+"desc": "千年灵芝，炼制培元丹不可或缺的药材。",
+"icon": "🍄",
+"name": "千年灵芝",
+"quality": "稀有"
+}, {
+"category": "pill",
+"count": "x11",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒"
+}, {
+"category": "pill",
+"count": "x3",
+"desc": "手绘符篆，激发后可释放一次法术，用后即毁。",
+"icon": "📜",
+"name": "符篆"
+}, {
+"category": "pill",
+"count": "x5",
+"desc": "尚未开启的储物格，修为达标后可解锁。",
+"icon": "🔒",
+"locked": true,
+"name": "封印格"
+}]
+}
+
+[node name="GoodsGrid" type="GdUIGrid" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll" unique_id=1080414078]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/h_separation = 6
+theme_override_constants/v_separation = 6
+columns = 8
+metadata/__filter_key = "category"
+metadata/__signal_s_click_item = "_on_item_clicked"
+metadata/__filter_value = "pill"
+metadata/__script_data = [{
+"category": "pill",
+"count": "x1",
+"desc": "服用后可快速聚集天地灵气，提升修为。是修仙者常用的助修丹药。",
+"icon": "🏺",
+"name": "聚气丹",
+"selected": true
+}, {
+"category": "pill",
+"count": "x1",
+"desc": "修士常用的法器长剑，灌注灵力可斩妖除魔。",
+"icon": "⚔️",
+"name": "精铁剑",
+"quality": "稀有"
+}, {
+"category": "pill",
+"count": "x16",
+"desc": "三阶灵草，炼制清心丹的主药，可安神静气。",
+"icon": "🌿",
+"name": "清心草"
+}, {
+"category": "pill",
+"count": "x5",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒"
+}, {
+"category": "pill",
+"count": "x6",
+"desc": "手绘符篆，激发后可释放一次法术，用后即毁。",
+"icon": "📜",
+"name": "符篆"
+}, {
+"category": "pill",
+"count": "x24",
+"desc": "修仙界通用货币，蕴含精纯灵气，可辅助修炼。",
+"icon": "💎",
+"name": "灵石"
+}, {
+"category": "pill",
+"count": "x16",
+"desc": "三阶灵草，炼制清心丹的主药，可安神静气。",
+"icon": "🌿",
+"name": "清心草"
+}, {
+"category": "pill",
+"count": "x4",
+"desc": "生于灵潭深处的三阶灵莲，百年一开花，珍稀难得。",
+"icon": "🪷",
+"name": "碧水莲",
+"quality": "稀有"
+}, {
+"category": "pill",
+"count": "x35",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒"
+}, {
+"category": "pill",
+"count": "x1",
+"desc": "修士常用的法器长剑，灌注灵力可斩妖除魔。",
+"icon": "⚔️",
+"name": "精铁剑"
+}, {
+"category": "pill",
+"count": "x26",
+"desc": "桃灵树所结之花，可入药，亦可酿制桃花酿。",
+"icon": "🌸",
+"name": "灵桃花"
+}, {
+"category": "pill",
+"count": "x15",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒",
+"quality": "稀有"
+}, {
+"category": "pill",
+"count": "x6",
+"desc": "炼丹辅药，可提升丹药成丹率，炼丹师必备。",
+"icon": "🧪",
+"name": "凝魂露"
+}, {
+"category": "pill",
+"count": "x3",
+"desc": "手绘符篆，激发后可释放一次法术，用后即毁。",
+"icon": "📜",
+"name": "符篆"
+}, {
+"category": "pill",
+"count": "x33",
+"desc": "三阶灵草，炼制清心丹的主药，可安神静气。",
+"icon": "🌿",
+"name": "清心草"
+}, {
+"category": "pill",
+"count": "x11",
+"desc": "修仙界通用货币，蕴含精纯灵气，可辅助修炼。",
+"icon": "💎",
+"name": "灵石"
+}, {
+"category": "pill",
+"count": "x11",
+"desc": "千年灵芝，炼制培元丹不可或缺的药材。",
+"icon": "🍄",
+"name": "千年灵芝",
+"quality": "稀有"
+}, {
+"category": "pill",
+"count": "x3",
+"desc": "修士常用的法器长剑，灌注灵力可斩妖除魔。",
+"icon": "⚔️",
+"name": "精铁剑"
+}, {
+"category": "pill",
+"count": "x3",
+"desc": "前朝遗留的灵钱，据说串成串可以布聚灵阵。",
+"icon": "🪙",
+"name": "古灵钱",
+"quality": "稀有"
+}, {
+"category": "pill",
+"count": "x23",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒"
+}, {
+"category": "pill",
+"count": "x16",
+"desc": "桃灵树所结之花，可入药，亦可酿制桃花酿。",
+"icon": "🌸",
+"name": "灵桃花"
+}, {
+"category": "pill",
+"count": "x3",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒"
+}, {
+"category": "pill",
+"count": "x31",
+"desc": "桃灵树所结之花，可入药，亦可酿制桃花酿。",
+"icon": "🌸",
+"name": "灵桃花"
+}, {
+"category": "pill",
+"count": "x9",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒"
+}, {
+"category": "pill",
+"count": "x16",
+"desc": "手绘符篆，激发后可释放一次法术，用后即毁。",
+"icon": "📜",
+"name": "符篆"
+}, {
+"category": "pill",
+"count": "x24",
+"desc": "三阶灵草，炼制清心丹的主药，可安神静气。",
+"icon": "🌿",
+"name": "清心草"
+}, {
+"category": "pill",
+"count": "x3",
+"desc": "修士常用的法器长剑，灌注灵力可斩妖除魔。",
+"icon": "⚔️",
+"name": "精铁剑"
+}, {
+"category": "pill",
+"count": "x10",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒"
+}, {
+"category": "pill",
+"count": "x26",
+"desc": "桃灵树所结之花，可入药，亦可酿制桃花酿。",
+"icon": "🌸",
+"name": "灵桃花"
+}, {
+"category": "pill",
+"count": "x6",
+"desc": "手绘符篆，激发后可释放一次法术，用后即毁。",
+"icon": "📜",
+"name": "符篆"
+}, {
+"category": "pill",
+"count": "x14",
+"desc": "经灵泉过滤的纯净水，洗炼法器必备。",
+"icon": "💧",
+"name": "净灵水"
+}, {
+"category": "pill",
+"count": "x17",
+"desc": "三阶灵草，炼制清心丹的主药，可安神静气。",
+"icon": "🌿",
+"name": "清心草"
+}, {
+"category": "pill",
+"count": "x7",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒",
+"quality": "稀有"
+}, {
+"category": "pill",
+"count": "x16",
+"desc": "性烈属火，是火系丹药的常用引子。",
+"icon": "🌺",
+"name": "赤焰花"
+}, {
+"category": "pill",
+"count": "x1",
+"desc": "修士常用的法器长剑，灌注灵力可斩妖除魔。",
+"icon": "⚔️",
+"name": "精铁剑"
+}, {
+"category": "pill",
+"count": "x4",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒"
+}, {
+"category": "pill",
+"count": "x12",
+"desc": "手绘符篆，激发后可释放一次法术，用后即毁。",
+"icon": "📜",
+"name": "符篆"
+}, {
+"category": "pill",
+"count": "x26",
+"desc": "灵田所产灵蔬，服食可小补灵气。",
+"icon": "🥬",
+"name": "翠灵菜"
+}, {
+"category": "pill",
+"count": "x2",
+"desc": "修士常用的法器长剑，灌注灵力可斩妖除魔。",
+"icon": "⚔️",
+"name": "精铁剑",
+"quality": "稀有"
+}, {
+"category": "pill",
+"count": "x3",
+"desc": "修仙界通用货币，蕴含精纯灵气，可辅助修炼。",
+"icon": "💎",
+"name": "灵石"
+}, {
+"category": "pill",
+"count": "x21",
+"desc": "二阶灵花，晒干后可泡制灵茶，清目养神。",
+"icon": "🌼",
+"name": "金盏菊"
+}, {
+"category": "pill",
+"count": "x16",
+"desc": "形似萝卜的灵参，药性温和，适合筑基期修士。",
+"icon": "🥕",
+"name": "土灵参"
+}, {
+"category": "pill",
+"count": "x6",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒"
+}, {
+"category": "pill",
+"count": "x33",
+"desc": "三阶灵草，炼制清心丹的主药，可安神静气。",
+"icon": "🌿",
+"name": "清心草"
+}, {
+"category": "pill",
+"count": "x4",
+"desc": "千年灵芝，炼制培元丹不可或缺的药材。",
+"icon": "🍄",
+"name": "千年灵芝",
+"quality": "稀有"
+}, {
+"category": "pill",
+"count": "x11",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒"
+}, {
+"category": "pill",
+"count": "x3",
+"desc": "手绘符篆，激发后可释放一次法术，用后即毁。",
+"icon": "📜",
+"name": "符篆"
+}, {
+"category": "pill",
+"count": "x5",
+"desc": "尚未开启的储物格，修为达标后可解锁。",
+"icon": "🔒",
+"locked": true,
+"name": "封印格"
+}]
+
+[node name="BagCell" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=581392707]
+visible = false
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/BagCell" unique_id=86217903]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/BagCell" unique_id=937534218]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/BagCell/IconBox" unique_id=1800874597]
+layout_mode = 2
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/BagCell" unique_id=219933650]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/BagCell" unique_id=695822408]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/BagCell" unique_id=2116852584]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@35" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=1495060737]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "🏺"
+count = "x1"
+selected = true
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "聚气丹"
+metadata/desc = "服用后可快速聚集天地灵气，提升修为。是修仙者常用的助修丹药。"
+metadata/selected = true
+metadata/__item_data = {
+"category": "pill",
+"count": "x1",
+"desc": "服用后可快速聚集天地灵气，提升修为。是修仙者常用的助修丹药。",
+"icon": "🏺",
+"name": "聚气丹",
+"selected": true
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@35" unique_id=1646197586]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@35" unique_id=1516351902]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@35/IconBox" unique_id=1780449561]
+layout_mode = 2
+text = "🏺"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@35" unique_id=632515636]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@35" unique_id=1806659502]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x1"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@35" unique_id=1449131670]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@36" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=167211307]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "⚔️"
+count = "x1"
+quality = "稀有"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "精铁剑"
+metadata/desc = "修士常用的法器长剑，灌注灵力可斩妖除魔。"
+metadata/quality = "稀有"
+metadata/__item_data = {
+"category": "pill",
+"count": "x1",
+"desc": "修士常用的法器长剑，灌注灵力可斩妖除魔。",
+"icon": "⚔️",
+"name": "精铁剑",
+"quality": "稀有"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@36" unique_id=1731829701]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@36" unique_id=1115527578]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@36/IconBox" unique_id=1275988227]
+layout_mode = 2
+text = "⚔️"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@36" unique_id=1064195869]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@36" unique_id=1858123278]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x1"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@36" unique_id=1849208516]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@37" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=350650688]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "🌿"
+count = "x16"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "清心草"
+metadata/desc = "三阶灵草，炼制清心丹的主药，可安神静气。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x16",
+"desc": "三阶灵草，炼制清心丹的主药，可安神静气。",
+"icon": "🌿",
+"name": "清心草"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@37" unique_id=1892832396]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@37" unique_id=1222742658]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@37/IconBox" unique_id=27549876]
+layout_mode = 2
+text = "🌿"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@37" unique_id=1689794598]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@37" unique_id=1965026723]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x16"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@37" unique_id=871507014]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@38" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=1849153190]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "🍶"
+count = "x5"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "灵酒"
+metadata/desc = "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x5",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@38" unique_id=499126818]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@38" unique_id=737448544]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@38/IconBox" unique_id=2071959738]
+layout_mode = 2
+text = "🍶"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@38" unique_id=112792859]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@38" unique_id=70102397]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x5"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@38" unique_id=2044836027]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@39" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=1141718504]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "📜"
+count = "x6"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "符篆"
+metadata/desc = "手绘符篆，激发后可释放一次法术，用后即毁。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x6",
+"desc": "手绘符篆，激发后可释放一次法术，用后即毁。",
+"icon": "📜",
+"name": "符篆"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@39" unique_id=1176349016]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@39" unique_id=1023495756]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@39/IconBox" unique_id=14718037]
+layout_mode = 2
+text = "📜"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@39" unique_id=1321866741]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@39" unique_id=1690711679]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x6"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@39" unique_id=660502316]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@40" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=192228758]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "💎"
+count = "x24"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "灵石"
+metadata/desc = "修仙界通用货币，蕴含精纯灵气，可辅助修炼。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x24",
+"desc": "修仙界通用货币，蕴含精纯灵气，可辅助修炼。",
+"icon": "💎",
+"name": "灵石"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@40" unique_id=376579444]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@40" unique_id=990251052]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@40/IconBox" unique_id=350468084]
+layout_mode = 2
+text = "💎"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@40" unique_id=289416006]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@40" unique_id=967633743]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x24"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@40" unique_id=1042094030]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@41" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=1887668009]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "🌿"
+count = "x16"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "清心草"
+metadata/desc = "三阶灵草，炼制清心丹的主药，可安神静气。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x16",
+"desc": "三阶灵草，炼制清心丹的主药，可安神静气。",
+"icon": "🌿",
+"name": "清心草"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@41" unique_id=1488392368]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@41" unique_id=1621658732]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@41/IconBox" unique_id=1481919914]
+layout_mode = 2
+text = "🌿"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@41" unique_id=1912664223]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@41" unique_id=1143052925]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x16"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@41" unique_id=1048413537]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@42" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=1999420610]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "🪷"
+count = "x4"
+quality = "稀有"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "碧水莲"
+metadata/desc = "生于灵潭深处的三阶灵莲，百年一开花，珍稀难得。"
+metadata/quality = "稀有"
+metadata/__item_data = {
+"category": "pill",
+"count": "x4",
+"desc": "生于灵潭深处的三阶灵莲，百年一开花，珍稀难得。",
+"icon": "🪷",
+"name": "碧水莲",
+"quality": "稀有"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@42" unique_id=1829241881]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@42" unique_id=893971854]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@42/IconBox" unique_id=2100918938]
+layout_mode = 2
+text = "🪷"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@42" unique_id=824590813]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@42" unique_id=956286666]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x4"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@42" unique_id=897683125]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@43" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=185980893]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "🍶"
+count = "x35"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "灵酒"
+metadata/desc = "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x35",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@43" unique_id=904124328]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@43" unique_id=604897116]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@43/IconBox" unique_id=929776582]
+layout_mode = 2
+text = "🍶"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@43" unique_id=613911612]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@43" unique_id=1669754284]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x35"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@43" unique_id=1365124411]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@44" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=1332862345]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "⚔️"
+count = "x1"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "精铁剑"
+metadata/desc = "修士常用的法器长剑，灌注灵力可斩妖除魔。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x1",
+"desc": "修士常用的法器长剑，灌注灵力可斩妖除魔。",
+"icon": "⚔️",
+"name": "精铁剑"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@44" unique_id=11040576]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@44" unique_id=1505372]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@44/IconBox" unique_id=787448755]
+layout_mode = 2
+text = "⚔️"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@44" unique_id=508224364]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@44" unique_id=119609037]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x1"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@44" unique_id=793214404]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@45" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=676089241]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "🌸"
+count = "x26"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "灵桃花"
+metadata/desc = "桃灵树所结之花，可入药，亦可酿制桃花酿。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x26",
+"desc": "桃灵树所结之花，可入药，亦可酿制桃花酿。",
+"icon": "🌸",
+"name": "灵桃花"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@45" unique_id=1468440714]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@45" unique_id=279833599]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@45/IconBox" unique_id=1839680801]
+layout_mode = 2
+text = "🌸"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@45" unique_id=692127216]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@45" unique_id=1775028756]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x26"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@45" unique_id=1362880061]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@46" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=1708928781]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "🍶"
+count = "x15"
+quality = "稀有"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "灵酒"
+metadata/desc = "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。"
+metadata/quality = "稀有"
+metadata/__item_data = {
+"category": "pill",
+"count": "x15",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒",
+"quality": "稀有"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@46" unique_id=208081719]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@46" unique_id=664804675]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@46/IconBox" unique_id=384519010]
+layout_mode = 2
+text = "🍶"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@46" unique_id=1396393475]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@46" unique_id=1751592977]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x15"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@46" unique_id=1657810118]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@47" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=659401713]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "🧪"
+count = "x6"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "凝魂露"
+metadata/desc = "炼丹辅药，可提升丹药成丹率，炼丹师必备。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x6",
+"desc": "炼丹辅药，可提升丹药成丹率，炼丹师必备。",
+"icon": "🧪",
+"name": "凝魂露"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@47" unique_id=568589465]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@47" unique_id=2107522139]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@47/IconBox" unique_id=608163709]
+layout_mode = 2
+text = "🧪"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@47" unique_id=2003321951]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@47" unique_id=660002815]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x6"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@47" unique_id=2122152800]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@48" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=372153683]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "📜"
+count = "x3"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "符篆"
+metadata/desc = "手绘符篆，激发后可释放一次法术，用后即毁。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x3",
+"desc": "手绘符篆，激发后可释放一次法术，用后即毁。",
+"icon": "📜",
+"name": "符篆"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@48" unique_id=1775030707]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@48" unique_id=1543096174]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@48/IconBox" unique_id=37532332]
+layout_mode = 2
+text = "📜"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@48" unique_id=124960579]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@48" unique_id=449276354]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x3"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@48" unique_id=1554037685]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@49" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=1126834652]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "🌿"
+count = "x33"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "清心草"
+metadata/desc = "三阶灵草，炼制清心丹的主药，可安神静气。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x33",
+"desc": "三阶灵草，炼制清心丹的主药，可安神静气。",
+"icon": "🌿",
+"name": "清心草"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@49" unique_id=359543340]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@49" unique_id=1164193176]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@49/IconBox" unique_id=1709478575]
+layout_mode = 2
+text = "🌿"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@49" unique_id=553322656]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@49" unique_id=1328434358]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x33"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@49" unique_id=970706343]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@50" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=2045204020]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "💎"
+count = "x11"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "灵石"
+metadata/desc = "修仙界通用货币，蕴含精纯灵气，可辅助修炼。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x11",
+"desc": "修仙界通用货币，蕴含精纯灵气，可辅助修炼。",
+"icon": "💎",
+"name": "灵石"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@50" unique_id=1087020292]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@50" unique_id=1736195559]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@50/IconBox" unique_id=1442313478]
+layout_mode = 2
+text = "💎"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@50" unique_id=934386102]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@50" unique_id=849002149]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x11"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@50" unique_id=1818863102]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@51" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=1762813381]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "🍄"
+count = "x11"
+quality = "稀有"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "千年灵芝"
+metadata/desc = "千年灵芝，炼制培元丹不可或缺的药材。"
+metadata/quality = "稀有"
+metadata/__item_data = {
+"category": "pill",
+"count": "x11",
+"desc": "千年灵芝，炼制培元丹不可或缺的药材。",
+"icon": "🍄",
+"name": "千年灵芝",
+"quality": "稀有"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@51" unique_id=991073216]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@51" unique_id=128700315]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@51/IconBox" unique_id=2051889742]
+layout_mode = 2
+text = "🍄"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@51" unique_id=1191165915]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@51" unique_id=1343420614]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x11"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@51" unique_id=1153452041]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@52" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=43461178]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "⚔️"
+count = "x3"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "精铁剑"
+metadata/desc = "修士常用的法器长剑，灌注灵力可斩妖除魔。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x3",
+"desc": "修士常用的法器长剑，灌注灵力可斩妖除魔。",
+"icon": "⚔️",
+"name": "精铁剑"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@52" unique_id=795213681]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@52" unique_id=682472342]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@52/IconBox" unique_id=495513606]
+layout_mode = 2
+text = "⚔️"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@52" unique_id=1558294261]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@52" unique_id=1714847766]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x3"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@52" unique_id=609138459]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@53" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=1014032823]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "🪙"
+count = "x3"
+quality = "稀有"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "古灵钱"
+metadata/desc = "前朝遗留的灵钱，据说串成串可以布聚灵阵。"
+metadata/quality = "稀有"
+metadata/__item_data = {
+"category": "pill",
+"count": "x3",
+"desc": "前朝遗留的灵钱，据说串成串可以布聚灵阵。",
+"icon": "🪙",
+"name": "古灵钱",
+"quality": "稀有"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@53" unique_id=65662839]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@53" unique_id=18348128]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@53/IconBox" unique_id=2013318147]
+layout_mode = 2
+text = "🪙"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@53" unique_id=2068553983]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@53" unique_id=1985826030]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x3"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@53" unique_id=147580214]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@54" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=1492277430]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "🍶"
+count = "x23"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "灵酒"
+metadata/desc = "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x23",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@54" unique_id=1628935976]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@54" unique_id=275583182]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@54/IconBox" unique_id=621497702]
+layout_mode = 2
+text = "🍶"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@54" unique_id=732439253]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@54" unique_id=113972014]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x23"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@54" unique_id=1860520326]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@55" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=129370282]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "🌸"
+count = "x16"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "灵桃花"
+metadata/desc = "桃灵树所结之花，可入药，亦可酿制桃花酿。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x16",
+"desc": "桃灵树所结之花，可入药，亦可酿制桃花酿。",
+"icon": "🌸",
+"name": "灵桃花"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@55" unique_id=1068743674]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@55" unique_id=150012773]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@55/IconBox" unique_id=337006783]
+layout_mode = 2
+text = "🌸"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@55" unique_id=561784676]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@55" unique_id=1260732314]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x16"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@55" unique_id=320163648]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@56" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=2141091291]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "🍶"
+count = "x3"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "灵酒"
+metadata/desc = "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x3",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@56" unique_id=1230307625]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@56" unique_id=1969972946]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@56/IconBox" unique_id=760382860]
+layout_mode = 2
+text = "🍶"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@56" unique_id=2120126810]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@56" unique_id=271962383]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x3"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@56" unique_id=2046199860]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@57" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=616733681]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "🌸"
+count = "x31"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "灵桃花"
+metadata/desc = "桃灵树所结之花，可入药，亦可酿制桃花酿。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x31",
+"desc": "桃灵树所结之花，可入药，亦可酿制桃花酿。",
+"icon": "🌸",
+"name": "灵桃花"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@57" unique_id=1146382232]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@57" unique_id=408610608]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@57/IconBox" unique_id=940379242]
+layout_mode = 2
+text = "🌸"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@57" unique_id=304780615]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@57" unique_id=1005858542]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x31"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@57" unique_id=1557545624]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@58" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=220871855]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "🍶"
+count = "x9"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "灵酒"
+metadata/desc = "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x9",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@58" unique_id=1411762587]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@58" unique_id=1169557273]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@58/IconBox" unique_id=1570004125]
+layout_mode = 2
+text = "🍶"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@58" unique_id=1146763115]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@58" unique_id=873550485]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x9"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@58" unique_id=364466629]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@59" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=462886534]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "📜"
+count = "x16"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "符篆"
+metadata/desc = "手绘符篆，激发后可释放一次法术，用后即毁。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x16",
+"desc": "手绘符篆，激发后可释放一次法术，用后即毁。",
+"icon": "📜",
+"name": "符篆"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@59" unique_id=2126010531]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@59" unique_id=445123711]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@59/IconBox" unique_id=423979421]
+layout_mode = 2
+text = "📜"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@59" unique_id=313005410]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@59" unique_id=1665867780]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x16"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@59" unique_id=745355062]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@60" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=674453012]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "🌿"
+count = "x24"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "清心草"
+metadata/desc = "三阶灵草，炼制清心丹的主药，可安神静气。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x24",
+"desc": "三阶灵草，炼制清心丹的主药，可安神静气。",
+"icon": "🌿",
+"name": "清心草"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@60" unique_id=915387898]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@60" unique_id=1194172331]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@60/IconBox" unique_id=1847029713]
+layout_mode = 2
+text = "🌿"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@60" unique_id=1631854241]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@60" unique_id=238735065]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x24"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@60" unique_id=189284309]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@61" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=1804608588]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "⚔️"
+count = "x3"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "精铁剑"
+metadata/desc = "修士常用的法器长剑，灌注灵力可斩妖除魔。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x3",
+"desc": "修士常用的法器长剑，灌注灵力可斩妖除魔。",
+"icon": "⚔️",
+"name": "精铁剑"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@61" unique_id=1457735490]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@61" unique_id=75322680]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@61/IconBox" unique_id=1677532238]
+layout_mode = 2
+text = "⚔️"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@61" unique_id=92096028]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@61" unique_id=320696687]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x3"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@61" unique_id=632448734]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@62" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=1944918105]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "🍶"
+count = "x10"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "灵酒"
+metadata/desc = "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x10",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@62" unique_id=1512102204]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@62" unique_id=2134580022]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@62/IconBox" unique_id=769269958]
+layout_mode = 2
+text = "🍶"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@62" unique_id=1036986212]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@62" unique_id=2003776374]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x10"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@62" unique_id=656194629]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@63" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=308909285]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "🌸"
+count = "x26"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "灵桃花"
+metadata/desc = "桃灵树所结之花，可入药，亦可酿制桃花酿。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x26",
+"desc": "桃灵树所结之花，可入药，亦可酿制桃花酿。",
+"icon": "🌸",
+"name": "灵桃花"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@63" unique_id=372925676]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@63" unique_id=653195358]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@63/IconBox" unique_id=430856763]
+layout_mode = 2
+text = "🌸"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@63" unique_id=1590519407]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@63" unique_id=324776962]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x26"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@63" unique_id=1281610215]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@64" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=439393819]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "📜"
+count = "x6"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "符篆"
+metadata/desc = "手绘符篆，激发后可释放一次法术，用后即毁。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x6",
+"desc": "手绘符篆，激发后可释放一次法术，用后即毁。",
+"icon": "📜",
+"name": "符篆"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@64" unique_id=936734137]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@64" unique_id=1634063817]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@64/IconBox" unique_id=1144532402]
+layout_mode = 2
+text = "📜"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@64" unique_id=963853475]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@64" unique_id=1577776442]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x6"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@64" unique_id=44197169]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@65" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=1209835780]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "💧"
+count = "x14"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "净灵水"
+metadata/desc = "经灵泉过滤的纯净水，洗炼法器必备。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x14",
+"desc": "经灵泉过滤的纯净水，洗炼法器必备。",
+"icon": "💧",
+"name": "净灵水"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@65" unique_id=494012213]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@65" unique_id=1759858794]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@65/IconBox" unique_id=1165268291]
+layout_mode = 2
+text = "💧"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@65" unique_id=482723842]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@65" unique_id=1688445914]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x14"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@65" unique_id=1356367462]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@66" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=856110072]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "🌿"
+count = "x17"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "清心草"
+metadata/desc = "三阶灵草，炼制清心丹的主药，可安神静气。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x17",
+"desc": "三阶灵草，炼制清心丹的主药，可安神静气。",
+"icon": "🌿",
+"name": "清心草"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@66" unique_id=1508638689]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@66" unique_id=1530457416]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@66/IconBox" unique_id=415135768]
+layout_mode = 2
+text = "🌿"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@66" unique_id=1943818358]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@66" unique_id=1098949984]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x17"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@66" unique_id=1475689786]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@67" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=1110455582]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "🍶"
+count = "x7"
+quality = "稀有"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "灵酒"
+metadata/desc = "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。"
+metadata/quality = "稀有"
+metadata/__item_data = {
+"category": "pill",
+"count": "x7",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒",
+"quality": "稀有"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@67" unique_id=167994270]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@67" unique_id=42699052]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@67/IconBox" unique_id=1805438400]
+layout_mode = 2
+text = "🍶"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@67" unique_id=403589318]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@67" unique_id=1698335085]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x7"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@67" unique_id=524077619]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@68" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=979781522]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "🌺"
+count = "x16"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "赤焰花"
+metadata/desc = "性烈属火，是火系丹药的常用引子。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x16",
+"desc": "性烈属火，是火系丹药的常用引子。",
+"icon": "🌺",
+"name": "赤焰花"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@68" unique_id=1035214889]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@68" unique_id=1673677826]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@68/IconBox" unique_id=1956316818]
+layout_mode = 2
+text = "🌺"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@68" unique_id=1893162067]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@68" unique_id=1558268931]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x16"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@68" unique_id=981998445]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@69" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=1419841555]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "⚔️"
+count = "x1"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "精铁剑"
+metadata/desc = "修士常用的法器长剑，灌注灵力可斩妖除魔。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x1",
+"desc": "修士常用的法器长剑，灌注灵力可斩妖除魔。",
+"icon": "⚔️",
+"name": "精铁剑"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@69" unique_id=1324505511]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@69" unique_id=576918614]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@69/IconBox" unique_id=277632923]
+layout_mode = 2
+text = "⚔️"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@69" unique_id=352035587]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@69" unique_id=54480470]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x1"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@69" unique_id=1259103802]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@70" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=756287161]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "🍶"
+count = "x4"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "灵酒"
+metadata/desc = "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x4",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@70" unique_id=368226830]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@70" unique_id=855737051]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@70/IconBox" unique_id=909602495]
+layout_mode = 2
+text = "🍶"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@70" unique_id=244689593]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@70" unique_id=1877706403]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x4"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@70" unique_id=883940748]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@71" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=266251902]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "📜"
+count = "x12"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "符篆"
+metadata/desc = "手绘符篆，激发后可释放一次法术，用后即毁。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x12",
+"desc": "手绘符篆，激发后可释放一次法术，用后即毁。",
+"icon": "📜",
+"name": "符篆"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@71" unique_id=1349265135]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@71" unique_id=673199908]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@71/IconBox" unique_id=793559560]
+layout_mode = 2
+text = "📜"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@71" unique_id=629943109]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@71" unique_id=513352338]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x12"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@71" unique_id=1798804906]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@72" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=1268096977]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "🥬"
+count = "x26"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "翠灵菜"
+metadata/desc = "灵田所产灵蔬，服食可小补灵气。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x26",
+"desc": "灵田所产灵蔬，服食可小补灵气。",
+"icon": "🥬",
+"name": "翠灵菜"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@72" unique_id=2010751257]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@72" unique_id=1438863805]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@72/IconBox" unique_id=906913964]
+layout_mode = 2
+text = "🥬"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@72" unique_id=1082432011]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@72" unique_id=879274878]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x26"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@72" unique_id=1796902311]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@73" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=30535878]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "⚔️"
+count = "x2"
+quality = "稀有"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "精铁剑"
+metadata/desc = "修士常用的法器长剑，灌注灵力可斩妖除魔。"
+metadata/quality = "稀有"
+metadata/__item_data = {
+"category": "pill",
+"count": "x2",
+"desc": "修士常用的法器长剑，灌注灵力可斩妖除魔。",
+"icon": "⚔️",
+"name": "精铁剑",
+"quality": "稀有"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@73" unique_id=1527258904]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@73" unique_id=274807959]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@73/IconBox" unique_id=1198653929]
+layout_mode = 2
+text = "⚔️"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@73" unique_id=166399631]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@73" unique_id=365576162]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x2"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@73" unique_id=1971783037]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@74" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=368086128]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "💎"
+count = "x3"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "灵石"
+metadata/desc = "修仙界通用货币，蕴含精纯灵气，可辅助修炼。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x3",
+"desc": "修仙界通用货币，蕴含精纯灵气，可辅助修炼。",
+"icon": "💎",
+"name": "灵石"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@74" unique_id=1350866129]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@74" unique_id=1172124382]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@74/IconBox" unique_id=1110263654]
+layout_mode = 2
+text = "💎"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@74" unique_id=252735489]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@74" unique_id=2060243517]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x3"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@74" unique_id=772624224]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@75" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=546436372]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "🌼"
+count = "x21"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "金盏菊"
+metadata/desc = "二阶灵花，晒干后可泡制灵茶，清目养神。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x21",
+"desc": "二阶灵花，晒干后可泡制灵茶，清目养神。",
+"icon": "🌼",
+"name": "金盏菊"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@75" unique_id=1261751252]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@75" unique_id=57035021]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@75/IconBox" unique_id=118263194]
+layout_mode = 2
+text = "🌼"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@75" unique_id=2143279134]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@75" unique_id=1372573271]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x21"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@75" unique_id=1986725103]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@76" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=1702808810]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "🥕"
+count = "x16"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "土灵参"
+metadata/desc = "形似萝卜的灵参，药性温和，适合筑基期修士。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x16",
+"desc": "形似萝卜的灵参，药性温和，适合筑基期修士。",
+"icon": "🥕",
+"name": "土灵参"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@76" unique_id=310389750]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@76" unique_id=397359861]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@76/IconBox" unique_id=799944307]
+layout_mode = 2
+text = "🥕"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@76" unique_id=368923495]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@76" unique_id=819794697]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x16"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@76" unique_id=740528415]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@77" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=938245613]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "🍶"
+count = "x6"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "灵酒"
+metadata/desc = "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x6",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@77" unique_id=2046807329]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@77" unique_id=929622359]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@77/IconBox" unique_id=718823756]
+layout_mode = 2
+text = "🍶"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@77" unique_id=338783137]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@77" unique_id=36623295]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x6"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@77" unique_id=797008046]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@78" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=184344159]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "🌿"
+count = "x33"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "清心草"
+metadata/desc = "三阶灵草，炼制清心丹的主药，可安神静气。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x33",
+"desc": "三阶灵草，炼制清心丹的主药，可安神静气。",
+"icon": "🌿",
+"name": "清心草"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@78" unique_id=1698267911]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@78" unique_id=1886682681]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@78/IconBox" unique_id=426905796]
+layout_mode = 2
+text = "🌿"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@78" unique_id=122879137]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@78" unique_id=1349500385]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x33"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@78" unique_id=233357755]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@79" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=831186965]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "🍄"
+count = "x4"
+quality = "稀有"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "千年灵芝"
+metadata/desc = "千年灵芝，炼制培元丹不可或缺的药材。"
+metadata/quality = "稀有"
+metadata/__item_data = {
+"category": "pill",
+"count": "x4",
+"desc": "千年灵芝，炼制培元丹不可或缺的药材。",
+"icon": "🍄",
+"name": "千年灵芝",
+"quality": "稀有"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@79" unique_id=187456891]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@79" unique_id=1028827675]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@79/IconBox" unique_id=929416488]
+layout_mode = 2
+text = "🍄"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@79" unique_id=1770384424]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@79" unique_id=1738230143]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x4"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@79" unique_id=1286929332]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@80" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=539977818]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "🍶"
+count = "x11"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "灵酒"
+metadata/desc = "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x11",
+"desc": "以灵果酿制的灵酒，饮之灵气充盈，微醺入定。",
+"icon": "🍶",
+"name": "灵酒"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@80" unique_id=841606894]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@80" unique_id=2022990166]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@80/IconBox" unique_id=2133699745]
+layout_mode = 2
+text = "🍶"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@80" unique_id=665697828]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@80" unique_id=1387666795]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x11"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@80" unique_id=743737202]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@81" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=120582377]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "📜"
+count = "x3"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "符篆"
+metadata/desc = "手绘符篆，激发后可释放一次法术，用后即毁。"
+metadata/__item_data = {
+"category": "pill",
+"count": "x3",
+"desc": "手绘符篆，激发后可释放一次法术，用后即毁。",
+"icon": "📜",
+"name": "符篆"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@81" unique_id=223166013]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@81" unique_id=2123484595]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@81/IconBox" unique_id=1002828125]
+layout_mode = 2
+text = "📜"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@81" unique_id=1266196980]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@81" unique_id=1526284358]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x3"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@81" unique_id=255703063]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Panel@82" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=316464856]
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_a85wb")
+script = ExtResource("4_wgwwu")
+icon = "🔒"
+count = "x5"
+locked = true
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/category = "pill"
+metadata/name = "封印格"
+metadata/desc = "尚未开启的储物格，修为达标后可解锁。"
+metadata/locked = true
+metadata/__item_data = {
+"category": "pill",
+"count": "x5",
+"desc": "尚未开启的储物格，修为达标后可解锁。",
+"icon": "🔒",
+"locked": true,
+"name": "封印格"
+}
+
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@82" unique_id=1910443556]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5tu3m")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@82" unique_id=1416080285]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@82/IconBox" unique_id=350891159]
+layout_mode = 2
+text = "🔒"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@82" unique_id=966244923]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@82" unique_id=1504416192]
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -4.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "x5"
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/@Panel@82" unique_id=2005435057]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ss7mo")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Control@83" type="Control" parent="MainMargin/MainColumn/BodyRow" unique_id=1147996776]
+custom_minimum_size = Vector2(12, 0)
+layout_mode = 2
+
+[node name="DetailPanel" type="Panel" parent="MainMargin/MainColumn/BodyRow" unique_id=760295235]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.3
+theme_override_styles/panel = SubResource("StyleBoxFlat_t633n")
+script = ExtResource("5_occjv")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray()
+
+[node name="DetailColumn" type="VBoxContainer" parent="MainMargin/MainColumn/BodyRow/DetailPanel" unique_id=635002567]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = -14.0
+offset_bottom = -14.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Control@86" type="Control" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn" unique_id=719408433]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="@CenterContainer@85" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn/@Control@86" unique_id=1889069314]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 40.0
+offset_bottom = -10.0
+metadata/__anchor = "full"
+
+[node name="@Panel@84" type="Panel" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn/@Control@86/@CenterContainer@85" unique_id=1515885448]
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_awdso")
+
+[node name="DetailIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn/@Control@86/@CenterContainer@85/@Panel@84" unique_id=1083091499]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 64
+text = "🏺"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="SealText" type="Label" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn/@Control@86" unique_id=277227767]
+layout_mode = 0
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -16.0
+offset_bottom = -10.0
+theme_override_colors/font_color = Color(0.6901961, 0.22745098, 0.18039216, 1)
+text = "闲"
+metadata/__anchor = "bottom_right"
+
+[node name="DetailName" type="Label" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn" unique_id=1370007505]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+text = "聚气丹"
+horizontal_alignment = 1
+
+[node name="@CenterContainer@88" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn" unique_id=711433604]
+layout_mode = 2
+
+[node name="@Panel@87" type="Panel" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn/@CenterContainer@88" unique_id=1945308542]
+custom_minimum_size = Vector2(64, 26)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_t7f6o")
+
+[node name="QualityText" type="Label" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn/@CenterContainer@88/@Panel@87" unique_id=660896772]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+text = "上品"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="DetailDesc" type="Label" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn" unique_id=2134535142]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.41960785, 0.3529412, 0.24313726, 1)
+text = "服用后可快速聚集天地灵气，提升修为。是修仙者常用的助修丹药。"
+horizontal_alignment = 1
+
+[node name="@HBoxContainer@89" type="HBoxContainer" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn" unique_id=224867159]
+layout_mode = 2
+
+[node name="UseBtn" type="Button" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn/@HBoxContainer@89" unique_id=1320835466]
+custom_minimum_size = Vector2(120, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/normal = SubResource("StyleBoxFlat_iuwgy")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_0fdff")
+theme_override_styles/hover = SubResource("StyleBoxFlat_q0vwp")
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
+text = "使  用"
+metadata/__signal_pressed = "_on_use_pressed"
+
+[node name="SellBtn" type="Button" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn/@HBoxContainer@89" unique_id=611893941]
+custom_minimum_size = Vector2(72, 44)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_87416")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_ltlwk")
+theme_override_styles/hover = SubResource("StyleBoxFlat_dueop")
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "出售"
+metadata/__signal_pressed = "_on_sell_pressed"
+
+[node name="ComposeBtn" type="Button" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn/@HBoxContainer@89" unique_id=1027510015]
+custom_minimum_size = Vector2(72, 44)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_yj4mx")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_c5cye")
+theme_override_styles/hover = SubResource("StyleBoxFlat_51r2r")
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "合成"
+metadata/__signal_pressed = "_on_compose_pressed"

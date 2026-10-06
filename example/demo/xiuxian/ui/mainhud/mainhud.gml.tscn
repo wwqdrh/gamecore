@@ -1,0 +1,1476 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" uid="uid://bch2qm1lmilro" path="res://example/demo/xiuxian/ui/mainhud/mainhud.gd" id="1_lc1fk"]
+[ext_resource type="Script" uid="uid://b48phlkfihowp" path="res://example/demo/xiuxian/ui/mainhud/mainhud_menus.gd" id="2_7s3js"]
+[ext_resource type="Script" uid="uid://b2de6578cslwq" path="res://example/demo/xiuxian/ui/mainhud/mainhud_skillbar.gd" id="3_mti25"]
+[ext_resource type="Script" uid="uid://bfxptmrnvg8ca" path="res://example/demo/xiuxian/ui/mainhud/skill_item.gd" id="4_aujxf"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_t8m3b"]
+bg_color = Color(0.18039216, 0.2901961, 0.22745098, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.9098039, 0.7254902, 0.24313726, 1)
+corner_radius_top_left = 44
+corner_radius_top_right = 44
+corner_radius_bottom_right = 44
+corner_radius_bottom_left = 44
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cgof4"]
+bg_color = Color(0.9098039, 0.8509804, 0.65882355, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.5411765, 0.41568628, 0.11764706, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_b6kn1"]
+bg_color = Color(0.14117648, 0.23529412, 0.18039216, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2tqlv"]
+bg_color = Color(0.37254903, 0.68235296, 0.41568628, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qld2r"]
+bg_color = Color(0.18039216, 0.2901961, 0.22745098, 0.8)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.9098039, 0.7254902, 0.24313726, 1)
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+corner_radius_bottom_right = 22
+corner_radius_bottom_left = 22
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_d86d5"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.37254903, 0.68235296, 0.41568628, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_d2x5o"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.27254903, 0.58235294, 0.3156863, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_n1sgb"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.49254903, 0.80235296, 0.53568625, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_phsrj"]
+bg_color = Color(0.18039216, 0.2901961, 0.22745098, 0.8)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.9098039, 0.7254902, 0.24313726, 1)
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+corner_radius_bottom_right = 22
+corner_radius_bottom_left = 22
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_f6xiw"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.37254903, 0.68235296, 0.41568628, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6jwjg"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.27254903, 0.58235294, 0.3156863, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2kg2m"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.49254903, 0.80235296, 0.53568625, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pno5c"]
+bg_color = Color(0.18039216, 0.2901961, 0.22745098, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.9098039, 0.7254902, 0.24313726, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xr3qs"]
+bg_color = Color(0.14117648, 0.23529412, 0.18039216, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.3372549, 0.4392157, 0.36078432, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_b7jtf"]
+bg_color = Color(0.41960785, 0.2901961, 0.11764706, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.2901961, 0.19607843, 0.07058824, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_a4484"]
+bg_color = Color(0.9098039, 0.8509804, 0.65882355, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.5411765, 0.41568628, 0.11764706, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dhxaf"]
+bg_color = Color(0.41960785, 0.2901961, 0.11764706, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.2901961, 0.19607843, 0.07058824, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qc13i"]
+bg_color = Color(0.22745098, 0.3529412, 0.27450982, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 42
+corner_radius_top_right = 42
+corner_radius_bottom_right = 42
+corner_radius_bottom_left = 42
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_a1h0x"]
+bg_color = Color(0.22745098, 0.3529412, 0.27450982, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 42
+corner_radius_top_right = 42
+corner_radius_bottom_right = 42
+corner_radius_bottom_left = 42
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gqiyo"]
+bg_color = Color(0.22745098, 0.3529412, 0.27450982, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 42
+corner_radius_top_right = 42
+corner_radius_bottom_right = 42
+corner_radius_bottom_left = 42
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ysf4e"]
+bg_color = Color(0.22745098, 0.3529412, 0.27450982, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 42
+corner_radius_top_right = 42
+corner_radius_bottom_right = 42
+corner_radius_bottom_left = 42
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_r5pdf"]
+bg_color = Color(0.14117648, 0.23529412, 0.18039216, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3dgny"]
+bg_color = Color(0.039215688, 0.078431375, 0.0627451, 0.7529412)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4ogxs"]
+bg_color = Color(0.18039216, 0.2901961, 0.22745098, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.9098039, 0.7254902, 0.24313726, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_k8fo1"]
+bg_color = Color(0.14117648, 0.23529412, 0.18039216, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.3372549, 0.4392157, 0.36078432, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6ya2q"]
+bg_color = Color(0.30980393, 0.7647059, 0.72156864, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[node name="MainHud" type="Control" unique_id=1667103511]
+layout_mode = 3
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_lc1fk")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray()
+
+[node name="TopLayer" type="MarginContainer" parent="." unique_id=145542796]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 10.0
+offset_right = -14.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="TopRow" type="HBoxContainer" parent="TopLayer" unique_id=1577229668]
+layout_mode = 2
+
+[node name="PlayerBadge" type="HBoxContainer" parent="TopLayer/TopRow" unique_id=2116324440]
+layout_mode = 2
+size_flags_vertical = 0
+metadata/__script_vars = {}
+
+[node name="AvatarRing" type="Panel" parent="TopLayer/TopRow/PlayerBadge" unique_id=1719893922]
+custom_minimum_size = Vector2(88, 88)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_t8m3b")
+metadata/__script_vars = {}
+
+[node name="AvatarIcon" type="Label" parent="TopLayer/TopRow/PlayerBadge/AvatarRing" unique_id=1717227617]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🧙"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="PlayerInfo" type="VBoxContainer" parent="TopLayer/TopRow/PlayerBadge" unique_id=331647678]
+layout_mode = 2
+size_flags_vertical = 4
+metadata/__script_vars = {}
+
+[node name="@Panel@6" type="Panel" parent="TopLayer/TopRow/PlayerBadge/PlayerInfo" unique_id=98272509]
+custom_minimum_size = Vector2(210, 42)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_cgof4")
+
+[node name="@HBoxContainer@5" type="HBoxContainer" parent="TopLayer/TopRow/PlayerBadge/PlayerInfo/@Panel@6" unique_id=1422379355]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 6.0
+offset_right = -8.0
+offset_bottom = -6.0
+metadata/__anchor = "full"
+
+[node name="@Label@2" type="Label" parent="TopLayer/TopRow/PlayerBadge/PlayerInfo/@Panel@6/@HBoxContainer@5" unique_id=1171249551]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.41960785, 0.2901961, 0.11764706, 1)
+text = "炼气三层"
+vertical_alignment = 1
+
+[node name="@Control@3" type="Control" parent="TopLayer/TopRow/PlayerBadge/PlayerInfo/@Panel@6/@HBoxContainer@5" unique_id=69082641]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="@Label@4" type="Label" parent="TopLayer/TopRow/PlayerBadge/PlayerInfo/@Panel@6/@HBoxContainer@5" unique_id=2124266097]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "最高境界"
+vertical_alignment = 1
+
+[node name="@HBoxContainer@11" type="HBoxContainer" parent="TopLayer/TopRow/PlayerBadge/PlayerInfo" unique_id=1757084782]
+layout_mode = 2
+
+[node name="@Label@7" type="Label" parent="TopLayer/TopRow/PlayerBadge/PlayerInfo/@HBoxContainer@11" unique_id=1334736476]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9098039, 0.7254902, 0.24313726, 1)
+text = "Lv.12"
+vertical_alignment = 1
+
+[node name="@Panel@9" type="Panel" parent="TopLayer/TopRow/PlayerBadge/PlayerInfo/@HBoxContainer@11" unique_id=106682061]
+custom_minimum_size = Vector2(90, 10)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_b6kn1")
+
+[node name="@Panel@8" type="Panel" parent="TopLayer/TopRow/PlayerBadge/PlayerInfo/@HBoxContainer@11/@Panel@9" unique_id=1259605534]
+custom_minimum_size = Vector2(30, 10)
+layout_mode = 0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_2tqlv")
+metadata/__anchor = "left_wide"
+
+[node name="@Label@10" type="Label" parent="TopLayer/TopRow/PlayerBadge/PlayerInfo/@HBoxContainer@11" unique_id=588115567]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8117647, 0.8901961, 0.78431374, 1)
+text = "22"
+vertical_alignment = 1
+
+[node name="@Control@12" type="Control" parent="TopLayer/TopRow" unique_id=712121883]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ResourceBar" type="HBoxContainer" parent="TopLayer/TopRow" unique_id=2088182361]
+layout_mode = 2
+size_flags_vertical = 0
+metadata/__script_vars = {}
+
+[node name="@Panel@17" type="Panel" parent="TopLayer/TopRow/ResourceBar" unique_id=1105295599]
+custom_minimum_size = Vector2(168, 44)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_qld2r")
+metadata/__script_vars = {}
+
+[node name="@HBoxContainer@16" type="HBoxContainer" parent="TopLayer/TopRow/ResourceBar/@Panel@17" unique_id=1929941604]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 6.0
+offset_right = -8.0
+offset_bottom = -6.0
+metadata/__anchor = "full"
+
+[node name="@Label@13" type="Label" parent="TopLayer/TopRow/ResourceBar/@Panel@17/@HBoxContainer@16" unique_id=60581273]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "💎"
+vertical_alignment = 1
+
+[node name="@Label@14" type="Label" parent="TopLayer/TopRow/ResourceBar/@Panel@17/@HBoxContainer@16" unique_id=743103864]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "12,800"
+vertical_alignment = 1
+
+[node name="@Control@15" type="Control" parent="TopLayer/TopRow/ResourceBar/@Panel@17/@HBoxContainer@16" unique_id=106047268]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="AddStoneBtn" type="Button" parent="TopLayer/TopRow/ResourceBar/@Panel@17/@HBoxContainer@16" unique_id=827570691]
+custom_minimum_size = Vector2(26, 26)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_d86d5")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_d2x5o")
+theme_override_styles/hover = SubResource("StyleBoxFlat_n1sgb")
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "＋"
+metadata/__signal_pressed = "_on_res_add"
+
+[node name="@Panel@22" type="Panel" parent="TopLayer/TopRow/ResourceBar" unique_id=1941230938]
+custom_minimum_size = Vector2(140, 44)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_phsrj")
+metadata/__script_vars = {}
+
+[node name="@HBoxContainer@21" type="HBoxContainer" parent="TopLayer/TopRow/ResourceBar/@Panel@22" unique_id=371674565]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 6.0
+offset_right = -8.0
+offset_bottom = -6.0
+metadata/__anchor = "full"
+
+[node name="@Label@18" type="Label" parent="TopLayer/TopRow/ResourceBar/@Panel@22/@HBoxContainer@21" unique_id=1676381871]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "🧪"
+vertical_alignment = 1
+
+[node name="@Label@19" type="Label" parent="TopLayer/TopRow/ResourceBar/@Panel@22/@HBoxContainer@21" unique_id=1877899519]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "3/36"
+vertical_alignment = 1
+
+[node name="@Control@20" type="Control" parent="TopLayer/TopRow/ResourceBar/@Panel@22/@HBoxContainer@21" unique_id=1259604642]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="AddPillBtn" type="Button" parent="TopLayer/TopRow/ResourceBar/@Panel@22/@HBoxContainer@21" unique_id=989140791]
+custom_minimum_size = Vector2(26, 26)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_f6xiw")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_6jwjg")
+theme_override_styles/hover = SubResource("StyleBoxFlat_2kg2m")
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "＋"
+metadata/__signal_pressed = "_on_res_add"
+
+[node name="@Control@23" type="Control" parent="TopLayer/TopRow" unique_id=249434762]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MiniMap" type="Panel" parent="TopLayer/TopRow" unique_id=1238702460]
+custom_minimum_size = Vector2(172, 150)
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_pno5c")
+metadata/__script_vars = {}
+
+[node name="MapInner" type="Panel" parent="TopLayer/TopRow/MiniMap" unique_id=30422630]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 6.0
+offset_top = 6.0
+offset_right = -6.0
+offset_bottom = -6.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_xr3qs")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Label@24" type="Label" parent="TopLayer/TopRow/MiniMap/MapInner" unique_id=1123701412]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🗺️"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="PlayerArrow" type="Label" parent="TopLayer/TopRow/MiniMap/MapInner" unique_id=1174540985]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -8.0
+offset_top = -11.5
+offset_right = 8.0
+offset_bottom = 11.5
+text = "⬆"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "center"
+
+[node name="NorthMark" type="Label" parent="TopLayer/TopRow/MiniMap/MapInner" unique_id=386002342]
+layout_mode = 0
+anchor_right = 1.0
+offset_top = 4.0
+offset_right = -8.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "N"
+horizontal_alignment = 2
+metadata/__anchor = "top_wide"
+
+[node name="MidLayer" type="MarginContainer" parent="." unique_id=1402669925]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 175.0
+offset_right = -14.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="MidRow" type="HBoxContainer" parent="MidLayer" unique_id=1749287458]
+layout_mode = 2
+
+[node name="QuestBanner" type="HBoxContainer" parent="MidLayer/MidRow" unique_id=1539572687]
+layout_mode = 2
+size_flags_vertical = 0
+metadata/__script_vars = {}
+
+[node name="@Panel@25" type="Panel" parent="MidLayer/MidRow/QuestBanner" unique_id=765604649]
+custom_minimum_size = Vector2(12, 48)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_b7jtf")
+metadata/__script_vars = {}
+
+[node name="@Panel@29" type="Panel" parent="MidLayer/MidRow/QuestBanner" unique_id=1614252424]
+custom_minimum_size = Vector2(226, 48)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_a4484")
+metadata/__script_vars = {}
+
+[node name="@HBoxContainer@28" type="HBoxContainer" parent="MidLayer/MidRow/QuestBanner/@Panel@29" unique_id=392963595]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 8.0
+offset_right = -12.0
+offset_bottom = -8.0
+metadata/__anchor = "full"
+
+[node name="@Label@26" type="Label" parent="MidLayer/MidRow/QuestBanner/@Panel@29/@HBoxContainer@28" unique_id=1333223943]
+layout_mode = 2
+text = "📜"
+vertical_alignment = 1
+
+[node name="@Label@27" type="Label" parent="MidLayer/MidRow/QuestBanner/@Panel@29/@HBoxContainer@28" unique_id=96446414]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "击败山中妖狼 3/5"
+vertical_alignment = 1
+
+[node name="@Panel@30" type="Panel" parent="MidLayer/MidRow/QuestBanner" unique_id=85368117]
+custom_minimum_size = Vector2(12, 48)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_dhxaf")
+metadata/__script_vars = {}
+
+[node name="@Control@31" type="Control" parent="MidLayer/MidRow" unique_id=474309827]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MenuColumn" type="VBoxContainer" parent="MidLayer/MidRow" unique_id=409882408]
+layout_mode = 2
+size_flags_vertical = 0
+script = ExtResource("2_7s3js")
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray()
+
+[node name="MenuCultivate" type="Panel" parent="MidLayer/MidRow/MenuColumn" unique_id=1917822159]
+custom_minimum_size = Vector2(84, 84)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_qc13i")
+metadata/__signal_pressed = "_on_menu_pressed"
+metadata/__script_vars = {}
+
+[node name="@VBoxContainer@34" type="VBoxContainer" parent="MidLayer/MidRow/MenuColumn/MenuCultivate" unique_id=1274867604]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 10.0
+offset_right = -8.0
+offset_bottom = -8.0
+metadata/__anchor = "full"
+
+[node name="@Label@32" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuCultivate/@VBoxContainer@34" unique_id=179368943]
+layout_mode = 2
+size_flags_vertical = 3
+text = "🧘"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="@Label@33" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuCultivate/@VBoxContainer@34" unique_id=620579072]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "修炼"
+horizontal_alignment = 1
+
+[node name="@Label@35" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuCultivate" unique_id=1027783511]
+layout_mode = 0
+anchor_right = 1.0
+offset_top = 6.0
+offset_right = -10.0
+theme_override_colors/font_color = Color(0.8784314, 0.3137255, 0.28235295, 1)
+text = "●"
+horizontal_alignment = 2
+metadata/__anchor = "top_wide"
+
+[node name="MenuGongfa" type="Panel" parent="MidLayer/MidRow/MenuColumn" unique_id=837646244]
+custom_minimum_size = Vector2(84, 84)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_a1h0x")
+metadata/__signal_pressed = "_on_menu_pressed"
+metadata/__script_vars = {}
+
+[node name="@VBoxContainer@38" type="VBoxContainer" parent="MidLayer/MidRow/MenuColumn/MenuGongfa" unique_id=1708998716]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 10.0
+offset_right = -8.0
+offset_bottom = -8.0
+metadata/__anchor = "full"
+
+[node name="@Label@36" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuGongfa/@VBoxContainer@38" unique_id=74989570]
+layout_mode = 2
+size_flags_vertical = 3
+text = "📖"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="@Label@37" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuGongfa/@VBoxContainer@38" unique_id=267071692]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "功法"
+horizontal_alignment = 1
+
+[node name="@Label@39" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuGongfa" unique_id=980439284]
+layout_mode = 0
+anchor_right = 1.0
+offset_top = 6.0
+offset_right = -10.0
+theme_override_colors/font_color = Color(0.8784314, 0.3137255, 0.28235295, 1)
+text = "●"
+horizontal_alignment = 2
+metadata/__anchor = "top_wide"
+
+[node name="MenuBag" type="Panel" parent="MidLayer/MidRow/MenuColumn" unique_id=1775927031]
+custom_minimum_size = Vector2(84, 84)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_gqiyo")
+metadata/__signal_pressed = "_on_menu_pressed"
+metadata/__script_vars = {}
+
+[node name="@VBoxContainer@42" type="VBoxContainer" parent="MidLayer/MidRow/MenuColumn/MenuBag" unique_id=193744165]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 10.0
+offset_right = -8.0
+offset_bottom = -8.0
+metadata/__anchor = "full"
+
+[node name="@Label@40" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuBag/@VBoxContainer@42" unique_id=1220727441]
+layout_mode = 2
+size_flags_vertical = 3
+text = "👝"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="@Label@41" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuBag/@VBoxContainer@42" unique_id=375706145]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "储物袋"
+horizontal_alignment = 1
+
+[node name="@Label@43" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuBag" unique_id=183295191]
+layout_mode = 0
+anchor_right = 1.0
+offset_top = 6.0
+offset_right = -10.0
+theme_override_colors/font_color = Color(0.8784314, 0.3137255, 0.28235295, 1)
+text = "●"
+horizontal_alignment = 2
+metadata/__anchor = "top_wide"
+
+[node name="MenuMarket" type="Panel" parent="MidLayer/MidRow/MenuColumn" unique_id=246650349]
+custom_minimum_size = Vector2(84, 84)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_ysf4e")
+metadata/__signal_pressed = "_on_menu_pressed"
+metadata/__script_vars = {}
+
+[node name="@VBoxContainer@46" type="VBoxContainer" parent="MidLayer/MidRow/MenuColumn/MenuMarket" unique_id=1857751339]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 10.0
+offset_right = -8.0
+offset_bottom = -8.0
+metadata/__anchor = "full"
+
+[node name="@Label@44" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuMarket/@VBoxContainer@46" unique_id=572753980]
+layout_mode = 2
+size_flags_vertical = 3
+text = "🏮"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="@Label@45" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuMarket/@VBoxContainer@46" unique_id=986211618]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "坊市"
+horizontal_alignment = 1
+
+[node name="@Label@47" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuMarket" unique_id=1895939223]
+layout_mode = 0
+anchor_right = 1.0
+offset_top = 6.0
+offset_right = -10.0
+theme_override_colors/font_color = Color(0.8784314, 0.3137255, 0.28235295, 1)
+text = "●"
+horizontal_alignment = 2
+metadata/__anchor = "top_wide"
+
+[node name="BottomLayer" type="MarginContainer" parent="." unique_id=686116227]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 240.0
+offset_right = -240.0
+offset_bottom = -12.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="BottomColumn" type="VBoxContainer" parent="BottomLayer" unique_id=2044260061]
+layout_mode = 2
+
+[node name="@Control@48" type="Control" parent="BottomLayer/BottomColumn" unique_id=42186333]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="SkillBar" type="VBoxContainer" parent="BottomLayer/BottomColumn" unique_id=1837419913]
+layout_mode = 2
+size_flags_horizontal = 4
+script = ExtResource("3_mti25")
+metadata/__script_vars = {
+"skills": [{
+"cd": "",
+"icon": "🌀",
+"key": "1"
+}, {
+"cd": "",
+"icon": "⚡",
+"key": "2"
+}, {
+"cd": "8s",
+"icon": "🌙",
+"key": "3"
+}, {
+"cd": "",
+"icon": "🍃",
+"key": "4"
+}, {
+"cd": "",
+"icon": "🧘",
+"key": "5"
+}, {
+"cd": "",
+"icon": "🗡️",
+"key": "6"
+}]
+}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray()
+
+[node name="SkillList" type="GdUIHList" parent="BottomLayer/BottomColumn/SkillBar" unique_id=2134568615]
+layout_mode = 2
+metadata/__signal_s_click_item = "_on_skill_clicked"
+metadata/__script_vars = {
+"skills": [{
+"cd": "",
+"icon": "🌀",
+"key": "1"
+}, {
+"cd": "",
+"icon": "⚡",
+"key": "2"
+}, {
+"cd": "8s",
+"icon": "🌙",
+"key": "3"
+}, {
+"cd": "",
+"icon": "🍃",
+"key": "4"
+}, {
+"cd": "",
+"icon": "🧘",
+"key": "5"
+}, {
+"cd": "",
+"icon": "🗡️",
+"key": "6"
+}]
+}
+metadata/__script_data = [{
+"cd": "",
+"icon": "🌀",
+"key": "1"
+}, {
+"cd": "",
+"icon": "⚡",
+"key": "2"
+}, {
+"cd": "8s",
+"icon": "🌙",
+"key": "3"
+}, {
+"cd": "",
+"icon": "🍃",
+"key": "4"
+}, {
+"cd": "",
+"icon": "🧘",
+"key": "5"
+}, {
+"cd": "",
+"icon": "🗡️",
+"key": "6"
+}]
+
+[node name="SkillSlot" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList" unique_id=1072065453]
+visible = false
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_r5pdf")
+script = ExtResource("4_aujxf")
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "key", "cd")
+
+[node name="IconBox" type="CenterContainer" parent="BottomLayer/BottomColumn/SkillBar/SkillList/SkillSlot" unique_id=781665015]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="SlotIcon" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/SkillSlot/IconBox" unique_id=1747923714]
+layout_mode = 2
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="CdMask" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList/SkillSlot" unique_id=375778060]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_3dgny")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CdText" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/SkillSlot" unique_id=1048843230]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__tpl_text = "cd"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="KeyBadge" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/SkillSlot" unique_id=1913821559]
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = -24.0
+offset_right = -14.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+horizontal_alignment = 1
+metadata/__tpl_text = "key"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="@Panel@53" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList" unique_id=223834189]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_r5pdf")
+script = ExtResource("4_aujxf")
+icon = "🌀"
+key = "1"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "key", "cd")
+metadata/__item_data = {
+"cd": "",
+"icon": "🌀",
+"key": "1"
+}
+
+[node name="IconBox" type="CenterContainer" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@53" unique_id=652029480]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="SlotIcon" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@53/IconBox" unique_id=709143877]
+layout_mode = 2
+text = "🌀"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="CdMask" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@53" unique_id=902907532]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_3dgny")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CdText" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@53" unique_id=1441216355]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__tpl_text = "cd"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="KeyBadge" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@53" unique_id=848895350]
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = -24.0
+offset_right = -14.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "1"
+horizontal_alignment = 1
+metadata/__tpl_text = "key"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="@Panel@54" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList" unique_id=732449830]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_r5pdf")
+script = ExtResource("4_aujxf")
+icon = "⚡"
+key = "2"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "key", "cd")
+metadata/__item_data = {
+"cd": "",
+"icon": "⚡",
+"key": "2"
+}
+
+[node name="IconBox" type="CenterContainer" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@54" unique_id=1936302101]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="SlotIcon" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@54/IconBox" unique_id=1815973715]
+layout_mode = 2
+text = "⚡"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="CdMask" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@54" unique_id=1120469503]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_3dgny")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CdText" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@54" unique_id=593776743]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__tpl_text = "cd"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="KeyBadge" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@54" unique_id=2076650982]
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = -24.0
+offset_right = -14.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "2"
+horizontal_alignment = 1
+metadata/__tpl_text = "key"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="@Panel@55" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList" unique_id=91698394]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_r5pdf")
+script = ExtResource("4_aujxf")
+icon = "🌙"
+key = "3"
+cd = "8s"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "key", "cd")
+metadata/__item_data = {
+"cd": "8s",
+"icon": "🌙",
+"key": "3"
+}
+
+[node name="IconBox" type="CenterContainer" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@55" unique_id=1240884121]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="SlotIcon" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@55/IconBox" unique_id=1243482112]
+layout_mode = 2
+text = "🌙"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="CdMask" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@55" unique_id=1034689776]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_3dgny")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CdText" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@55" unique_id=732462606]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "8s"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__tpl_text = "cd"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="KeyBadge" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@55" unique_id=2046431731]
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = -24.0
+offset_right = -14.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "3"
+horizontal_alignment = 1
+metadata/__tpl_text = "key"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="@Panel@56" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList" unique_id=1861333748]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_r5pdf")
+script = ExtResource("4_aujxf")
+icon = "🍃"
+key = "4"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "key", "cd")
+metadata/__item_data = {
+"cd": "",
+"icon": "🍃",
+"key": "4"
+}
+
+[node name="IconBox" type="CenterContainer" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@56" unique_id=775701656]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="SlotIcon" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@56/IconBox" unique_id=1447670749]
+layout_mode = 2
+text = "🍃"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="CdMask" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@56" unique_id=1422926270]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_3dgny")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CdText" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@56" unique_id=642864039]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__tpl_text = "cd"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="KeyBadge" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@56" unique_id=1071831179]
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = -24.0
+offset_right = -14.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "4"
+horizontal_alignment = 1
+metadata/__tpl_text = "key"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="@Panel@57" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList" unique_id=626039580]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_r5pdf")
+script = ExtResource("4_aujxf")
+icon = "🧘"
+key = "5"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "key", "cd")
+metadata/__item_data = {
+"cd": "",
+"icon": "🧘",
+"key": "5"
+}
+
+[node name="IconBox" type="CenterContainer" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@57" unique_id=89944149]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="SlotIcon" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@57/IconBox" unique_id=1989666092]
+layout_mode = 2
+text = "🧘"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="CdMask" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@57" unique_id=1699377221]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_3dgny")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CdText" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@57" unique_id=1825164159]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__tpl_text = "cd"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="KeyBadge" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@57" unique_id=848065249]
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = -24.0
+offset_right = -14.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "5"
+horizontal_alignment = 1
+metadata/__tpl_text = "key"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="@Panel@58" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList" unique_id=1883191272]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_r5pdf")
+script = ExtResource("4_aujxf")
+icon = "🗡️"
+key = "6"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "key", "cd")
+metadata/__item_data = {
+"cd": "",
+"icon": "🗡️",
+"key": "6"
+}
+
+[node name="IconBox" type="CenterContainer" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@58" unique_id=308627675]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="SlotIcon" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@58/IconBox" unique_id=1422165635]
+layout_mode = 2
+text = "🗡️"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="CdMask" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@58" unique_id=1384683174]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_3dgny")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CdText" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@58" unique_id=709049740]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__tpl_text = "cd"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="KeyBadge" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@58" unique_id=2086293718]
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = -24.0
+offset_right = -14.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "6"
+horizontal_alignment = 1
+metadata/__tpl_text = "key"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="XpBar" type="Panel" parent="BottomLayer/BottomColumn/SkillBar" unique_id=132448157]
+custom_minimum_size = Vector2(500, 26)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_4ogxs")
+metadata/__script_vars = {
+"skills": [{
+"cd": "",
+"icon": "🌀",
+"key": "1"
+}, {
+"cd": "",
+"icon": "⚡",
+"key": "2"
+}, {
+"cd": "8s",
+"icon": "🌙",
+"key": "3"
+}, {
+"cd": "",
+"icon": "🍃",
+"key": "4"
+}, {
+"cd": "",
+"icon": "🧘",
+"key": "5"
+}, {
+"cd": "",
+"icon": "🗡️",
+"key": "6"
+}]
+}
+
+[node name="@HBoxContainer@52" type="HBoxContainer" parent="BottomLayer/BottomColumn/SkillBar/XpBar" unique_id=1322281385]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 4.0
+offset_right = -12.0
+offset_bottom = -4.0
+metadata/__anchor = "full"
+
+[node name="@Label@49" type="Label" parent="BottomLayer/BottomColumn/SkillBar/XpBar/@HBoxContainer@52" unique_id=656876664]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "💠"
+vertical_alignment = 1
+
+[node name="@Label@50" type="Label" parent="BottomLayer/BottomColumn/SkillBar/XpBar/@HBoxContainer@52" unique_id=1576814016]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "灵气经验"
+vertical_alignment = 1
+
+[node name="XpTrack" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/XpBar/@HBoxContainer@52" unique_id=1644782410]
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_k8fo1")
+
+[node name="XpFill" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/XpBar/@HBoxContainer@52/XpTrack" unique_id=1817874060]
+custom_minimum_size = Vector2(200, 12)
+layout_mode = 0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_6ya2q")
+metadata/__anchor = "left_wide"
+
+[node name="@Label@51" type="Label" parent="BottomLayer/BottomColumn/SkillBar/XpBar/@HBoxContainer@52" unique_id=348100949]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "320/600"
+vertical_alignment = 1
