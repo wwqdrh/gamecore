@@ -11,6 +11,7 @@ use godot::classes::{
 use godot::classes::control::LayoutPreset;
 
 use super::gd_scene::GdScene;
+use super::camera::GdViewCamera;
 
 /// 转场动画步骤
 #[derive(Default, PartialEq, Clone, Copy)]
@@ -68,6 +69,14 @@ pub struct GdSceneRoot {
     #[var]
     manager_id: GString,
 
+    /// 入口场景别名（ready 后自动进入；仅由场景/GD 侧显式配置，空则不自动进入）
+    #[export]
+    entry_scene: GString,
+
+    /// 是否自动挂载相机（默认 true；挂载 GdViewCamera 到自身）
+    #[export]
+    auto_camera: bool,
+
     base: Base<Node>,
 }
 
@@ -89,6 +98,8 @@ impl INode for GdSceneRoot {
             scene_init_data_map: VarDictionary::new(),
             trans_duration: 0.5,
             manager_id: GString::from("default"),
+            entry_scene: GString::new(),
+            auto_camera: true,
             base,
         }
     }
@@ -138,6 +149,30 @@ impl INode for GdSceneRoot {
         if scenes_var.get_type() == godot::builtin::VariantType::DICTIONARY {
             let scenes = scenes_var.to::<VarDictionary>();
             self.register_scenes(scenes);
+        }
+
+        // 自动挂载相机（GdViewCamera：跟随/震动/缩放/平移等能力的 Camera2D）
+        if self.auto_camera {
+            let mut camera = GdViewCamera::new_alloc();
+            camera.set_name(&StringName::from("ViewCamera"));
+            // 设计分辨率居中，避免 Camera2D 原点锚定导致世界坐标偏移
+            camera.set_position(Vector2::new(960.0, 540.0));
+            self.base_mut().add_child(&camera.clone().upcast::<Node>());
+            camera.make_current();
+        }
+
+        // 进入入口场景（仅认场景上显式配置的 entry_scene，空则不自动进入）
+        if !self.entry_scene.is_empty() {
+            let entered = self.change_scene(
+                self.entry_scene.clone(),
+                VarDictionary::new(),
+                GString::new(),
+                false,
+                true,
+            );
+            if !entered {
+                godot_warn!("GdSceneRoot: entry scene load failed");
+            }
         }
     }
 

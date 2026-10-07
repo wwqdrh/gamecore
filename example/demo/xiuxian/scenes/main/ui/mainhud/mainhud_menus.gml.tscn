@@ -1,0 +1,264 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/ui/mainhud/mainhud_menus.gd" id="1_kc8ni"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3iccf"]
+bg_color = Color(0.22745098, 0.3529412, 0.27450982, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 42
+corner_radius_top_right = 42
+corner_radius_bottom_right = 42
+corner_radius_bottom_left = 42
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cs5fp"]
+bg_color = Color(0.22745098, 0.3529412, 0.27450982, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 42
+corner_radius_top_right = 42
+corner_radius_bottom_right = 42
+corner_radius_bottom_left = 42
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_udw71"]
+bg_color = Color(0.22745098, 0.3529412, 0.27450982, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 42
+corner_radius_top_right = 42
+corner_radius_bottom_right = 42
+corner_radius_bottom_left = 42
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jtsid"]
+bg_color = Color(0.22745098, 0.3529412, 0.27450982, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 42
+corner_radius_top_right = 42
+corner_radius_bottom_right = 42
+corner_radius_bottom_left = 42
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0330s"]
+bg_color = Color(0.22745098, 0.3529412, 0.27450982, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 42
+corner_radius_top_right = 42
+corner_radius_bottom_right = 42
+corner_radius_bottom_left = 42
+
+[node name="MenuColumn" type="VBoxContainer" unique_id=398522655]
+script = ExtResource("1_kc8ni")
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray()
+
+[node name="MenuCultivate" type="Panel" parent="." unique_id=651011511]
+custom_minimum_size = Vector2(84, 84)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_3iccf")
+metadata/__signal_pressed = "_on_menu_pressed"
+metadata/__script_vars = {}
+
+[node name="@VBoxContainer@91" type="VBoxContainer" parent="MenuCultivate" unique_id=185804856]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 10.0
+offset_right = -8.0
+offset_bottom = -8.0
+metadata/__anchor = "full"
+
+[node name="@Label@89" type="Label" parent="MenuCultivate/@VBoxContainer@91" unique_id=918433455]
+layout_mode = 2
+size_flags_vertical = 3
+text = "🧘"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="@Label@90" type="Label" parent="MenuCultivate/@VBoxContainer@91" unique_id=1107317479]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "修炼"
+horizontal_alignment = 1
+
+[node name="@Label@92" type="Label" parent="MenuCultivate" unique_id=1072422015]
+layout_mode = 0
+anchor_right = 1.0
+offset_top = 6.0
+offset_right = -10.0
+theme_override_colors/font_color = Color(0.8784314, 0.3137255, 0.28235295, 1)
+text = "●"
+horizontal_alignment = 2
+metadata/__anchor = "top_wide"
+
+[node name="MenuGongfa" type="Panel" parent="." unique_id=377912824]
+custom_minimum_size = Vector2(84, 84)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_cs5fp")
+metadata/__signal_pressed = "_on_menu_pressed"
+metadata/__script_vars = {}
+
+[node name="@VBoxContainer@95" type="VBoxContainer" parent="MenuGongfa" unique_id=1342478977]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 10.0
+offset_right = -8.0
+offset_bottom = -8.0
+metadata/__anchor = "full"
+
+[node name="@Label@93" type="Label" parent="MenuGongfa/@VBoxContainer@95" unique_id=716881192]
+layout_mode = 2
+size_flags_vertical = 3
+text = "📖"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="@Label@94" type="Label" parent="MenuGongfa/@VBoxContainer@95" unique_id=1380555041]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "功法"
+horizontal_alignment = 1
+
+[node name="@Label@96" type="Label" parent="MenuGongfa" unique_id=1910027279]
+layout_mode = 0
+anchor_right = 1.0
+offset_top = 6.0
+offset_right = -10.0
+theme_override_colors/font_color = Color(0.8784314, 0.3137255, 0.28235295, 1)
+text = "●"
+horizontal_alignment = 2
+metadata/__anchor = "top_wide"
+
+[node name="MenuBag" type="Panel" parent="." unique_id=401163649]
+custom_minimum_size = Vector2(84, 84)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_udw71")
+metadata/__signal_pressed = "show:BagModal"
+metadata/__script_vars = {}
+
+[node name="@VBoxContainer@99" type="VBoxContainer" parent="MenuBag" unique_id=1134101076]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 10.0
+offset_right = -8.0
+offset_bottom = -8.0
+metadata/__anchor = "full"
+
+[node name="@Label@97" type="Label" parent="MenuBag/@VBoxContainer@99" unique_id=973429664]
+layout_mode = 2
+size_flags_vertical = 3
+text = "👝"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="@Label@98" type="Label" parent="MenuBag/@VBoxContainer@99" unique_id=1784286563]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "储物袋"
+horizontal_alignment = 1
+
+[node name="@Label@100" type="Label" parent="MenuBag" unique_id=558450835]
+layout_mode = 0
+anchor_right = 1.0
+offset_top = 6.0
+offset_right = -10.0
+theme_override_colors/font_color = Color(0.8784314, 0.3137255, 0.28235295, 1)
+text = "●"
+horizontal_alignment = 2
+metadata/__anchor = "top_wide"
+
+[node name="MenuTask" type="Panel" parent="." unique_id=1167642051]
+custom_minimum_size = Vector2(84, 84)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_jtsid")
+metadata/__signal_pressed = "show:TaskDrawer"
+metadata/__script_vars = {}
+
+[node name="@VBoxContainer@103" type="VBoxContainer" parent="MenuTask" unique_id=932753357]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 10.0
+offset_right = -8.0
+offset_bottom = -8.0
+metadata/__anchor = "full"
+
+[node name="@Label@101" type="Label" parent="MenuTask/@VBoxContainer@103" unique_id=2143254301]
+layout_mode = 2
+size_flags_vertical = 3
+text = "📜"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="@Label@102" type="Label" parent="MenuTask/@VBoxContainer@103" unique_id=1856106270]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "任务"
+horizontal_alignment = 1
+
+[node name="MenuMarket" type="Panel" parent="." unique_id=1793636010]
+custom_minimum_size = Vector2(84, 84)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_0330s")
+metadata/__signal_pressed = "show:StoreModal"
+metadata/__script_vars = {}
+
+[node name="@VBoxContainer@106" type="VBoxContainer" parent="MenuMarket" unique_id=1951606758]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 10.0
+offset_right = -8.0
+offset_bottom = -8.0
+metadata/__anchor = "full"
+
+[node name="@Label@104" type="Label" parent="MenuMarket/@VBoxContainer@106" unique_id=408402082]
+layout_mode = 2
+size_flags_vertical = 3
+text = "🏮"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="@Label@105" type="Label" parent="MenuMarket/@VBoxContainer@106" unique_id=448297370]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "坊市"
+horizontal_alignment = 1
+
+[node name="@Label@107" type="Label" parent="MenuMarket" unique_id=295815515]
+layout_mode = 0
+anchor_right = 1.0
+offset_top = 6.0
+offset_right = -10.0
+theme_override_colors/font_color = Color(0.8784314, 0.3137255, 0.28235295, 1)
+text = "●"
+horizontal_alignment = 2
+metadata/__anchor = "top_wide"

@@ -1,0 +1,243 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/ui/bag/bag_categories.gd" id="1_cu70f"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7y7l1"]
+bg_color = Color(0.9137255, 0.8862745, 0.78431374, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qyshg"]
+bg_color = Color(0.9490196, 0.9254902, 0.83137256, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sprp4"]
+bg_color = Color(0.9490196, 0.9254902, 0.83137256, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_g4khc"]
+bg_color = Color(0.9490196, 0.9254902, 0.83137256, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_uka1c"]
+bg_color = Color(0.9490196, 0.9254902, 0.83137256, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bbm8k"]
+bg_color = Color(0.9490196, 0.9254902, 0.83137256, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="CategoryPanel" type="Panel" unique_id=1868208384]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_7y7l1")
+script = ExtResource("1_cu70f")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray()
+
+[node name="CatColumn" type="VBoxContainer" parent="." unique_id=861779787]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 12.0
+offset_right = -10.0
+offset_bottom = -12.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CatAll" type="Panel" parent="CatColumn" unique_id=1128607808]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_qyshg")
+metadata/__signal_pressed = "_on_category"
+
+[node name="@HBoxContainer@106" type="HBoxContainer" parent="CatColumn/CatAll" unique_id=1562776035]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_right = -8.0
+metadata/__anchor = "full"
+
+[node name="@Label@104" type="Label" parent="CatColumn/CatAll/@HBoxContainer@106" unique_id=2069058244]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "🔳"
+vertical_alignment = 1
+
+[node name="@Label@105" type="Label" parent="CatColumn/CatAll/@HBoxContainer@106" unique_id=1288828729]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "全部"
+vertical_alignment = 1
+
+[node name="CatTool" type="Panel" parent="CatColumn" unique_id=1391087555]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_sprp4")
+metadata/__signal_pressed = "_on_category"
+
+[node name="@HBoxContainer@109" type="HBoxContainer" parent="CatColumn/CatTool" unique_id=171963664]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_right = -8.0
+metadata/__anchor = "full"
+
+[node name="@Label@107" type="Label" parent="CatColumn/CatTool/@HBoxContainer@109" unique_id=578703525]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "🗡️"
+vertical_alignment = 1
+
+[node name="@Label@108" type="Label" parent="CatColumn/CatTool/@HBoxContainer@109" unique_id=972347806]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "法器"
+vertical_alignment = 1
+
+[node name="CatPill" type="Panel" parent="CatColumn" unique_id=1006531417]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_g4khc")
+metadata/__signal_pressed = "_on_category"
+
+[node name="@HBoxContainer@112" type="HBoxContainer" parent="CatColumn/CatPill" unique_id=469575565]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_right = -8.0
+metadata/__anchor = "full"
+
+[node name="@Label@110" type="Label" parent="CatColumn/CatPill/@HBoxContainer@112" unique_id=569263588]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "⚗️"
+vertical_alignment = 1
+
+[node name="@Label@111" type="Label" parent="CatColumn/CatPill/@HBoxContainer@112" unique_id=1156801350]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "丹药"
+vertical_alignment = 1
+
+[node name="CatMaterial" type="Panel" parent="CatColumn" unique_id=1055331312]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_uka1c")
+metadata/__signal_pressed = "_on_category"
+
+[node name="@HBoxContainer@115" type="HBoxContainer" parent="CatColumn/CatMaterial" unique_id=685517882]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_right = -8.0
+metadata/__anchor = "full"
+
+[node name="@Label@113" type="Label" parent="CatColumn/CatMaterial/@HBoxContainer@115" unique_id=1752175491]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "🌿"
+vertical_alignment = 1
+
+[node name="@Label@114" type="Label" parent="CatColumn/CatMaterial/@HBoxContainer@115" unique_id=1616234789]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "材料"
+vertical_alignment = 1
+
+[node name="CatTalisman" type="Panel" parent="CatColumn" unique_id=1201383433]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_bbm8k")
+metadata/__signal_pressed = "_on_category"
+
+[node name="@HBoxContainer@118" type="HBoxContainer" parent="CatColumn/CatTalisman" unique_id=296393391]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_right = -8.0
+metadata/__anchor = "full"
+
+[node name="@Label@116" type="Label" parent="CatColumn/CatTalisman/@HBoxContainer@118" unique_id=936083313]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "📜"
+vertical_alignment = 1
+
+[node name="@Label@117" type="Label" parent="CatColumn/CatTalisman/@HBoxContainer@118" unique_id=1683125214]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
+text = "符篆"
+vertical_alignment = 1
+
+[node name="@Control@119" type="Control" parent="CatColumn" unique_id=1874131722]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="@Label@120" type="Label" parent="CatColumn" unique_id=519159726]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6901961, 0.22745098, 0.18039216, 1)
+text = "修
+仙"
+horizontal_alignment = 1

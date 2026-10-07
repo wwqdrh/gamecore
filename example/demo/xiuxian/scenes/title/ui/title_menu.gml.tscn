@@ -1,0 +1,114 @@
+[gd_scene format=3 uid="uid://dpnv7nun0k1yd"]
+
+[ext_resource type="Script" uid="uid://b3ggqowndeado" path="res://example/demo/xiuxian/scenes/title/ui/title_menu.gd" id="1_ew0ey"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ew0ey"]
+bg_color = Color(0.08627451, 0.1254902, 0.17254902, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ybnmy"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.18039216, 0.2901961, 0.22745098, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.5411765, 0.41568628, 0.11764706, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jjqqh"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.08039216, 0.1901961, 0.12745097, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.5411765, 0.41568628, 0.11764706, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xtous"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.30039215, 0.4101961, 0.34745097, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[node name="TitleMenu" type="Panel" unique_id=929272434]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ew0ey")
+script = ExtResource("1_ew0ey")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray()
+
+[node name="MenuColumn" type="VBoxContainer" parent="." unique_id=86093779]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Control@21803" type="Control" parent="MenuColumn" unique_id=1452628442]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="@Label@21804" type="Label" parent="MenuColumn" unique_id=973282779]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9098039, 0.8509804, 0.65882355, 1)
+text = "仙  途"
+horizontal_alignment = 1
+
+[node name="@Label@21805" type="Label" parent="MenuColumn" unique_id=612142415]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5411765, 0.6039216, 0.6901961, 1)
+text = "— 修 仙 问 道 · demo —"
+horizontal_alignment = 1
+
+[node name="@Control@21806" type="Control" parent="MenuColumn" unique_id=2130171392]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+
+[node name="BtnStart" type="Button" parent="MenuColumn" unique_id=1151514374]
+custom_minimum_size = Vector2(260, 56)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_ybnmy")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_jjqqh")
+theme_override_styles/hover = SubResource("StyleBoxFlat_xtous")
+text = "开 始 游 戏"
+metadata/__signal_pressed = "_on_start_pressed"
+
+[node name="BtnQuit" type="Button" parent="MenuColumn" unique_id=1314940156]
+custom_minimum_size = Vector2(260, 56)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "退 出 游 戏"
+metadata/__signal_pressed = "_on_quit_pressed"
+
+[node name="@Control@21807" type="Control" parent="MenuColumn" unique_id=51484854]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="@Label@21808" type="Label" parent="MenuColumn" unique_id=361865610]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3529412, 0.41568628, 0.47843137, 1)
+text = "ESC 打开设置 · GML 框架 demo"
+horizontal_alignment = 1

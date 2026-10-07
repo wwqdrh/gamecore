@@ -142,6 +142,12 @@ impl GdScene {
         }
     }
 
+    /// 获取场景别名标识
+    #[func]
+    pub fn get_scene_id(&self) -> GString {
+        self.scene_id.clone()
+    }
+
     /// 获取状态栈
     #[func]
     fn get_state_stack(&self) -> VarArray {

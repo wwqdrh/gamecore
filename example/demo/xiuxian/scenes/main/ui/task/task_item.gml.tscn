@@ -1,0 +1,165 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/ui/task/task_item.gd" id="1_8ayk1"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ovwul"]
+bg_color = Color(0.9647059, 0.9372549, 0.85882354, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_or5mg"]
+bg_color = Color(0.89411765, 0.8509804, 0.72156864, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_61y8c"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.24705882, 0.49019608, 0.30588236, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_745mm"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.14705881, 0.39019608, 0.20588237, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rswx4"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.3670588, 0.61019605, 0.42588237, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="ItemRoot" type="Panel" unique_id=609469441]
+custom_minimum_size = Vector2(0, 84)
+theme_override_styles/panel = SubResource("StyleBoxFlat_ovwul")
+script = ExtResource("1_8ayk1")
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "title", "desc", "progress", "reward1", "reward2", "btn_text", "btn_state")
+
+[node name="ItemMargin" type="MarginContainer" parent="." unique_id=1628510461]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 8.0
+offset_right = -12.0
+offset_bottom = -8.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="ItemRow" type="HBoxContainer" parent="ItemMargin" unique_id=27194136]
+layout_mode = 2
+
+[node name="@Panel@87" type="Panel" parent="ItemMargin/ItemRow" unique_id=1059948189]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_or5mg")
+
+[node name="ItemIcon" type="Label" parent="ItemMargin/ItemRow/@Panel@87" unique_id=201753636]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 30
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "full"
+
+[node name="@Control@88" type="Control" parent="ItemMargin/ItemRow" unique_id=2131815173]
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 2
+
+[node name="@VBoxContainer@89" type="VBoxContainer" parent="ItemMargin/ItemRow" unique_id=853270388]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+
+[node name="ItemTitle" type="Label" parent="ItemMargin/ItemRow/@VBoxContainer@89" unique_id=171118525]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="ItemDesc" type="Label" parent="ItemMargin/ItemRow/@VBoxContainer@89" unique_id=1646189588]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.5411765, 0.47843137, 0.34509805, 1)
+metadata/__tpl_text = "desc"
+metadata/__tpl_keys = "text"
+
+[node name="ItemProgress" type="Label" parent="ItemMargin/ItemRow" unique_id=116085455]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.36078432, 0.3019608, 0.18039216, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "progress"
+metadata/__tpl_keys = "text"
+
+[node name="@Control@90" type="Control" parent="ItemMargin/ItemRow" unique_id=2133566152]
+custom_minimum_size = Vector2(14, 0)
+layout_mode = 2
+
+[node name="Reward1" type="Label" parent="ItemMargin/ItemRow" unique_id=1384847071]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.2901961, 0.3529412, 0.22745098, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "reward1"
+metadata/__tpl_keys = "text"
+
+[node name="@Control@91" type="Control" parent="ItemMargin/ItemRow" unique_id=1871209253]
+custom_minimum_size = Vector2(12, 0)
+layout_mode = 2
+
+[node name="Reward2" type="Label" parent="ItemMargin/ItemRow" unique_id=605716300]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.2901961, 0.3529412, 0.22745098, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "reward2"
+metadata/__tpl_keys = "text"
+
+[node name="@Control@92" type="Control" parent="ItemMargin/ItemRow" unique_id=614292035]
+custom_minimum_size = Vector2(14, 0)
+layout_mode = 2
+
+[node name="ItemBtn" type="Button" parent="ItemMargin/ItemRow" unique_id=1394247788]
+custom_minimum_size = Vector2(84, 40)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/normal = SubResource("StyleBoxFlat_61y8c")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_745mm")
+theme_override_styles/hover = SubResource("StyleBoxFlat_rswx4")
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+metadata/__tpl_text = "btn_text"
+metadata/__tpl_keys = "text"
+metadata/__signal_pressed = "_on_task_action"

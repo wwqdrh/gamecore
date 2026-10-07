@@ -1,0 +1,728 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/ui/mainhud/mainhud_skillbar.gd" id="1_0mhdu"]
+[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/ui/mainhud/skill_item.gd" id="2_0r1bx"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jsa6q"]
+bg_color = Color(0.14117648, 0.23529412, 0.18039216, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_oukil"]
+bg_color = Color(0.039215688, 0.078431375, 0.0627451, 0.7529412)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hbhr0"]
+bg_color = Color(0.18039216, 0.2901961, 0.22745098, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.9098039, 0.7254902, 0.24313726, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hq5nd"]
+bg_color = Color(0.14117648, 0.23529412, 0.18039216, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.3372549, 0.4392157, 0.36078432, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fsgd8"]
+bg_color = Color(0.30980393, 0.7647059, 0.72156864, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[node name="SkillBar" type="VBoxContainer" unique_id=656424368]
+script = ExtResource("1_0mhdu")
+metadata/__script_vars = {
+"skills": [{
+"cd": "",
+"icon": "🌀",
+"key": "1"
+}, {
+"cd": "",
+"icon": "⚡",
+"key": "2"
+}, {
+"cd": "8s",
+"icon": "🌙",
+"key": "3"
+}, {
+"cd": "",
+"icon": "🍃",
+"key": "4"
+}, {
+"cd": "",
+"icon": "🧘",
+"key": "5"
+}, {
+"cd": "",
+"icon": "🗡️",
+"key": "6"
+}]
+}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray()
+
+[node name="SkillList" type="GdUIHList" parent="." unique_id=1474171221]
+layout_mode = 2
+metadata/__signal_s_click_item = "_on_skill_clicked"
+metadata/__script_vars = {
+"skills": [{
+"cd": "",
+"icon": "🌀",
+"key": "1"
+}, {
+"cd": "",
+"icon": "⚡",
+"key": "2"
+}, {
+"cd": "8s",
+"icon": "🌙",
+"key": "3"
+}, {
+"cd": "",
+"icon": "🍃",
+"key": "4"
+}, {
+"cd": "",
+"icon": "🧘",
+"key": "5"
+}, {
+"cd": "",
+"icon": "🗡️",
+"key": "6"
+}]
+}
+metadata/__script_data = [{
+"cd": "",
+"icon": "🌀",
+"key": "1"
+}, {
+"cd": "",
+"icon": "⚡",
+"key": "2"
+}, {
+"cd": "8s",
+"icon": "🌙",
+"key": "3"
+}, {
+"cd": "",
+"icon": "🍃",
+"key": "4"
+}, {
+"cd": "",
+"icon": "🧘",
+"key": "5"
+}, {
+"cd": "",
+"icon": "🗡️",
+"key": "6"
+}]
+
+[node name="SkillSlot" type="Panel" parent="SkillList" unique_id=1722172644]
+visible = false
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_jsa6q")
+script = ExtResource("2_0r1bx")
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "key", "cd")
+
+[node name="IconBox" type="CenterContainer" parent="SkillList/SkillSlot" unique_id=1086748531]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="SlotIcon" type="Label" parent="SkillList/SkillSlot/IconBox" unique_id=367676665]
+layout_mode = 2
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="CdMask" type="Panel" parent="SkillList/SkillSlot" unique_id=1026672576]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_oukil")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CdText" type="Label" parent="SkillList/SkillSlot" unique_id=842191093]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__tpl_text = "cd"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="KeyBadge" type="Label" parent="SkillList/SkillSlot" unique_id=874136974]
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = -24.0
+offset_right = -14.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+horizontal_alignment = 1
+metadata/__tpl_text = "key"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="@Panel@112" type="Panel" parent="SkillList" unique_id=1940379168]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_jsa6q")
+script = ExtResource("2_0r1bx")
+icon = "🌀"
+key = "1"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "key", "cd")
+metadata/__item_data = {
+"cd": "",
+"icon": "🌀",
+"key": "1"
+}
+
+[node name="IconBox" type="CenterContainer" parent="SkillList/@Panel@112" unique_id=954284087]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="SlotIcon" type="Label" parent="SkillList/@Panel@112/IconBox" unique_id=1016383775]
+layout_mode = 2
+text = "🌀"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="CdMask" type="Panel" parent="SkillList/@Panel@112" unique_id=146284274]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_oukil")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CdText" type="Label" parent="SkillList/@Panel@112" unique_id=1499845118]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__tpl_text = "cd"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="KeyBadge" type="Label" parent="SkillList/@Panel@112" unique_id=18931959]
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = -24.0
+offset_right = -14.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "1"
+horizontal_alignment = 1
+metadata/__tpl_text = "key"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="@Panel@113" type="Panel" parent="SkillList" unique_id=1521423500]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_jsa6q")
+script = ExtResource("2_0r1bx")
+icon = "⚡"
+key = "2"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "key", "cd")
+metadata/__item_data = {
+"cd": "",
+"icon": "⚡",
+"key": "2"
+}
+
+[node name="IconBox" type="CenterContainer" parent="SkillList/@Panel@113" unique_id=79563565]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="SlotIcon" type="Label" parent="SkillList/@Panel@113/IconBox" unique_id=498019451]
+layout_mode = 2
+text = "⚡"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="CdMask" type="Panel" parent="SkillList/@Panel@113" unique_id=899070639]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_oukil")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CdText" type="Label" parent="SkillList/@Panel@113" unique_id=892296763]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__tpl_text = "cd"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="KeyBadge" type="Label" parent="SkillList/@Panel@113" unique_id=694397114]
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = -24.0
+offset_right = -14.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "2"
+horizontal_alignment = 1
+metadata/__tpl_text = "key"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="@Panel@114" type="Panel" parent="SkillList" unique_id=1358934706]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_jsa6q")
+script = ExtResource("2_0r1bx")
+icon = "🌙"
+key = "3"
+cd = "8s"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "key", "cd")
+metadata/__item_data = {
+"cd": "8s",
+"icon": "🌙",
+"key": "3"
+}
+
+[node name="IconBox" type="CenterContainer" parent="SkillList/@Panel@114" unique_id=899049278]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="SlotIcon" type="Label" parent="SkillList/@Panel@114/IconBox" unique_id=861620369]
+layout_mode = 2
+text = "🌙"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="CdMask" type="Panel" parent="SkillList/@Panel@114" unique_id=1771926688]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_oukil")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CdText" type="Label" parent="SkillList/@Panel@114" unique_id=118171028]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "8s"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__tpl_text = "cd"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="KeyBadge" type="Label" parent="SkillList/@Panel@114" unique_id=2016551278]
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = -24.0
+offset_right = -14.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "3"
+horizontal_alignment = 1
+metadata/__tpl_text = "key"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="@Panel@115" type="Panel" parent="SkillList" unique_id=593204662]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_jsa6q")
+script = ExtResource("2_0r1bx")
+icon = "🍃"
+key = "4"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "key", "cd")
+metadata/__item_data = {
+"cd": "",
+"icon": "🍃",
+"key": "4"
+}
+
+[node name="IconBox" type="CenterContainer" parent="SkillList/@Panel@115" unique_id=821722083]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="SlotIcon" type="Label" parent="SkillList/@Panel@115/IconBox" unique_id=879248483]
+layout_mode = 2
+text = "🍃"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="CdMask" type="Panel" parent="SkillList/@Panel@115" unique_id=2129025850]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_oukil")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CdText" type="Label" parent="SkillList/@Panel@115" unique_id=915920490]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__tpl_text = "cd"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="KeyBadge" type="Label" parent="SkillList/@Panel@115" unique_id=1636734436]
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = -24.0
+offset_right = -14.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "4"
+horizontal_alignment = 1
+metadata/__tpl_text = "key"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="@Panel@116" type="Panel" parent="SkillList" unique_id=974492845]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_jsa6q")
+script = ExtResource("2_0r1bx")
+icon = "🧘"
+key = "5"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "key", "cd")
+metadata/__item_data = {
+"cd": "",
+"icon": "🧘",
+"key": "5"
+}
+
+[node name="IconBox" type="CenterContainer" parent="SkillList/@Panel@116" unique_id=167280259]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="SlotIcon" type="Label" parent="SkillList/@Panel@116/IconBox" unique_id=1616822213]
+layout_mode = 2
+text = "🧘"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="CdMask" type="Panel" parent="SkillList/@Panel@116" unique_id=1322879833]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_oukil")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CdText" type="Label" parent="SkillList/@Panel@116" unique_id=589805098]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__tpl_text = "cd"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="KeyBadge" type="Label" parent="SkillList/@Panel@116" unique_id=819665649]
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = -24.0
+offset_right = -14.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "5"
+horizontal_alignment = 1
+metadata/__tpl_text = "key"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="@Panel@117" type="Panel" parent="SkillList" unique_id=1210093486]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_jsa6q")
+script = ExtResource("2_0r1bx")
+icon = "🗡️"
+key = "6"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "key", "cd")
+metadata/__item_data = {
+"cd": "",
+"icon": "🗡️",
+"key": "6"
+}
+
+[node name="IconBox" type="CenterContainer" parent="SkillList/@Panel@117" unique_id=1518285383]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="SlotIcon" type="Label" parent="SkillList/@Panel@117/IconBox" unique_id=2116056357]
+layout_mode = 2
+text = "🗡️"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="CdMask" type="Panel" parent="SkillList/@Panel@117" unique_id=2112263451]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_oukil")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CdText" type="Label" parent="SkillList/@Panel@117" unique_id=1306771278]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__tpl_text = "cd"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="KeyBadge" type="Label" parent="SkillList/@Panel@117" unique_id=116457107]
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = -24.0
+offset_right = -14.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "6"
+horizontal_alignment = 1
+metadata/__tpl_text = "key"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="XpBar" type="Panel" parent="." unique_id=2068659316]
+custom_minimum_size = Vector2(500, 26)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_hbhr0")
+metadata/__script_vars = {
+"skills": [{
+"cd": "",
+"icon": "🌀",
+"key": "1"
+}, {
+"cd": "",
+"icon": "⚡",
+"key": "2"
+}, {
+"cd": "8s",
+"icon": "🌙",
+"key": "3"
+}, {
+"cd": "",
+"icon": "🍃",
+"key": "4"
+}, {
+"cd": "",
+"icon": "🧘",
+"key": "5"
+}, {
+"cd": "",
+"icon": "🗡️",
+"key": "6"
+}]
+}
+
+[node name="@HBoxContainer@111" type="HBoxContainer" parent="XpBar" unique_id=1138506683]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 4.0
+offset_right = -12.0
+offset_bottom = -4.0
+metadata/__anchor = "full"
+
+[node name="@Label@108" type="Label" parent="XpBar/@HBoxContainer@111" unique_id=1058537943]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "💠"
+vertical_alignment = 1
+
+[node name="@Label@109" type="Label" parent="XpBar/@HBoxContainer@111" unique_id=1367113130]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "灵气经验"
+vertical_alignment = 1
+
+[node name="XpTrack" type="Panel" parent="XpBar/@HBoxContainer@111" unique_id=115527588]
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_hq5nd")
+
+[node name="XpFill" type="Panel" parent="XpBar/@HBoxContainer@111/XpTrack" unique_id=856582728]
+custom_minimum_size = Vector2(200, 12)
+layout_mode = 0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_fsgd8")
+metadata/__anchor = "left_wide"
+
+[node name="@Label@110" type="Label" parent="XpBar/@HBoxContainer@111" unique_id=2090890809]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "320/600"
+vertical_alignment = 1

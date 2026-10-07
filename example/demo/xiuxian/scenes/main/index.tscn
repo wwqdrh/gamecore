@@ -1,0 +1,17 @@
+[gd_scene load_steps=2 format=3 uid="uid://fsa76hw3xkii"]
+
+[ext_resource type="PackedScene" path="res://example/demo/xiuxian/scenes/main/ui/main.gml.tscn" id="1_ui"]
+
+[node name="Index" type="GdScene"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="World" type="Node2D" parent="."]
+
+[node name="UILayer" type="CanvasLayer" parent="."]
+layer = 1
+
+[node name="MainUI" parent="UILayer" instance=ExtResource("1_ui")]

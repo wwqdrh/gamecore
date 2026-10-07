@@ -1,0 +1,1205 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/ui/task/task_list.gd" id="1_8ius1"]
+[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/ui/task/task_item.gd" id="2_lhdlp"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wpv6i"]
+bg_color = Color(0.9647059, 0.9372549, 0.85882354, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mf4tn"]
+bg_color = Color(0.89411765, 0.8509804, 0.72156864, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4rqfj"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.24705882, 0.49019608, 0.30588236, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_guaop"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.14705881, 0.39019608, 0.20588237, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_peejb"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.3670588, 0.61019605, 0.42588237, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_a4pmy"]
+bg_color = Color(0.9647059, 0.9372549, 0.85882354, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_r8tur"]
+bg_color = Color(0.89411765, 0.8509804, 0.72156864, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2tlag"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.24705882, 0.49019608, 0.30588236, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gmv8e"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.14705881, 0.39019608, 0.20588237, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0opl7"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.3670588, 0.61019605, 0.42588237, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_imygw"]
+bg_color = Color(0.9647059, 0.9372549, 0.85882354, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7rocy"]
+bg_color = Color(0.89411765, 0.8509804, 0.72156864, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dpoho"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.24705882, 0.49019608, 0.30588236, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wylvx"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.14705881, 0.39019608, 0.20588237, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1gd5c"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.3670588, 0.61019605, 0.42588237, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_smn7r"]
+bg_color = Color(0.9647059, 0.9372549, 0.85882354, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_t1eeg"]
+bg_color = Color(0.89411765, 0.8509804, 0.72156864, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jmmo5"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.24705882, 0.49019608, 0.30588236, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bbr24"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.14705881, 0.39019608, 0.20588237, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vnfuk"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.3670588, 0.61019605, 0.42588237, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="TaskTabs" type="TabContainer" unique_id=820591577]
+anchor_right = 1.0
+anchor_bottom = 1.0
+current_tab = 0
+metadata/__anchor = "full"
+metadata/__script_vars = {
+"cat_bounty": "bounty",
+"cat_daily": "daily",
+"cat_guild": "guild",
+"cat_main": "main"
+}
+metadata/__gml_root = true
+
+[node name="日常" type="VBoxContainer" parent="." unique_id=1770953165]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 0
+metadata/__script_vars = {
+"cat_bounty": "bounty",
+"cat_daily": "daily",
+"cat_guild": "guild",
+"cat_main": "main"
+}
+
+[node name="TaskScroll" type="ScrollContainer" parent="日常" unique_id=159057654]
+layout_mode = 2
+size_flags_vertical = 3
+script = ExtResource("1_8ius1")
+metadata/__script_vars = {
+"category": "daily",
+"tasks": [{
+"btn_state": "go",
+"btn_text": "前往",
+"category": "daily",
+"desc": "task_list.gml 内置默认数据",
+"icon": "📦",
+"progress": "1/2",
+"reward1": "💎 10",
+"reward2": "🪙 5",
+"title": "日常·示例任务"
+}, {
+"btn_state": "go",
+"btn_text": "前往",
+"category": "daily",
+"desc": "后山采集 5 株灵草",
+"icon": "🌿",
+"progress": "3/5",
+"reward1": "💎 15",
+"reward2": "🪙 8",
+"title": "日常·采集灵草"
+}, {
+"btn_state": "go",
+"btn_text": "前往",
+"category": "main",
+"desc": "击败 10 只怪物",
+"icon": "⚔️",
+"progress": "0/10",
+"reward1": "💎 20",
+"reward2": "🪙 8",
+"title": "主线·击杀小怪"
+}, {
+"btn_state": "go",
+"btn_text": "捐献",
+"category": "guild",
+"desc": "捐献木材 100 单位",
+"icon": "🏯",
+"progress": "60/100",
+"reward1": "💎 30",
+"reward2": "🪙 12",
+"title": "宗门·修建大殿"
+}, {
+"btn_state": "go",
+"btn_text": "追击",
+"category": "bounty",
+"desc": "黑风寨方向追击",
+"icon": "📜",
+"progress": "0/1",
+"reward1": "💎 50",
+"reward2": "🪙 20",
+"title": "悬赏·缉拿逃犯"
+}]
+}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray()
+
+[node name="TaskList" type="GdUIVList" parent="日常/TaskScroll" unique_id=1316783166]
+layout_mode = 2
+size_flags_horizontal = 3
+metadata/__data_var = "bean:task_list:tasks"
+metadata/__filter_key = "category"
+metadata/__script_vars = {
+"category": "daily",
+"tasks": [{
+"btn_state": "go",
+"btn_text": "前往",
+"category": "daily",
+"desc": "task_list.gml 内置默认数据",
+"icon": "📦",
+"progress": "1/2",
+"reward1": "💎 10",
+"reward2": "🪙 5",
+"title": "日常·示例任务"
+}, {
+"btn_state": "go",
+"btn_text": "前往",
+"category": "daily",
+"desc": "后山采集 5 株灵草",
+"icon": "🌿",
+"progress": "3/5",
+"reward1": "💎 15",
+"reward2": "🪙 8",
+"title": "日常·采集灵草"
+}, {
+"btn_state": "go",
+"btn_text": "前往",
+"category": "main",
+"desc": "击败 10 只怪物",
+"icon": "⚔️",
+"progress": "0/10",
+"reward1": "💎 20",
+"reward2": "🪙 8",
+"title": "主线·击杀小怪"
+}, {
+"btn_state": "go",
+"btn_text": "捐献",
+"category": "guild",
+"desc": "捐献木材 100 单位",
+"icon": "🏯",
+"progress": "60/100",
+"reward1": "💎 30",
+"reward2": "🪙 12",
+"title": "宗门·修建大殿"
+}, {
+"btn_state": "go",
+"btn_text": "追击",
+"category": "bounty",
+"desc": "黑风寨方向追击",
+"icon": "📜",
+"progress": "0/1",
+"reward1": "💎 50",
+"reward2": "🪙 20",
+"title": "悬赏·缉拿逃犯"
+}]
+}
+metadata/__filter_value = "daily"
+
+[node name="ItemRoot" type="Panel" parent="日常/TaskScroll/TaskList" unique_id=1382899299]
+visible = false
+custom_minimum_size = Vector2(0, 84)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_wpv6i")
+script = ExtResource("2_lhdlp")
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "title", "desc", "progress", "reward1", "reward2", "btn_text", "btn_state")
+
+[node name="ItemMargin" type="MarginContainer" parent="日常/TaskScroll/TaskList/ItemRoot" unique_id=1983365143]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 8.0
+offset_right = -12.0
+offset_bottom = -8.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="ItemRow" type="HBoxContainer" parent="日常/TaskScroll/TaskList/ItemRoot/ItemMargin" unique_id=534779884]
+layout_mode = 2
+
+[node name="@Panel@49" type="Panel" parent="日常/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1459518121]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_mf4tn")
+
+[node name="ItemIcon" type="Label" parent="日常/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow/@Panel@49" unique_id=1194564189]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 30
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "full"
+
+[node name="@Control@50" type="Control" parent="日常/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1465406585]
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 2
+
+[node name="@VBoxContainer@51" type="VBoxContainer" parent="日常/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=635033233]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+
+[node name="ItemTitle" type="Label" parent="日常/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow/@VBoxContainer@51" unique_id=1351092700]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="ItemDesc" type="Label" parent="日常/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow/@VBoxContainer@51" unique_id=207968559]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.5411765, 0.47843137, 0.34509805, 1)
+metadata/__tpl_text = "desc"
+metadata/__tpl_keys = "text"
+
+[node name="ItemProgress" type="Label" parent="日常/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1008041180]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.36078432, 0.3019608, 0.18039216, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "progress"
+metadata/__tpl_keys = "text"
+
+[node name="@Control@52" type="Control" parent="日常/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1117595387]
+custom_minimum_size = Vector2(14, 0)
+layout_mode = 2
+
+[node name="Reward1" type="Label" parent="日常/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=140638220]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.2901961, 0.3529412, 0.22745098, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "reward1"
+metadata/__tpl_keys = "text"
+
+[node name="@Control@53" type="Control" parent="日常/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1227921983]
+custom_minimum_size = Vector2(12, 0)
+layout_mode = 2
+
+[node name="Reward2" type="Label" parent="日常/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=525609497]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.2901961, 0.3529412, 0.22745098, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "reward2"
+metadata/__tpl_keys = "text"
+
+[node name="@Control@54" type="Control" parent="日常/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1348741464]
+custom_minimum_size = Vector2(14, 0)
+layout_mode = 2
+
+[node name="ItemBtn" type="Button" parent="日常/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=176237381]
+custom_minimum_size = Vector2(84, 40)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/normal = SubResource("StyleBoxFlat_4rqfj")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_guaop")
+theme_override_styles/hover = SubResource("StyleBoxFlat_peejb")
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+metadata/__tpl_text = "btn_text"
+metadata/__tpl_keys = "text"
+metadata/__signal_pressed = "_on_task_action"
+
+[node name="主线" type="VBoxContainer" parent="." unique_id=1555322565]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+metadata/__script_vars = {
+"cat_bounty": "bounty",
+"cat_daily": "daily",
+"cat_guild": "guild",
+"cat_main": "main"
+}
+
+[node name="TaskScroll" type="ScrollContainer" parent="主线" unique_id=893314697]
+layout_mode = 2
+size_flags_vertical = 3
+script = ExtResource("1_8ius1")
+metadata/__script_vars = {
+"category": "main",
+"tasks": [{
+"btn_state": "go",
+"btn_text": "前往",
+"category": "daily",
+"desc": "task_list.gml 内置默认数据",
+"icon": "📦",
+"progress": "1/2",
+"reward1": "💎 10",
+"reward2": "🪙 5",
+"title": "日常·示例任务"
+}, {
+"btn_state": "go",
+"btn_text": "前往",
+"category": "daily",
+"desc": "后山采集 5 株灵草",
+"icon": "🌿",
+"progress": "3/5",
+"reward1": "💎 15",
+"reward2": "🪙 8",
+"title": "日常·采集灵草"
+}, {
+"btn_state": "go",
+"btn_text": "前往",
+"category": "main",
+"desc": "击败 10 只怪物",
+"icon": "⚔️",
+"progress": "0/10",
+"reward1": "💎 20",
+"reward2": "🪙 8",
+"title": "主线·击杀小怪"
+}, {
+"btn_state": "go",
+"btn_text": "捐献",
+"category": "guild",
+"desc": "捐献木材 100 单位",
+"icon": "🏯",
+"progress": "60/100",
+"reward1": "💎 30",
+"reward2": "🪙 12",
+"title": "宗门·修建大殿"
+}, {
+"btn_state": "go",
+"btn_text": "追击",
+"category": "bounty",
+"desc": "黑风寨方向追击",
+"icon": "📜",
+"progress": "0/1",
+"reward1": "💎 50",
+"reward2": "🪙 20",
+"title": "悬赏·缉拿逃犯"
+}]
+}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray()
+
+[node name="TaskList" type="GdUIVList" parent="主线/TaskScroll" unique_id=401892843]
+layout_mode = 2
+size_flags_horizontal = 3
+metadata/__data_var = "bean:task_list:tasks"
+metadata/__filter_key = "category"
+metadata/__script_vars = {
+"category": "main",
+"tasks": [{
+"btn_state": "go",
+"btn_text": "前往",
+"category": "daily",
+"desc": "task_list.gml 内置默认数据",
+"icon": "📦",
+"progress": "1/2",
+"reward1": "💎 10",
+"reward2": "🪙 5",
+"title": "日常·示例任务"
+}, {
+"btn_state": "go",
+"btn_text": "前往",
+"category": "daily",
+"desc": "后山采集 5 株灵草",
+"icon": "🌿",
+"progress": "3/5",
+"reward1": "💎 15",
+"reward2": "🪙 8",
+"title": "日常·采集灵草"
+}, {
+"btn_state": "go",
+"btn_text": "前往",
+"category": "main",
+"desc": "击败 10 只怪物",
+"icon": "⚔️",
+"progress": "0/10",
+"reward1": "💎 20",
+"reward2": "🪙 8",
+"title": "主线·击杀小怪"
+}, {
+"btn_state": "go",
+"btn_text": "捐献",
+"category": "guild",
+"desc": "捐献木材 100 单位",
+"icon": "🏯",
+"progress": "60/100",
+"reward1": "💎 30",
+"reward2": "🪙 12",
+"title": "宗门·修建大殿"
+}, {
+"btn_state": "go",
+"btn_text": "追击",
+"category": "bounty",
+"desc": "黑风寨方向追击",
+"icon": "📜",
+"progress": "0/1",
+"reward1": "💎 50",
+"reward2": "🪙 20",
+"title": "悬赏·缉拿逃犯"
+}]
+}
+metadata/__filter_value = "main"
+
+[node name="ItemRoot" type="Panel" parent="主线/TaskScroll/TaskList" unique_id=1705462671]
+visible = false
+custom_minimum_size = Vector2(0, 84)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_a4pmy")
+script = ExtResource("2_lhdlp")
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "title", "desc", "progress", "reward1", "reward2", "btn_text", "btn_state")
+
+[node name="ItemMargin" type="MarginContainer" parent="主线/TaskScroll/TaskList/ItemRoot" unique_id=160578676]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 8.0
+offset_right = -12.0
+offset_bottom = -8.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="ItemRow" type="HBoxContainer" parent="主线/TaskScroll/TaskList/ItemRoot/ItemMargin" unique_id=945637156]
+layout_mode = 2
+
+[node name="@Panel@57" type="Panel" parent="主线/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1745486608]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_r8tur")
+
+[node name="ItemIcon" type="Label" parent="主线/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow/@Panel@57" unique_id=5262311]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 30
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "full"
+
+[node name="@Control@58" type="Control" parent="主线/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1006007577]
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 2
+
+[node name="@VBoxContainer@59" type="VBoxContainer" parent="主线/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=2055624480]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+
+[node name="ItemTitle" type="Label" parent="主线/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow/@VBoxContainer@59" unique_id=186490913]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="ItemDesc" type="Label" parent="主线/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow/@VBoxContainer@59" unique_id=614482293]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.5411765, 0.47843137, 0.34509805, 1)
+metadata/__tpl_text = "desc"
+metadata/__tpl_keys = "text"
+
+[node name="ItemProgress" type="Label" parent="主线/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1276667378]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.36078432, 0.3019608, 0.18039216, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "progress"
+metadata/__tpl_keys = "text"
+
+[node name="@Control@60" type="Control" parent="主线/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=2080906304]
+custom_minimum_size = Vector2(14, 0)
+layout_mode = 2
+
+[node name="Reward1" type="Label" parent="主线/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=866311466]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.2901961, 0.3529412, 0.22745098, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "reward1"
+metadata/__tpl_keys = "text"
+
+[node name="@Control@61" type="Control" parent="主线/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=351041620]
+custom_minimum_size = Vector2(12, 0)
+layout_mode = 2
+
+[node name="Reward2" type="Label" parent="主线/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=353687480]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.2901961, 0.3529412, 0.22745098, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "reward2"
+metadata/__tpl_keys = "text"
+
+[node name="@Control@62" type="Control" parent="主线/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=51348044]
+custom_minimum_size = Vector2(14, 0)
+layout_mode = 2
+
+[node name="ItemBtn" type="Button" parent="主线/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=355606877]
+custom_minimum_size = Vector2(84, 40)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/normal = SubResource("StyleBoxFlat_2tlag")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_gmv8e")
+theme_override_styles/hover = SubResource("StyleBoxFlat_0opl7")
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+metadata/__tpl_text = "btn_text"
+metadata/__tpl_keys = "text"
+metadata/__signal_pressed = "_on_task_action"
+
+[node name="宗门" type="VBoxContainer" parent="." unique_id=551209688]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 2
+metadata/__script_vars = {
+"cat_bounty": "bounty",
+"cat_daily": "daily",
+"cat_guild": "guild",
+"cat_main": "main"
+}
+
+[node name="TaskScroll" type="ScrollContainer" parent="宗门" unique_id=231250741]
+layout_mode = 2
+size_flags_vertical = 3
+script = ExtResource("1_8ius1")
+metadata/__script_vars = {
+"category": "guild",
+"tasks": [{
+"btn_state": "go",
+"btn_text": "前往",
+"category": "daily",
+"desc": "task_list.gml 内置默认数据",
+"icon": "📦",
+"progress": "1/2",
+"reward1": "💎 10",
+"reward2": "🪙 5",
+"title": "日常·示例任务"
+}, {
+"btn_state": "go",
+"btn_text": "前往",
+"category": "daily",
+"desc": "后山采集 5 株灵草",
+"icon": "🌿",
+"progress": "3/5",
+"reward1": "💎 15",
+"reward2": "🪙 8",
+"title": "日常·采集灵草"
+}, {
+"btn_state": "go",
+"btn_text": "前往",
+"category": "main",
+"desc": "击败 10 只怪物",
+"icon": "⚔️",
+"progress": "0/10",
+"reward1": "💎 20",
+"reward2": "🪙 8",
+"title": "主线·击杀小怪"
+}, {
+"btn_state": "go",
+"btn_text": "捐献",
+"category": "guild",
+"desc": "捐献木材 100 单位",
+"icon": "🏯",
+"progress": "60/100",
+"reward1": "💎 30",
+"reward2": "🪙 12",
+"title": "宗门·修建大殿"
+}, {
+"btn_state": "go",
+"btn_text": "追击",
+"category": "bounty",
+"desc": "黑风寨方向追击",
+"icon": "📜",
+"progress": "0/1",
+"reward1": "💎 50",
+"reward2": "🪙 20",
+"title": "悬赏·缉拿逃犯"
+}]
+}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray()
+
+[node name="TaskList" type="GdUIVList" parent="宗门/TaskScroll" unique_id=1835780697]
+layout_mode = 2
+size_flags_horizontal = 3
+metadata/__data_var = "bean:task_list:tasks"
+metadata/__filter_key = "category"
+metadata/__script_vars = {
+"category": "guild",
+"tasks": [{
+"btn_state": "go",
+"btn_text": "前往",
+"category": "daily",
+"desc": "task_list.gml 内置默认数据",
+"icon": "📦",
+"progress": "1/2",
+"reward1": "💎 10",
+"reward2": "🪙 5",
+"title": "日常·示例任务"
+}, {
+"btn_state": "go",
+"btn_text": "前往",
+"category": "daily",
+"desc": "后山采集 5 株灵草",
+"icon": "🌿",
+"progress": "3/5",
+"reward1": "💎 15",
+"reward2": "🪙 8",
+"title": "日常·采集灵草"
+}, {
+"btn_state": "go",
+"btn_text": "前往",
+"category": "main",
+"desc": "击败 10 只怪物",
+"icon": "⚔️",
+"progress": "0/10",
+"reward1": "💎 20",
+"reward2": "🪙 8",
+"title": "主线·击杀小怪"
+}, {
+"btn_state": "go",
+"btn_text": "捐献",
+"category": "guild",
+"desc": "捐献木材 100 单位",
+"icon": "🏯",
+"progress": "60/100",
+"reward1": "💎 30",
+"reward2": "🪙 12",
+"title": "宗门·修建大殿"
+}, {
+"btn_state": "go",
+"btn_text": "追击",
+"category": "bounty",
+"desc": "黑风寨方向追击",
+"icon": "📜",
+"progress": "0/1",
+"reward1": "💎 50",
+"reward2": "🪙 20",
+"title": "悬赏·缉拿逃犯"
+}]
+}
+metadata/__filter_value = "guild"
+
+[node name="ItemRoot" type="Panel" parent="宗门/TaskScroll/TaskList" unique_id=442701338]
+visible = false
+custom_minimum_size = Vector2(0, 84)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_imygw")
+script = ExtResource("2_lhdlp")
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "title", "desc", "progress", "reward1", "reward2", "btn_text", "btn_state")
+
+[node name="ItemMargin" type="MarginContainer" parent="宗门/TaskScroll/TaskList/ItemRoot" unique_id=503200749]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 8.0
+offset_right = -12.0
+offset_bottom = -8.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="ItemRow" type="HBoxContainer" parent="宗门/TaskScroll/TaskList/ItemRoot/ItemMargin" unique_id=1616385235]
+layout_mode = 2
+
+[node name="@Panel@65" type="Panel" parent="宗门/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=2085473570]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_7rocy")
+
+[node name="ItemIcon" type="Label" parent="宗门/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow/@Panel@65" unique_id=820316901]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 30
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "full"
+
+[node name="@Control@66" type="Control" parent="宗门/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1974560898]
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 2
+
+[node name="@VBoxContainer@67" type="VBoxContainer" parent="宗门/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=615610186]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+
+[node name="ItemTitle" type="Label" parent="宗门/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow/@VBoxContainer@67" unique_id=1547367986]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="ItemDesc" type="Label" parent="宗门/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow/@VBoxContainer@67" unique_id=958296698]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.5411765, 0.47843137, 0.34509805, 1)
+metadata/__tpl_text = "desc"
+metadata/__tpl_keys = "text"
+
+[node name="ItemProgress" type="Label" parent="宗门/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=940519397]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.36078432, 0.3019608, 0.18039216, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "progress"
+metadata/__tpl_keys = "text"
+
+[node name="@Control@68" type="Control" parent="宗门/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=905123673]
+custom_minimum_size = Vector2(14, 0)
+layout_mode = 2
+
+[node name="Reward1" type="Label" parent="宗门/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=847748544]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.2901961, 0.3529412, 0.22745098, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "reward1"
+metadata/__tpl_keys = "text"
+
+[node name="@Control@69" type="Control" parent="宗门/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1483270965]
+custom_minimum_size = Vector2(12, 0)
+layout_mode = 2
+
+[node name="Reward2" type="Label" parent="宗门/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1165096902]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.2901961, 0.3529412, 0.22745098, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "reward2"
+metadata/__tpl_keys = "text"
+
+[node name="@Control@70" type="Control" parent="宗门/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=785202364]
+custom_minimum_size = Vector2(14, 0)
+layout_mode = 2
+
+[node name="ItemBtn" type="Button" parent="宗门/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=2116263186]
+custom_minimum_size = Vector2(84, 40)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/normal = SubResource("StyleBoxFlat_dpoho")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_wylvx")
+theme_override_styles/hover = SubResource("StyleBoxFlat_1gd5c")
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+metadata/__tpl_text = "btn_text"
+metadata/__tpl_keys = "text"
+metadata/__signal_pressed = "_on_task_action"
+
+[node name="悬赏" type="VBoxContainer" parent="." unique_id=1261120248]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 3
+metadata/__script_vars = {
+"cat_bounty": "bounty",
+"cat_daily": "daily",
+"cat_guild": "guild",
+"cat_main": "main"
+}
+
+[node name="TaskScroll" type="ScrollContainer" parent="悬赏" unique_id=1436560792]
+layout_mode = 2
+size_flags_vertical = 3
+script = ExtResource("1_8ius1")
+metadata/__script_vars = {
+"category": "bounty",
+"tasks": [{
+"btn_state": "go",
+"btn_text": "前往",
+"category": "daily",
+"desc": "task_list.gml 内置默认数据",
+"icon": "📦",
+"progress": "1/2",
+"reward1": "💎 10",
+"reward2": "🪙 5",
+"title": "日常·示例任务"
+}, {
+"btn_state": "go",
+"btn_text": "前往",
+"category": "daily",
+"desc": "后山采集 5 株灵草",
+"icon": "🌿",
+"progress": "3/5",
+"reward1": "💎 15",
+"reward2": "🪙 8",
+"title": "日常·采集灵草"
+}, {
+"btn_state": "go",
+"btn_text": "前往",
+"category": "main",
+"desc": "击败 10 只怪物",
+"icon": "⚔️",
+"progress": "0/10",
+"reward1": "💎 20",
+"reward2": "🪙 8",
+"title": "主线·击杀小怪"
+}, {
+"btn_state": "go",
+"btn_text": "捐献",
+"category": "guild",
+"desc": "捐献木材 100 单位",
+"icon": "🏯",
+"progress": "60/100",
+"reward1": "💎 30",
+"reward2": "🪙 12",
+"title": "宗门·修建大殿"
+}, {
+"btn_state": "go",
+"btn_text": "追击",
+"category": "bounty",
+"desc": "黑风寨方向追击",
+"icon": "📜",
+"progress": "0/1",
+"reward1": "💎 50",
+"reward2": "🪙 20",
+"title": "悬赏·缉拿逃犯"
+}]
+}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray()
+
+[node name="TaskList" type="GdUIVList" parent="悬赏/TaskScroll" unique_id=1172061387]
+layout_mode = 2
+size_flags_horizontal = 3
+metadata/__data_var = "bean:task_list:tasks"
+metadata/__filter_key = "category"
+metadata/__script_vars = {
+"category": "bounty",
+"tasks": [{
+"btn_state": "go",
+"btn_text": "前往",
+"category": "daily",
+"desc": "task_list.gml 内置默认数据",
+"icon": "📦",
+"progress": "1/2",
+"reward1": "💎 10",
+"reward2": "🪙 5",
+"title": "日常·示例任务"
+}, {
+"btn_state": "go",
+"btn_text": "前往",
+"category": "daily",
+"desc": "后山采集 5 株灵草",
+"icon": "🌿",
+"progress": "3/5",
+"reward1": "💎 15",
+"reward2": "🪙 8",
+"title": "日常·采集灵草"
+}, {
+"btn_state": "go",
+"btn_text": "前往",
+"category": "main",
+"desc": "击败 10 只怪物",
+"icon": "⚔️",
+"progress": "0/10",
+"reward1": "💎 20",
+"reward2": "🪙 8",
+"title": "主线·击杀小怪"
+}, {
+"btn_state": "go",
+"btn_text": "捐献",
+"category": "guild",
+"desc": "捐献木材 100 单位",
+"icon": "🏯",
+"progress": "60/100",
+"reward1": "💎 30",
+"reward2": "🪙 12",
+"title": "宗门·修建大殿"
+}, {
+"btn_state": "go",
+"btn_text": "追击",
+"category": "bounty",
+"desc": "黑风寨方向追击",
+"icon": "📜",
+"progress": "0/1",
+"reward1": "💎 50",
+"reward2": "🪙 20",
+"title": "悬赏·缉拿逃犯"
+}]
+}
+metadata/__filter_value = "bounty"
+
+[node name="ItemRoot" type="Panel" parent="悬赏/TaskScroll/TaskList" unique_id=249363171]
+visible = false
+custom_minimum_size = Vector2(0, 84)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_smn7r")
+script = ExtResource("2_lhdlp")
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "title", "desc", "progress", "reward1", "reward2", "btn_text", "btn_state")
+
+[node name="ItemMargin" type="MarginContainer" parent="悬赏/TaskScroll/TaskList/ItemRoot" unique_id=200156201]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 8.0
+offset_right = -12.0
+offset_bottom = -8.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="ItemRow" type="HBoxContainer" parent="悬赏/TaskScroll/TaskList/ItemRoot/ItemMargin" unique_id=1934709147]
+layout_mode = 2
+
+[node name="@Panel@73" type="Panel" parent="悬赏/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1356319618]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_t1eeg")
+
+[node name="ItemIcon" type="Label" parent="悬赏/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow/@Panel@73" unique_id=1138238659]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 30
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "full"
+
+[node name="@Control@74" type="Control" parent="悬赏/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=125449491]
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 2
+
+[node name="@VBoxContainer@75" type="VBoxContainer" parent="悬赏/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1693620237]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+
+[node name="ItemTitle" type="Label" parent="悬赏/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow/@VBoxContainer@75" unique_id=177846367]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+metadata/__tpl_text = "title"
+metadata/__tpl_keys = "text"
+
+[node name="ItemDesc" type="Label" parent="悬赏/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow/@VBoxContainer@75" unique_id=1181997265]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.5411765, 0.47843137, 0.34509805, 1)
+metadata/__tpl_text = "desc"
+metadata/__tpl_keys = "text"
+
+[node name="ItemProgress" type="Label" parent="悬赏/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=407696806]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.36078432, 0.3019608, 0.18039216, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "progress"
+metadata/__tpl_keys = "text"
+
+[node name="@Control@76" type="Control" parent="悬赏/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=768507923]
+custom_minimum_size = Vector2(14, 0)
+layout_mode = 2
+
+[node name="Reward1" type="Label" parent="悬赏/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=546315573]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.2901961, 0.3529412, 0.22745098, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "reward1"
+metadata/__tpl_keys = "text"
+
+[node name="@Control@77" type="Control" parent="悬赏/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1045472226]
+custom_minimum_size = Vector2(12, 0)
+layout_mode = 2
+
+[node name="Reward2" type="Label" parent="悬赏/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1741215870]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.2901961, 0.3529412, 0.22745098, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "reward2"
+metadata/__tpl_keys = "text"
+
+[node name="@Control@78" type="Control" parent="悬赏/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1971728597]
+custom_minimum_size = Vector2(14, 0)
+layout_mode = 2
+
+[node name="ItemBtn" type="Button" parent="悬赏/TaskScroll/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1354831439]
+custom_minimum_size = Vector2(84, 40)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/normal = SubResource("StyleBoxFlat_jmmo5")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_bbr24")
+theme_override_styles/hover = SubResource("StyleBoxFlat_vnfuk")
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+metadata/__tpl_text = "btn_text"
+metadata/__tpl_keys = "text"
+metadata/__signal_pressed = "_on_task_action"
