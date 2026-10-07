@@ -1,10 +1,10 @@
 # 校验脚本：修仙角色面板 GML 结构验证
-# 运行：godot --headless --path . -s res://example/demo/xiuxian/ui/profile/check_profile_ui.gd
+# 运行：godot --headless --path . -s res://example/demo/xiuxian/ui/main/profile/check_profile_ui.gd
 # 职责：1) 全部 gml 构建校验并重生成同名 tscn（等效编辑器插件产物）
 #       2) 实例化主面板验证 <Gml> 组合 / 数据驱动条目 / 模板渲染 / @export 契约注入
 extends SceneTree
 
-const DIR := "res://example/demo/xiuxian/ui/profile/"
+const DIR := "res://example/demo/xiuxian/ui/main/profile/"
 const GML_FILES := [
 	"profile_panel.gml", "profile_topbar.gml", "profile_avatar.gml",
 	"spirit_root_item.gml", "profile_realm.gml", "profile_skills.gml",

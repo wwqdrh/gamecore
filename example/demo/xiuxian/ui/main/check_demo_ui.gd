@@ -1,13 +1,15 @@
 # 校验脚本：修仙 Demo 组合根集成测试（统一 UI 管理层跨组件调用）
-# 运行：godot --headless --path . -s res://example/demo/xiuxian/check_demo_ui.gd
+# 运行：godot --headless --path . -s res://example/demo/xiuxian/ui/main/check_demo_ui.gd
 # 职责：1) main.gml（组合根）构建校验并重生成 tscn（传递构建 mainhud + task 抽屉）
 #       2) 实例化组合根：ui_id 自动注册（GdUIManager.has_ui/find_ui）
 #       3) mainhud 右侧 MenuTask 按钮（Panel @pressed="show:TaskDrawer" 点击模拟）
 #          → 跨文件夹触发 task 抽屉 open（丝滑动画展开）
 #       4) 半屏宽校验 + 遮罩点击关闭 + 再次展开（toggle 全链路）
+#       5) Modal 组件：ui_id 注册 / 按钮跨组件弹出 / 内容关闭联动 / 遮罩关闭
+#       6) SettingModal：key_bind="escape" 按键开/关 + 设置接口组件（音量/开关）读写
 extends SceneTree
 
-const MAIN_GML := "res://example/demo/xiuxian/main.gml"
+const MAIN_GML := "res://example/demo/xiuxian/ui/main/main.gml"
 
 
 func _initialize() -> void:
@@ -210,6 +212,122 @@ func _run() -> void:
 			ok = false
 	else:
 		push_error("[Check] GdUIManager.find_ui(\"ProfileModal\") 返回 null")
+		ok = false
+
+	# 9. SettingModal：key_bind="escape" 按键开/关 + 设置接口组件（表单/绑定）断言
+	if not GdUIManager.has_ui("SettingModal"):
+		push_error("[Check] 组合树挂载后未自动注册 ui_id=SettingModal")
+		ok = false
+	var setting_modal: Control = demo.find_child("SettingModal", true, false)
+	if setting_modal == null or setting_modal.is_visible_in_tree():
+		push_error("[Check] SettingModal 初始应为存在且隐藏")
+		ok = false
+
+	# 9a. ESC 按键 → Modal toggle 打开（InputEventKey 经 Input 分发到 _input）
+	var esc := InputEventKey.new()
+	esc.keycode = KEY_ESCAPE
+	esc.physical_keycode = KEY_ESCAPE
+	esc.pressed = true
+	Input.parse_input_event(esc)
+	await process_frame
+	await process_frame
+	await create_timer(0.4).timeout
+	var setting_content: Control = setting_modal.find_child("SettingsPanel", true, false)
+	print("[Check] ESC -> SettingModal open=%s visible=%s content=%s" % [
+		setting_modal.call("is_modal_open"), setting_modal.is_visible_in_tree(),
+		setting_content != null])
+	if not setting_modal.call("is_modal_open") or setting_content == null:
+		push_error("[Check] ESC 未触发 SettingModal 打开（key_bind 断链？）")
+		ok = false
+
+	# 9b. 设置接口组件：SettingSlider 初值读自 GdViewSetting，set_value 即时应用
+	var vol_music: Control = setting_content.find_child("VolMusic", true, false)
+	if vol_music == null:
+		push_error("[Check] 设置面板缺少 VolMusic（SettingSlider）")
+		ok = false
+	else:
+		var init_v: float = vol_music.get("value")
+		print("[Check] VolMusic 初值=%.2f（持久化/总线读取）" % init_v)
+		vol_music.set("value", 0.5)
+		await process_frame
+		var bus_idx: int = AudioServer.get_bus_index("Music")
+		var applied: float = db_to_linear(AudioServer.get_bus_volume_db(bus_idx)) if bus_idx >= 0 else -1.0
+		print("[Check] set_value(0.5) -> Music 总线线性音量=%.2f" % applied)
+		if absf(applied - 0.5) > 0.01:
+			push_error("[Check] SettingSlider 未应用音量到 Music 总线（bind 断链？）")
+			ok = false
+
+	# 9c. SettingSwitch：切换持久化（custom 值经 GdViewSetting 落盘可回读）
+	var sw_vsync: Control = setting_content.find_child("SwVsync", true, false)
+	if sw_vsync == null:
+		push_error("[Check] 设置面板缺少 SwVsync（SettingSwitch）")
+		ok = false
+	else:
+		var vsync_now: bool = sw_vsync.get("checked")
+		sw_vsync.call("_on_toggled", not vsync_now)
+		await process_frame
+		var fresh = GdViewSetting.build("user://settings.data", "setting")
+		var stored: bool = fresh.get_value("vsync", true)
+		print("[Check] SwVsync toggle -> 持久化 vsync=%s（期望 %s）" % [stored, not vsync_now])
+		if stored != (not vsync_now):
+			push_error("[Check] SettingSwitch 未持久化 vsync")
+			ok = false
+
+	# 9d. 基础表单组件：FormRadio 单选互斥 + s_value_changed 上报
+	var radio: Control = setting_content.find_child("RadioDifficulty", true, false)
+	if radio == null:
+		push_error("[Check] 设置面板缺少 RadioDifficulty（FormRadio）")
+		ok = false
+	else:
+		var rows: Array = []
+		for child in radio.get_children():
+			rows.append(child)
+		print("[Check] FormRadio 行数=%d value=%s" % [rows.size(), radio.get("value")])
+		if rows.size() != 3:
+			push_error("[Check] FormRadio 应有 3 个选项行")
+			ok = false
+		# 命中区域断言：行最小/实际宽度必须 > 0（宽度 0 时鼠标永远点不到，
+		# 且自绘内容会越界画出行外——回归过一次）
+		var row0: Control = rows[0]
+		await process_frame
+		var min_sz: Vector2 = row0.get_combined_minimum_size()
+		print("[Check] FormRadio 行0 min_size=%s size=%s" % [min_sz, row0.get_size()])
+		if min_sz.x < 40.0 or row0.get_size().x < min_sz.x - 0.5:
+			push_error("[Check] FormRadio 行宽度异常（0 宽控件点击无反应）")
+			ok = false
+		var chk_damage: Control = setting_content.find_child("ChkDamage", true, false)
+		if chk_damage == null:
+			push_error("[Check] 设置面板缺少 ChkDamage（FormCheck）")
+			ok = false
+		else:
+			await process_frame
+			var chk_min: Vector2 = chk_damage.get_combined_minimum_size()
+			print("[Check] ChkDamage min_size=%s size=%s" % [chk_min, chk_damage.get_size()])
+			if chk_min.x < 40.0 or chk_damage.get_size().x < chk_min.x - 0.5:
+				push_error("[Check] FormCheck 宽度异常（0 宽控件点击无反应）")
+				ok = false
+		# 点选第一行（历练）→ 互斥 + 值上报（经 GDSTATE 可读）
+		rows[0].call("_on_toggled", true)
+		await process_frame
+		await process_frame
+		var st = Engine.get_singleton("GDSTATE")
+		var diff: String = st.get_state("setting.difficulty")
+		print("[Check] 点选历练 -> GDSTATE setting.difficulty=%s" % diff)
+		if diff != "历练":
+			push_error("[Check] FormRadio 选中未上报 GDSTATE（联动断链？）")
+			ok = false
+		if rows[0].get("checked") != true or rows[2].get("checked") != false:
+			push_error("[Check] FormRadio 单选互斥失败")
+			ok = false
+
+	# 9e. ESC 再按一次 → toggle 关闭
+	Input.parse_input_event(esc)
+	await process_frame
+	await process_frame
+	await create_timer(0.4).timeout
+	print("[Check] ESC again -> SettingModal open=%s" % setting_modal.call("is_modal_open"))
+	if setting_modal.call("is_modal_open"):
+		push_error("[Check] ESC 二次按下未关闭 SettingModal")
 		ok = false
 
 	print("[Check] RESULT=%s" % ("PASS" if ok else "FAIL"))

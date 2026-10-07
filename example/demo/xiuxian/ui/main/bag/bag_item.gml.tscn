@@ -1,8 +1,8 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" uid="uid://ev012igar36m" path="res://example/demo/xiuxian/ui/main/bag/bag_item.gd" id="1_hp2fr"]
+[ext_resource type="Script" path="res://example/demo/xiuxian/ui/main/bag/bag_item.gd" id="1_2sbjh"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6utv7"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dbtms"]
 bg_color = Color(0.8745098, 0.9137255, 0.8, 1)
 border_width_left = 1
 border_width_top = 1
@@ -14,7 +14,7 @@ corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bjcep"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bxlto"]
 bg_color = Color(0.6901961, 0.5882353, 0.8784314, 1)
 border_width_left = 1
 border_width_top = 1
@@ -26,7 +26,7 @@ corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0o24b"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rtg26"]
 bg_color = Color(0.9411765, 0.9098039, 0.8235294, 0)
 border_width_left = 3
 border_width_top = 3
@@ -38,26 +38,26 @@ corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
-[node name="BagCell" type="Panel" unique_id=1445315544]
+[node name="BagCell" type="Panel" unique_id=2023537324]
 custom_minimum_size = Vector2(58, 58)
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_6utv7")
-script = ExtResource("1_hp2fr")
+theme_override_styles/panel = SubResource("StyleBoxFlat_dbtms")
+script = ExtResource("1_2sbjh")
 metadata/__script_vars = {}
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
 
-[node name="RareFrame" type="Panel" parent="." unique_id=1685474144]
+[node name="RareFrame" type="Panel" parent="." unique_id=1958200391]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_bjcep")
+theme_override_styles/panel = SubResource("StyleBoxFlat_bxlto")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="." unique_id=251520344]
+[node name="IconBox" type="CenterContainer" parent="." unique_id=1006717239]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -68,12 +68,12 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="IconBox" unique_id=1318665036]
+[node name="CellIcon" type="Label" parent="IconBox" unique_id=1780653428]
 layout_mode = 2
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="." unique_id=1085346068]
+[node name="LockIcon" type="Label" parent="." unique_id=1220302884]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -84,7 +84,7 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="." unique_id=1106635911]
+[node name="CountLabel" type="Label" parent="." unique_id=884530757]
 visible = false
 layout_mode = 0
 anchor_top = 1.0
@@ -100,11 +100,11 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="." unique_id=1566880967]
+[node name="SelectedFrame" type="Panel" parent="." unique_id=1705454583]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_0o24b")
+theme_override_styles/panel = SubResource("StyleBoxFlat_rtg26")
 metadata/__anchor = "full"
 metadata/__script_vars = {}

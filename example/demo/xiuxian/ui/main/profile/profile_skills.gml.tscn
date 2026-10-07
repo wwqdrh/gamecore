@@ -1,8 +1,8 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" uid="uid://qxl64qh8gm52" path="res://example/demo/xiuxian/ui/main/profile/skill_item.gd" id="1_3s5px"]
+[ext_resource type="Script" path="res://example/demo/xiuxian/ui/main/profile/skill_item.gd" id="1_bry0g"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mh5cp"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fs0fp"]
 bg_color = Color(0.9647059, 0.9411765, 0.87058824, 1)
 border_width_left = 2
 border_width_top = 2
@@ -14,7 +14,7 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1h1tv"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hl85n"]
 bg_color = Color(0.36862746, 0.5529412, 0.47843137, 1)
 border_width_left = 2
 border_width_top = 2
@@ -26,7 +26,7 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1nkhh"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_r4ljy"]
 bg_color = Color(0.9372549, 0.9019608, 0.8039216, 1)
 border_width_left = 2
 border_width_top = 2
@@ -38,7 +38,7 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sa4ak"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_thy4h"]
 bg_color = Color(0.2901961, 0.47843137, 0.40784314, 1)
 border_width_left = 2
 border_width_top = 2
@@ -50,7 +50,7 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1v4q0"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_s42mt"]
 content_margin_left = 16.0
 content_margin_top = 8.0
 content_margin_right = 16.0
@@ -66,7 +66,7 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hmnni"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tygaw"]
 content_margin_left = 16.0
 content_margin_top = 8.0
 content_margin_right = 16.0
@@ -82,7 +82,7 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gx60n"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_w0bnp"]
 content_margin_left = 16.0
 content_margin_top = 8.0
 content_margin_right = 16.0
@@ -93,8 +93,8 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[node name="SkillsPanel" type="Panel" unique_id=342347779]
-theme_override_styles/panel = SubResource("StyleBoxFlat_mh5cp")
+[node name="SkillsPanel" type="Panel" unique_id=1268994992]
+theme_override_styles/panel = SubResource("StyleBoxFlat_fs0fp")
 metadata/__script_vars = {
 "skills": [{
 "btn_text": "升级",
@@ -118,7 +118,7 @@ metadata/__script_vars = {
 }
 metadata/__gml_root = true
 
-[node name="SkillsColumn" type="VBoxContainer" parent="." unique_id=1907603028]
+[node name="SkillsColumn" type="VBoxContainer" parent="." unique_id=351112769]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -149,12 +149,12 @@ metadata/__script_vars = {
 }]
 }
 
-[node name="SkillsHeader" type="Panel" parent="SkillsColumn" unique_id=744815040]
+[node name="SkillsHeader" type="Panel" parent="SkillsColumn" unique_id=1059843265]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_1h1tv")
+theme_override_styles/panel = SubResource("StyleBoxFlat_hl85n")
 
-[node name="SkillsHeaderText" type="Label" parent="SkillsColumn/SkillsHeader" unique_id=2129304327]
+[node name="SkillsHeaderText" type="Label" parent="SkillsColumn/SkillsHeader" unique_id=2016335768]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -165,16 +165,16 @@ horizontal_alignment = 1
 vertical_alignment = 1
 metadata/__anchor = "full"
 
-[node name="@Control@81" type="Control" parent="SkillsColumn" unique_id=580615653]
+[node name="@Control@81" type="Control" parent="SkillsColumn" unique_id=1270390732]
 custom_minimum_size = Vector2(0, 8)
 layout_mode = 2
 
-[node name="SkillsScroll" type="ScrollContainer" parent="SkillsColumn" unique_id=114754337]
+[node name="SkillsScroll" type="ScrollContainer" parent="SkillsColumn" unique_id=1697881723]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="SkillList" type="GdUIVList" parent="SkillsColumn/SkillsScroll" unique_id=1820090462]
+[node name="SkillList" type="GdUIVList" parent="SkillsColumn/SkillsScroll" unique_id=371304211]
 layout_mode = 2
 size_flags_horizontal = 3
 metadata/__script_data = [{
@@ -197,17 +197,17 @@ metadata/__script_data = [{
 "title": "御风术"
 }]
 
-[node name="SkillItemRoot" type="Panel" parent="SkillsColumn/SkillsScroll/SkillList" unique_id=1223522461]
+[node name="SkillItemRoot" type="Panel" parent="SkillsColumn/SkillsScroll/SkillList" unique_id=361769443]
 visible = false
 custom_minimum_size = Vector2(0, 72)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_1nkhh")
-script = ExtResource("1_3s5px")
+theme_override_styles/panel = SubResource("StyleBoxFlat_r4ljy")
+script = ExtResource("1_bry0g")
 metadata/__script_vars = {}
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray("icon", "title", "level", "btn_text", "locked")
 
-[node name="SkillMargin" type="MarginContainer" parent="SkillsColumn/SkillsScroll/SkillList/SkillItemRoot" unique_id=2018003820]
+[node name="SkillMargin" type="MarginContainer" parent="SkillsColumn/SkillsScroll/SkillList/SkillItemRoot" unique_id=560450414]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -218,16 +218,16 @@ offset_bottom = -8.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="SkillRow" type="HBoxContainer" parent="SkillsColumn/SkillsScroll/SkillList/SkillItemRoot/SkillMargin" unique_id=401741166]
+[node name="SkillRow" type="HBoxContainer" parent="SkillsColumn/SkillsScroll/SkillList/SkillItemRoot/SkillMargin" unique_id=1073278729]
 layout_mode = 2
 
-[node name="SkillIconBg" type="Panel" parent="SkillsColumn/SkillsScroll/SkillList/SkillItemRoot/SkillMargin/SkillRow" unique_id=661206049]
+[node name="SkillIconBg" type="Panel" parent="SkillsColumn/SkillsScroll/SkillList/SkillItemRoot/SkillMargin/SkillRow" unique_id=1397114068]
 custom_minimum_size = Vector2(52, 52)
 layout_mode = 2
 size_flags_vertical = 4
-theme_override_styles/panel = SubResource("StyleBoxFlat_sa4ak")
+theme_override_styles/panel = SubResource("StyleBoxFlat_thy4h")
 
-[node name="SkillIcon" type="Label" parent="SkillsColumn/SkillsScroll/SkillList/SkillItemRoot/SkillMargin/SkillRow/SkillIconBg" unique_id=1635193630]
+[node name="SkillIcon" type="Label" parent="SkillsColumn/SkillsScroll/SkillList/SkillItemRoot/SkillMargin/SkillRow/SkillIconBg" unique_id=335039298]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -238,50 +238,50 @@ metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 metadata/__anchor = "full"
 
-[node name="@Control@84" type="Control" parent="SkillsColumn/SkillsScroll/SkillList/SkillItemRoot/SkillMargin/SkillRow" unique_id=1404106489]
+[node name="@Control@84" type="Control" parent="SkillsColumn/SkillsScroll/SkillList/SkillItemRoot/SkillMargin/SkillRow" unique_id=1693020104]
 custom_minimum_size = Vector2(10, 0)
 layout_mode = 2
 
-[node name="SkillInfo" type="VBoxContainer" parent="SkillsColumn/SkillsScroll/SkillList/SkillItemRoot/SkillMargin/SkillRow" unique_id=1508800186]
+[node name="SkillInfo" type="VBoxContainer" parent="SkillsColumn/SkillsScroll/SkillList/SkillItemRoot/SkillMargin/SkillRow" unique_id=1070189747]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 
-[node name="SkillTitle" type="Label" parent="SkillsColumn/SkillsScroll/SkillList/SkillItemRoot/SkillMargin/SkillRow/SkillInfo" unique_id=1274772049]
+[node name="SkillTitle" type="Label" parent="SkillsColumn/SkillsScroll/SkillList/SkillItemRoot/SkillMargin/SkillRow/SkillInfo" unique_id=1257434639]
 layout_mode = 2
 theme_override_font_sizes/font_size = 17
 theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
 metadata/__tpl_text = "title"
 metadata/__tpl_keys = "text"
 
-[node name="SkillLevel" type="Label" parent="SkillsColumn/SkillsScroll/SkillList/SkillItemRoot/SkillMargin/SkillRow/SkillInfo" unique_id=447850873]
+[node name="SkillLevel" type="Label" parent="SkillsColumn/SkillsScroll/SkillList/SkillItemRoot/SkillMargin/SkillRow/SkillInfo" unique_id=983142011]
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
 theme_override_colors/font_color = Color(0.5411765, 0.47843137, 0.34509805, 1)
 metadata/__tpl_text = "level"
 metadata/__tpl_keys = "text"
 
-[node name="@Control@85" type="Control" parent="SkillsColumn/SkillsScroll/SkillList/SkillItemRoot/SkillMargin/SkillRow" unique_id=1264721910]
+[node name="@Control@85" type="Control" parent="SkillsColumn/SkillsScroll/SkillList/SkillItemRoot/SkillMargin/SkillRow" unique_id=677079303]
 custom_minimum_size = Vector2(8, 0)
 layout_mode = 2
 
-[node name="SkillBtn" type="Button" parent="SkillsColumn/SkillsScroll/SkillList/SkillItemRoot/SkillMargin/SkillRow" unique_id=2027739050]
+[node name="SkillBtn" type="Button" parent="SkillsColumn/SkillsScroll/SkillList/SkillItemRoot/SkillMargin/SkillRow" unique_id=715691719]
 custom_minimum_size = Vector2(76, 40)
 layout_mode = 2
 size_flags_vertical = 4
-theme_override_styles/normal = SubResource("StyleBoxFlat_1v4q0")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_hmnni")
-theme_override_styles/hover = SubResource("StyleBoxFlat_gx60n")
+theme_override_styles/normal = SubResource("StyleBoxFlat_s42mt")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_tygaw")
+theme_override_styles/hover = SubResource("StyleBoxFlat_w0bnp")
 theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
 metadata/__tpl_text = "btn_text"
 metadata/__tpl_keys = "text"
 metadata/__signal_pressed = "_on_skill_action"
 
-[node name="@Panel@86" type="Panel" parent="SkillsColumn/SkillsScroll/SkillList" unique_id=1691757798]
+[node name="@Panel@86" type="Panel" parent="SkillsColumn/SkillsScroll/SkillList" unique_id=1500765791]
 custom_minimum_size = Vector2(0, 72)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_1nkhh")
-script = ExtResource("1_3s5px")
+theme_override_styles/panel = SubResource("StyleBoxFlat_r4ljy")
+script = ExtResource("1_bry0g")
 icon = "🌀"
 title = "吐纳诀"
 level = "Lv.4"
@@ -298,7 +298,7 @@ metadata/__item_data = {
 "title": "吐纳诀"
 }
 
-[node name="SkillMargin" type="MarginContainer" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@86" unique_id=1404007126]
+[node name="SkillMargin" type="MarginContainer" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@86" unique_id=183315802]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -309,16 +309,16 @@ offset_bottom = -8.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="SkillRow" type="HBoxContainer" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@86/SkillMargin" unique_id=1981624538]
+[node name="SkillRow" type="HBoxContainer" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@86/SkillMargin" unique_id=488609026]
 layout_mode = 2
 
-[node name="SkillIconBg" type="Panel" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@86/SkillMargin/SkillRow" unique_id=510247121]
+[node name="SkillIconBg" type="Panel" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@86/SkillMargin/SkillRow" unique_id=1993876678]
 custom_minimum_size = Vector2(52, 52)
 layout_mode = 2
 size_flags_vertical = 4
-theme_override_styles/panel = SubResource("StyleBoxFlat_sa4ak")
+theme_override_styles/panel = SubResource("StyleBoxFlat_thy4h")
 
-[node name="SkillIcon" type="Label" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@86/SkillMargin/SkillRow/SkillIconBg" unique_id=1093415383]
+[node name="SkillIcon" type="Label" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@86/SkillMargin/SkillRow/SkillIconBg" unique_id=2146436700]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -330,16 +330,16 @@ metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 metadata/__anchor = "full"
 
-[node name="_Control_84" type="Control" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@86/SkillMargin/SkillRow" unique_id=164654984]
+[node name="_Control_84" type="Control" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@86/SkillMargin/SkillRow" unique_id=1029382894]
 custom_minimum_size = Vector2(10, 0)
 layout_mode = 2
 
-[node name="SkillInfo" type="VBoxContainer" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@86/SkillMargin/SkillRow" unique_id=224439150]
+[node name="SkillInfo" type="VBoxContainer" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@86/SkillMargin/SkillRow" unique_id=1493234289]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 
-[node name="SkillTitle" type="Label" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@86/SkillMargin/SkillRow/SkillInfo" unique_id=1691777238]
+[node name="SkillTitle" type="Label" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@86/SkillMargin/SkillRow/SkillInfo" unique_id=1701079550]
 layout_mode = 2
 theme_override_font_sizes/font_size = 17
 theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
@@ -347,7 +347,7 @@ text = "吐纳诀"
 metadata/__tpl_text = "title"
 metadata/__tpl_keys = "text"
 
-[node name="SkillLevel" type="Label" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@86/SkillMargin/SkillRow/SkillInfo" unique_id=1788516531]
+[node name="SkillLevel" type="Label" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@86/SkillMargin/SkillRow/SkillInfo" unique_id=1160879253]
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
 theme_override_colors/font_color = Color(0.5411765, 0.47843137, 0.34509805, 1)
@@ -355,28 +355,28 @@ text = "Lv.4"
 metadata/__tpl_text = "level"
 metadata/__tpl_keys = "text"
 
-[node name="_Control_85" type="Control" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@86/SkillMargin/SkillRow" unique_id=487589419]
+[node name="_Control_85" type="Control" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@86/SkillMargin/SkillRow" unique_id=1360957810]
 custom_minimum_size = Vector2(8, 0)
 layout_mode = 2
 
-[node name="SkillBtn" type="Button" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@86/SkillMargin/SkillRow" unique_id=1305783586]
+[node name="SkillBtn" type="Button" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@86/SkillMargin/SkillRow" unique_id=182755280]
 custom_minimum_size = Vector2(76, 40)
 layout_mode = 2
 size_flags_vertical = 4
-theme_override_styles/normal = SubResource("StyleBoxFlat_1v4q0")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_hmnni")
-theme_override_styles/hover = SubResource("StyleBoxFlat_gx60n")
+theme_override_styles/normal = SubResource("StyleBoxFlat_s42mt")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_tygaw")
+theme_override_styles/hover = SubResource("StyleBoxFlat_w0bnp")
 theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
 text = "升级"
 metadata/__tpl_text = "btn_text"
 metadata/__tpl_keys = "text"
 metadata/__signal_pressed = "_on_skill_action"
 
-[node name="@Panel@87" type="Panel" parent="SkillsColumn/SkillsScroll/SkillList" unique_id=459718442]
+[node name="@Panel@87" type="Panel" parent="SkillsColumn/SkillsScroll/SkillList" unique_id=1948584066]
 custom_minimum_size = Vector2(0, 72)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_1nkhh")
-script = ExtResource("1_3s5px")
+theme_override_styles/panel = SubResource("StyleBoxFlat_r4ljy")
+script = ExtResource("1_bry0g")
 icon = "⚔️"
 title = "青木剑诀"
 level = "Lv.2"
@@ -393,7 +393,7 @@ metadata/__item_data = {
 "title": "青木剑诀"
 }
 
-[node name="SkillMargin" type="MarginContainer" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@87" unique_id=1558844535]
+[node name="SkillMargin" type="MarginContainer" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@87" unique_id=1755581167]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -404,16 +404,16 @@ offset_bottom = -8.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="SkillRow" type="HBoxContainer" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@87/SkillMargin" unique_id=873921211]
+[node name="SkillRow" type="HBoxContainer" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@87/SkillMargin" unique_id=1560410944]
 layout_mode = 2
 
-[node name="SkillIconBg" type="Panel" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@87/SkillMargin/SkillRow" unique_id=113710279]
+[node name="SkillIconBg" type="Panel" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@87/SkillMargin/SkillRow" unique_id=1895340989]
 custom_minimum_size = Vector2(52, 52)
 layout_mode = 2
 size_flags_vertical = 4
-theme_override_styles/panel = SubResource("StyleBoxFlat_sa4ak")
+theme_override_styles/panel = SubResource("StyleBoxFlat_thy4h")
 
-[node name="SkillIcon" type="Label" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@87/SkillMargin/SkillRow/SkillIconBg" unique_id=2083270322]
+[node name="SkillIcon" type="Label" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@87/SkillMargin/SkillRow/SkillIconBg" unique_id=633645669]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -425,16 +425,16 @@ metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 metadata/__anchor = "full"
 
-[node name="_Control_84" type="Control" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@87/SkillMargin/SkillRow" unique_id=1423780525]
+[node name="_Control_84" type="Control" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@87/SkillMargin/SkillRow" unique_id=846063991]
 custom_minimum_size = Vector2(10, 0)
 layout_mode = 2
 
-[node name="SkillInfo" type="VBoxContainer" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@87/SkillMargin/SkillRow" unique_id=1187765906]
+[node name="SkillInfo" type="VBoxContainer" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@87/SkillMargin/SkillRow" unique_id=1898363960]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 
-[node name="SkillTitle" type="Label" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@87/SkillMargin/SkillRow/SkillInfo" unique_id=131256982]
+[node name="SkillTitle" type="Label" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@87/SkillMargin/SkillRow/SkillInfo" unique_id=1815085154]
 layout_mode = 2
 theme_override_font_sizes/font_size = 17
 theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
@@ -442,7 +442,7 @@ text = "青木剑诀"
 metadata/__tpl_text = "title"
 metadata/__tpl_keys = "text"
 
-[node name="SkillLevel" type="Label" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@87/SkillMargin/SkillRow/SkillInfo" unique_id=1274586230]
+[node name="SkillLevel" type="Label" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@87/SkillMargin/SkillRow/SkillInfo" unique_id=2121594962]
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
 theme_override_colors/font_color = Color(0.5411765, 0.47843137, 0.34509805, 1)
@@ -450,28 +450,28 @@ text = "Lv.2"
 metadata/__tpl_text = "level"
 metadata/__tpl_keys = "text"
 
-[node name="_Control_85" type="Control" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@87/SkillMargin/SkillRow" unique_id=1161191169]
+[node name="_Control_85" type="Control" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@87/SkillMargin/SkillRow" unique_id=2120050815]
 custom_minimum_size = Vector2(8, 0)
 layout_mode = 2
 
-[node name="SkillBtn" type="Button" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@87/SkillMargin/SkillRow" unique_id=1981666460]
+[node name="SkillBtn" type="Button" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@87/SkillMargin/SkillRow" unique_id=1736428170]
 custom_minimum_size = Vector2(76, 40)
 layout_mode = 2
 size_flags_vertical = 4
-theme_override_styles/normal = SubResource("StyleBoxFlat_1v4q0")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_hmnni")
-theme_override_styles/hover = SubResource("StyleBoxFlat_gx60n")
+theme_override_styles/normal = SubResource("StyleBoxFlat_s42mt")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_tygaw")
+theme_override_styles/hover = SubResource("StyleBoxFlat_w0bnp")
 theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
 text = "升级"
 metadata/__tpl_text = "btn_text"
 metadata/__tpl_keys = "text"
 metadata/__signal_pressed = "_on_skill_action"
 
-[node name="@Panel@88" type="Panel" parent="SkillsColumn/SkillsScroll/SkillList" unique_id=1062968405]
+[node name="@Panel@88" type="Panel" parent="SkillsColumn/SkillsScroll/SkillList" unique_id=521099587]
 custom_minimum_size = Vector2(0, 72)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_1nkhh")
-script = ExtResource("1_3s5px")
+theme_override_styles/panel = SubResource("StyleBoxFlat_r4ljy")
+script = ExtResource("1_bry0g")
 icon = "🌪️"
 title = "御风术"
 level = "未习得"
@@ -489,7 +489,7 @@ metadata/__item_data = {
 "title": "御风术"
 }
 
-[node name="SkillMargin" type="MarginContainer" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@88" unique_id=808963388]
+[node name="SkillMargin" type="MarginContainer" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@88" unique_id=2073833396]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -500,16 +500,16 @@ offset_bottom = -8.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="SkillRow" type="HBoxContainer" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@88/SkillMargin" unique_id=2043818603]
+[node name="SkillRow" type="HBoxContainer" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@88/SkillMargin" unique_id=159515734]
 layout_mode = 2
 
-[node name="SkillIconBg" type="Panel" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@88/SkillMargin/SkillRow" unique_id=567433867]
+[node name="SkillIconBg" type="Panel" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@88/SkillMargin/SkillRow" unique_id=111139782]
 custom_minimum_size = Vector2(52, 52)
 layout_mode = 2
 size_flags_vertical = 4
-theme_override_styles/panel = SubResource("StyleBoxFlat_sa4ak")
+theme_override_styles/panel = SubResource("StyleBoxFlat_thy4h")
 
-[node name="SkillIcon" type="Label" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@88/SkillMargin/SkillRow/SkillIconBg" unique_id=655206897]
+[node name="SkillIcon" type="Label" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@88/SkillMargin/SkillRow/SkillIconBg" unique_id=460914054]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -521,16 +521,16 @@ metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 metadata/__anchor = "full"
 
-[node name="_Control_84" type="Control" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@88/SkillMargin/SkillRow" unique_id=55876975]
+[node name="_Control_84" type="Control" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@88/SkillMargin/SkillRow" unique_id=1019219784]
 custom_minimum_size = Vector2(10, 0)
 layout_mode = 2
 
-[node name="SkillInfo" type="VBoxContainer" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@88/SkillMargin/SkillRow" unique_id=115733268]
+[node name="SkillInfo" type="VBoxContainer" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@88/SkillMargin/SkillRow" unique_id=1877983559]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 
-[node name="SkillTitle" type="Label" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@88/SkillMargin/SkillRow/SkillInfo" unique_id=1580522196]
+[node name="SkillTitle" type="Label" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@88/SkillMargin/SkillRow/SkillInfo" unique_id=1279709730]
 layout_mode = 2
 theme_override_font_sizes/font_size = 17
 theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
@@ -538,7 +538,7 @@ text = "御风术"
 metadata/__tpl_text = "title"
 metadata/__tpl_keys = "text"
 
-[node name="SkillLevel" type="Label" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@88/SkillMargin/SkillRow/SkillInfo" unique_id=565448774]
+[node name="SkillLevel" type="Label" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@88/SkillMargin/SkillRow/SkillInfo" unique_id=1688683728]
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
 theme_override_colors/font_color = Color(0.5411765, 0.47843137, 0.34509805, 1)
@@ -546,17 +546,17 @@ text = "未习得"
 metadata/__tpl_text = "level"
 metadata/__tpl_keys = "text"
 
-[node name="_Control_85" type="Control" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@88/SkillMargin/SkillRow" unique_id=1762800146]
+[node name="_Control_85" type="Control" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@88/SkillMargin/SkillRow" unique_id=1503465818]
 custom_minimum_size = Vector2(8, 0)
 layout_mode = 2
 
-[node name="SkillBtn" type="Button" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@88/SkillMargin/SkillRow" unique_id=1044659471]
+[node name="SkillBtn" type="Button" parent="SkillsColumn/SkillsScroll/SkillList/@Panel@88/SkillMargin/SkillRow" unique_id=985359032]
 custom_minimum_size = Vector2(76, 40)
 layout_mode = 2
 size_flags_vertical = 4
-theme_override_styles/normal = SubResource("StyleBoxFlat_1v4q0")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_hmnni")
-theme_override_styles/hover = SubResource("StyleBoxFlat_gx60n")
+theme_override_styles/normal = SubResource("StyleBoxFlat_s42mt")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_tygaw")
+theme_override_styles/hover = SubResource("StyleBoxFlat_w0bnp")
 theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
 text = "🔒"
 metadata/__tpl_text = "btn_text"

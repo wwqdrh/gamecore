@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jm88o"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_02yuk"]
 bg_color = Color(0.18039216, 0.2901961, 0.22745098, 1)
 border_width_left = 3
 border_width_top = 3
@@ -12,7 +12,7 @@ corner_radius_top_right = 44
 corner_radius_bottom_right = 44
 corner_radius_bottom_left = 44
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nvig2"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gybfc"]
 bg_color = Color(0.9098039, 0.8509804, 0.65882355, 1)
 border_width_left = 2
 border_width_top = 2
@@ -24,33 +24,33 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p681h"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_msguv"]
 bg_color = Color(0.14117648, 0.23529412, 0.18039216, 1)
 corner_radius_top_left = 5
 corner_radius_top_right = 5
 corner_radius_bottom_right = 5
 corner_radius_bottom_left = 5
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7shkn"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_j44rw"]
 bg_color = Color(0.37254903, 0.68235296, 0.41568628, 1)
 corner_radius_top_left = 5
 corner_radius_top_right = 5
 corner_radius_bottom_right = 5
 corner_radius_bottom_left = 5
 
-[node name="PlayerBadge" type="HBoxContainer" unique_id=270342353]
+[node name="PlayerBadge" type="HBoxContainer" unique_id=1822928111]
 metadata/__script_vars = {}
 metadata/__gml_root = true
 
-[node name="AvatarRing" type="Panel" parent="." unique_id=1074382601]
+[node name="AvatarRing" type="Panel" parent="." unique_id=6724921]
 custom_minimum_size = Vector2(88, 88)
 layout_mode = 2
 mouse_default_cursor_shape = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_jm88o")
+theme_override_styles/panel = SubResource("StyleBoxFlat_02yuk")
 metadata/__signal_pressed = "show:ProfileModal"
 metadata/__script_vars = {}
 
-[node name="AvatarIcon" type="Label" parent="AvatarRing" unique_id=1729435724]
+[node name="AvatarIcon" type="Label" parent="AvatarRing" unique_id=1506484429]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -59,17 +59,17 @@ horizontal_alignment = 1
 vertical_alignment = 1
 metadata/__anchor = "full"
 
-[node name="PlayerInfo" type="VBoxContainer" parent="." unique_id=238472034]
+[node name="PlayerInfo" type="VBoxContainer" parent="." unique_id=334556731]
 layout_mode = 2
 size_flags_vertical = 4
 metadata/__script_vars = {}
 
-[node name="@Panel@66" type="Panel" parent="PlayerInfo" unique_id=281282061]
+[node name="@Panel@66" type="Panel" parent="PlayerInfo" unique_id=1084811459]
 custom_minimum_size = Vector2(210, 42)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_nvig2")
+theme_override_styles/panel = SubResource("StyleBoxFlat_gybfc")
 
-[node name="@HBoxContainer@65" type="HBoxContainer" parent="PlayerInfo/@Panel@66" unique_id=1014108450]
+[node name="@HBoxContainer@65" type="HBoxContainer" parent="PlayerInfo/@Panel@66" unique_id=192614720]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -79,45 +79,45 @@ offset_right = -8.0
 offset_bottom = -6.0
 metadata/__anchor = "full"
 
-[node name="@Label@62" type="Label" parent="PlayerInfo/@Panel@66/@HBoxContainer@65" unique_id=632677444]
+[node name="@Label@62" type="Label" parent="PlayerInfo/@Panel@66/@HBoxContainer@65" unique_id=824589813]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.41960785, 0.2901961, 0.11764706, 1)
 text = "炼气三层"
 vertical_alignment = 1
 
-[node name="@Control@63" type="Control" parent="PlayerInfo/@Panel@66/@HBoxContainer@65" unique_id=62572996]
+[node name="@Control@63" type="Control" parent="PlayerInfo/@Panel@66/@HBoxContainer@65" unique_id=102601504]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="@Label@64" type="Label" parent="PlayerInfo/@Panel@66/@HBoxContainer@65" unique_id=9020024]
+[node name="@Label@64" type="Label" parent="PlayerInfo/@Panel@66/@HBoxContainer@65" unique_id=1206464957]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "最高境界"
 vertical_alignment = 1
 
-[node name="@HBoxContainer@71" type="HBoxContainer" parent="PlayerInfo" unique_id=1593033109]
+[node name="@HBoxContainer@71" type="HBoxContainer" parent="PlayerInfo" unique_id=1129376101]
 layout_mode = 2
 
-[node name="@Label@67" type="Label" parent="PlayerInfo/@HBoxContainer@71" unique_id=658110314]
+[node name="@Label@67" type="Label" parent="PlayerInfo/@HBoxContainer@71" unique_id=761048183]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9098039, 0.7254902, 0.24313726, 1)
 text = "Lv.12"
 vertical_alignment = 1
 
-[node name="@Panel@69" type="Panel" parent="PlayerInfo/@HBoxContainer@71" unique_id=875366811]
+[node name="@Panel@69" type="Panel" parent="PlayerInfo/@HBoxContainer@71" unique_id=1210896218]
 custom_minimum_size = Vector2(90, 10)
 layout_mode = 2
 size_flags_vertical = 4
-theme_override_styles/panel = SubResource("StyleBoxFlat_p681h")
+theme_override_styles/panel = SubResource("StyleBoxFlat_msguv")
 
-[node name="@Panel@68" type="Panel" parent="PlayerInfo/@HBoxContainer@71/@Panel@69" unique_id=2048663561]
+[node name="@Panel@68" type="Panel" parent="PlayerInfo/@HBoxContainer@71/@Panel@69" unique_id=597556803]
 custom_minimum_size = Vector2(30, 10)
 layout_mode = 0
 anchor_bottom = 1.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_7shkn")
+theme_override_styles/panel = SubResource("StyleBoxFlat_j44rw")
 metadata/__anchor = "left_wide"
 
-[node name="@Label@70" type="Label" parent="PlayerInfo/@HBoxContainer@71" unique_id=970787787]
+[node name="@Label@70" type="Label" parent="PlayerInfo/@HBoxContainer@71" unique_id=1909476003]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.8117647, 0.8901961, 0.78431374, 1)
 text = "22"

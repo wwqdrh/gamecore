@@ -15,16 +15,42 @@
 use godot::prelude::*;
 use godot::builtin::{GString, StringName, Color};
 use godot::classes::{
-    IControl, Control, ColorRect, MarginContainer, InputEvent, InputEventMouseButton, Engine,
+    IControl, Control, ColorRect, MarginContainer, InputEvent, InputEventMouseButton, InputEventKey,
+    Engine,
 };
 use godot::classes::control::{LayoutPreset, MouseFilter};
-use godot::global::MouseButton;
+use godot::global::{MouseButton, Key};
 use godot::obj::WithBaseField;
 
 use crate::anim::easing::ease_out_cubic;
 
 /// 内容缩放动画：从 94% 弹到 100%
 const SCALE_FROM: f32 = 0.94;
+
+/// 按键名 → Key（手写映射常用按键，key_bind 属性用；不认识的返回 None）
+fn parse_key_name(name: &str) -> Option<Key> {
+    let k = name.trim().to_lowercase();
+    let key = match k.as_str() {
+        "escape" | "esc" => Key::ESCAPE,
+        "enter" => Key::ENTER,
+        "space" => Key::SPACE,
+        "tab" => Key::TAB,
+        "f1" => Key::F1,
+        "f2" => Key::F2,
+        "f3" => Key::F3,
+        "f4" => Key::F4,
+        "f5" => Key::F5,
+        "f6" => Key::F6,
+        "f7" => Key::F7,
+        "f8" => Key::F8,
+        "f9" => Key::F9,
+        "f10" => Key::F10,
+        "f11" => Key::F11,
+        "f12" => Key::F12,
+        _ => return None,
+    };
+    Some(key)
+}
 
 #[derive(GodotClass)]
 #[class(base = Control, tool)]
@@ -40,6 +66,10 @@ pub struct GdUIModal {
     animation_duration: f64,
     #[export]
     close_on_overlay: bool,
+    /// 按键绑定（如 "escape"）：按下触发 toggle 开/关弹窗；空 = 不绑定。
+    /// 常用键名：escape/esc、enter、space、tab、f1..f12
+    #[export]
+    key_bind: GString,
 
     // 内部节点引用
     overlay: Option<Gd<ColorRect>>,
@@ -60,6 +90,7 @@ impl IControl for GdUIModal {
             content_margin: 0,
             animation_duration: 0.22,
             close_on_overlay: true,
+            key_bind: GString::new(),
             overlay: None,
             content_area: None,
             is_open: false,
@@ -87,6 +118,38 @@ impl IControl for GdUIModal {
         self.animating = false;
         self.anim_progress = 0.0;
         self.base_mut().set_visible(false);
+        // 按键绑定：显式开启 _input 处理（保险起见，Godot 对实现了 _input 的
+        // 脚本一般会自动开启）
+        if !self.key_bind.is_empty() {
+            self.base_mut().set_process_input(true);
+        }
+    }
+
+    /// 按键绑定处理：key_bind 声明的按键按下（非连按）→ toggle 开/关弹窗。
+    /// 编辑器下不响应；keycode 或 physical_keycode 任一匹配即触发
+    fn input(&mut self, event: Gd<InputEvent>) {
+        if Engine::singleton().is_editor_hint() || self.key_bind.is_empty() {
+            return;
+        }
+        let Ok(key_ev) = event.try_cast::<InputEventKey>() else {
+            return;
+        };
+        if !key_ev.is_pressed() || key_ev.is_echo() {
+            return;
+        }
+        let Some(want) = parse_key_name(&self.key_bind.to_string()) else {
+            godot_warn!(
+                "[UIModal] key_bind=\"{}\" 不是可识别的按键名（支持 escape/enter/space/tab/f1..f12）",
+                self.key_bind
+            );
+            return;
+        };
+        let physical = key_ev.get_physical_keycode();
+        if key_ev.get_keycode() == want
+            || (physical != Key::NONE && physical == want)
+        {
+            self.toggle();
+        }
     }
 
     fn process(&mut self, delta: f64) {

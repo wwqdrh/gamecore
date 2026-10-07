@@ -606,3 +606,46 @@ func _ready() -> void:
    - 右上/右下角标 → `anchor="top_wide"/"bottom_wide"` + `align="right"` + 负 right margin
    - bottom_wide 贴底文字 → 负 top margin（如 `margin="14 -24 14 2"`，
      注意 Label 行高比 font_size 大，留余量）
+
+## 表单组件（ui_form.rs）：设置面板即插即用
+
+`rust/src/ui/ui_form.rs` 提供 9 个表单 tag，分两类。统一信号：`s_toggled(checked: bool)`
+（Check/Switch 类）、`s_value_changed(value)`（Radio/Select 为 GString，Slider 为 f64），
+GML 内 `@s_toggled="方法名"` / `@s_value_changed="方法名"` 就近绑定即可。
+
+### 基础控件（纯 UI 状态，业务由使用方接线）
+
+```xml
+<FormCheck text="显示伤害数字" checked="true" />                      <!-- 多选框 -->
+<FormRadio options="历练,问道,渡劫" value="问道" item_height="34" />  <!-- 单选组 -->
+<FormSelect options="流畅,均衡,高清,影视" value="均衡" />              <!-- 下拉 -->
+<FormSwitch text="全屏" checked="false" />                            <!-- 开关 -->
+<FormSliderH min_value="0" max_value="1" step="0.01" value="0.8" />   <!-- 左右滑块 -->
+<FormSliderV min_value="0" max_value="1" value="0.8" />               <!-- 上下滑块 -->
+```
+
+### 接口组件（bind 属性绑定 manager 接口，Rust 侧预定义读写逻辑）
+
+```xml
+<SettingSlider bind="volume:Music" min_value="0" max_value="1" step="0.01" />
+<SettingSwitch bind="fullscreen" />
+<SettingSwitch bind="vsync" default_value="true" />
+<SettingSelect bind="custom:graphics" options="流畅,均衡,高清,影视" value="均衡" />
+```
+
+bind 协议（经 `GdViewSetting`，rust/src/manager/setting.rs，写即持久化到
+`user://settings.data`）：`volume:<Bus>`（Master/Music/Audio/Voice）、`fullscreen`、
+`vsync`（读走持久化值）、`custom:<key>`（任意键值）。组件 ready 时自动读绑定初值，
+交互时自动应用并持久化——零 GDScript。
+
+### 程序化 API 与 Modal key_bind
+
+- 运行期改组件状态用 `apply_checked`（FormCheck/FormSwitch）与 `select_value`
+  （FormRadio/FormSelect）——导出属性 setter 只改字段不驱动视图刷新。
+- 共享 GdViewSetting 实例挂在 **SceneTree 根节点 meta**（`__ui_form_setting`）上，
+  引擎自有生命周期；**严禁 thread_local 缓存 Gd**——引擎卸载后 TLS drop 调 ffi
+  会 "thread local panicked on drop, aborting"。
+- Modal 支持按键触发：`<Modal key_bind="escape">`（InputEventKey pressed 非 echo，
+  keycode/physical 任一匹配即 `toggle()`；键名支持 escape/enter/space/tab/f1..f12）。
+- 改 ui_form.rs 后必须 `./build.sh debug`（cargo build 不会同步二进制到
+  addons/gamecore/bin/，headless check 跑的是旧库——症状：改了代码但行为不变/panic 仍在）。

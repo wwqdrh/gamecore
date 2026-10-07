@@ -1,5 +1,5 @@
 # 校验脚本：任务抽屉独立组件（task 目录只保留 Drawer）+ 统一 UI 管理层
-# 运行：godot --headless --path . -s res://example/demo/xiuxian/ui/task/check_task_drawer.gd
+# 运行：godot --headless --path . -s res://example/demo/xiuxian/ui/main/task/check_task_drawer.gd
 # 职责：1) task gml 构建校验并重生成 tscn（抽屉组件 + tabs/list/item）
 #       2) 独立实例化 task_drawer.gml.tscn：
 #          挂树后自动注册 ui_id → GdUIManager.has_ui/find_ui（GD API 跨组件查找）
@@ -7,7 +7,7 @@
 #       3) find_ui 拿到组件后 open/close（GD 侧跨组件调用）+ 遮罩点击关闭
 extends SceneTree
 
-const DIR := "res://example/demo/xiuxian/ui/task/"
+const DIR := "res://example/demo/xiuxian/ui/main/task/"
 const GML_FILES := [
 	"task_drawer.gml", "task_tabs.gml",
 	"task_list.gml", "task_item.gml",

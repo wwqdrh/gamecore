@@ -1,11 +1,11 @@
 # 校验脚本：修仙主界面 HUD GML 结构验证
-# 运行：godot --headless --path . -s res://example/demo/xiuxian/ui/mainhud/check_mainhud_ui.gd
+# 运行：godot --headless --path . -s res://example/demo/xiuxian/ui/main/mainhud/check_mainhud_ui.gd
 # 职责：1) 全部 gml 构建校验并重生成同名 tscn（等效编辑器插件产物）
 #       2) 实例化主 HUD 验证 <Gml> 组合 / 三层布局 / 技能栏数据驱动（6 格 + 冷却）
 #          / 功能按钮 GdState 上报与高亮互斥 / 技能点选上报 / 资源加号回调 / 鼠标穿透
 extends SceneTree
 
-const DIR := "res://example/demo/xiuxian/ui/mainhud/"
+const DIR := "res://example/demo/xiuxian/ui/main/mainhud/"
 const GML_FILES := [
 	"mainhud.gml", "mainhud_player.gml", "mainhud_resources.gml",
 	"mainhud_quest.gml", "mainhud_minimap.gml", "mainhud_menus.gml",

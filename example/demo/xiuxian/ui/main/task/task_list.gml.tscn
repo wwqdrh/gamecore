@@ -1,9 +1,9 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" uid="uid://ccw4c361ap7r3" path="res://example/demo/xiuxian/ui/main/task/task_list.gd" id="1_1464p"]
-[ext_resource type="Script" uid="uid://duna1at8jyim4" path="res://example/demo/xiuxian/ui/main/task/task_item.gd" id="2_cavmb"]
+[ext_resource type="Script" path="res://example/demo/xiuxian/ui/main/task/task_list.gd" id="1_jrh65"]
+[ext_resource type="Script" path="res://example/demo/xiuxian/ui/main/task/task_item.gd" id="2_a6ub8"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_siu46"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_28mg3"]
 bg_color = Color(0.9647059, 0.9372549, 0.85882354, 1)
 border_width_left = 2
 border_width_top = 2
@@ -15,14 +15,14 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_syqan"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gd1p4"]
 bg_color = Color(0.89411765, 0.8509804, 0.72156864, 1)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8vixv"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1nanu"]
 content_margin_left = 16.0
 content_margin_top = 8.0
 content_margin_right = 16.0
@@ -33,7 +33,7 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ywp7o"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_u64pv"]
 content_margin_left = 16.0
 content_margin_top = 8.0
 content_margin_right = 16.0
@@ -44,7 +44,7 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7a8ki"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3pyp6"]
 content_margin_left = 16.0
 content_margin_top = 8.0
 content_margin_right = 16.0
@@ -55,9 +55,9 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[node name="TaskScroll" type="ScrollContainer" unique_id=2127717767]
+[node name="TaskScroll" type="ScrollContainer" unique_id=161832172]
 size_flags_vertical = 3
-script = ExtResource("1_1464p")
+script = ExtResource("1_jrh65")
 metadata/__script_vars = {
 "category": "",
 "tasks": [{
@@ -115,7 +115,7 @@ metadata/__script_vars = {
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray()
 
-[node name="TaskList" type="GdUIVList" parent="." unique_id=851454375]
+[node name="TaskList" type="GdUIVList" parent="." unique_id=950768813]
 layout_mode = 2
 size_flags_horizontal = 3
 metadata/__data_var = "bean:task_list:tasks"
@@ -176,17 +176,17 @@ metadata/__script_vars = {
 }
 metadata/__filter_value = ""
 
-[node name="ItemRoot" type="Panel" parent="TaskList" unique_id=2049087325]
+[node name="ItemRoot" type="Panel" parent="TaskList" unique_id=822560126]
 visible = false
 custom_minimum_size = Vector2(0, 84)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_siu46")
-script = ExtResource("2_cavmb")
+theme_override_styles/panel = SubResource("StyleBoxFlat_28mg3")
+script = ExtResource("2_a6ub8")
 metadata/__script_vars = {}
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray("icon", "title", "desc", "progress", "reward1", "reward2", "btn_text", "btn_state")
 
-[node name="ItemMargin" type="MarginContainer" parent="TaskList/ItemRoot" unique_id=1504595702]
+[node name="ItemMargin" type="MarginContainer" parent="TaskList/ItemRoot" unique_id=1842674288]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -197,16 +197,16 @@ offset_bottom = -8.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="ItemRow" type="HBoxContainer" parent="TaskList/ItemRoot/ItemMargin" unique_id=1484291549]
+[node name="ItemRow" type="HBoxContainer" parent="TaskList/ItemRoot/ItemMargin" unique_id=112779727]
 layout_mode = 2
 
-[node name="@Panel@81" type="Panel" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=2099148100]
+[node name="@Panel@81" type="Panel" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=576850420]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 size_flags_vertical = 4
-theme_override_styles/panel = SubResource("StyleBoxFlat_syqan")
+theme_override_styles/panel = SubResource("StyleBoxFlat_gd1p4")
 
-[node name="ItemIcon" type="Label" parent="TaskList/ItemRoot/ItemMargin/ItemRow/@Panel@81" unique_id=1093481399]
+[node name="ItemIcon" type="Label" parent="TaskList/ItemRoot/ItemMargin/ItemRow/@Panel@81" unique_id=1514210178]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -217,30 +217,30 @@ metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 metadata/__anchor = "full"
 
-[node name="@Control@82" type="Control" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1549054964]
+[node name="@Control@82" type="Control" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1407607353]
 custom_minimum_size = Vector2(10, 0)
 layout_mode = 2
 
-[node name="@VBoxContainer@83" type="VBoxContainer" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=2090440196]
+[node name="@VBoxContainer@83" type="VBoxContainer" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=2105386033]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 
-[node name="ItemTitle" type="Label" parent="TaskList/ItemRoot/ItemMargin/ItemRow/@VBoxContainer@83" unique_id=1521785950]
+[node name="ItemTitle" type="Label" parent="TaskList/ItemRoot/ItemMargin/ItemRow/@VBoxContainer@83" unique_id=2097906931]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
 metadata/__tpl_text = "title"
 metadata/__tpl_keys = "text"
 
-[node name="ItemDesc" type="Label" parent="TaskList/ItemRoot/ItemMargin/ItemRow/@VBoxContainer@83" unique_id=862849414]
+[node name="ItemDesc" type="Label" parent="TaskList/ItemRoot/ItemMargin/ItemRow/@VBoxContainer@83" unique_id=192870676]
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
 theme_override_colors/font_color = Color(0.5411765, 0.47843137, 0.34509805, 1)
 metadata/__tpl_text = "desc"
 metadata/__tpl_keys = "text"
 
-[node name="ItemProgress" type="Label" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1420180431]
+[node name="ItemProgress" type="Label" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=217890981]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.36078432, 0.3019608, 0.18039216, 1)
@@ -248,11 +248,11 @@ vertical_alignment = 1
 metadata/__tpl_text = "progress"
 metadata/__tpl_keys = "text"
 
-[node name="@Control@84" type="Control" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=12120532]
+[node name="@Control@84" type="Control" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=996462446]
 custom_minimum_size = Vector2(14, 0)
 layout_mode = 2
 
-[node name="Reward1" type="Label" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1971083104]
+[node name="Reward1" type="Label" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1352380973]
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
 theme_override_colors/font_color = Color(0.2901961, 0.3529412, 0.22745098, 1)
@@ -260,11 +260,11 @@ vertical_alignment = 1
 metadata/__tpl_text = "reward1"
 metadata/__tpl_keys = "text"
 
-[node name="@Control@85" type="Control" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=999080956]
+[node name="@Control@85" type="Control" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1983863743]
 custom_minimum_size = Vector2(12, 0)
 layout_mode = 2
 
-[node name="Reward2" type="Label" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=430693768]
+[node name="Reward2" type="Label" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1176053091]
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
 theme_override_colors/font_color = Color(0.2901961, 0.3529412, 0.22745098, 1)
@@ -272,17 +272,17 @@ vertical_alignment = 1
 metadata/__tpl_text = "reward2"
 metadata/__tpl_keys = "text"
 
-[node name="@Control@86" type="Control" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=355734331]
+[node name="@Control@86" type="Control" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1196835637]
 custom_minimum_size = Vector2(14, 0)
 layout_mode = 2
 
-[node name="ItemBtn" type="Button" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=2109079145]
+[node name="ItemBtn" type="Button" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1574312339]
 custom_minimum_size = Vector2(84, 40)
 layout_mode = 2
 size_flags_vertical = 4
-theme_override_styles/normal = SubResource("StyleBoxFlat_8vixv")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_ywp7o")
-theme_override_styles/hover = SubResource("StyleBoxFlat_7a8ki")
+theme_override_styles/normal = SubResource("StyleBoxFlat_1nanu")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_u64pv")
+theme_override_styles/hover = SubResource("StyleBoxFlat_3pyp6")
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 metadata/__tpl_text = "btn_text"
 metadata/__tpl_keys = "text"

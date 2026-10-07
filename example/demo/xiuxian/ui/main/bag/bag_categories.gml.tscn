@@ -1,8 +1,8 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" uid="uid://c1fkobnxcufcp" path="res://example/demo/xiuxian/ui/main/bag/bag_categories.gd" id="1_tk7gb"]
+[ext_resource type="Script" path="res://example/demo/xiuxian/ui/main/bag/bag_categories.gd" id="1_1b2nu"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_46rcm"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_61iwk"]
 bg_color = Color(0.9137255, 0.8862745, 0.78431374, 1)
 border_width_left = 2
 border_width_top = 2
@@ -14,7 +14,7 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mv62g"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_h3bs5"]
 bg_color = Color(0.9490196, 0.9254902, 0.83137256, 1)
 border_width_left = 1
 border_width_top = 1
@@ -26,7 +26,7 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_72gki"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nhtbv"]
 bg_color = Color(0.9490196, 0.9254902, 0.83137256, 1)
 border_width_left = 1
 border_width_top = 1
@@ -38,7 +38,7 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_iko17"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_n1fci"]
 bg_color = Color(0.9490196, 0.9254902, 0.83137256, 1)
 border_width_left = 1
 border_width_top = 1
@@ -50,7 +50,7 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ggk06"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pqvp0"]
 bg_color = Color(0.9490196, 0.9254902, 0.83137256, 1)
 border_width_left = 1
 border_width_top = 1
@@ -62,7 +62,7 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_m3ydr"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fhnhf"]
 bg_color = Color(0.9490196, 0.9254902, 0.83137256, 1)
 border_width_left = 1
 border_width_top = 1
@@ -74,17 +74,17 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[node name="CategoryPanel" type="Panel" unique_id=1561142100]
+[node name="CategoryPanel" type="Panel" unique_id=1273535997]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_46rcm")
-script = ExtResource("1_tk7gb")
+theme_override_styles/panel = SubResource("StyleBoxFlat_61iwk")
+script = ExtResource("1_1b2nu")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray()
 
-[node name="CatColumn" type="VBoxContainer" parent="." unique_id=1710738521]
+[node name="CatColumn" type="VBoxContainer" parent="." unique_id=1905468416]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -95,14 +95,14 @@ offset_bottom = -12.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CatAll" type="Panel" parent="CatColumn" unique_id=619821211]
+[node name="CatAll" type="Panel" parent="CatColumn" unique_id=600452402]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 mouse_default_cursor_shape = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_mv62g")
+theme_override_styles/panel = SubResource("StyleBoxFlat_h3bs5")
 metadata/__signal_pressed = "_on_category"
 
-[node name="@HBoxContainer@106" type="HBoxContainer" parent="CatColumn/CatAll" unique_id=560654575]
+[node name="@HBoxContainer@106" type="HBoxContainer" parent="CatColumn/CatAll" unique_id=1753747418]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -110,26 +110,26 @@ offset_left = 12.0
 offset_right = -8.0
 metadata/__anchor = "full"
 
-[node name="@Label@104" type="Label" parent="CatColumn/CatAll/@HBoxContainer@106" unique_id=1632266295]
+[node name="@Label@104" type="Label" parent="CatColumn/CatAll/@HBoxContainer@106" unique_id=1693778097]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "🔳"
 vertical_alignment = 1
 
-[node name="@Label@105" type="Label" parent="CatColumn/CatAll/@HBoxContainer@106" unique_id=1068203796]
+[node name="@Label@105" type="Label" parent="CatColumn/CatAll/@HBoxContainer@106" unique_id=1505472995]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "全部"
 vertical_alignment = 1
 
-[node name="CatTool" type="Panel" parent="CatColumn" unique_id=1115413406]
+[node name="CatTool" type="Panel" parent="CatColumn" unique_id=89928751]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 mouse_default_cursor_shape = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_72gki")
+theme_override_styles/panel = SubResource("StyleBoxFlat_nhtbv")
 metadata/__signal_pressed = "_on_category"
 
-[node name="@HBoxContainer@109" type="HBoxContainer" parent="CatColumn/CatTool" unique_id=1520393791]
+[node name="@HBoxContainer@109" type="HBoxContainer" parent="CatColumn/CatTool" unique_id=1441240178]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -137,26 +137,26 @@ offset_left = 12.0
 offset_right = -8.0
 metadata/__anchor = "full"
 
-[node name="@Label@107" type="Label" parent="CatColumn/CatTool/@HBoxContainer@109" unique_id=1899220311]
+[node name="@Label@107" type="Label" parent="CatColumn/CatTool/@HBoxContainer@109" unique_id=1603830590]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "🗡️"
 vertical_alignment = 1
 
-[node name="@Label@108" type="Label" parent="CatColumn/CatTool/@HBoxContainer@109" unique_id=2010698018]
+[node name="@Label@108" type="Label" parent="CatColumn/CatTool/@HBoxContainer@109" unique_id=2017645981]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "法器"
 vertical_alignment = 1
 
-[node name="CatPill" type="Panel" parent="CatColumn" unique_id=1161221012]
+[node name="CatPill" type="Panel" parent="CatColumn" unique_id=706534492]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 mouse_default_cursor_shape = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_iko17")
+theme_override_styles/panel = SubResource("StyleBoxFlat_n1fci")
 metadata/__signal_pressed = "_on_category"
 
-[node name="@HBoxContainer@112" type="HBoxContainer" parent="CatColumn/CatPill" unique_id=1022685655]
+[node name="@HBoxContainer@112" type="HBoxContainer" parent="CatColumn/CatPill" unique_id=228718580]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -164,26 +164,26 @@ offset_left = 12.0
 offset_right = -8.0
 metadata/__anchor = "full"
 
-[node name="@Label@110" type="Label" parent="CatColumn/CatPill/@HBoxContainer@112" unique_id=247823260]
+[node name="@Label@110" type="Label" parent="CatColumn/CatPill/@HBoxContainer@112" unique_id=1995954784]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "⚗️"
 vertical_alignment = 1
 
-[node name="@Label@111" type="Label" parent="CatColumn/CatPill/@HBoxContainer@112" unique_id=1795660607]
+[node name="@Label@111" type="Label" parent="CatColumn/CatPill/@HBoxContainer@112" unique_id=1781971272]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "丹药"
 vertical_alignment = 1
 
-[node name="CatMaterial" type="Panel" parent="CatColumn" unique_id=1810601660]
+[node name="CatMaterial" type="Panel" parent="CatColumn" unique_id=1742221753]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 mouse_default_cursor_shape = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_ggk06")
+theme_override_styles/panel = SubResource("StyleBoxFlat_pqvp0")
 metadata/__signal_pressed = "_on_category"
 
-[node name="@HBoxContainer@115" type="HBoxContainer" parent="CatColumn/CatMaterial" unique_id=1025831043]
+[node name="@HBoxContainer@115" type="HBoxContainer" parent="CatColumn/CatMaterial" unique_id=1103958889]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -191,26 +191,26 @@ offset_left = 12.0
 offset_right = -8.0
 metadata/__anchor = "full"
 
-[node name="@Label@113" type="Label" parent="CatColumn/CatMaterial/@HBoxContainer@115" unique_id=221452552]
+[node name="@Label@113" type="Label" parent="CatColumn/CatMaterial/@HBoxContainer@115" unique_id=747328817]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "🌿"
 vertical_alignment = 1
 
-[node name="@Label@114" type="Label" parent="CatColumn/CatMaterial/@HBoxContainer@115" unique_id=1061119933]
+[node name="@Label@114" type="Label" parent="CatColumn/CatMaterial/@HBoxContainer@115" unique_id=1993958270]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "材料"
 vertical_alignment = 1
 
-[node name="CatTalisman" type="Panel" parent="CatColumn" unique_id=1104115093]
+[node name="CatTalisman" type="Panel" parent="CatColumn" unique_id=330138226]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 mouse_default_cursor_shape = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_m3ydr")
+theme_override_styles/panel = SubResource("StyleBoxFlat_fhnhf")
 metadata/__signal_pressed = "_on_category"
 
-[node name="@HBoxContainer@118" type="HBoxContainer" parent="CatColumn/CatTalisman" unique_id=891286103]
+[node name="@HBoxContainer@118" type="HBoxContainer" parent="CatColumn/CatTalisman" unique_id=594628924]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -218,23 +218,23 @@ offset_left = 12.0
 offset_right = -8.0
 metadata/__anchor = "full"
 
-[node name="@Label@116" type="Label" parent="CatColumn/CatTalisman/@HBoxContainer@118" unique_id=1349526405]
+[node name="@Label@116" type="Label" parent="CatColumn/CatTalisman/@HBoxContainer@118" unique_id=720445928]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "📜"
 vertical_alignment = 1
 
-[node name="@Label@117" type="Label" parent="CatColumn/CatTalisman/@HBoxContainer@118" unique_id=98599354]
+[node name="@Label@117" type="Label" parent="CatColumn/CatTalisman/@HBoxContainer@118" unique_id=392368423]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "符篆"
 vertical_alignment = 1
 
-[node name="@Control@119" type="Control" parent="CatColumn" unique_id=982537482]
+[node name="@Control@119" type="Control" parent="CatColumn" unique_id=75395372]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="@Label@120" type="Label" parent="CatColumn" unique_id=333899305]
+[node name="@Label@120" type="Label" parent="CatColumn" unique_id=1221965163]
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6901961, 0.22745098, 0.18039216, 1)

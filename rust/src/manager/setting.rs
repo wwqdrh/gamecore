@@ -124,7 +124,8 @@ impl GdViewSetting {
     /// 切换垂直同步（headless 下只持久化不应用）
     #[func]
     pub fn set_vsync(&mut self, enabled: bool) {
-        if !Self::is_headless() {
+        // 编辑器内只持久化不应用（垂直同步作用于编辑器窗口无意义且有害）
+        if !Self::is_headless() && !Engine::singleton().is_editor_hint() {
             let mode = if enabled { VSyncMode::ENABLED } else { VSyncMode::DISABLED };
             DisplayServer::singleton().window_set_vsync_mode(mode);
         }
@@ -144,6 +145,12 @@ impl GdViewSetting {
     /// 避免加载阶段把兜底值（如音量 1.0）覆盖进文件
     #[func]
     pub fn load_and_apply(&mut self) {
+        // 编辑器内只加载不应用：编辑器启动会自动恢复上次打开的场景标签，
+        // settings 面板的 tool 组件 ready 时构建本类，若应用会把编辑器窗口
+        // 切回 WINDOWED（最大化被重置成固定大小）、并改写编辑器音频总线
+        if Engine::singleton().is_editor_hint() {
+            return;
+        }
         for bus_name in VOLUME_BUSES {
             let key = format!("volume_{}", bus_name.to_lowercase());
             if self.has_stored(GString::from(key.as_str())) {
@@ -174,6 +181,11 @@ impl GdViewSetting {
 
     /// 仅应用音量到 AudioServer，不持久化（加载路径使用）
     fn apply_volume(bus_name: &str, v: f64) {
+        // 编辑器内禁止应用：tool 组件在编辑器构建设置桥时会走到这里，
+        // 改的是编辑器自身的 AudioServer 总线
+        if Engine::singleton().is_editor_hint() {
+            return;
+        }
         let v = v.clamp(0.0, 1.0);
         let idx = Self::ensure_bus(&GString::from(bus_name));
         if idx < 0 {
@@ -224,7 +236,8 @@ impl GdViewSetting {
     /// 否则 Window 内部缓存的 mode 会在窗口事件时把模式覆盖回窗口化）。
     /// 注意：从编辑器"嵌入游戏窗口"模式运行时 fullscreen 无视觉效果，属正常现象
     fn apply_fullscreen(&self, enabled: bool) {
-        if Self::is_headless() {
+        // 编辑器内禁止应用：会把编辑器自身窗口切到 WINDOWED（最大化被重置成固定大小）
+        if Self::is_headless() || Engine::singleton().is_editor_hint() {
             return;
         }
         if let Some(mut win) = Self::main_window() {

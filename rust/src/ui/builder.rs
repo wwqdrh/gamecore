@@ -29,6 +29,11 @@ use super::ui_popup_panel::GdPopupPanel;
 use super::ui_tooltip::GdUITooltip;
 use super::ui_drawer::GdUIDrawer;
 use super::ui_modal::GdUIModal;
+use super::ui_form::{
+    GdUIFormCheck, GdUIFormRadio, GdUIFormSelect, GdUIFormSwitch,
+    GdUIFormSliderH, GdUIFormSliderV,
+    GdUISettingSlider, GdUISettingSwitch, GdUISettingSelect,
+};
 use super::ui_nav_menu::GdUINavMenu;
 use super::ui_theme::{ThemeVars, get_theme_color, resolve_theme_vars};
 
@@ -661,6 +666,17 @@ impl UiBuilder {
             "Drawer" => GdUIDrawer::new_alloc().upcast(),
             // 模态弹窗
             "Modal" => GdUIModal::new_alloc().upcast(),
+            // 表单组件（ui_form.rs）：单选/多选/下拉/开关/滑块
+            "FormCheck" => GdUIFormCheck::new_alloc().upcast(),
+            "FormRadio" => GdUIFormRadio::new_alloc().upcast(),
+            "FormSelect" => GdUIFormSelect::new_alloc().upcast(),
+            "FormSwitch" => GdUIFormSwitch::new_alloc().upcast(),
+            "FormSlider" | "FormSliderH" => GdUIFormSliderH::new_alloc().upcast(),
+            "FormSliderV" => GdUIFormSliderV::new_alloc().upcast(),
+            // 设置接口组件（bind → GdViewSetting：音频/窗口/自定义设置）
+            "SettingSlider" => GdUISettingSlider::new_alloc().upcast(),
+            "SettingSwitch" => GdUISettingSwitch::new_alloc().upcast(),
+            "SettingSelect" => GdUISettingSelect::new_alloc().upcast(),
             // 导航菜单
             "NavMenu" => GdUINavMenu::new_alloc().upcast(),
             // 导航菜单项（递归嵌套，使用 Control 占位）
@@ -1402,6 +1418,11 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
                     btn.set_text(&GString::from(value));
                     return btn.upcast();
                 }
+                // FormCheck/FormSwitch/SettingSwitch：文本走 label 导出属性
+                // （自定义绘制，不占用 Button 原生 text，避免双绘）
+                "FormCheck" | "FormSwitch" | "SettingSwitch" => {
+                    control.set(&StringName::from("label"), &value.to_variant());
+                }
 
                 "RichTextLabel" => {
                     let mut rt = control.cast::<RichTextLabel>();
@@ -1649,12 +1670,70 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
             }
         }
         "value" => {
-            if tag == "ProgressBar" || tag == "SpinBox" || tag == "HSlider" {
+            // 表单字符串值组件（FormRadio/FormSelect/SettingSelect 的 value 导出）
+            if tag == "FormRadio" || tag == "FormSelect" || tag == "SettingSelect" {
+                control.set(&StringName::from("value"), &value.to_variant());
+            } else if tag == "ProgressBar"
+                || tag == "SpinBox"
+                || tag == "HSlider"
+                || tag == "FormSlider"
+                || tag == "FormSliderH"
+                || tag == "FormSliderV"
+                || tag == "SettingSlider"
+            {
                 if let Ok(val) = value.parse::<f64>() {
                     let mut c = control.cast::<Range>();
                     c.set_value(val);
                     return c.upcast();
                 }
+            }
+        }
+        // 表单组件：选中态（FormCheck/FormSwitch/SettingSwitch）
+        "checked" => {
+            if tag == "FormCheck" || tag == "FormSwitch" || tag == "SettingSwitch" {
+                control.set(
+                    &StringName::from("checked"),
+                    &(value == "true" || value == "1").to_variant(),
+                );
+            }
+        }
+        // 表单组件：选项列表（FormRadio/FormSelect/SettingSelect）
+        "options" => {
+            if tag == "FormRadio" || tag == "FormSelect" || tag == "SettingSelect" {
+                control.set(&StringName::from("options"), &value.to_variant());
+            }
+        }
+        // 设置接口组件：绑定协议（volume:<Bus> / fullscreen / vsync / custom:<key>）
+        "bind" => {
+            if tag == "SettingSlider" || tag == "SettingSwitch" || tag == "SettingSelect" {
+                control.set(&StringName::from("bind"), &value.to_variant());
+            }
+        }
+        // 设置接口组件：custom 键缺省默认值（SettingSwitch 布尔 / SettingSlider 数值）
+        "default_value" => {
+            if tag == "SettingSwitch" {
+                control.set(
+                    &StringName::from("default_value"),
+                    &(value == "true" || value == "1").to_variant(),
+                );
+            } else if tag == "SettingSlider" {
+                if let Ok(v) = value.parse::<f64>() {
+                    control.set(&StringName::from("default_value"), &v.to_variant());
+                }
+            }
+        }
+        // FormRadio 行高
+        "item_height" => {
+            if tag == "FormRadio" {
+                if let Ok(v) = value.parse::<i32>() {
+                    control.set(&StringName::from("item_height"), &v.to_variant());
+                }
+            }
+        }
+        // Modal 特有：按键绑定（key_bind="escape" → ESC 开关弹窗）
+        "key_bind" => {
+            if tag == "Modal" {
+                control.set(&StringName::from("key_bind"), &value.to_variant());
             }
         }
         "visible" => {
@@ -2078,6 +2157,17 @@ fn apply_text_color(control: &mut Gd<Control>, tag: &str, color: Color) {
                 &StringName::from("font_color"),
                 color,
             );
+        }
+        // 表单组件：自绘文本走 label_color 导出属性；下拉类走 font_color 主题覆盖
+        "FormCheck" | "FormSwitch" | "SettingSwitch" | "FormRadio" => {
+            control.set(&StringName::from("label_color"), &color.to_variant());
+        }
+        "FormSelect" | "SettingSelect" => {
+            control.add_theme_color_override(
+                &StringName::from("label_color"),
+                color,
+            );
+            control.set(&StringName::from("label_color"), &color.to_variant());
         }
         _ => {}
     }

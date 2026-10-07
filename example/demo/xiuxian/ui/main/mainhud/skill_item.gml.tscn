@@ -1,8 +1,8 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" uid="uid://bfxptmrnvg8ca" path="res://example/demo/xiuxian/ui/main/mainhud/skill_item.gd" id="1_f32xw"]
+[ext_resource type="Script" path="res://example/demo/xiuxian/ui/main/mainhud/skill_item.gd" id="1_goblc"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1dtkr"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_12jwk"]
 bg_color = Color(0.14117648, 0.23529412, 0.18039216, 1)
 border_width_left = 2
 border_width_top = 2
@@ -14,24 +14,24 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xhprl"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xhhkd"]
 bg_color = Color(0.039215688, 0.078431375, 0.0627451, 0.7529412)
 corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[node name="SkillSlot" type="Panel" unique_id=406618234]
+[node name="SkillSlot" type="Panel" unique_id=1959498785]
 custom_minimum_size = Vector2(56, 56)
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_1dtkr")
-script = ExtResource("1_f32xw")
+theme_override_styles/panel = SubResource("StyleBoxFlat_12jwk")
+script = ExtResource("1_goblc")
 metadata/__script_vars = {}
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray("icon", "key", "cd")
 
-[node name="IconBox" type="CenterContainer" parent="." unique_id=714259162]
+[node name="IconBox" type="CenterContainer" parent="." unique_id=1975484232]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -42,21 +42,21 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="SlotIcon" type="Label" parent="IconBox" unique_id=1486932452]
+[node name="SlotIcon" type="Label" parent="IconBox" unique_id=357985249]
 layout_mode = 2
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="CdMask" type="Panel" parent="." unique_id=1566028478]
+[node name="CdMask" type="Panel" parent="." unique_id=231486650]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_xhprl")
+theme_override_styles/panel = SubResource("StyleBoxFlat_xhhkd")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CdText" type="Label" parent="." unique_id=1711862214]
+[node name="CdText" type="Label" parent="." unique_id=1439671038]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -69,7 +69,7 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="KeyBadge" type="Label" parent="." unique_id=126588600]
+[node name="KeyBadge" type="Label" parent="." unique_id=506932755]
 layout_mode = 0
 anchor_top = 1.0
 anchor_right = 1.0

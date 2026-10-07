@@ -1,11 +1,11 @@
 # 校验脚本：修仙坊市 GML 结构验证
-# 运行：godot --headless --path . -s res://example/demo/xiuxian/ui/store/check_store_ui.gd
+# 运行：godot --headless --path . -s res://example/demo/xiuxian/ui/main/store/check_store_ui.gd
 # 职责：1) 全部 gml 构建校验并重生成同名 tscn（等效编辑器插件产物）
 #       2) 实例化主面板验证 <Gml> 组合 / Tab 页内 HBox（左 3x2 网格 + 右推荐卡）/
 #          分类过滤 / 条目契约注入（品质角标/倒计时/售罄态）/ 布局比例
 extends SceneTree
 
-const DIR := "res://example/demo/xiuxian/ui/store/"
+const DIR := "res://example/demo/xiuxian/ui/main/store/"
 const GML_FILES := [
 	"store_panel.gml", "store_topbar.gml", "store_tabs.gml",
 	"store_goods.gml", "store_item.gml", "store_featured.gml", "store_footer.gml",
