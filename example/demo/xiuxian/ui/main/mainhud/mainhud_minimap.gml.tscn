@@ -1,0 +1,77 @@
+[gd_scene format=3]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0mm1s"]
+bg_color = Color(0.18039216, 0.2901961, 0.22745098, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.9098039, 0.7254902, 0.24313726, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_27vts"]
+bg_color = Color(0.14117648, 0.23529412, 0.18039216, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.3372549, 0.4392157, 0.36078432, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="MiniMap" type="Panel" unique_id=120178692]
+custom_minimum_size = Vector2(172, 150)
+theme_override_styles/panel = SubResource("StyleBoxFlat_0mm1s")
+metadata/__script_vars = {}
+metadata/__gml_root = true
+
+[node name="MapInner" type="Panel" parent="." unique_id=1840758656]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 6.0
+offset_top = 6.0
+offset_right = -6.0
+offset_bottom = -6.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_27vts")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="@Label@88" type="Label" parent="MapInner" unique_id=510391333]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "🗺️"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="PlayerArrow" type="Label" parent="MapInner" unique_id=183264892]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -8.0
+offset_top = -11.5
+offset_right = 8.0
+offset_bottom = 11.5
+text = "⬆"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "center"
+
+[node name="NorthMark" type="Label" parent="MapInner" unique_id=154547871]
+layout_mode = 0
+anchor_right = 1.0
+offset_top = 4.0
+offset_right = -8.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "N"
+horizontal_alignment = 2
+metadata/__anchor = "top_wide"

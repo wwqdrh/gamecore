@@ -139,9 +139,45 @@ popup.is_popup_visible()
 
 ## 其他控件
 
-- `GdUIDrawer`：抽屉面板，从屏幕边缘滑入/滑出。
+- `GdUIDrawer`：抽屉面板，从屏幕边缘滑入/滑出（`<Drawer direction="left" slide_width="50%" drawer_title="任务">`，open/close/toggle，close_on_overlay 点击遮罩关闭）。
 - `GdUINavMenu`：多级级联导航菜单。
 - `GdUITooltip`：鼠标跟随提示框。
+
+## GdUIModal — 模态弹窗 + GdUIManager 跨组件调用
+
+`<Modal>`：全屏遮罩 + 内容区，遮罩淡入 + 内容缩放动画（居中弹窗版 Drawer）：
+
+```xml
+<!-- 组件声明（在自己文件里声明 ui_id 唯一身份，零外部引用） -->
+<Modal name="BagModal" ui_id="BagModal" anchor="full"
+       content_margin="56" close_on_overlay="true">
+  <Gml src="bag_panel.gml" />   <!-- 内容子节点进入 ContentArea（content_margin 四周留白） -->
+</Modal>
+```
+
+- `open()/close()/toggle()/is_modal_open()`；信号 `s_modal_opened` / `s_modal_closed`
+- `content_margin`：内容区四周像素留白；留白区点击穿透到遮罩 → 关闭
+- **内容关闭联动**：内容根声明 `signal s_close_requested` 并在自身关闭按钮里 emit
+  （独立 F6 仍走自身 hide），Modal 自动连接并整体 close——现成面板无需改动即可弹窗化
+- 编辑器内静态预览展开布局（遮罩透明），运行期初始隐藏
+
+**跨组件调用（GdUIManager 统一 UI 管理层）**：组件分属不同目录时零 import、
+零 find_child 翻树，全部按 ui_id 查注册表（组合根把组件装配进同一棵树后自动注册）：
+
+```xml
+<!-- GML 内部动作：运行期按下时按 id 延迟解析（本地树节点名优先 → ui_id 注册表） -->
+<Panel @pressed="show:BagModal" />
+```
+
+```gdscript
+# GD 侧按需调用
+GdUIManager.find_ui("BagModal").open()
+GdUIManager.has_ui("TaskDrawer") / get_ui_ids()
+```
+
+范本：`example/demo/xiuxian/`（main.gml 组合根装配 mainhud + task 抽屉 + 三个 Modal，
+mainhud 功能按钮 `show:BagModal`/`show:StoreModal`、头像 `show:ProfileModal`），
+验收 `check_demo_ui.gd`。
 
 ## 推荐架构
 

@@ -28,6 +28,7 @@ use super::ui_grid::GdUIGrid;
 use super::ui_popup_panel::GdPopupPanel;
 use super::ui_tooltip::GdUITooltip;
 use super::ui_drawer::GdUIDrawer;
+use super::ui_modal::GdUIModal;
 use super::ui_nav_menu::GdUINavMenu;
 use super::ui_theme::{ThemeVars, get_theme_color, resolve_theme_vars};
 
@@ -231,10 +232,10 @@ impl UiBuilder {
             self.apply_class_style(&mut control, &node.tag, cn);
         }
 
-        // PopupPanel/Drawer/Tooltip：属性设置完成后立即构建内部 UI
+        // PopupPanel/Drawer/Modal/Tooltip：属性设置完成后立即构建内部 UI
         // 这样 ContentContainer 在添加子节点前就已存在
         // NavMenu 不在此处构建，因为需要先添加 NavItem 子节点再解析数据，由 ready() 处理
-        if node.tag == "PopupPanel" || node.tag == "Drawer" || node.tag == "Tooltip" {
+        if node.tag == "PopupPanel" || node.tag == "Drawer" || node.tag == "Modal" || node.tag == "Tooltip" {
             control.call(&StringName::from("ensure_ui_built"), &[]);
         }
 
@@ -299,7 +300,7 @@ impl UiBuilder {
             }
 
             // PopupPanel 的子节点添加到内容区域
-            if node.tag == "PopupPanel" || node.tag == "Drawer" || node.tag == "Tooltip" {
+            if node.tag == "PopupPanel" || node.tag == "Drawer" || node.tag == "Modal" || node.tag == "Tooltip" {
                 control.call(
                     &StringName::from("add_content_child"),
                     &[child_control.clone().upcast::<godot::classes::Node>().to_variant()],
@@ -658,6 +659,8 @@ impl UiBuilder {
             "Tooltip" => GdUITooltip::new_alloc().upcast(),
             // 抽屉面板
             "Drawer" => GdUIDrawer::new_alloc().upcast(),
+            // 模态弹窗
+            "Modal" => GdUIModal::new_alloc().upcast(),
             // 导航菜单
             "NavMenu" => GdUINavMenu::new_alloc().upcast(),
             // 导航菜单项（递归嵌套，使用 Control 占位）
@@ -1252,6 +1255,12 @@ impl UiBuilder {
                 if let Some(color) = get_theme_color(&self.theme_vars, "popup_border") {
                     control.set(&StringName::from("drawer_border_color"), &color.to_variant());
                 }
+                if let Some(color) = get_theme_color(&self.theme_vars, "overlay") {
+                    control.set(&StringName::from("overlay_color"), &color.to_variant());
+                }
+            }
+            // Modal：设置弹窗默认遮罩颜色
+            "Modal" => {
                 if let Some(color) = get_theme_color(&self.theme_vars, "overlay") {
                     control.set(&StringName::from("overlay_color"), &color.to_variant());
                 }
@@ -1863,8 +1872,16 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
             }
         }
         "close_on_overlay" => {
-            if tag == "PopupPanel" || tag == "Drawer" || tag == "NavMenu" {
+            if tag == "PopupPanel" || tag == "Drawer" || tag == "Modal" || tag == "NavMenu" {
                 control.set(&StringName::from("close_on_overlay"), &(value == "true" || value == "1").to_variant());
+            }
+        }
+        // Modal 特有属性
+        "content_margin" => {
+            if tag == "Modal" {
+                if let Ok(v) = value.parse::<i32>() {
+                    control.set(&StringName::from("content_margin"), &v.to_variant());
+                }
             }
         }
         // Tooltip 特有属性

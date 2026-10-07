@@ -1,0 +1,232 @@
+[gd_scene format=3]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_anim2"]
+bg_color = Color(0.9647059, 0.9411765, 0.87058824, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vwl5j"]
+bg_color = Color(0.8509804, 0.78431374, 0.57254905, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.72156864, 0.627451, 0.41568628, 1)
+corner_radius_top_left = 90
+corner_radius_top_right = 90
+corner_radius_bottom_right = 90
+corner_radius_bottom_left = 90
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_g63ka"]
+bg_color = Color(0.9137255, 0.9411765, 0.9019608, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.36862746, 0.6117647, 0.5254902, 1)
+corner_radius_top_left = 74
+corner_radius_top_right = 74
+corner_radius_bottom_right = 74
+corner_radius_bottom_left = 74
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ckr68"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.9098039, 0.7254902, 0.24313726, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.5411765, 0.41568628, 0.11764706, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hep6d"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.8098039, 0.6254902, 0.14313725, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.5411765, 0.41568628, 0.11764706, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ofrhu"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(1, 0.8454902, 0.36313725, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_66g5b"]
+bg_color = Color(0.9372549, 0.89411765, 0.76862746, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[node name="RealmPanel" type="Panel" unique_id=752602639]
+theme_override_styles/panel = SubResource("StyleBoxFlat_anim2")
+metadata/__script_vars = {}
+metadata/__gml_root = true
+
+[node name="RealmColumn" type="VBoxContainer" parent="." unique_id=938126531]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = -14.0
+offset_bottom = -14.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="RealmTitleRow" type="CenterContainer" parent="RealmColumn" unique_id=161250273]
+layout_mode = 2
+
+[node name="@HBoxContainer@76" type="HBoxContainer" parent="RealmColumn/RealmTitleRow" unique_id=1376678025]
+layout_mode = 2
+
+[node name="RealmNow" type="Label" parent="RealmColumn/RealmTitleRow/@HBoxContainer@76" unique_id=13970035]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+text = "炼气三层"
+vertical_alignment = 1
+
+[node name="@Control@74" type="Control" parent="RealmColumn/RealmTitleRow/@HBoxContainer@76" unique_id=1123205367]
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 2
+
+[node name="RealmArrow" type="Label" parent="RealmColumn/RealmTitleRow/@HBoxContainer@76" unique_id=232113161]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.65882355, 0.26666668, 0.22745098, 1)
+text = "→"
+vertical_alignment = 1
+
+[node name="@Control@75" type="Control" parent="RealmColumn/RealmTitleRow/@HBoxContainer@76" unique_id=195690856]
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 2
+
+[node name="RealmNext" type="Label" parent="RealmColumn/RealmTitleRow/@HBoxContainer@76" unique_id=1731596298]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.36862746, 0.5529412, 0.47843137, 1)
+text = "炼气四层"
+vertical_alignment = 1
+
+[node name="@Control@77" type="Control" parent="RealmColumn" unique_id=1581014208]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+
+[node name="RingRow" type="CenterContainer" parent="RealmColumn" unique_id=813388661]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ProgressRing" type="Panel" parent="RealmColumn/RingRow" unique_id=1501091159]
+custom_minimum_size = Vector2(160, 160)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_vwl5j")
+
+[node name="RingInner" type="Panel" parent="RealmColumn/RingRow/ProgressRing" unique_id=1896117670]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = -14.0
+offset_bottom = -14.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_g63ka")
+metadata/__anchor = "full"
+
+[node name="RealmProgress" type="Label" parent="RealmColumn/RingRow/ProgressRing/RingInner" unique_id=1283439072]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 34
+theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+text = "62%"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="@Control@78" type="Control" parent="RealmColumn" unique_id=491572774]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+
+[node name="BreakthroughRow" type="CenterContainer" parent="RealmColumn" unique_id=475175392]
+layout_mode = 2
+
+[node name="BreakthroughBtn" type="Button" parent="RealmColumn/BreakthroughRow" unique_id=1739255910]
+custom_minimum_size = Vector2(180, 52)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_ckr68")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_hep6d")
+theme_override_styles/hover = SubResource("StyleBoxFlat_ofrhu")
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
+text = "突  破"
+metadata/__signal_pressed = "_on_breakthrough_pressed"
+
+[node name="@Control@79" type="Control" parent="RealmColumn" unique_id=1901839827]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+
+[node name="MaterialRow" type="CenterContainer" parent="RealmColumn" unique_id=528812829]
+layout_mode = 2
+
+[node name="MaterialChip" type="Panel" parent="RealmColumn/MaterialRow" unique_id=612914355]
+custom_minimum_size = Vector2(130, 40)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_66g5b")
+
+[node name="MaterialChipRow" type="HBoxContainer" parent="RealmColumn/MaterialRow/MaterialChip" unique_id=2053025810]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_right = -10.0
+metadata/__anchor = "full"
+
+[node name="MaterialIcon" type="Label" parent="RealmColumn/MaterialRow/MaterialChip/MaterialChipRow" unique_id=1156031405]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "🟢"
+vertical_alignment = 1
+
+[node name="@Control@80" type="Control" parent="RealmColumn/MaterialRow/MaterialChip/MaterialChipRow" unique_id=1199483468]
+custom_minimum_size = Vector2(6, 0)
+layout_mode = 2
+
+[node name="MaterialText" type="Label" parent="RealmColumn/MaterialRow/MaterialChip/MaterialChipRow" unique_id=1143379261]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.41960785, 0.3529412, 0.24313726, 1)
+text = "聚气丹 x5"
+vertical_alignment = 1

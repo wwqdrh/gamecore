@@ -1,0 +1,593 @@
+[gd_scene format=3]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_exkfm"]
+bg_color = Color(0.9647059, 0.9411765, 0.87058824, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5cwvl"]
+bg_color = Color(0.84705883, 0.89411765, 0.84705883, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.6901961, 0.7607843, 0.6901961, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hjdiy"]
+bg_color = Color(0.65882355, 0.26666668, 0.22745098, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0joo0"]
+bg_color = Color(0.8862745, 0.84705883, 0.7372549, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gtej3"]
+bg_color = Color(0.36862746, 0.6117647, 0.5254902, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[node name="AvatarPanel" type="Panel" unique_id=2123121565]
+theme_override_styles/panel = SubResource("StyleBoxFlat_exkfm")
+metadata/__script_vars = {
+"spirit_roots": [{
+"element": "金",
+"icon": "🟡",
+"max": 100.0,
+"value": 28.0
+}, {
+"element": "木",
+"icon": "🟢",
+"max": 100.0,
+"value": 32.0
+}, {
+"element": "水",
+"icon": "🔵",
+"max": 100.0,
+"value": 24.0
+}, {
+"element": "火",
+"icon": "🔴",
+"max": 100.0,
+"value": 18.0
+}, {
+"element": "土",
+"icon": "🟤",
+"max": 100.0,
+"value": 16.0
+}]
+}
+metadata/__gml_root = true
+
+[node name="AvatarColumn" type="VBoxContainer" parent="." unique_id=147550149]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+metadata/__anchor = "full"
+metadata/__script_vars = {
+"spirit_roots": [{
+"element": "金",
+"icon": "🟡",
+"max": 100.0,
+"value": 28.0
+}, {
+"element": "木",
+"icon": "🟢",
+"max": 100.0,
+"value": 32.0
+}, {
+"element": "水",
+"icon": "🔵",
+"max": 100.0,
+"value": 24.0
+}, {
+"element": "火",
+"icon": "🔴",
+"max": 100.0,
+"value": 18.0
+}, {
+"element": "土",
+"icon": "🟤",
+"max": 100.0,
+"value": 16.0
+}]
+}
+
+[node name="PortraitArea" type="Panel" parent="AvatarColumn" unique_id=256887001]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_5cwvl")
+
+[node name="PortraitPlaceholder" type="Label" parent="AvatarColumn/PortraitArea" unique_id=7235853]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 20
+text = "【立绘】"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="XianBadge" type="Panel" parent="AvatarColumn/PortraitArea" unique_id=1928002682]
+custom_minimum_size = Vector2(28, 64)
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_hjdiy")
+metadata/__anchor = "top_left"
+
+[node name="XianText" type="VBoxContainer" parent="AvatarColumn/PortraitArea/XianBadge" unique_id=169770111]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+metadata/__anchor = "full"
+
+[node name="@Label@61" type="Label" parent="AvatarColumn/PortraitArea/XianBadge/XianText" unique_id=38404956]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 14
+text = "修"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="@Label@62" type="Label" parent="AvatarColumn/PortraitArea/XianBadge/XianText" unique_id=1145281322]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 14
+text = "仙"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="@Control@63" type="Control" parent="AvatarColumn" unique_id=1491569119]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+
+[node name="RootSectionTitle" type="Label" parent="AvatarColumn" unique_id=274104179]
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+theme_override_colors/font_color = Color(0.41960785, 0.3529412, 0.24313726, 1)
+text = "五行灵根"
+horizontal_alignment = 1
+
+[node name="@Control@64" type="Control" parent="AvatarColumn" unique_id=737429095]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="SpiritRootList" type="GdUIVList" parent="AvatarColumn" unique_id=715407655]
+layout_mode = 2
+size_flags_horizontal = 3
+metadata/__script_data = [{
+"element": "金",
+"icon": "🟡",
+"max": 100.0,
+"value": 28.0
+}, {
+"element": "木",
+"icon": "🟢",
+"max": 100.0,
+"value": 32.0
+}, {
+"element": "水",
+"icon": "🔵",
+"max": 100.0,
+"value": 24.0
+}, {
+"element": "火",
+"icon": "🔴",
+"max": 100.0,
+"value": 18.0
+}, {
+"element": "土",
+"icon": "🟤",
+"max": 100.0,
+"value": 16.0
+}]
+
+[node name="RootItem" type="Panel" parent="AvatarColumn/SpiritRootList" unique_id=1031954624]
+visible = false
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
+metadata/__script_vars = {}
+metadata/__gml_root = true
+
+[node name="RootRow" type="HBoxContainer" parent="AvatarColumn/SpiritRootList/RootItem" unique_id=251812028]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="RootIcon" type="Label" parent="AvatarColumn/SpiritRootList/RootItem/RootRow" unique_id=644076239]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+vertical_alignment = 1
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="RootName" type="Label" parent="AvatarColumn/SpiritRootList/RootItem/RootRow" unique_id=1502361399]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "element"
+metadata/__tpl_keys = "text"
+
+[node name="@Control@65" type="Control" parent="AvatarColumn/SpiritRootList/RootItem/RootRow" unique_id=1515855443]
+custom_minimum_size = Vector2(6, 0)
+layout_mode = 2
+
+[node name="RootBar" type="ProgressBar" parent="AvatarColumn/SpiritRootList/RootItem/RootRow" unique_id=993316914]
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_styles/background = SubResource("StyleBoxFlat_0joo0")
+theme_override_styles/fill = SubResource("StyleBoxFlat_gtej3")
+show_percentage = false
+metadata/__tpl_value = "value"
+metadata/__tpl_keys = "value,max_value"
+metadata/__tpl_max_value = "max"
+
+[node name="@Control@66" type="Control" parent="AvatarColumn/SpiritRootList/RootItem/RootRow" unique_id=1030992821]
+custom_minimum_size = Vector2(8, 0)
+layout_mode = 2
+
+[node name="RootValue" type="Label" parent="AvatarColumn/SpiritRootList/RootItem/RootRow" unique_id=1468696879]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.41960785, 0.3529412, 0.24313726, 1)
+vertical_alignment = 1
+metadata/__tpl_text = "value"
+metadata/__tpl_keys = "text"
+
+[node name="@Panel@67" type="Panel" parent="AvatarColumn/SpiritRootList" unique_id=1122182830]
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__item_data = {
+"element": "金",
+"icon": "🟡",
+"max": 100.0,
+"value": 28.0
+}
+
+[node name="RootRow" type="HBoxContainer" parent="AvatarColumn/SpiritRootList/@Panel@67" unique_id=741039321]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="RootIcon" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@67/RootRow" unique_id=961767081]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "🟡"
+vertical_alignment = 1
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="RootName" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@67/RootRow" unique_id=1976263653]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+text = "金"
+vertical_alignment = 1
+metadata/__tpl_text = "element"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_65" type="Control" parent="AvatarColumn/SpiritRootList/@Panel@67/RootRow" unique_id=1056925984]
+custom_minimum_size = Vector2(6, 0)
+layout_mode = 2
+
+[node name="RootBar" type="ProgressBar" parent="AvatarColumn/SpiritRootList/@Panel@67/RootRow" unique_id=1379786718]
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_styles/background = SubResource("StyleBoxFlat_0joo0")
+theme_override_styles/fill = SubResource("StyleBoxFlat_gtej3")
+value = 28.0
+show_percentage = false
+metadata/__tpl_value = "value"
+metadata/__tpl_keys = "value,max_value"
+metadata/__tpl_max_value = "max"
+
+[node name="_Control_66" type="Control" parent="AvatarColumn/SpiritRootList/@Panel@67/RootRow" unique_id=1868765169]
+custom_minimum_size = Vector2(8, 0)
+layout_mode = 2
+
+[node name="RootValue" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@67/RootRow" unique_id=1782987011]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.41960785, 0.3529412, 0.24313726, 1)
+text = "28.0"
+vertical_alignment = 1
+metadata/__tpl_text = "value"
+metadata/__tpl_keys = "text"
+
+[node name="@Panel@68" type="Panel" parent="AvatarColumn/SpiritRootList" unique_id=90940997]
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__item_data = {
+"element": "木",
+"icon": "🟢",
+"max": 100.0,
+"value": 32.0
+}
+
+[node name="RootRow" type="HBoxContainer" parent="AvatarColumn/SpiritRootList/@Panel@68" unique_id=803139767]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="RootIcon" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@68/RootRow" unique_id=441910763]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "🟢"
+vertical_alignment = 1
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="RootName" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@68/RootRow" unique_id=832043620]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+text = "木"
+vertical_alignment = 1
+metadata/__tpl_text = "element"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_65" type="Control" parent="AvatarColumn/SpiritRootList/@Panel@68/RootRow" unique_id=1646966865]
+custom_minimum_size = Vector2(6, 0)
+layout_mode = 2
+
+[node name="RootBar" type="ProgressBar" parent="AvatarColumn/SpiritRootList/@Panel@68/RootRow" unique_id=1776171229]
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_styles/background = SubResource("StyleBoxFlat_0joo0")
+theme_override_styles/fill = SubResource("StyleBoxFlat_gtej3")
+value = 32.0
+show_percentage = false
+metadata/__tpl_value = "value"
+metadata/__tpl_keys = "value,max_value"
+metadata/__tpl_max_value = "max"
+
+[node name="_Control_66" type="Control" parent="AvatarColumn/SpiritRootList/@Panel@68/RootRow" unique_id=1214890529]
+custom_minimum_size = Vector2(8, 0)
+layout_mode = 2
+
+[node name="RootValue" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@68/RootRow" unique_id=1350848628]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.41960785, 0.3529412, 0.24313726, 1)
+text = "32.0"
+vertical_alignment = 1
+metadata/__tpl_text = "value"
+metadata/__tpl_keys = "text"
+
+[node name="@Panel@69" type="Panel" parent="AvatarColumn/SpiritRootList" unique_id=797432488]
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__item_data = {
+"element": "水",
+"icon": "🔵",
+"max": 100.0,
+"value": 24.0
+}
+
+[node name="RootRow" type="HBoxContainer" parent="AvatarColumn/SpiritRootList/@Panel@69" unique_id=1661766074]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="RootIcon" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@69/RootRow" unique_id=1345948933]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "🔵"
+vertical_alignment = 1
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="RootName" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@69/RootRow" unique_id=1264780324]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+text = "水"
+vertical_alignment = 1
+metadata/__tpl_text = "element"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_65" type="Control" parent="AvatarColumn/SpiritRootList/@Panel@69/RootRow" unique_id=1139331020]
+custom_minimum_size = Vector2(6, 0)
+layout_mode = 2
+
+[node name="RootBar" type="ProgressBar" parent="AvatarColumn/SpiritRootList/@Panel@69/RootRow" unique_id=698165016]
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_styles/background = SubResource("StyleBoxFlat_0joo0")
+theme_override_styles/fill = SubResource("StyleBoxFlat_gtej3")
+value = 24.0
+show_percentage = false
+metadata/__tpl_value = "value"
+metadata/__tpl_keys = "value,max_value"
+metadata/__tpl_max_value = "max"
+
+[node name="_Control_66" type="Control" parent="AvatarColumn/SpiritRootList/@Panel@69/RootRow" unique_id=1011484682]
+custom_minimum_size = Vector2(8, 0)
+layout_mode = 2
+
+[node name="RootValue" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@69/RootRow" unique_id=467353651]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.41960785, 0.3529412, 0.24313726, 1)
+text = "24.0"
+vertical_alignment = 1
+metadata/__tpl_text = "value"
+metadata/__tpl_keys = "text"
+
+[node name="@Panel@70" type="Panel" parent="AvatarColumn/SpiritRootList" unique_id=1280248339]
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__item_data = {
+"element": "火",
+"icon": "🔴",
+"max": 100.0,
+"value": 18.0
+}
+
+[node name="RootRow" type="HBoxContainer" parent="AvatarColumn/SpiritRootList/@Panel@70" unique_id=124390383]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="RootIcon" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@70/RootRow" unique_id=1767254896]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "🔴"
+vertical_alignment = 1
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="RootName" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@70/RootRow" unique_id=1333371246]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+text = "火"
+vertical_alignment = 1
+metadata/__tpl_text = "element"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_65" type="Control" parent="AvatarColumn/SpiritRootList/@Panel@70/RootRow" unique_id=239847339]
+custom_minimum_size = Vector2(6, 0)
+layout_mode = 2
+
+[node name="RootBar" type="ProgressBar" parent="AvatarColumn/SpiritRootList/@Panel@70/RootRow" unique_id=594250936]
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_styles/background = SubResource("StyleBoxFlat_0joo0")
+theme_override_styles/fill = SubResource("StyleBoxFlat_gtej3")
+value = 18.0
+show_percentage = false
+metadata/__tpl_value = "value"
+metadata/__tpl_keys = "value,max_value"
+metadata/__tpl_max_value = "max"
+
+[node name="_Control_66" type="Control" parent="AvatarColumn/SpiritRootList/@Panel@70/RootRow" unique_id=264929841]
+custom_minimum_size = Vector2(8, 0)
+layout_mode = 2
+
+[node name="RootValue" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@70/RootRow" unique_id=595880002]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.41960785, 0.3529412, 0.24313726, 1)
+text = "18.0"
+vertical_alignment = 1
+metadata/__tpl_text = "value"
+metadata/__tpl_keys = "text"
+
+[node name="@Panel@71" type="Panel" parent="AvatarColumn/SpiritRootList" unique_id=2034787921]
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__item_data = {
+"element": "土",
+"icon": "🟤",
+"max": 100.0,
+"value": 16.0
+}
+
+[node name="RootRow" type="HBoxContainer" parent="AvatarColumn/SpiritRootList/@Panel@71" unique_id=1465698304]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="RootIcon" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@71/RootRow" unique_id=295495504]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "🟤"
+vertical_alignment = 1
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="RootName" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@71/RootRow" unique_id=1796404352]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+text = "土"
+vertical_alignment = 1
+metadata/__tpl_text = "element"
+metadata/__tpl_keys = "text"
+
+[node name="_Control_65" type="Control" parent="AvatarColumn/SpiritRootList/@Panel@71/RootRow" unique_id=1493474633]
+custom_minimum_size = Vector2(6, 0)
+layout_mode = 2
+
+[node name="RootBar" type="ProgressBar" parent="AvatarColumn/SpiritRootList/@Panel@71/RootRow" unique_id=1703618330]
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_styles/background = SubResource("StyleBoxFlat_0joo0")
+theme_override_styles/fill = SubResource("StyleBoxFlat_gtej3")
+value = 16.0
+show_percentage = false
+metadata/__tpl_value = "value"
+metadata/__tpl_keys = "value,max_value"
+metadata/__tpl_max_value = "max"
+
+[node name="_Control_66" type="Control" parent="AvatarColumn/SpiritRootList/@Panel@71/RootRow" unique_id=1062545700]
+custom_minimum_size = Vector2(8, 0)
+layout_mode = 2
+
+[node name="RootValue" type="Label" parent="AvatarColumn/SpiritRootList/@Panel@71/RootRow" unique_id=1783268222]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.41960785, 0.3529412, 0.24313726, 1)
+text = "16.0"
+vertical_alignment = 1
+metadata/__tpl_text = "value"
+metadata/__tpl_keys = "text"
