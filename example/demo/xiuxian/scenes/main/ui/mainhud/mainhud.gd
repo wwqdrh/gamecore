@@ -16,12 +16,30 @@
 #   · 命令上行：功能按钮/技能格点击 set_state 写入状态总线
 #   · 状态下行：监听方 watch 同名键各自更新（如菜单高亮）
 #   · 红线：watch 回调内禁止同步再调用 GDSTATE 任何方法（重入 panic）
+#
+# 状态层数据源（GdBean 持久化状态，example/demo/xiuxian/state/）：
+#   · XiuCharacterState（xiuxian_character）→ 玩家徽章（境界/等级/经验）
+#     + 资源栏灵石
+#   · XiuItemState（xiuxian_item）→ 资源栏丹药数（背包消耗类总量）；
+#     ＋ 按钮真实写入状态（加灵石/加丹药，全 UI 响应式联动）
+#   · XiuTaskState（xiuxian_task）→ 任务卷轴横幅（首个进行中任务进度）
 extends Control
+
+const CharacterStateScript := preload("res://example/demo/xiuxian/state/character/character_state.gd")
+const ItemStateScript := preload("res://example/demo/xiuxian/state/item/item_state.gd")
+const TaskStateScript := preload("res://example/demo/xiuxian/state/task/task_state.gd")
 
 ## 状态键：当前功能主界面（"cultivate"/"gongfa"/"bag"/"market"）
 const KEY_MENU := "mainhud.menu"
 ## 状态键：当前点选的技能格（键位字符串 "1"~"6"）
 const KEY_SKILL := "mainhud.skill"
+
+## 资源按钮动作：每次点击加的灵石数
+const STONE_GAIN := 100
+
+var _char_bean: GdBean
+var _item_bean: GdBean
+var _task_bean: GdBean
 
 
 func _ready() -> void:
@@ -33,6 +51,8 @@ func _ready() -> void:
 			c.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	# 初始功能页（子区块 _ready 自底向上先于本方法执行，watch 已注册完毕）
 	_state().set_state(KEY_MENU, "cultivate")
+	# 状态层数据绑定（watch 注册即回调当前值，无需手动刷初始 UI）
+	_bind_game_state()
 
 
 ## 状态总线访问入口（子区块各自 Engine.get_singleton 亦可）
@@ -40,6 +60,90 @@ func _state():
 	return Engine.get_singleton("GDSTATE")
 
 
+# ---------- 状态层数据绑定 ----------
+
+func _bind_game_state() -> void:
+	_char_bean = CharacterStateScript.ins()
+	_item_bean = ItemStateScript.ins()
+	_task_bean = TaskStateScript.ins()
+	_char_bean.watch("level", _on_char_changed)
+	_char_bean.watch("exp", _on_char_changed)
+	_char_bean.watch("attrs", _on_char_changed)
+	_char_bean.watch("spirit_stones", _on_stones_changed)
+	_item_bean.watch("bag_views", _on_bag_changed)
+	_task_bean.watch("views", _on_task_views_changed)
+
+
+## 玩家徽章：境界标题 / 等级 / 经验条（注册即回调当前值）
+func _on_char_changed(_value: Variant = null, _metas: Variant = null) -> void:
+	var realm: Label = find_child("RealmText", true, false)
+	if realm:
+		realm.text = _char_bean.get_realm_title()
+	var lv: Label = find_child("LevelText", true, false)
+	if lv:
+		lv.text = "Lv.%d" % int(_char_bean.level)
+	var pct: float = _char_bean.get_exp_progress()
+	var fill: Control = find_child("LevelFill", true, false)
+	if fill:
+		fill.custom_minimum_size.x = 90.0 * pct
+	var pct_label: Label = find_child("LevelPct", true, false)
+	if pct_label:
+		pct_label.text = "%d%%" % roundi(pct * 100.0)
+
+
+## 资源栏灵石（千分位展示）
+func _on_stones_changed(_value: Variant = null, _metas: Variant = null) -> void:
+	var num: Label = find_child("StoneNum", true, false)
+	if num:
+		num.text = _fmt_thousands(int(_char_bean.spirit_stones))
+
+
+## 资源栏丹药：背包消耗类总量
+func _on_bag_changed(_value: Variant = null, _metas: Variant = null) -> void:
+	var num: Label = find_child("PillNum", true, false)
+	if num == null:
+		return
+	var total := 0
+	for v in _item_bean.bag_views:
+		if str(v.get("category", "")) == "pill":
+			total += int(str(v.get("count", "x0")).trim_prefix("x"))
+	num.text = "x%d" % total
+
+
+## 任务横幅：首个进行中（accepted）任务，无则取首个可接任务，再无则提示文案
+func _on_task_views_changed(_value: Variant = null, _metas: Variant = null) -> void:
+	var text: Label = find_child("QuestText", true, false)
+	if text == null:
+		return
+	var shown := {}
+	for v in _task_bean.views:
+		if str(v.get("btn_state", "")) == "go" and str(v.get("progress", "0/1")) != "0/1":
+			shown = v
+			break
+	if shown.is_empty():
+		for v in _task_bean.views:
+			if str(v.get("btn_state", "")) == "go":
+				shown = v
+				break
+	if shown.is_empty():
+		text.text = "暂无进行中的任务"
+	else:
+		text.text = "%s %s" % [str(shown.get("title", "")), str(shown.get("progress", ""))]
+
+
+func _fmt_thousands(v: int) -> String:
+	var s := str(v)
+	var out := ""
+	while s.length() > 3:
+		out = "," + s.substr(s.length() - 3) + out
+		s = s.substr(0, s.length() - 3)
+	return s + out
+
+
 # ---------- 资源栏回调（mainhud_resources.gml 的 @pressed，就近解析回退到本脚本） ----------
+## ＋ 按钮真实写状态层：灵石 +STONE_GAIN / 回春丹 +1（全 UI 响应式联动）
 func _on_res_add(btn: Control) -> void:
-	print("[MainHud] 资源获取入口: ", btn.name)
+	if btn.name == StringName("AddPillBtn"):
+		_item_bean.add_item("pill_hp", 1)
+	else:
+		_char_bean.add_spirit_stones(STONE_GAIN)

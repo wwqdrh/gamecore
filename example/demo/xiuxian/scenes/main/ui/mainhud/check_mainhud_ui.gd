@@ -24,6 +24,13 @@ func _run() -> void:
 	var builder := GdUiBuilder.new()
 	var ok := true
 
+	# 0. 状态层基线：人物状态重置（HUD 等级/境界/经验条/资源栏由
+	#    XiuCharacterState/XiuItemState 驱动，先重置保证跨运行确定性）
+	var CharacterStateScript := preload("res://example/demo/xiuxian/state/character/character_state.gd")
+	var ItemStateScript := preload("res://example/demo/xiuxian/state/item/item_state.gd")
+	CharacterStateScript.ins().reset_demo()
+	ItemStateScript.ins().reset_demo()
+
 	# 1. 全部 gml 可构建 + 重生成 tscn
 	for f in GML_FILES:
 		var scene: PackedScene = builder.build_scene_file(DIR + f)
@@ -101,11 +108,11 @@ func _run() -> void:
 			ok = false
 	print("[Check] skill slot contracts OK (slot3 cd=8s)")
 
-	# 经验条：320/600 文本 + 填充条
+	# 经验条：状态层基线（reset 后 1 级 0 经验）→ 文本 0/100 + 填充条
 	var xp_fill: Control = hud.find_child("XpFill", true, false)
 	var xp_texts := 0
 	for node in hud.find_children("*", "Label", true, false):
-		if node.text == "320/600":
+		if node.text == "0/100":
 			xp_texts += 1
 	if xp_fill == null or xp_texts != 1:
 		push_error("[Check] 经验条填充/文本失败")

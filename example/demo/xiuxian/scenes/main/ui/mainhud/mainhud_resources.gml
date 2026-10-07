@@ -18,21 +18,21 @@
 	}
   </style>
   <HBoxContainer name="ResourceBar" separation="12">
-	<!-- 灵石徽章 -->
+	<!-- 灵石徽章（数值由 mainhud.gd watch 状态层驱动） -->
 	<Panel class="res-box" custom_minimum_size="168,44">
 	  <HBoxContainer anchor="full" margin="14 6 8 6" separation="8">
 		<Label text="💎" valign="center" font_size="16" />
-		<Label class="res-num" text="12,800" valign="center" />
+		<Label name="StoneNum" class="res-num" text="0" valign="center" />
 		<Control size_flags_horizontal="expand_fill" />
 		<Button name="AddStoneBtn" class="plus-btn" text="＋" custom_minimum_size="26,26"
 		        @pressed="_on_res_add" />
 	  </HBoxContainer>
 	</Panel>
-	<!-- 丹药徽章 -->
+	<!-- 丹药徽章（数值 = 背包消耗类总量，watch 状态层驱动） -->
 	<Panel class="res-box" custom_minimum_size="140,44">
 	  <HBoxContainer anchor="full" margin="14 6 8 6" separation="8">
 		<Label text="🧪" valign="center" font_size="16" />
-		<Label class="res-num" text="3/36" valign="center" />
+		<Label name="PillNum" class="res-num" text="x0" valign="center" />
 		<Control size_flags_horizontal="expand_fill" />
 		<Button name="AddPillBtn" class="plus-btn" text="＋" custom_minimum_size="26,26"
 		        @pressed="_on_res_add" />

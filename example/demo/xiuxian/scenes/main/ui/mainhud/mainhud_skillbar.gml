@@ -40,17 +40,17 @@
 	  <!-- slot 模板：技能格条目（构建期注入，duplicate 复制） -->
 	  <Gml src="skill_item.gml" />
 	</UIHList>
-	<!-- 灵气经验条：320/600 -->
+	<!-- 灵气经验条：由 mainhud_skillbar.gd watch 状态层经验驱动 -->
 	<Panel name="XpBar" class="xp-bg" custom_minimum_size="500,26">
 	  <HBoxContainer anchor="full" margin="12 4 12 4" separation="8">
 		<Label text="💠" valign="center" font_size="12" />
 		<Label class="xp-text" text="灵气经验" valign="center" />
 		<Panel name="XpTrack" class="xp-track" custom_minimum_size="0,12"
 		       size_flags_horizontal="expand_fill" size_flags_vertical="shrink_center">
-		  <Panel name="XpFill" class="xp-fill" custom_minimum_size="200,12"
+		  <Panel name="XpFill" class="xp-fill" custom_minimum_size="0,12"
 		         anchor="left_wide" />
 		</Panel>
-		<Label class="xp-text" text="320/600" valign="center" />
+		<Label name="XpText" class="xp-text" text="0/100" valign="center" />
 	  </HBoxContainer>
 	</Panel>
   </VBoxContainer>

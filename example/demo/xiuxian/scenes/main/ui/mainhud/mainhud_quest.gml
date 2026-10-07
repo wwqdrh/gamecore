@@ -1,6 +1,7 @@
 <ui>
   <!-- 左中任务卷轴横幅：卷轴轴头 + 羊皮纸任务文本（追踪目标任务进度）。
-	   无脚本：静态展示区块（进度接任务数据后可改 {{}} 模板） -->
+	   文本由 mainhud.gd watch 状态层 XiuTaskState views 驱动
+	   （首个进行中任务：名称 + 步数进度） -->
   <style>
 	.quest-scroll {
 	  background: #e8d9a8;
@@ -22,7 +23,7 @@
 	<Panel class="quest-scroll" custom_minimum_size="226,48">
 	  <HBoxContainer anchor="full" margin="12 8 12 8" separation="8">
 		<Label class="quest-icon" text="📜" valign="center" />
-		<Label class="quest-text" text="击败山中妖狼 3/5" valign="center" />
+		<Label name="QuestText" class="quest-text" text="暂无进行中的任务" valign="center" />
 	  </HBoxContainer>
 	</Panel>
 	<Panel class="quest-roller" custom_minimum_size="12,48" />

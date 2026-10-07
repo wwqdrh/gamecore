@@ -98,13 +98,13 @@ func _run() -> void:
 	else:
 		push_error("[Check] DrawerPanel 不存在")
 		ok = false
-	# 抽屉内任务列表正常建条目（daily 2 条）
+	# 抽屉内任务列表正常建条目（daily 页签 = 状态层 xiuxian_task 视图，日常任务 1 条）
 	if tabs:
 		var list: GdUIVList = tabs.find_child("TaskList", true, false)
 		var count: int = list.get_child_count() - 1 if list else -1
 		print("[Check] daily items=%d" % count)
-		if count != 2:
-			push_error("[Check] daily 页签应 2 条（列表数据未加载？）")
+		if count != 1:
+			push_error("[Check] daily 页签应 1 条（状态层 views 未加载？）")
 			ok = false
 
 	# 6. 遮罩点击关闭

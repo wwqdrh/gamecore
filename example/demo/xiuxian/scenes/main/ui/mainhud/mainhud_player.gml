@@ -2,7 +2,8 @@
   <!-- 左上玩家徽章：圆形头像 + 境界卷轴横幅（最高境界角标）+ 等级行。
 	   头像 @pressed="show:ProfileModal"：角色面板在 ui/profile/ 目录，
 	   内部动作经统一 UI 管理层按 ui_id 跨组件触发（零文件引用）。
-	   无其他脚本：静态展示区块（等级/境界接 GdBean 后可改 {{}} 模板） -->
+	   等级/境界/经验由 mainhud.gd 绑定状态层 XiuCharacterState
+	   （bean: xiuxian_character）watch 驱动（锚点节点已命名） -->
   <style>
 	.avatar-ring {
 	  background: #2e4a3a;
@@ -46,17 +47,17 @@
 	<VBoxContainer name="PlayerInfo" separation="6" size_flags_vertical="shrink_center">
 	  <Panel class="realm-banner" custom_minimum_size="210,42">
 		<HBoxContainer anchor="full" margin="12 6 8 6" separation="8">
-		  <Label class="realm-text" text="炼气三层" valign="center" />
+		  <Label name="RealmText" class="realm-text" text="练气一层" valign="center" />
 		  <Control size_flags_horizontal="expand_fill" />
 		  <Label class="realm-tag" text="最高境界" valign="center" />
 		</HBoxContainer>
 	  </Panel>
 	  <HBoxContainer separation="8">
-		<Label class="lv-text" text="Lv.12" valign="center" />
+		<Label name="LevelText" class="lv-text" text="Lv.1" valign="center" />
 		<Panel class="lv-track" custom_minimum_size="90,10" size_flags_vertical="shrink_center">
-		  <Panel class="lv-fill" custom_minimum_size="30,10" anchor="left_wide" />
+		  <Panel name="LevelFill" class="lv-fill" custom_minimum_size="0,10" anchor="left_wide" />
 		</Panel>
-		<Label class="lv-pct" text="22" valign="center" />
+		<Label name="LevelPct" class="lv-pct" text="0%" valign="center" />
 	  </HBoxContainer>
 	</VBoxContainer>
   </HBoxContainer>
