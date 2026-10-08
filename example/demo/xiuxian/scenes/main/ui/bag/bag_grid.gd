@@ -13,9 +13,6 @@
 #
 # 注意：watch 回调内不得同步再调用 GDSTATE（重入 panic）
 extends Panel
-
-const ItemStateScript := preload("res://example/demo/xiuxian/state/item/item_state.gd")
-
 ## 与 bag_panel.gd 的 KEY_CATEGORY 一致（demo 各自声明，避免 class_name 缓存依赖）
 const KEY_CATEGORY := "bag.category"
 const KEY_SELECTED_ITEM := "bag.selected_item"
@@ -24,7 +21,7 @@ var _bean: GdBean
 
 
 func _ready() -> void:
-	_bean = ItemStateScript.ins()
+	_bean = XiuItemState.ins()
 	# 状态层数据源：初始填充 + 响应式刷新（等一帧确保面板初始分类已写入）
 	_bind_state_data.call_deferred()
 	# 状态下行：监听分类变化（注册即回调当前值；值为 nil 表示尚未初始化，跳过）

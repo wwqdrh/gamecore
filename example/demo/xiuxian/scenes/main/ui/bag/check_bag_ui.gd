@@ -13,8 +13,6 @@ const GML_FILES := [
 	"bag_panel.gml", "bag_topbar.gml", "bag_categories.gml",
 	"bag_grid.gml", "bag_item.gml", "bag_detail.gml",
 ]
-const ItemStateScript := preload("res://example/demo/xiuxian/state/item/item_state.gd")
-
 ## 播种背包（item_id -> 数量；目录全量 10 种，id 排序决定网格顺序）
 const SEED := {
 	"herb_lingzhi": 6, "herb_xueshen": 16, "map_secret": 1, "ore_coldiron": 3,
@@ -32,7 +30,7 @@ func _run() -> void:
 	var ok := true
 
 	# 0. 状态层基线：重置 + 播种（跨运行存档恢复，必须先重置）
-	var item = ItemStateScript.ins()
+	var item = XiuItemState.ins()
 	item.reset_demo()
 	for id in SEED:
 		item.add_item(id, SEED[id])

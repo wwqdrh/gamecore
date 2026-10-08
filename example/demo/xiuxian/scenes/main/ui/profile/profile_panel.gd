@@ -15,10 +15,6 @@
 #   watch 注册即回调当前值，面板打开即展示存档状态
 #   （五行灵根/功法列表暂为静态配置数据，与养成状态无关）
 extends Control
-
-const CharacterStateScript := preload("res://example/demo/xiuxian/state/character/character_state.gd")
-const ItemStateScript := preload("res://example/demo/xiuxian/state/item/item_state.gd")
-
 ## 面板关闭请求：独立 F6 运行时仅自身 hide()；组合进 <Modal> 时
 ## Modal 监听本信号整体关闭（见 ui_modal.rs 内容关闭联动）
 signal s_close_requested
@@ -29,8 +25,8 @@ var _item_bean: GdBean
 
 func _ready() -> void:
 	# 状态层数据绑定（watch 注册即回调当前值，无需手动刷初始 UI）
-	_char_bean = CharacterStateScript.ins()
-	_item_bean = ItemStateScript.ins()
+	_char_bean = XiuCharacterState.ins()
+	_item_bean = XiuItemState.ins()
 	_char_bean.watch("level", _on_char_changed)
 	_char_bean.watch("exp", _on_char_changed)
 	_char_bean.watch("hp", _on_char_changed)

@@ -676,6 +676,12 @@ impl GdRoleMover {
 
     /// 网格通行查询：绑定地图节点则鸭子调用 is_walkable(Vector2i)，否则全部放行
     fn grid_cell_walkable(&mut self, cx: i32, cy: i32) -> bool {
+        // 缓存失效检测：地图切换后旧地图节点被释放，重置为 None 并按路径重新解析
+        if let Some(ref map) = self.grid_map {
+            if !map.is_instance_valid() {
+                self.grid_map = None;
+            }
+        }
         if self.grid_map.is_none() && !self.grid_map_path.is_empty() {
             self.grid_map = self.base().get_node_or_null(&self.grid_map_path);
         }

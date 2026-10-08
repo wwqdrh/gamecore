@@ -7,12 +7,6 @@
 #       人物经验升级与境界、跨分类联动（任务奖励发放）、
 #       GJson 路径直查与整库 dump、reset_demo 基线还原。
 extends SceneTree
-
-const TaskStateScript := preload("res://example/demo/xiuxian/state/task/task_state.gd")
-const ItemStateScript := preload("res://example/demo/xiuxian/state/item/item_state.gd")
-const CharacterStateScript := preload("res://example/demo/xiuxian/state/character/character_state.gd")
-const GameStateScript := preload("res://example/demo/xiuxian/state/game_state.gd")
-
 var ok := true
 
 
@@ -35,12 +29,12 @@ func _initialize() -> void:
 		return
 
 	# 1. 分类 Bean 注册（幂等单例）
-	var task = TaskStateScript.ins()
-	var item = ItemStateScript.ins()
-	var character = CharacterStateScript.ins()
-	var gs = GameStateScript.ins()
+	var task = XiuTaskState.ins()
+	var item = XiuItemState.ins()
+	var character = XiuCharacterState.ins()
+	var gs = XiuGameState.ins()
 	check(gs.task.get_instance_id() == task.get_instance_id(), "gs.task 应与直取的 TaskBean 同实例")
-	check(TaskStateScript.ins().get_instance_id() == task.get_instance_id(), "ins() 应幂等返回同一 Bean")
+	check(XiuTaskState.ins().get_instance_id() == task.get_instance_id(), "ins() 应幂等返回同一 Bean")
 	print("[State] beans: task=%s item=%s character=%s" % [
 		task != null, item != null, character != null])
 
@@ -131,23 +125,23 @@ func _initialize() -> void:
 		str(summary["spirit_stones"]), str(summary["levels"])])
 
 	# 7. GJson 直查（跨 Bean，路径语义 "bean_id;字段;子键"）
-	check(int(GameStateScript.query("xiuxian_character;level")) == 4,
+	check(int(XiuGameState.query("xiuxian_character;level")) == 4,
 		"query 人物等级应为 4")
-	check(int(GameStateScript.query("xiuxian_item;bag;pill_hp")) == 6,
+	check(int(XiuGameState.query("xiuxian_item;bag;pill_hp")) == 6,
 		"query 背包回春丹应为 6")
-	check(str(GameStateScript.query("xiuxian_task;tasks;main_003;name")) == "秘境探幽",
+	check(str(XiuGameState.query("xiuxian_task;tasks;main_003;name")) == "秘境探幽",
 		"query 未解锁任务名称应为 秘境探幽")
-	check(str(GameStateScript.query("xiuxian_task;progress;main_001;status")) == "submitted",
+	check(str(XiuGameState.query("xiuxian_task;progress;main_001;status")) == "submitted",
 		"query 任务进度状态应为 submitted")
-	check(GameStateScript.query("no;such;path", "默认值") == "默认值",
+	check(XiuGameState.query("no;such;path", "默认值") == "默认值",
 		"未命中路径应返回默认值")
-	var dump: String = GameStateScript.dump_json()
+	var dump: String = XiuGameState.dump_json()
 	check(dump.contains("xiuxian_character") and dump.contains("xiuxian_task"),
 		"整库 JSON 应包含分类 Bean 数据")
 	print("[State] gjson query: level=%s pill_hp=%s locked_name=%s json_len=%d" % [
-		str(GameStateScript.query("xiuxian_character;level")),
-		str(GameStateScript.query("xiuxian_item;bag;pill_hp")),
-		str(GameStateScript.query("xiuxian_task;tasks;main_003;name")),
+		str(XiuGameState.query("xiuxian_character;level")),
+		str(XiuGameState.query("xiuxian_item;bag;pill_hp")),
+		str(XiuGameState.query("xiuxian_task;tasks;main_003;name")),
 		dump.length()])
 
 	# 8. 基线还原（演示语义：跑完检查回到干净状态）

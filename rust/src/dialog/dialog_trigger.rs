@@ -90,6 +90,11 @@ pub struct GdDialogTrigger {
     #[export]
     entry_stage: GString,
 
+    /// 本 NPC 专属 timeline 文件路径（空 = 沿用共享 Dialogue 已加载的内容）。
+    /// 触发对话时加载——每个 NPC 的对话文本拆在自己目录下，共享 Dialogue 只有一份
+    #[export]
+    timeline_path: GString,
+
     /// 触发条件："方法名[:参数1,参数2]"，返回 falsy 则不触发
     #[export]
     condition_fn: GString,
@@ -123,6 +128,7 @@ impl INode for GdDialogTrigger {
             dialogue_path: NodePath::default(),
             player_path: NodePath::default(),
             entry_stage: GString::new(),
+            timeline_path: GString::new(),
             condition_fn: GString::new(),
             cooldown_timer: 0.0,
             auto_timer: 0.0,
@@ -272,8 +278,11 @@ impl GdDialogTrigger {
             }
         }
 
-        // 重置 timeline 位置：有 entry_stage 跳到指定 stage，
-        // 否则回到开头，保证 NPC 可重复触发完整对话
+        // 重置 timeline 位置：NPC 自带 timeline 则先加载（每 NPC 各自的对话文本），
+        // 有 entry_stage 跳到指定 stage，否则回到开头，保证 NPC 可重复触发完整对话
+        if !self.timeline_path.is_empty() {
+            dia.bind_mut().set_timeline_path(self.timeline_path.clone());
+        }
         if !self.entry_stage.is_empty() {
             dia.bind_mut().goto_stage(self.entry_stage.clone());
         } else {

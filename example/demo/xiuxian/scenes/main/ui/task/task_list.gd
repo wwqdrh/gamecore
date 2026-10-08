@@ -13,14 +13,11 @@
 #                          filter_key="category" filter_value_var="category">
 #   分类值由引用方 <Gml src="task_list.gml" data-category="分类变量"> 具名映射注入。
 extends ScrollContainer
-
-const TaskStateScript := preload("res://example/demo/xiuxian/state/task/task_state.gd")
-
 var _bean: GdBean
 
 
 func _ready() -> void:
-	_bean = TaskStateScript.ins()
+	_bean = XiuTaskState.ins()
 	# 延迟一帧再绑定：子区块 _ready 自底向上先于父级，等页签/面板就绪
 	_setup.call_deferred()
 

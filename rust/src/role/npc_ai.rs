@@ -16,7 +16,7 @@ use godot::prelude::*;
 use godot::builtin::{GString, PackedVector2Array, Vector2};
 use godot::classes::{INode, Node, Node2D};
 
-use super::movement::GdRoleMover;
+use super::movement::{GdRoleMover, MODE_GRID};
 
 /// 行为：待机
 pub const AI_IDLE: i64 = 0;
@@ -188,6 +188,11 @@ impl INode for GdNpcBrain {
         if !mover.is_instance_valid() {
             return;
         }
+        // 剧情/对话锁期间不动：mover 已被 set_paused 停止并清路径，
+        // 此时继续驱动只会逐帧重算路径（且恢复后会沿过期路径续走）
+        if mover.bind().is_paused() {
+            return;
+        }
         let mut mover = mover;
         match self.behavior {
             AI_WANDER => self.tick_wander(delta, &mut mover),
@@ -224,6 +229,12 @@ impl GdNpcBrain {
     #[func]
     fn get_ai_state(&self) -> GString {
         self.phase.clone()
+    }
+
+    /// 游走基准点（落位/吸附后的家，restart 时刷新）
+    #[func]
+    pub fn get_home(&self) -> Vector2 {
+        self.home
     }
 
     /// 重置 AI：以当前位置为新家，巡逻从头开始，状态回到 idle
@@ -413,7 +424,59 @@ impl GdNpcBrain {
             mover.bind_mut().stop();
             return true;
         }
+        // 网格模式：经地图 BFS 寻路逐格走（不走直线，防穿不可行走地形）
+        if mover.bind().get_move_mode() == MODE_GRID {
+            return self.drive_grid(mover, target);
+        }
         mover.bind_mut().set_ai_target_position(target, stop_distance);
+        false
+    }
+
+    /// 网格寻路驱动：路径在走 → 返回未到达；路径空闲 → 以当前位置为起点
+    /// 经绑定地图 find_path 计算整段路径交给 mover 逐格走。
+    /// 终点不可达 / 目标就在当前格 / 未绑定地图时返回 true（视为到达，
+    /// 上层进 idle 或巡逻跳下一点，避免逐帧重算 BFS）
+    fn drive_grid(&self, mover: &mut Gd<GdRoleMover>, target: Vector2) -> bool {
+        {
+            let mb = mover.bind();
+            if mb.is_grid_path_active() {
+                return false;
+            }
+        }
+        let map_path = mover.bind().get_grid_map_path();
+        let pos = mover.bind().base().get_position();
+        let cell_size = mover.bind().get_grid_cell_size();
+        if map_path.is_empty() || cell_size <= 0.0 {
+            mover.bind_mut().stop();
+            return true;
+        }
+        let Some(mut map) = mover.bind().base().get_node_or_null(&map_path) else {
+            mover.bind_mut().stop();
+            return true;
+        };
+        let csf = cell_size as f32;
+        let start = Vector2i::new((pos.x / csf).floor() as i32, (pos.y / csf).floor() as i32);
+        let end = Vector2i::new(
+            (target.x / csf).floor() as i32,
+            (target.y / csf).floor() as i32,
+        );
+        if start == end {
+            mover.bind_mut().stop();
+            return true;
+        }
+        let points = map.call("find_path", &[start.to_variant(), end.to_variant()]);
+        let points: PackedVector2Array = match points.try_to::<PackedVector2Array>() {
+            Ok(p) => p,
+            Err(_) => {
+                mover.bind_mut().stop();
+                return true;
+            }
+        };
+        if points.is_empty() {
+            mover.bind_mut().stop();
+            return true;
+        }
+        mover.bind_mut().set_grid_path(points);
         false
     }
 

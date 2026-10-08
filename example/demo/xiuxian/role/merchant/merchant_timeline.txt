@@ -1,0 +1,19 @@
+# 坊市商人对话时间线（GdDialogue 语法，本角色专属）
+# 语法：[stage@标记] 舞台；(角色名) 说话人轮换；- 选项@动作；
+#       @函数:参数 调用对话 control 上的方法；:goto:stage 控制流
+# UI 命令：@open_ui:StoreModal;end 打开坊市弹窗并结束对话（走 GdUIManager 注册表）
+
+[merchant_talk]
+(坊市商人,云舟)
+客官看看？回春丹正是练气期的必需物，童叟无欺！
+- 让我看看货品。@open_ui:StoreModal;end
+- 丹药从哪里领？@goto:merchant_pill
+- 先随便看看。@goto:merchant_browse
+
+[merchant_pill]
+(坊市商人)
+完成宗门任务领了灵石，再来我这儿，不二价。
+
+[merchant_browse]
+(坊市商人)
+哎，别走啊——量大还可优惠嘛！

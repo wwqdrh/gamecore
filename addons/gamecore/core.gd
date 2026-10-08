@@ -54,6 +54,52 @@ func _exit_tree():
 	if _console_panel:
 		_console_panel.queue_free()
 		_console_panel = null
+	# 规避 Godot 4.5/4.6 引擎退出崩溃（见 _remove_editor_doc_cache）
+	_remove_editor_doc_cache()
+
+
+## 规避 Godot 引擎已知崩溃 bug（godotengine/godot#111048 / #111645，
+## 修复 PR #123658 截至本注释写入时仍未合并进任何 stable 版本）：
+##   崩溃链：编辑器启动时 docs 缓存（editor_doc_cache-<主>.<次>.res）命中 →
+##   worker 线程向主线程延迟注册 EditorHelp::_gen_extensions_docs →
+##   退出时 EditorNode 析构先跑 EditorHelp::cleanup_doc()（memdelete(doc);
+##   doc=nullptr）→ Main::cleanup 中 message_queue->flush() 执行残留回调 →
+##   doc->generate() 对空指针解引用 → EXC_BAD_ACCESS(0x8) → macOS
+##   「异常退出」弹窗（崩溃报告栈底：DocTools::generate ←
+##   EditorHelp::_gen_extensions_docs ← CallQueue::flush ← Main::cleanup）。
+##   规避方式：编辑器退出时删除全局 docs 缓存文件，使下次启动必然走
+##   「缓存未命中 → 主线程同步 generate」路径——该路径不注册
+##   _gen_extensions_docs，其余 deferred 回调（load_script_doc_cache 等）
+##   均不直接解引用 doc，退出安全。
+##   代价：下次启动文档全量生成（约 1~2 秒）。引擎修复合并后可删除本段。
+func _remove_editor_doc_cache() -> void:
+	if not Engine.is_editor_hint():
+		return
+	# EditorPaths / OS.get_cache_path 均未暴露给脚本，按引擎 C++ 逻辑
+	# 复现各平台缓存目录（self-contained _sc_ 模式不覆盖，官方发行版不受影响）
+	var cache_dir := ""
+	match OS.get_name():
+		"macOS":
+			cache_dir = OS.get_environment("HOME").path_join("Library/Caches/Godot")
+		"Linux":
+			var xdg := OS.get_environment("XDG_CACHE_HOME")
+			if xdg.is_empty():
+				xdg = OS.get_environment("HOME").path_join(".cache")
+			cache_dir = xdg.path_join("Godot")
+		"Windows":
+			var local := OS.get_environment("LOCALAPPDATA")
+			if local.is_empty():
+				local = OS.get_environment("APPDATA")
+			cache_dir = local.path_join("Godot")
+	if cache_dir.is_empty():
+		return
+	var vi := Engine.get_version_info()
+	var cache_file: String = cache_dir.path_join(
+		"editor_doc_cache-%d.%d.res" % [int(vi.major), int(vi.minor)])
+	if FileAccess.file_exists(cache_file):
+		var err := DirAccess.remove_absolute(cache_file)
+		if err != OK:
+			printerr("[gamecore] 删除编辑器 docs 缓存失败（%s）: %s" % [cache_file, error_string(err)])
 
 
 ## 轮询：收集项目内全部 .gml 文件，与上次 mtime 比对，

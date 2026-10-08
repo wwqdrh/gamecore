@@ -1,0 +1,29 @@
+[gd_scene load_steps=1 format=3]
+
+[node name="QingCaoLing" type="GdQuickMap"]
+width = 30
+height = 18
+cell_size = 32
+seed_value = 20261008
+noise_scale = 9.0
+draw_grid_lines = true
+terrain_names = PackedStringArray("sand", "grass", "forest", "mountain", "water")
+terrain_thresholds = PackedFloat64Array(0.2, 0.4, 0.6, 0.8)
+terrain_dualgrid_textures = PackedStringArray("", "res://example/map/assets/tileset_grass.png", "", "", "res://example/map/assets/tileset_water.png")
+terrain_shaders = PackedStringArray("", "", "", "", "water_flow")
+blocked_terrains = PackedStringArray("water", "mountain")
+
+[node name="TeleportEast" type="GdMapMarker" parent="."]
+cell = Vector2i(26, 9)
+cell_size = 32
+target_alias = "xiuxian_map_b"
+target_cell = Vector2i(3, 9)
+label = "前往幽竹林"
+
+[node name="TeleportTown" type="GdMapMarker" parent="."]
+cell = Vector2i(3, 13)
+cell_size = 32
+color = Color(0.55, 0.85, 1, 1)
+target_alias = "xiuxian_town"
+target_cell = Vector2i(26, 10)
+label = "返回青云坊"

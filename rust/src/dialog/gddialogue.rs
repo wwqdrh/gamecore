@@ -98,7 +98,7 @@ impl GdDialogue {
     }
 
     #[func]
-    fn set_timeline_path(&mut self, path: GString) {
+    pub fn set_timeline_path(&mut self, path: GString) {
         self.timeline_path = path.clone();
         if !path.is_empty() {
             self.load_timeline_from_path(&path);

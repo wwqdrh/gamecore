@@ -51,7 +51,7 @@ corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
-[node name="GoodsPanel" type="Panel" unique_id=1152626386]
+[node name="GoodsPanel" type="Panel" unique_id=769143148]
 anchor_right = 1.0
 anchor_bottom = 1.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_pv0wf")
@@ -63,7 +63,7 @@ metadata/__script_vars = {
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray()
 
-[node name="GoodsScroll" type="ScrollContainer" parent="." unique_id=2094573840]
+[node name="GoodsScroll" type="ScrollContainer" parent="." unique_id=11187558]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -76,7 +76,7 @@ metadata/__script_vars = {
 "category": "pill"
 }
 
-[node name="GoodsGrid" type="GdUIGrid" parent="GoodsScroll" unique_id=124760707]
+[node name="GoodsGrid" type="GdUIGrid" parent="GoodsScroll" unique_id=1771290231]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -88,7 +88,7 @@ metadata/__filter_key = "category"
 metadata/__signal_s_click_item = "_on_item_clicked"
 metadata/__filter_value = "pill"
 
-[node name="BagCell" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=2008837716]
+[node name="BagCell" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1547729398]
 visible = false
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
@@ -100,7 +100,7 @@ metadata/__script_vars = {}
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/BagCell" unique_id=372091640]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/BagCell" unique_id=1963169587]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -109,7 +109,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_guhx0")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/BagCell" unique_id=1666837063]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/BagCell" unique_id=1016320611]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -120,12 +120,12 @@ offset_bottom = -5.0
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/BagCell/IconBox" unique_id=751963467]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/BagCell/IconBox" unique_id=1911588179]
 layout_mode = 2
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/BagCell" unique_id=829939154]
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/BagCell" unique_id=1756634522]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -136,7 +136,7 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/BagCell" unique_id=89173551]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/BagCell" unique_id=987770690]
 visible = false
 layout_mode = 0
 anchor_top = 1.0
@@ -152,7 +152,7 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/BagCell" unique_id=2003828079]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/BagCell" unique_id=1981132012]
 visible = false
 layout_mode = 0
 anchor_right = 1.0

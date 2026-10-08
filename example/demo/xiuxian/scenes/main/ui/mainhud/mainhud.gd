@@ -24,11 +24,6 @@
 #     ＋ 按钮真实写入状态（加灵石/加丹药，全 UI 响应式联动）
 #   · XiuTaskState（xiuxian_task）→ 任务卷轴横幅（首个进行中任务进度）
 extends Control
-
-const CharacterStateScript := preload("res://example/demo/xiuxian/state/character/character_state.gd")
-const ItemStateScript := preload("res://example/demo/xiuxian/state/item/item_state.gd")
-const TaskStateScript := preload("res://example/demo/xiuxian/state/task/task_state.gd")
-
 ## 状态键：当前功能主界面（"cultivate"/"gongfa"/"bag"/"market"）
 const KEY_MENU := "mainhud.menu"
 ## 状态键：当前点选的技能格（键位字符串 "1"~"6"）
@@ -63,9 +58,9 @@ func _state():
 # ---------- 状态层数据绑定 ----------
 
 func _bind_game_state() -> void:
-	_char_bean = CharacterStateScript.ins()
-	_item_bean = ItemStateScript.ins()
-	_task_bean = TaskStateScript.ins()
+	_char_bean = XiuCharacterState.ins()
+	_item_bean = XiuItemState.ins()
+	_task_bean = XiuTaskState.ins()
 	_char_bean.watch("level", _on_char_changed)
 	_char_bean.watch("exp", _on_char_changed)
 	_char_bean.watch("attrs", _on_char_changed)

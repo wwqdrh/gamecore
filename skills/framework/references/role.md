@@ -64,7 +64,16 @@ brain.s_attack.connect(_on_npc_attack)                    # 攻击时机信号
 # 状态监听（"wander"/"chase"/"attack"/...）
 brain.s_ai_state_changed.connect(func(state):
     hitbox.enabled = (state == "attack"))
+
+brain.restart()   # 以当前位置为新的游走中心（网格 NPC 落位吸附后调用）
+brain.get_home()  # 游走基准点（#[func]，GDScript 侧无 home 属性直读）
 ```
+
+**网格地图适配（2026-10-08）**：`move_mode = MODE_GRID` 的 NPC 挂 Brain 后，
+WANDER/PATROL/FOLLOW/HUNTER 的移动自动经绑定地图 `find_path` BFS 逐格走
+（`drive_to` 内网格分支），不会直穿水域/山地；终点不可达时视为到达进 idle
+（巡逻跳下一点）。对话/剧情锁（set_paused）期间 Brain 自动停驱。
+非网格模式仍走直线 `set_ai_target_position`。范本 `example/demo/xiuxian/role/`。
 
 ## 完整组装示例（战斗 NPC）
 

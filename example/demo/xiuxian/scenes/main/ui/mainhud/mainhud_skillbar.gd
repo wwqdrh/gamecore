@@ -7,9 +7,6 @@
 #   状态下行：灵气经验条 watch 状态层 XiuCharacterState（bean: xiuxian_character）
 #   经验变化 → 填充宽度 + 文本（exp/exp_to_next）
 extends VBoxContainer
-
-const CharacterStateScript := preload("res://example/demo/xiuxian/state/character/character_state.gd")
-
 ## 与 mainhud.gd 的 KEY_SKILL 一致（demo 各自声明，避免 class_name 缓存依赖）
 const KEY_SKILL := "mainhud.skill"
 
@@ -17,7 +14,7 @@ var _char_bean: GdBean
 
 
 func _ready() -> void:
-	_char_bean = CharacterStateScript.ins()
+	_char_bean = XiuCharacterState.ins()
 	_char_bean.watch("exp", _on_exp_changed)
 
 

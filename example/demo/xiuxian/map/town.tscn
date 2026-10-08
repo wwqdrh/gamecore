@@ -1,0 +1,42 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" path="res://example/demo/xiuxian/role/elder/elder.tscn" id="1_elder"]
+[ext_resource type="PackedScene" path="res://example/demo/xiuxian/role/merchant/merchant.tscn" id="2_merchant"]
+[ext_resource type="PackedScene" path="res://example/demo/xiuxian/role/disciple/disciple.tscn" id="3_disciple"]
+
+[node name="QingYunFang" type="GdQuickMap"]
+width = 32
+height = 20
+cell_size = 32
+seed_value = 886677
+noise_scale = 7.0
+draw_grid_lines = true
+terrain_names = PackedStringArray("sand", "grass", "forest", "mountain", "water")
+terrain_thresholds = PackedFloat64Array(0.25, 0.75, 0.92, 0.97)
+terrain_dualgrid_textures = PackedStringArray("", "res://example/map/assets/tileset_grass.png", "", "", "res://example/map/assets/tileset_water.png")
+terrain_shaders = PackedStringArray("", "", "", "", "water_flow")
+blocked_terrains = PackedStringArray("water", "mountain")
+
+[node name="TeleportEast" type="GdMapMarker" parent="."]
+cell = Vector2i(28, 10)
+cell_size = 32
+target_alias = "xiuxian_map_a"
+target_cell = Vector2i(25, 13)
+label = "前往青草岭"
+
+[node name="TeleportNorth" type="GdMapMarker" parent="."]
+cell = Vector2i(16, 2)
+cell_size = 32
+color = Color(1, 0.72, 0.3, 1)
+target_alias = "xiuxian_map_b"
+target_cell = Vector2i(13, 8)
+label = "前往幽竹林"
+
+[node name="NpcElder" parent="." instance=ExtResource("1_elder")]
+position = Vector2(336, 304)
+
+[node name="NpcMerchant" parent="." instance=ExtResource("2_merchant")]
+position = Vector2(560, 432)
+
+[node name="NpcDisciple" parent="." instance=ExtResource("3_disciple")]
+position = Vector2(752, 240)

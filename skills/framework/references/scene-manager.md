@@ -26,6 +26,38 @@ root.set_game_paused(not root.is_game_paused())
 
 `GdScene`（页面节点，继承 Control）：提供状态管理与生命周期回调，业务页面根节点用它。
 
+## GdSceneRoot — 组件注册表（跨组件查找规范）
+
+场景内跨组件协作**一律走 GdSceneRoot 组件注册表**，禁止 `get_parent` 链遍历、
+`find_child("Xxx")` 魔法查找——节点层级是装配细节，不应成为业务耦合点。
+
+```gdscript
+# 拿场景根：GDCORE 全局节点表（GdSceneRoot 以 manager_id 注册，默认 "default"）
+var scene_root: Node = Engine.get_singleton("GDCORE").get_global_node("default")
+
+# 按组件名查询（未注册返回 null）
+var map_mgr  = scene_root.get_component("MapManager")
+var camera   = scene_root.get_component("ViewCamera")
+
+# 自定义组件：装配/业务侧显式注册（重名覆盖并告警）
+scene_root.register_component("Inventory", $Inventory)
+
+# 组件释放时注销（防死引用）
+scene_root.unregister_component("Inventory")
+scene_root.get_component_names()   # 已注册组件名列表（调试用）
+```
+
+- **自动注册**：`ViewCamera`（GdSceneRoot ready 挂相机时）、`MapManager`
+  （GdMapManager process 前几帧自动向场景根注册，兼容 GdScene 延迟创建
+  默认管理器的时序；重试约 5 秒后放弃并告警）
+- 场景根 `manager_id` 非 "default" 时，GdMapManager 无法自动找到场景根，
+  需装配侧显式 `register_component("MapManager", $MapManager)`
+- 查询时机注意：组件注册晚于子节点 ready（MapManager 靠 process 重试、
+  相机靠 SceneRoot ready）——业务接线重试统一放 **_process 驱动**。
+  **红线：禁止 call_deferred 自重试**——deferred 队列 flush 到空才结束，
+  自重试让队列永不为空，主循环卡死在 flush 内、process 永不执行（死锁）。
+  demo 范本见 `example/demo/xiuxian/role/player/player.gd`
+
 ## GdViewSetting — 游戏设置管理器
 
 统一封装音频/窗口/自定义设置的读取、应用与持久化（依赖 GdCoreData 存档）。

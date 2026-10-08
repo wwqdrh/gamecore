@@ -61,6 +61,10 @@ pub struct GdSceneRoot {
     /// 场景初始化数据映射 (alias -> Dictionary)
     scene_init_data_map: VarDictionary,
 
+    /// 场景级组件注册表 (组件名 -> Node)：跨组件查找统一入口，
+    /// 禁止业务用 get_parent 链遍历 / find_child 魔法查找
+    components: VarDictionary,
+
     /// 转场动画时长（秒）
     #[var]
     trans_duration: f64,
@@ -96,6 +100,7 @@ impl INode for GdSceneRoot {
             transition_tween: None,
             scene_change_stack: VarArray::new(),
             scene_init_data_map: VarDictionary::new(),
+            components: VarDictionary::new(),
             trans_duration: 0.5,
             manager_id: GString::from("default"),
             entry_scene: GString::new(),
@@ -159,6 +164,11 @@ impl INode for GdSceneRoot {
             camera.set_position(Vector2::new(960.0, 540.0));
             self.base_mut().add_child(&camera.clone().upcast::<Node>());
             camera.make_current();
+            // 相机自动注册进组件表（业务经 get_component("ViewCamera") 查找）
+            self.register_component(
+                GString::from("ViewCamera"),
+                camera.upcast::<Node>().to_variant(),
+            );
         }
 
         // 进入入口场景（仅认场景上显式配置的 entry_scene，空则不自动进入）
@@ -411,6 +421,36 @@ impl GdSceneRoot {
         self.base()
             .get_tree_or_null()
             .map_or(false, |t| t.is_paused())
+    }
+
+    /// 注册场景级组件（组件名 -> Node）。重名覆盖（后注册者生效，打警告）。
+    /// 组件释放时业务须自行 unregister_component，否则残留死引用。
+    #[func]
+    pub fn register_component(&mut self, name: GString, node: Variant) {
+        let key = name.to_variant();
+        if self.components.contains_key(&key) {
+            godot_warn!("GdSceneRoot: component '{}' already exists, overwritten", name);
+        }
+        self.components.set(&key, &node);
+    }
+
+    /// 按组件名查询组件（未注册返回 nil）。
+    /// 跨组件协作的标准入口：`scene_root.get_component("MapManager")`。
+    #[func]
+    pub fn get_component(&self, name: GString) -> Variant {
+        self.components.get_or_nil(&name.to_variant())
+    }
+
+    /// 注销组件（组件释放时调用，防死引用）
+    #[func]
+    pub fn unregister_component(&mut self, name: GString) {
+        self.components.erase(&name.to_variant());
+    }
+
+    /// 已注册的组件名列表
+    #[func]
+    pub fn get_component_names(&self) -> VarArray {
+        self.components.keys_array()
     }
 }
 

@@ -1,0 +1,30 @@
+[gd_scene load_steps=1 format=3]
+
+[node name="YouZhuLin" type="GdQuickMap"]
+width = 26
+height = 16
+cell_size = 32
+seed_value = 777001
+noise_scale = 6.0
+draw_grid_lines = true
+terrain_names = PackedStringArray("sand", "grass", "forest", "mountain", "water")
+terrain_thresholds = PackedFloat64Array(0.15, 0.35, 0.75, 0.9)
+terrain_dualgrid_textures = PackedStringArray("", "res://example/map/assets/tileset_grass.png", "", "", "res://example/map/assets/tileset_water.png")
+terrain_shaders = PackedStringArray("", "", "", "", "water_flow")
+blocked_terrains = PackedStringArray("water", "mountain")
+
+[node name="TeleportWest" type="GdMapMarker" parent="."]
+cell = Vector2i(3, 8)
+cell_size = 32
+color = Color(1, 0.72, 0.3, 1)
+target_alias = "xiuxian_map_a"
+target_cell = Vector2i(4, 9)
+label = "返回青草岭"
+
+[node name="TeleportTown" type="GdMapMarker" parent="."]
+cell = Vector2i(22, 8)
+cell_size = 32
+color = Color(0.55, 0.85, 1, 1)
+target_alias = "xiuxian_town"
+target_cell = Vector2i(16, 4)
+label = "返回青云坊"

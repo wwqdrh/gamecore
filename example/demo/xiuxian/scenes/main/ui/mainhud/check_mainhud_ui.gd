@@ -26,10 +26,8 @@ func _run() -> void:
 
 	# 0. 状态层基线：人物状态重置（HUD 等级/境界/经验条/资源栏由
 	#    XiuCharacterState/XiuItemState 驱动，先重置保证跨运行确定性）
-	var CharacterStateScript := preload("res://example/demo/xiuxian/state/character/character_state.gd")
-	var ItemStateScript := preload("res://example/demo/xiuxian/state/item/item_state.gd")
-	CharacterStateScript.ins().reset_demo()
-	ItemStateScript.ins().reset_demo()
+	XiuCharacterState.ins().reset_demo()
+	XiuItemState.ins().reset_demo()
 
 	# 1. 全部 gml 可构建 + 重生成 tscn
 	for f in GML_FILES:

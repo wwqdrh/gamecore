@@ -1,7 +1,8 @@
-# 地图系统：双网格地形、噪声生成、寻路
+# 地图系统：双网格地形、噪声生成、寻路、地图管理
 
-对应 Rust 源码：`rust/src/map/`（dual_grid / gd_map_basic / quick_map）
-可运行示例：`example/map/map_demo.gd`、`example/map/basic.gd`
+对应 Rust 源码：`rust/src/map/`（dual_grid / gd_map_basic / quick_map / gd_map_manager / gd_map_marker）
+可运行示例：`example/map/map_demo.gd`、`example/map/basic.gd`、
+`example/demo/xiuxian/check_map_flow.gd`（地图管理器端到端）
 
 ## GdQuickMap — 快速地图生成器（Node2D）
 
@@ -72,3 +73,51 @@ $Map.clear_map()
 ## 灯光示例
 
 `example/map/rotating_light.gd` 演示了地图上挂旋转 PointLight2D 的做法，可参考。
+
+## GdMapManager — 地图管理器（Node）
+
+地图场景的注册、加载、切换与传送点调度。地图场景根须为 Node2D（推荐直接 GdQuickMap 作根）：
+
+```gdscript
+# 场景装配（tscn 上显式配置，与 entry_scene 同风格）：
+# [node name="MapManager" type="GdMapManager" parent="."]
+# map_paths = PackedStringArray("xiuxian_map_a=res://.../map_a.tscn", ...)
+# initial_map = "xiuxian_map_a"     # ready 自动加载（空则不自动）
+# initial_spawn = Vector2i(4, 9)
+
+MapManager.open_map("xiuxian_map_b", Vector2i(3, 9))  # 切换地图（旧图释放，新图入 MapLayer）
+MapManager.get_current_map()      # 当前地图实例（GdQuickMap/Node2D）
+MapManager.get_current_alias()    # 当前别名
+MapManager.get_spawn_cell()       # 出生格（open_map 时记录）
+MapManager.get_spawn_point()      # 出生格中心世界坐标
+MapManager.get_markers()          # 当前地图上的传送点数组
+```
+
+- 跨组件查找：MapManager 自动注册进所在场景根组件表（`GdSceneRoot.get_component("MapManager")`），
+  业务禁止 get_parent 链遍历 / find_child 查找，规范见 scene-manager.md「组件注册表」
+
+- 信号：`s_map_changed(alias)` / `s_teleport_triggered(from, to, target_cell)`
+- 传送点/出生格吸附：open_map 后自动把落在不可通行地形上的 GdMapMarker 与 spawn_cell
+  BFS 吸附到最近可行走格（噪声图种子固定但格子随机，手填坐标不可靠）
+- `click_teleport = true`（默认）时，未被 UI 消费的左键点击落在传送点格内直接触发传送
+- 注册到 GDCORE 全局节点表（manager_id 默认 "map"，`GDCORE.get_global_node` 可取）
+
+## GdMapMarker — 地图传送点/高亮标记（Node2D，tool）
+
+放在地图场景内（建议 GdQuickMap 子节点），指定格子绘制呼吸亮框（填充+光晕环+描边+四角高亮+中心光点，可配 label 文字）：
+
+```gdscript
+# tscn 节点属性：
+# cell = Vector2i(26, 9)        # ready 自动定位到格心（父级=地图原点约定）
+# cell_size = 32                # 与地图 cell_size 一致
+# target_alias = "xiuxian_map_b"  # 空 = 仅标记不传送
+# target_cell = Vector2i(3, 9)
+# label = "前往幽竹林"
+
+# 后续人物网格走动到达格子时：每步调用
+MapManager.try_teleport(角色全局坐标)  # 命中传送点格子即触发切换，返回是否传送
+```
+
+- ready 自动加入 `__gdmap_marker` 分组（GdMapManager 经此收集）
+- `contains_world_point(world_pos)` 命中判定 / `get_center()` 格心全局坐标 / `place_at(cell)` 重定位
+- 信号 `s_triggered`（管理器命中时发出）

@@ -15,11 +15,6 @@
 #   XiuGameState.dump_json()                                  # 整库存档 JSON
 class_name XiuGameState
 extends RefCounted
-
-const TaskStateScript := preload("res://example/demo/xiuxian/state/task/task_state.gd")
-const ItemStateScript := preload("res://example/demo/xiuxian/state/item/item_state.gd")
-const CharacterStateScript := preload("res://example/demo/xiuxian/state/character/character_state.gd")
-
 static var _inst: RefCounted
 
 ## 分类 Bean（task/item/character，类型见各 preload 脚本）
@@ -36,9 +31,9 @@ static func ins() -> RefCounted:
 
 
 func _init() -> void:
-	task = TaskStateScript.ins()
-	item = ItemStateScript.ins()
-	character = CharacterStateScript.ins()
+	task = XiuTaskState.ins()
+	item = XiuItemState.ins()
+	character = XiuCharacterState.ins()
 
 
 # ------------------------------------------------------------------ GJson 直查
@@ -89,7 +84,7 @@ func apply_task_rewards(task_id: String) -> Dictionary:
 	if stones != 0:
 		character.add_spirit_stones(stones)
 		summary["spirit_stones"] = stones
-	task.set_task_status(task_id, TaskStateScript.STATUS_SUBMITTED)
+	task.set_task_status(task_id, XiuTaskState.STATUS_SUBMITTED)
 	return summary
 
 
