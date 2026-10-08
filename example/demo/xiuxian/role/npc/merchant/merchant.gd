@@ -5,7 +5,7 @@ extends XiuNpcBase
 func _init() -> void:
 	display_name = "坊市商人"
 	role_name = "坊市商人"
-	timeline_path = "res://example/demo/xiuxian/role/merchant/merchant_timeline.txt"
+	timeline_path = "res://example/demo/xiuxian/role/npc/merchant/merchant_timeline.txt"
 	entry_stage = "merchant_talk"
 	npc_cell = Vector2i(17, 13)
 	ai_behavior = 1  # AI_WANDER 随机游走

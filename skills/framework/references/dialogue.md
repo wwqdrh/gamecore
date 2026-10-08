@@ -148,11 +148,13 @@ func open_ui(ui_id: String) -> void:
 
 ```
 role/
-├── npc/npc.gd            XiuNpcBase 共享基类（对话三件套 + AI Brain + 吸附装配）
-├── player/               玩家（网格四向 + 点击寻路）
-├── elder/                执事长老：elder.gd+tscn+elder_timeline.txt，AI_IDLE 站桩
-├── merchant/             坊市商人：merchant.gd+tscn+merchant_timeline.txt，AI_WANDER 游走
-└── disciple/             外门弟子：disciple.gd+tscn+disciple_timeline.txt，AI_PATROL 巡逻
+├── npc/
+│   ├── npc.gd         XiuNpcBase 共享基类（对话三件套 + AI Brain + 吸附装配）
+│   ├── elder/         执事长老：elder.gd+tscn+elder_timeline.txt，AI_IDLE 站桩
+│   ├── merchant/      坊市商人：merchant.gd+tscn+merchant_timeline.txt，AI_WANDER 游走
+│   └── disciple/      外门弟子：disciple.gd+tscn+disciple_timeline.txt，AI_PATROL 巡逻
+├── player/            玩家（网格四向 + 点击寻路 + 远程射击）
+└── enemy/             小怪基类 XiuEnemyBase + 变体场景（视野追击，见 combat.md）
 ```
 
 - **角色子类**：`extends XiuNpcBase`，`_init()` 设默认导出值

@@ -95,9 +95,9 @@ func _run() -> void:
 	# 各角色独立目录期望：timeline 归属 + AI 行为（长老站桩/商人游走/弟子巡逻）
 	var expect_behavior := {"执事长老": 0, "坊市商人": 1, "外门弟子": 2}
 	var expect_timeline := {
-		"执事长老": "role/elder/elder_timeline.txt",
-		"坊市商人": "role/merchant/merchant_timeline.txt",
-		"外门弟子": "role/disciple/disciple_timeline.txt",
+		"执事长老": "role/npc/elder/elder_timeline.txt",
+		"坊市商人": "role/npc/merchant/merchant_timeline.txt",
+		"外门弟子": "role/npc/disciple/disciple_timeline.txt",
 	}
 	for npc in npcs:
 		var cell: Vector2i = map.world_to_cell(npc.global_position)

@@ -31,6 +31,23 @@ map.generate(MAP_SEED)
 
 内置 shader 名直接写进 `terrain_shaders`（如 `water_flow`），编译在 Rust 二进制内，无需 .gdshader 文件。
 
+## 连通性保证（connected_terrain）
+
+噪声阈值切分的地图会出现被山/水隔断的孤岛可行走区（看着能走却到不了）。设置
+`connected_terrain = "grass"`（任意 terrain_names 中的地形名）后，generate/regenerate
+自动把**全部可通行区域挖通成一片**（同一 seed 结果确定）：
+
+- 算法：可通行格连通分量标记 → 取「主地形格最多」的分量为主分量 →
+  其余分量按大小降序，0-1 BFS（可通行代价 0 / 阻挡代价 1）找最短桥 →
+  桥上阻挡格改成主地形（视觉上即打通的通道）→ 分量并入主集合，直到全连通
+- 渲染前执行，桥格贴图/双网格过渡自然一致；传送点/NPC 吸附照常工作
+- 手动补挖：`map.ensure_connected()`（有改动时重建图层并重绘）
+
+```gdscript
+map.connected_terrain = "grass"   # tscn 里直接设属性即可
+map.generate(MAP_SEED)
+```
+
 ## 寻路与通行判定
 
 ```gdscript
@@ -43,6 +60,24 @@ var path: PackedVector2Array = map.find_path(from_cell, target_cell)  # BFS
 
 map.clear_map()   # 清空重画
 ```
+
+## 高度场（terrain_provider 协议）
+
+GdQuickMap 支持每地形海拔高度（高度场是一等地图数据，不做「山体」特判）：
+
+```gdscript
+# terrain_heights 与 terrain_names 下标对应（缺省 0；名为 mountain 的地形内置海拔 3）
+map.terrain_heights = PackedInt32Array([0, 3])   # grass=0, mountain=3
+
+map.get_cell_height(cell)             # 格子海拔（越界 0）
+map.get_height_at_world(world_pos)    # 世界坐标海拔（协议入口）
+```
+
+**协议**：GdQuickMap ready 时自动加入 `terrain_provider` 分组。场景树内该分组中
+实现 `get_height_at_world(world) -> i32` 的节点即为高度场数据源——投射物
+（GdBullet 撞山检测）、飞行单位越障、视线判断等消费方 duck-type 查询，
+与地图实现零耦合。判定语义：`地形海拔 > 单位飞行海拔` → 撞毁/阻挡
+（海拔相等不挡，草地 0 不挡地面单位）。
 
 ## 配合 GdRoleMover 网格移动
 

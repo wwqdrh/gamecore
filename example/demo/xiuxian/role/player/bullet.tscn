@@ -1,0 +1,16 @@
+[gd_scene load_steps=2 format=3]
+
+[sub_resource type="CircleShape2D" id="bullet_shape"]
+radius = 5.0
+
+[node name="Bullet" type="GdBullet"]
+collision_layer = 0
+collision_mask = 4
+lifetime = 1.2
+
+[node name="Shape" type="CollisionShape2D" parent="."]
+shape = SubResource("bullet_shape")
+
+[node name="Glow" type="Polygon2D" parent="."]
+color = Color(0.35, 0.9, 1, 1)
+polygon = PackedVector2Array(6, 0, 5.54, 2.29, 4.24, 4.24, 2.29, 5.54, 0, 6, -2.29, 5.54, -4.24, 4.24, -5.54, 2.29, -6, 0, -5.54, -2.29, -4.24, -4.24, -2.29, -5.54, 0, -6, 2.29, -5.54, 4.24, -4.24, 5.54, -2.29)

@@ -31,6 +31,7 @@ health.s_died.connect(_on_died)
 var hurt = GdHurtbox.new()
 hurt.collision_layer = 2    # 玩家受击盒=2 / 敌方=4
 hurt.collision_mask = 0
+hurt.defense = 4.0          # 防御减伤：实际伤害 = max(1, 伤害 - 防御)
 var cs = CollisionShape2D.new(); cs.shape = RectangleShape2D.new()
 hurt.add_child(cs)
 body.add_child(hurt)
@@ -46,29 +47,67 @@ enemy.add_child(hitbox)
 
 约定：Hitbox 的 mask 指向**目标** Hurtbox 的 layer（玩家受击盒=2，敌方受击盒=4）。
 
+## 修仙 demo 视野追击小怪范本（推荐参考）
+
+`example/demo/xiuxian/role/enemy/enemy.gd`（`class_name XiuEnemyBase extends GdRoleMover`）：
+一张基类脚本组装完整敌人，变体小怪**不需要子脚本**——不同 tscn 覆写导出值即可
+（slime/fox/golem：血量/攻击/防御/速度/视野/颜色不同）：
+
+- **装配**（_ready 代码组装，零场景编辑）：GdHealth（max_health + 受击无敌帧）
+  → GdHurtbox（layer=4，defense=自身防御）→ GdHitbox（mask=2 常开接触伤害，
+  damage=attack，cooldown 1.0）→ GdNpcBrain（AI_HUNTER：sight_range 视野追击、
+  attack_range 停下、无目标时 wander_radius 游走）
+- **目标绑定**：`brain.follow_target = player`（"player" 分组解析，_process 重试）
+- **网格地图**：`grid_map_path = NodePath("..")`（敌人是地图场景子节点），
+  Brain 网格适配自动走 BFS 寻路不穿地形；落位 BFS 吸附后 `brain.restart()`
+- **表现**：受击闪白（tween modulate）+ 迷你血条（health.get_health_ratio）；
+  死亡 s_died → 关 Brain → 淡出 → queue_free
+- 玩家远程射击：`role/player/player.gd`（GdShooter unhandled 路由自动开火：
+  持枪=auto_fire_mouse 随装备联动开关，左键/右键都开火；未持枪时左键留给寻路）
+  + `role/player/bullet.tscn`
+  （根 type="GdBullet"、mask=4、Polygon2D 圆形视觉）
+- 验收：`check_enemy_flow.gd`（装配/追击/接触伤害/子弹减伤数值/击杀回收/连通性）
+
 ## GdShooter — 射击组件（Node）
 
 挂宿主 Node2D 下，朝鼠标/指定方向发射子弹，子弹场景自动懒注册进对象池。
 
+**开火输入路由（框架红线）**：`auto_fire_mouse = true` 时开火输入走
+`unhandled_input` 事件路由——被 mouse_filter=STOP 的 UI 控件消费的点击
+到不了 unhandled 阶段，引擎保证「点击 UI 不开火、点击世界开火」，
+无需任何 hover 猜测。**严禁在业务侧用 `Input.is_mouse_button_pressed`
+轮询 + `gui_get_hovered_control()` 猜测**（hover 会被全屏 PASS/STOP
+壳层污染，且轮询与"这一次点击落在哪"脱钩，行为必然失灵）。
+按下即开火并按住连射（冷却内置）；release 被 UI 吞掉时由 process 中
+Input 轮询校准复位（防卡死）。宿主实现 `is_paused()`（如 GdRoleMover
+对话锁）时暂停期不接开火输入。`fire_button_left/fire_button_right`
+配置开火按键（默认左键开、右键关）。
+
 ```gdscript
 var shooter = GdShooter.new()
-shooter.auto_fire_mouse = true      # 按住左键朝鼠标方向连发（悬停 UI 上不开火）
+shooter.auto_fire_mouse = true      # unhandled 路由自动开火：点 UI 不开火/点世界开火
+shooter.fire_button_right = true    # 追加右键开火（默认仅左键）
 shooter.fire_cooldown = 0.18        # 射击间隔（秒）
 shooter.bullet_speed = 400.0
 shooter.bullet_damage = 15.0
 shooter.bullet_lifetime = 1.0       # 寿命到期自动归池
 shooter.muzzle_distance = 24.0      # 枪口离宿主中心距离
+shooter.max_distance = 320.0        # 最大射程（像素，超程销毁；0 = 不限）
 shooter.bullet_alias = "player_bullet"
 shooter.bullet_scene_path = "res://example/combat/bullet.tscn"
 host.add_child(shooter)
 
-# 手动发射
+# 手动发射（auto_fire_mouse=false 时完全由外部驱动）
 shooter.fire(Vector2(1, 0))         # 朝方向发射 -> bool
 shooter.fire_at_point(target_pos)   # 朝世界坐标
 shooter.fire_toward_mouse()         # 朝鼠标
 
 shooter.s_fired.connect(func(muzzle, dir): print("开火"))
 ```
+
+验收：`test/check_input_routing.gd`（点 UI 不开火/点世界开火/按住连射/
+宿主暂停拦截/未配置按键不响）、`test/check_bullet_terrain.gd`
+（射程销毁/撞山销毁/高海拔飞越/lifetime 统一出口）。
 
 ## GdBullet — 池化子弹（Area2D）
 
@@ -77,9 +116,17 @@ shooter.s_fired.connect(func(muzzle, dir): print("开火"))
 
 ```gdscript
 bullet.velocity = Vector2(240, 0)
-bullet.s_hit.connect(func(target): ...)
-# 命中受击盒即毁并归池；寿命到期自动归池（走 GDSPAWNPOOL.despawn）
+bullet.s_hit.connect(func(target): ...)        # 命中受击盒即毁并归池
+bullet.s_destroyed.connect(func(reason): ...)  # 非命中销毁：range/terrain/lifetime
 ```
+
+- **射程**：`max_distance`（像素，飞行距离超限销毁；0 = 不限），由 GdShooter 每发写入。
+- **地形高度检测**：`fly_height`（子弹飞行海拔，格）——沿运动线段按 8px 步长采样
+  地图高度场，`地形海拔 > fly_height` 即撞毁（`check_terrain = false` 可关）。
+  依赖 **terrain_provider 协议**：场景树内 `terrain_provider` 分组中实现
+  `get_height_at_world(world: Vector2) -> i32` 的节点即为高度场数据源
+  （GdQuickMap 内置支持；自定义地图/GDScript 地图入组即可）。子弹与地图零耦合，
+  换图后旧 provider 失效自动重查。
 
 ## GdSpawnPool — 对象池（单例 "GDSPAWNPOOL"）
 

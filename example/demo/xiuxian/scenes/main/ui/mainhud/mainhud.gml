@@ -14,9 +14,9 @@
 	<MarginContainer name="TopLayer" anchor="full" margin="14 10 14 0">
 	  <HBoxContainer name="TopRow" separation="16">
 		<Gml src="mainhud_player.gml" size_flags_vertical="shrink_begin" />
-		<Control size_flags_horizontal="expand_fill" />
+		<Control size_flags_horizontal="expand_fill" mouse_filter="ignore" />
 		<Gml src="mainhud_resources.gml" size_flags_vertical="shrink_begin" />
-		<Control size_flags_horizontal="expand_fill" />
+		<Control size_flags_horizontal="expand_fill" mouse_filter="ignore" />
 		<Gml src="mainhud_minimap.gml" size_flags_vertical="shrink_begin" />
 	  </HBoxContainer>
 	</MarginContainer>
@@ -24,14 +24,17 @@
 	<MarginContainer name="MidLayer" anchor="full" margin="14 175 14 0">
 	  <HBoxContainer name="MidRow" separation="16">
 		<Gml src="mainhud_quest.gml" size_flags_vertical="shrink_begin" />
-		<Control size_flags_horizontal="expand_fill" />
+		<Control size_flags_horizontal="expand_fill" mouse_filter="ignore" />
 		<Gml src="mainhud_menus.gml" size_flags_vertical="shrink_begin" />
 	  </HBoxContainer>
 	</MarginContainer>
-	<!-- 底层列：技能栏 + 经验条水平居中贴底（左右收窄 240） -->
+	<!-- 底层列：装备栏(4 格，数字键选择/高亮框) + 技能栏(6 格 + 冷却) + 经验条 -->
 	<MarginContainer name="BottomLayer" anchor="full" margin="240 0 240 12">
 	  <VBoxContainer name="BottomColumn" separation="8">
-		<Control size_flags_vertical="expand_fill" />
+		<!-- 占位 Control 必须鼠标穿透：expand_fill 会撑满剩余空间，
+			 默认 STOP 会把覆盖范围内的世界点击全部吃掉（点地图无反应） -->
+		<Control size_flags_vertical="expand_fill" mouse_filter="ignore" />
+		<Gml src="mainhud_equipbar.gml" size_flags_horizontal="shrink_center" />
 		<Gml src="mainhud_skillbar.gml" size_flags_horizontal="shrink_center" />
 	  </VBoxContainer>
 	</MarginContainer>

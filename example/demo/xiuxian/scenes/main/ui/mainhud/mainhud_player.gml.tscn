@@ -38,11 +38,12 @@ corner_radius_top_right = 5
 corner_radius_bottom_right = 5
 corner_radius_bottom_left = 5
 
-[node name="PlayerBadge" type="HBoxContainer" unique_id=781554109]
+[node name="PlayerBadge" type="HBoxContainer" unique_id=1477230021]
+mouse_filter = 2
 metadata/__script_vars = {}
 metadata/__gml_root = true
 
-[node name="AvatarRing" type="Panel" parent="." unique_id=628820605]
+[node name="AvatarRing" type="Panel" parent="." unique_id=1869982964]
 custom_minimum_size = Vector2(88, 88)
 layout_mode = 2
 mouse_default_cursor_shape = 2
@@ -50,7 +51,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0te1i")
 metadata/__signal_pressed = "show:ProfileModal"
 metadata/__script_vars = {}
 
-[node name="AvatarIcon" type="Label" parent="AvatarRing" unique_id=282554174]
+[node name="AvatarIcon" type="Label" parent="AvatarRing" unique_id=634203079]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -59,17 +60,19 @@ horizontal_alignment = 1
 vertical_alignment = 1
 metadata/__anchor = "full"
 
-[node name="PlayerInfo" type="VBoxContainer" parent="." unique_id=558976625]
+[node name="PlayerInfo" type="VBoxContainer" parent="." unique_id=477421485]
 layout_mode = 2
 size_flags_vertical = 4
+mouse_filter = 2
 metadata/__script_vars = {}
 
-[node name="@Panel@57" type="Panel" parent="PlayerInfo" unique_id=1250833857]
+[node name="@Panel@53" type="Panel" parent="PlayerInfo" unique_id=606614655]
 custom_minimum_size = Vector2(210, 42)
 layout_mode = 2
+mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_ibbys")
 
-[node name="@HBoxContainer@56" type="HBoxContainer" parent="PlayerInfo/@Panel@57" unique_id=896194539]
+[node name="@HBoxContainer@52" type="HBoxContainer" parent="PlayerInfo/@Panel@53" unique_id=330128943]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -77,47 +80,52 @@ offset_left = 12.0
 offset_top = 6.0
 offset_right = -8.0
 offset_bottom = -6.0
+mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="RealmText" type="Label" parent="PlayerInfo/@Panel@57/@HBoxContainer@56" unique_id=1265599311]
+[node name="RealmText" type="Label" parent="PlayerInfo/@Panel@53/@HBoxContainer@52" unique_id=852452764]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.41960785, 0.2901961, 0.11764706, 1)
 text = "练气一层"
 vertical_alignment = 1
 
-[node name="@Control@54" type="Control" parent="PlayerInfo/@Panel@57/@HBoxContainer@56" unique_id=1986151565]
+[node name="@Control@50" type="Control" parent="PlayerInfo/@Panel@53/@HBoxContainer@52" unique_id=691490903]
 layout_mode = 2
 size_flags_horizontal = 3
+mouse_filter = 2
 
-[node name="@Label@55" type="Label" parent="PlayerInfo/@Panel@57/@HBoxContainer@56" unique_id=333019677]
+[node name="@Label@51" type="Label" parent="PlayerInfo/@Panel@53/@HBoxContainer@52" unique_id=701639964]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "最高境界"
 vertical_alignment = 1
 
-[node name="@HBoxContainer@59" type="HBoxContainer" parent="PlayerInfo" unique_id=1302810588]
+[node name="@HBoxContainer@55" type="HBoxContainer" parent="PlayerInfo" unique_id=1227039053]
 layout_mode = 2
+mouse_filter = 2
 
-[node name="LevelText" type="Label" parent="PlayerInfo/@HBoxContainer@59" unique_id=1432247231]
+[node name="LevelText" type="Label" parent="PlayerInfo/@HBoxContainer@55" unique_id=2136397282]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9098039, 0.7254902, 0.24313726, 1)
 text = "Lv.1"
 vertical_alignment = 1
 
-[node name="@Panel@58" type="Panel" parent="PlayerInfo/@HBoxContainer@59" unique_id=629509402]
+[node name="@Panel@54" type="Panel" parent="PlayerInfo/@HBoxContainer@55" unique_id=2084308348]
 custom_minimum_size = Vector2(90, 10)
 layout_mode = 2
 size_flags_vertical = 4
+mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_2bkh8")
 
-[node name="LevelFill" type="Panel" parent="PlayerInfo/@HBoxContainer@59/@Panel@58" unique_id=1462921181]
+[node name="LevelFill" type="Panel" parent="PlayerInfo/@HBoxContainer@55/@Panel@54" unique_id=30450246]
 custom_minimum_size = Vector2(0, 10)
 layout_mode = 0
 anchor_bottom = 1.0
+mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_s3wdp")
 metadata/__anchor = "left_wide"
 
-[node name="LevelPct" type="Label" parent="PlayerInfo/@HBoxContainer@59" unique_id=423372476]
+[node name="LevelPct" type="Label" parent="PlayerInfo/@HBoxContainer@55" unique_id=1857257791]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.8117647, 0.8901961, 0.78431374, 1)
 text = "0%"

@@ -35,6 +35,7 @@ use super::ui_form::{
     GdUISettingSlider, GdUISettingSwitch, GdUISettingSelect,
 };
 use super::ui_nav_menu::GdUINavMenu;
+use super::ui_hotbar::GdUIHotbar;
 use super::ui_theme::{ThemeVars, get_theme_color, resolve_theme_vars};
 
 /// UI 构建器：将 AST 转换为 Godot Control 节点树
@@ -235,6 +236,21 @@ impl UiBuilder {
         // 应用 class 样式
         if let Some(ref cn) = class_name {
             self.apply_class_style(&mut control, &node.tag, cn);
+        }
+
+        // 鼠标穿透默认（GML 约定）：布局/展示类元素未显式声明 mouse_filter
+        // 且无交互绑定（@pressed / on_* 信号属性）时，默认 IGNORE。
+        // 防止 HUD 的全屏布局层/无名占位 Control（Godot Control 默认 STOP）
+        // 吞掉世界点击——「点击世界」类输入（GdShooter 开火、点击寻路）依赖
+        // unhandled 路由，被 STOP 控件消费的点击到不了 unhandled。
+        // 有交互绑定的元素与显式声明 mouse_filter 者不受影响。
+        let has_binding = node
+            .attributes
+            .iter()
+            .any(|(k, _)| k.starts_with('@') || k.starts_with("on_"));
+        let declared_filter = node.attributes.iter().any(|(k, _)| k == "mouse_filter");
+        if !has_binding && !declared_filter && is_transparent_tag(&node.tag) {
+            control.set_mouse_filter(godot::classes::control::MouseFilter::IGNORE);
         }
 
         // PopupPanel/Drawer/Modal/Tooltip：属性设置完成后立即构建内部 UI
@@ -679,6 +695,8 @@ impl UiBuilder {
             "SettingSelect" => GdUISettingSelect::new_alloc().upcast(),
             // 导航菜单
             "NavMenu" => GdUINavMenu::new_alloc().upcast(),
+            // 快捷装备栏（数字键绑定 + 选中高亮框）
+            "Hotbar" => GdUIHotbar::new_alloc().upcast(),
             // 导航菜单项（递归嵌套，使用 Control 占位）
             "NavItem" => Control::new_alloc(),
             // 列表扩展节点
@@ -1355,6 +1373,45 @@ impl UiBuilder {
     }
 }
 
+/// 解析 mouse_filter 属性值：stop / pass / ignore（不区分大小写，也接受 0/1/2）
+fn parse_mouse_filter(value: &str) -> Option<godot::classes::control::MouseFilter> {
+    use godot::classes::control::MouseFilter;
+    match value.trim().to_ascii_lowercase().as_str() {
+        "stop" | "0" => Some(MouseFilter::STOP),
+        "pass" | "1" => Some(MouseFilter::PASS),
+        "ignore" | "2" => Some(MouseFilter::IGNORE),
+        _ => None,
+    }
+}
+
+/// 布局/展示类标签：GML 元素无交互绑定时默认鼠标穿透（mouse_filter=IGNORE）。
+/// 这些标签只承担排版/显示职责，默认 STOP 会吞掉落在其上的世界点击
+/// （典型：HUD 全屏布局层、VBox 里的无名占位 Control）。
+/// 交互类控件（Button/LineEdit/ScrollContainer 等需要接收鼠标的）不在
+/// 名单内，保留引擎默认 STOP；有 @pressed/on_* 绑定的元素同样保留。
+fn is_transparent_tag(tag: &str) -> bool {
+    matches!(
+        tag,
+        "Control"
+            | "Label"
+            | "Panel"
+            | "ColorRect"
+            | "TextureRect"
+            | "NinePatchRect"
+            | "MarginContainer"
+            | "HBoxContainer"
+            | "VBoxContainer"
+            | "CenterContainer"
+            | "GridContainer"
+            | "PanelContainer"
+            | "HSeparator"
+            | "VSeparator"
+            | "HFlowContainer"
+            | "VFlowContainer"
+            | "AspectRatioContainer"
+    )
+}
+
 /// 应用根节点属性
 fn apply_root_attribute(control: &mut Gd<Control>, key: &str, value: &str) {
     match key {
@@ -1367,6 +1424,11 @@ fn apply_root_attribute(control: &mut Gd<Control>, key: &str, value: &str) {
                 "margin" => apply_margin(control, value),
                 "size" => apply_size(control, value),
                 "visible" => control.set_visible(value != "false" && value != "0"),
+                "mouse_filter" => {
+                    if let Some(f) = parse_mouse_filter(value) {
+                        control.set_mouse_filter(f);
+                    }
+                }
                 _ => {
                     // //godot_print!("[UiBuilder] Unhandled root attribute: {}='{}'", key, value);
                 }
@@ -1466,6 +1528,11 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
             }
         }
         "anchor" => apply_anchor(&mut control, value),
+        "mouse_filter" => {
+            if let Some(f) = parse_mouse_filter(value) {
+                control.set_mouse_filter(f);
+            }
+        }
         "margin" => apply_margin(&mut control, value),
         "size" => apply_size(&mut control, value),
         "custom_minimum_size" => apply_custom_minimum_size(&mut control, value),
@@ -1731,9 +1798,38 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
             }
         }
         // Modal 特有：按键绑定（key_bind="escape" → ESC 开关弹窗）
+        // Hotbar 通用：数字键 1..N 选中槽位（key_bind="true"）
         "key_bind" => {
             if tag == "Modal" {
                 control.set(&StringName::from("key_bind"), &value.to_variant());
+            } else if tag == "Hotbar" {
+                control.set(
+                    &StringName::from("key_bind"),
+                    &(value == "true" || value == "1").to_variant(),
+                );
+            }
+        }
+        // Hotbar 特有：槽位数 / 初始选中 / 间距 / 槽位尺寸
+        "slot_count" | "selected_index" | "separation" => {
+            if tag == "Hotbar" {
+                if let Ok(v) = value.parse::<i32>() {
+                    control.set(&StringName::from(key), &v.to_variant());
+                }
+            }
+        }
+        "slot_size" => {
+            if tag == "Hotbar" {
+                // 格式: "46,46" 或 "46x46"
+                let parts: Vec<f32> = value
+                    .split(|c| c == ',' || c == 'x')
+                    .filter_map(|s| s.trim().parse().ok())
+                    .collect();
+                if parts.len() == 2 {
+                    control.set(
+                        &StringName::from("slot_size"),
+                        &Vector2::new(parts[0], parts[1]).to_variant(),
+                    );
+                }
             }
         }
         "visible" => {
@@ -1778,7 +1874,7 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
         "enable_random_pos" => {
             control.set(&StringName::from(key), &(value == "true" || value == "1").to_variant());
         }
-        "highlight_color" | "fill_color" => {
+        "highlight_color" | "fill_color" | "slot_bg" | "slot_border" | "text_color" => {
             if let Some(color) = parse_color(value) {
                 control.set(&StringName::from(key), &color.to_variant());
             }

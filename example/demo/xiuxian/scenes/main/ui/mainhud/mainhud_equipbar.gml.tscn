@@ -1,0 +1,27 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/ui/mainhud/mainhud_equipbar.gd" id="1_upmmv"]
+
+[node name="EquipBar" type="HBoxContainer" unique_id=434959029]
+mouse_filter = 2
+script = ExtResource("1_upmmv")
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray()
+
+[node name="EquipTitle" type="Label" parent="." unique_id=645456662]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "装备"
+vertical_alignment = 1
+metadata/__script_vars = {}
+
+[node name="EquipSlots" type="GdUIHotbar" parent="." unique_id=713209385]
+separation = 6
+slot_bg = Color(0.09019608, 0.12156863, 0.101960786, 0.92156863)
+slot_border = Color(0.41960785, 0.38039216, 0.2784314, 1)
+highlight_color = Color(0.9490196, 0.7921569, 0.34901962, 1)
+text_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+layout_mode = 2
+metadata/__signal_s_selected = "_on_equip_selected"
+metadata/__script_vars = {}

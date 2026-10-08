@@ -5,7 +5,11 @@
 		 · mainhud 功能按钮 → @pressed="show:TaskDrawer"（运行期按 ui_id 查注册表）
 		 · GD 代码 → GdUIManager.find_ui("TaskDrawer").open()
 	   新增组件三步：组件文件里声明 ui_id → 本文件 <Gml> 装配 → 其他组件按 id 调用 -->
-  <Control name="DemoRoot" anchor="full">
+  <!-- mouse_filter=ignore：组合根全屏覆盖在世界上，必须鼠标穿透——
+	   否则根节点（默认 STOP）会被报为 hovered 并吞掉全部世界点击，
+	   导致玩家"无 UI 悬停才开火"的射击分支永不成立（点击寻路同样被吞）。
+	   交互子节点（按钮/装备栏/弹窗）各自声明鼠标行为，不受父级 IGNORE 影响 -->
+  <Control name="DemoRoot" anchor="full" mouse_filter="ignore">
 	<!-- 游戏主界面 HUD（底层） -->
 	<Gml src="mainhud/mainhud.gml" />
 	<!-- 任务抽屉（顶层，后挂载渲染在上；初始隐藏） -->

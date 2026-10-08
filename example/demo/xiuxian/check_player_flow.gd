@@ -51,6 +51,10 @@ func _run() -> void:
 	if player == null or mgr == null:
 		_finish()
 		return
+	# 装备栏默认选中枪支（左键=开火）；本脚本验的是移动/传送链路，先卸下装备
+	# 恢复左键点击寻路（装备/开火链路由 check_equip_flow.gd 专项覆盖）
+	Engine.get_singleton("GDSTATE").set_state("mainhud.equip", "")
+	check(not bool(player.gun_equipped), "卸下装备后玩家不应持枪")
 	check(player.get_class() == "GdRoleMover", "Player 应为 GdRoleMover")
 	check(int(player.move_mode) == 2, "移动模式应为 MODE_GRID(2)")
 	check(int(player.control_mode) == 1, "控制方式应为键盘")

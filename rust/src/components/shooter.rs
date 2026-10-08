@@ -3,7 +3,17 @@
 //   - fire(direction)          朝给定方向发射
 //   - fire_at_point(target)    朝世界坐标点发射
 //   - fire_toward_mouse()      朝鼠标位置发射
-//   - auto_fire_mouse 开启时，按住鼠标左键持续朝鼠标方向射击
+//   - auto_fire_mouse 开启时，框架自动处理开火输入（见下）
+//
+// 开火输入路由（设计约定：凡「点击世界」类动作一律走 unhandled 阶段）：
+//   auto_fire_mouse = true 时，GdShooter 在 unhandled_input 接收鼠标按键——
+//   被 UI 控件（mouse_filter=STOP）消费的点击到不了这里，引擎保证
+//   「收到 = 点击落在世界，收不到 = 点击被 UI 吃掉」，无需 hover 猜测。
+//   按下即开火并置 fire_held，_process 按住连射（冷却内置）；抬起复位。
+//   防卡死兜底：release 若被 UI 吞掉（按住拖进控件再松开），process 中用
+//   Input 轮询校准复位 fire_held。
+//   auto_fire_mouse = false 时完全由外部脚本驱动（调 fire_toward_mouse）。
+//
 // 子弹经 GdSpawnPool 生成/回收（bullet_scene_path 首次射击时自动注册进池），
 // 每发子弹的 速度/伤害/寿命/池别名 由本组件写入 GdBullet。
 //
@@ -12,7 +22,9 @@
 
 use godot::prelude::*;
 use godot::builtin::{GString, StringName, Variant, Vector2};
-use godot::classes::{Engine, INode, Input, Node, Node2D, Window};
+use godot::classes::{
+    Engine, INode, Input, InputEvent, InputEventMouseButton, Node, Node2D, Window,
+};
 use godot::global::MouseButton;
 
 use super::bullet::GdBullet;
@@ -24,9 +36,17 @@ pub struct GdShooter {
     #[export]
     enabled: bool,
 
-    /// 按住鼠标左键持续朝鼠标方向射击
+    /// 框架自动处理开火输入：unhandled 阶段路由（点击 UI 不开火，点击世界开火）
     #[export]
     auto_fire_mouse: bool,
+
+    /// 开火按键：鼠标左键
+    #[export]
+    fire_button_left: bool,
+
+    /// 开火按键：鼠标右键
+    #[export]
+    fire_button_right: bool,
 
     /// 射击冷却（秒）
     #[export]
@@ -48,6 +68,10 @@ pub struct GdShooter {
     #[export]
     muzzle_distance: f64,
 
+    /// 子弹最大射程（像素，飞行距离超限销毁）；0 = 不限
+    #[export]
+    max_distance: f64,
+
     /// 子弹池别名
     #[export]
     bullet_alias: GString,
@@ -59,6 +83,8 @@ pub struct GdShooter {
     // ---- 运行时状态 ----
     cooldown_timer: f64,
     pool_ready: bool,
+    /// unhandled 阶段收到开火键按下 → 按住连射；抬起/校准复位
+    fire_held: bool,
 
     base: Base<Node>,
 }
@@ -69,15 +95,19 @@ impl INode for GdShooter {
         Self {
             enabled: true,
             auto_fire_mouse: true,
+            fire_button_left: true,
+            fire_button_right: false,
             fire_cooldown: 0.25,
             bullet_speed: 480.0,
             bullet_lifetime: 1.5,
             bullet_damage: 20.0,
             muzzle_distance: 24.0,
+            max_distance: 0.0,
             bullet_alias: GString::from("bullet"),
             bullet_scene_path: GString::new(),
             cooldown_timer: 0.0,
             pool_ready: false,
+            fire_held: false,
             base,
         }
     }
@@ -86,17 +116,54 @@ impl INode for GdShooter {
         if self.cooldown_timer > 0.0 {
             self.cooldown_timer = (self.cooldown_timer - delta).max(0.0);
         }
+        if !self.enabled || !self.auto_fire_mouse || !self.fire_held {
+            return;
+        }
+        // 防卡死校准：release 被控件吞掉（按住拖进 UI 再松开）时，Input 状态
+        // 已复位但 fire_held 收不到 release——以 Input 实际状态为准复位
+        let input = Input::singleton();
+        let pressed = (self.fire_button_left && input.is_mouse_button_pressed(MouseButton::LEFT))
+            || (self.fire_button_right && input.is_mouse_button_pressed(MouseButton::RIGHT));
+        if !pressed {
+            self.fire_held = false;
+            return;
+        }
+        if self.host_paused() {
+            return;
+        }
+        self.fire_toward_mouse();
+    }
+
+    /// 开火输入路由：unhandled 阶段 = 点击落在了世界上。
+    /// 被 mouse_filter=STOP 的 UI 控件消费的点击到不了这里（引擎保证），
+    /// 因此「点击 UI 不开火、点击地图/世界开火」无需任何 hover 猜测。
+    fn unhandled_input(&mut self, event: Gd<InputEvent>) {
         if !self.enabled || !self.auto_fire_mouse {
             return;
         }
-        // 鼠标悬停在 UI 控件（按钮等）上时不自动开火
-        if let Some(viewport) = self.base().get_viewport() {
-            if viewport.gui_get_hovered_control().is_some() {
-                return;
-            }
+        // 对话/剧情锁：宿主实现 is_paused()（如 GdRoleMover）时暂停期不接开火输入
+        if self.host_paused() {
+            return;
         }
-        if Input::singleton().is_mouse_button_pressed(MouseButton::LEFT) {
-            self.fire_toward_mouse();
+        let Ok(btn) = event.try_cast::<InputEventMouseButton>() else {
+            return;
+        };
+        let idx = btn.get_button_index();
+        let is_fire_button = (idx == MouseButton::LEFT && self.fire_button_left)
+            || (idx == MouseButton::RIGHT && self.fire_button_right);
+        if !is_fire_button {
+            return;
+        }
+        if btn.is_pressed() {
+            self.fire_held = true;
+            if self.fire_toward_mouse() {
+                // 世界点击已被「开火」消费，不再下传（防止同时触发寻路等）
+                if let Some(mut vp) = self.base().get_viewport() {
+                    vp.set_input_as_handled();
+                }
+            }
+        } else {
+            self.fire_held = false;
         }
     }
 }
@@ -142,7 +209,9 @@ impl GdShooter {
             let damage = self.bullet_damage;
             let lifetime = self.bullet_lifetime;
             let alias = self.bullet_alias.clone();
-            b.bind_mut().setup(dir * speed as f32, damage, lifetime, alias);
+            let max_distance = self.max_distance as f32;
+            b.bind_mut()
+                .setup(dir * speed as f32, damage, lifetime, alias, max_distance);
         }
 
         self.cooldown_timer = self.fire_cooldown;
@@ -176,6 +245,22 @@ impl GdShooter {
         let host = self.base().get_parent()?;
         let host2d = host.try_cast::<Node2D>().ok()?;
         Some(host2d.get_global_position())
+    }
+
+    /// 宿主暂停判定（duck-type：宿主实现 is_paused() 即生效，如 GdRoleMover
+    /// 的对话/剧情锁）。非 Node2D 宿主或未实现时不视为暂停。
+    fn host_paused(&self) -> bool {
+        let Some(host) = self.base().get_parent() else {
+            return false;
+        };
+        let mut obj = host.upcast::<Object>();
+        if obj.has_method(&StringName::from("is_paused")) {
+            return obj
+                .call(&StringName::from("is_paused"), &[])
+                .try_to::<bool>()
+                .unwrap_or(false);
+        }
+        false
     }
 
     /// 瞄准方向：宿主 -> 鼠标（经宿主 CanvasItem 换算，自动适配相机）

@@ -198,8 +198,11 @@ impl ICharacterBody2D for GdRoleMover {
         }
     }
 
-    /// 鼠标控制：左键按下设定移动目标点
-    fn input(&mut self, event: Gd<InputEvent>) {
+    /// 鼠标控制：左键按下设定移动目标点。
+    /// 走 unhandled 阶段（事件路由）：被 mouse_filter=STOP 的 UI 控件消费的
+    /// 点击到不了这里——「点击 UI 不移动、点击世界移动」由引擎保证；
+    /// 严禁改回 _input 阶段（GUI 之前收到事件，点 UI 也会误移动）。
+    fn unhandled_input(&mut self, event: Gd<InputEvent>) {
         if !self.enable || self.control_mode != CONTROL_MOUSE {
             return;
         }
@@ -219,6 +222,11 @@ impl ICharacterBody2D for GdRoleMover {
     fn physics_process(&mut self, delta: f64) {
         if !self.enable || self.paused {
             return;
+        }
+        // 防卡死校准：release 被控件吞掉（按住拖进 UI 再松开）时收不到
+        // unhandled release——以 Input 实际状态为准复位 mouse_held
+        if self.mouse_held && !Input::singleton().is_mouse_button_pressed(MouseButton::LEFT) {
+            self.mouse_held = false;
         }
         self.tick(delta);
     }

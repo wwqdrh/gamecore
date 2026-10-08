@@ -12,6 +12,7 @@ terrain_thresholds = PackedFloat64Array(0.15, 0.35, 0.75, 0.9)
 terrain_dualgrid_textures = PackedStringArray("", "res://example/map/assets/tileset_grass.png", "", "", "res://example/map/assets/tileset_water.png")
 terrain_shaders = PackedStringArray("", "", "", "", "water_flow")
 blocked_terrains = PackedStringArray("water", "mountain")
+connected_terrain = "grass"
 
 [node name="TeleportWest" type="GdMapMarker" parent="."]
 cell = Vector2i(3, 8)

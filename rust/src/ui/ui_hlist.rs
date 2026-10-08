@@ -263,6 +263,10 @@ impl GdUIHList {
                     // item_index 为可见子节点索引（0-based）
                     let item_index = (i - 1) as i64;
 
+                    // 条目根必须接收鼠标（gui_input 点选）：GML 构建器会把无交互
+                    // 绑定的布局节点默认设为 IGNORE，组件接线时强制回 STOP
+                    n.set_mouse_filter(godot::classes::control::MouseFilter::STOP);
+
                     // 绑定点击事件 - 使用 bind 传入 item_index
                     let signal_name = StringName::from("gui_input");
                     let callable = Callable::from_object_method(

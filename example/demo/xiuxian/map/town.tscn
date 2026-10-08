@@ -1,8 +1,8 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene format=3]
 
-[ext_resource type="PackedScene" path="res://example/demo/xiuxian/role/elder/elder.tscn" id="1_elder"]
-[ext_resource type="PackedScene" path="res://example/demo/xiuxian/role/merchant/merchant.tscn" id="2_merchant"]
-[ext_resource type="PackedScene" path="res://example/demo/xiuxian/role/disciple/disciple.tscn" id="3_disciple"]
+[ext_resource type="PackedScene" path="res://example/demo/xiuxian/role/npc/elder/elder.tscn" id="1_elder"]
+[ext_resource type="PackedScene" path="res://example/demo/xiuxian/role/npc/merchant/merchant.tscn" id="2_merchant"]
+[ext_resource type="PackedScene" path="res://example/demo/xiuxian/role/npc/disciple/disciple.tscn" id="3_disciple"]
 
 [node name="QingYunFang" type="GdQuickMap"]
 width = 32
@@ -16,6 +16,7 @@ terrain_thresholds = PackedFloat64Array(0.25, 0.75, 0.92, 0.97)
 terrain_dualgrid_textures = PackedStringArray("", "res://example/map/assets/tileset_grass.png", "", "", "res://example/map/assets/tileset_water.png")
 terrain_shaders = PackedStringArray("", "", "", "", "water_flow")
 blocked_terrains = PackedStringArray("water", "mountain")
+connected_terrain = "grass"
 
 [node name="TeleportEast" type="GdMapMarker" parent="."]
 cell = Vector2i(28, 10)

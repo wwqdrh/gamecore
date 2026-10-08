@@ -5,7 +5,7 @@ extends XiuNpcBase
 func _init() -> void:
 	display_name = "外门弟子"
 	role_name = "外门弟子"
-	timeline_path = "res://example/demo/xiuxian/role/disciple/disciple_timeline.txt"
+	timeline_path = "res://example/demo/xiuxian/role/npc/disciple/disciple_timeline.txt"
 	entry_stage = "disciple_talk"
 	npc_cell = Vector2i(23, 7)
 	ai_behavior = 2  # AI_PATROL 路径巡逻

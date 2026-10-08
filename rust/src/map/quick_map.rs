@@ -144,6 +144,18 @@ pub struct GdQuickMap {
     #[export]
     blocked_terrains: PackedStringArray,
 
+    /// 每地形海拔高度（与 terrain_names 下标对应，缺省 0）。
+    /// 高度场是一等地图数据，不做「山体」特判：投射物撞山检测
+    /// （terrain_provider 协议）、飞行单位越障、视线判断等均可复用。
+    /// 显式配置覆盖内置默认（内置表中名为 mountain 的地形默认海拔 3）
+    #[export]
+    terrain_heights: PackedInt32Array,
+
+    /// 连通性保证主地形名（如 "grass"）：生成后把所有可通行区域挖通成一片，
+    /// 桥上不可通行格改成该地形；空 = 不启用。同一 seed 结果确定
+    #[export]
+    connected_terrain: GString,
+
     // ---- 运行时状态 ----
     /// 每格地形下标，-1 = 未生成
     grid: Vec<i32>,
@@ -153,6 +165,8 @@ pub struct GdQuickMap {
     textures: Vec<Option<Gd<Texture2D>>>,
     /// 不可通行地形下标缓存
     blocked_indices: Vec<i32>,
+    /// 每地形海拔高度缓存（与 names 下标对应）
+    heights: Vec<i32>,
     /// 每个地形对应的渲染图层（与 names 下标对应）
     layers: Vec<TerrainLayerInfo>,
 }
@@ -177,16 +191,23 @@ impl INode2D for GdQuickMap {
             terrain_shaders: PackedStringArray::new(),
             terrain_thresholds: PackedFloat64Array::new(),
             blocked_terrains: PackedStringArray::new(),
+            terrain_heights: PackedInt32Array::new(),
+            connected_terrain: GString::new(),
             grid: Vec::new(),
             names: Vec::new(),
             colors: Vec::new(),
             textures: Vec::new(),
             blocked_indices: Vec::new(),
+            heights: Vec::new(),
             layers: Vec::new(),
         }
     }
 
     fn ready(&mut self) {
+        // terrain_provider 协议：投射物/视线等外部系统经分组找到本地图，
+        // duck-type 调用 get_height_at_world(world) -> i32 查询高度场。
+        // 地图与消费者互相零依赖（GdMapBasic / GDScript 自定义地图亦可入组）
+        self.base_mut().add_to_group("terrain_provider");
         // 场景一打开（含编辑器）即按当前配置出图，方便所见即所得调参
         if self.grid.is_empty() {
             self.generate_internal(self.seed_value);
@@ -307,6 +328,23 @@ impl GdQuickMap {
             Some(idx) => !self.blocked_indices.contains(&idx),
             None => false,
         }
+    }
+
+    /// 格子海拔高度（高度场查询；越界/未生成返回 0）
+    #[func]
+    pub fn get_cell_height(&self, cell: Vector2i) -> i32 {
+        match self.terrain_index_at(cell.x, cell.y) {
+            Some(idx) => self.heights.get(idx as usize).copied().unwrap_or(0),
+            None => 0,
+        }
+    }
+
+    /// 世界坐标处的海拔高度（terrain_provider 协议入口：投射物/视线等
+    /// 外部系统 duck-type 调用，地图自身处理局部坐标换算）
+    #[func]
+    pub fn get_height_at_world(&self, world_pos: Vector2) -> i32 {
+        let local = self.base().to_local(world_pos);
+        self.get_cell_height(self.world_to_cell(local))
     }
 
     /// 格子中心的世界坐标
@@ -441,6 +479,14 @@ impl GdQuickMap {
         self.grid.get((cy * self.width + cx) as usize).copied()
     }
 
+    /// 网格下标是否可通行（连通性计算用；越界/未生成不可通行）
+    fn grid_index_walkable(&self, i: usize) -> bool {
+        match self.grid.get(i) {
+            Some(&ti) => ti >= 0 && !self.blocked_indices.contains(&ti),
+            None => false,
+        }
+    }
+
     /// 生成主流程：重建地形表 → 噪声 → 阈值划分 → 重绘
     fn generate_internal(&mut self, seed: i64) {
         self.build_terrain_table();
@@ -465,8 +511,179 @@ impl GdQuickMap {
             }
         }
 
+        // 连通性保证：渲染前把可通行区域挖通（桥格改主地形，渲染自然一致）
+        self.ensure_walkable_connected();
+
         self.rebuild_layers();
         self.base_mut().queue_redraw();
+    }
+
+    // ---- 连通性保证 ----
+
+    /// 手动触发连通性保证（connected_terrain 非空时生效）；generate/regenerate 自动执行
+    #[func]
+    pub fn ensure_connected(&mut self) -> bool {
+        if self.connected_terrain.is_empty() || self.grid.is_empty() {
+            return false;
+        }
+        let carved = self.ensure_walkable_connected();
+        if carved > 0 {
+            self.rebuild_layers();
+            self.base_mut().queue_redraw();
+        }
+        carved > 0
+    }
+
+    /// 把所有可通行区域挖通成一片：
+    ///   1. 对可通行格做连通分量标记，取「主地形格最多」的分量为主分量
+    ///   2. 其余分量按大小降序，用 0-1 BFS 找到到主分量的最短桥
+    ///      （可通行格代价 0 / 不可通行格代价 1），桥上不可通行格改成主地形
+    ///   3. 分量与桥并入主集合，直到全部连通
+    /// 同一 seed 结果确定；返回被改写的格数。
+    fn ensure_walkable_connected(&mut self) -> usize {
+        if self.connected_terrain.is_empty() || self.grid.is_empty() {
+            return 0;
+        }
+        let Some(target_ti) = self
+            .names
+            .iter()
+            .position(|s| *s == self.connected_terrain.to_string())
+        else {
+            godot_warn!(
+                "GdQuickMap: connected_terrain \"{}\" 不在 terrain_names 中，跳过连通性保证",
+                self.connected_terrain
+            );
+            return 0;
+        };
+        let target_ti = target_ti as i32;
+        let w = self.width.max(1) as usize;
+        let h = self.height.max(1) as usize;
+        let total = w * h;
+        if total == 0 {
+            return 0;
+        }
+
+        // 1. 连通分量标记
+        let mut comp = vec![-1i32; total];
+        let mut comps: Vec<Vec<usize>> = Vec::new();
+        for i in 0..total {
+            if !self.grid_index_walkable(i) || comp[i] >= 0 {
+                continue;
+            }
+            let id = comps.len() as i32;
+            let mut cells = Vec::new();
+            let mut queue = std::collections::VecDeque::new();
+            comp[i] = id;
+            queue.push_back(i);
+            while let Some(cur) = queue.pop_front() {
+                cells.push(cur);
+                let cx = cur % w;
+                let cy = cur / w;
+                for (nx, ny) in [
+                    (cx.wrapping_sub(1), cy),
+                    (cx + 1, cy),
+                    (cx, cy.wrapping_sub(1)),
+                    (cx, cy + 1),
+                ] {
+                    if nx >= w || ny >= h {
+                        continue;
+                    }
+                    let j = ny * w + nx;
+                    if comp[j] < 0 && self.grid_index_walkable(j) {
+                        comp[j] = id;
+                        queue.push_back(j);
+                    }
+                }
+            }
+            comps.push(cells);
+        }
+        if comps.len() <= 1 {
+            return 0;
+        }
+
+        // 2. 主分量 = 含主地形格最多的分量（并列取下标小的）
+        let mut main_id = 0usize;
+        let mut best_count = 0usize;
+        for (id, cells) in comps.iter().enumerate() {
+            let count = cells
+                .iter()
+                .filter(|&&i| self.grid[i] == target_ti)
+                .count();
+            if count > best_count {
+                best_count = count;
+                main_id = id;
+            }
+        }
+        let mut main_mark = vec![false; total];
+        for &i in &comps[main_id] {
+            main_mark[i] = true;
+        }
+
+        // 3. 其余分量按大小降序挖桥
+        let mut order: Vec<usize> = (0..comps.len()).collect();
+        order.sort_by_key(|&id| std::cmp::Reverse(comps[id].len()));
+        let mut carved = 0usize;
+        for id in order {
+            if id == main_id {
+                continue;
+            }
+            let cells = &comps[id];
+            // 0-1 BFS：可通行代价 0 / 不可通行代价 1，找到任一主集合格即回溯
+            let mut dist = vec![usize::MAX; total];
+            let mut prev = vec![usize::MAX; total];
+            let mut deque = std::collections::VecDeque::new();
+            for &i in cells {
+                dist[i] = 0;
+                deque.push_back(i);
+            }
+            let mut found = usize::MAX;
+            'search: while let Some(cur) = deque.pop_front() {
+                if main_mark[cur] && dist[cur] > 0 {
+                    found = cur;
+                    break;
+                }
+                let cx = cur % w;
+                let cy = cur / w;
+                for (nx, ny) in [
+                    (cx.wrapping_sub(1), cy),
+                    (cx + 1, cy),
+                    (cx, cy.wrapping_sub(1)),
+                    (cx, cy + 1),
+                ] {
+                    if nx >= w || ny >= h {
+                        continue;
+                    }
+                    let j = ny * w + nx;
+                    let cost = if self.grid_index_walkable(j) { 0 } else { 1 };
+                    if dist[cur] + cost < dist[j] {
+                        dist[j] = dist[cur] + cost;
+                        prev[j] = cur;
+                        if cost == 0 {
+                            deque.push_front(j);
+                        } else {
+                            deque.push_back(j);
+                        }
+                    }
+                }
+            }
+            if found == usize::MAX {
+                continue; // 全图不可达（理论上不会发生）
+            }
+            // 回溯挖桥：桥上不可通行格改主地形；整条路径与该分量并入主集合
+            let mut cur = found;
+            while cur != usize::MAX {
+                if !self.grid_index_walkable(cur) {
+                    self.grid[cur] = target_ti;
+                    carved += 1;
+                }
+                main_mark[cur] = true;
+                cur = prev[cur];
+            }
+            for &i in cells {
+                main_mark[i] = true;
+            }
+        }
+        carved
     }
 
     // ---- 图层渲染 ----
@@ -814,6 +1031,20 @@ impl GdQuickMap {
                 self.textures.push(tex);
             }
         }
+
+        // 海拔高度表：与 names 下标对应。优先 terrain_heights 显式配置；
+        // 缺省时内置语义——名为 mountain 的地形海拔 3（零配置即有撞山），
+        // 其余 0
+        self.heights = self
+            .names
+            .iter()
+            .enumerate()
+            .map(|(i, name)| {
+                self.terrain_heights
+                    .get(i)
+                    .unwrap_or(if name == "mountain" { 3 } else { 0 })
+            })
+            .collect();
     }
 
     /// 按噪声值挑地形：value < thresholds[i] → i；否则最后一个地形

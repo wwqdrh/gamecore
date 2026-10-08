@@ -17,5 +17,6 @@ mod ui_drawer;
 mod ui_modal;
 mod ui_form;
 mod ui_nav_menu;
+mod ui_hotbar;
 mod ui_gml_scene;
 pub mod ui_manager;

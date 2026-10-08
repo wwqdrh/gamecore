@@ -9,7 +9,7 @@ const DIR := "res://example/demo/xiuxian/scenes/main/ui/mainhud/"
 const GML_FILES := [
 	"mainhud.gml", "mainhud_player.gml", "mainhud_resources.gml",
 	"mainhud_quest.gml", "mainhud_minimap.gml", "mainhud_menus.gml",
-	"mainhud_skillbar.gml", "skill_item.gml",
+	"mainhud_skillbar.gml", "mainhud_equipbar.gml", "skill_item.gml",
 ]
 
 const KEY_MENU := "mainhud.menu"
@@ -59,7 +59,7 @@ func _run() -> void:
 
 	# <Gml> 引用的子视图
 	for view_name in ["PlayerBadge", "ResourceBar", "QuestBanner", "MiniMap",
-			"MenuColumn", "SkillBar", "XpBar"]:
+			"MenuColumn", "SkillBar", "XpBar", "EquipBar", "EquipSlots", "EquipTitle"]:
 		if hud.find_child(view_name, true, false) == null:
 			push_error("[Check] 子视图 %s 不存在" % view_name)
 			ok = false
@@ -75,6 +75,50 @@ func _run() -> void:
 	print("[Check] mouse passthrough=%s" % passthrough)
 	if not passthrough:
 		push_error("[Check] HUD 鼠标穿透失败")
+		ok = false
+
+	# 布局/展示类节点穿透回归（builder 默认）：无信号绑定的 Control/容器/Label
+	# 必须 IGNORE——无名占位 Control 曾以 STOP（filter=0）吃掉全屏世界点击
+	# （点地图/世界无反应，GdShooter 开火与点击寻路的 unhandled 收不到事件）
+	var layout_classes := ["Control", "Label", "Panel", "ColorRect", "TextureRect",
+		"MarginContainer", "HBoxContainer", "VBoxContainer", "CenterContainer",
+		"GridContainer", "PanelContainer", "HSeparator", "VSeparator"]
+	var layout_bad := 0
+	for node in hud.find_children("*", "Control", true, false):
+		var c := node as Control
+		if c == null or not layout_classes.has(c.get_class()):
+			continue
+		var has_binding := false
+		for meta_key in c.get_meta_list():
+			if str(meta_key).begins_with("__signal_"):
+				has_binding = true
+				break
+		if not has_binding and c.mouse_filter != Control.MOUSE_FILTER_IGNORE:
+			# 有 gui_input 连接的组件托管节点（如 GdUIHotbar 槽位）是
+			# 有意交互的，跳过；纯布局节点 STOP 才是 bug
+			if c.get_signal_connection_list("gui_input").size() > 0:
+				continue
+			push_error("[Check] 布局节点 %s(%s) 应为 IGNORE，实际 %d（会吞世界点击）"
+				% [c.name, c.get_class(), c.mouse_filter])
+			layout_bad += 1
+	if layout_bad > 0:
+		ok = false
+	else:
+		print("[Check] layout passthrough OK (all IGNORE)")
+
+	# 列表条目反断言：技能格条目根必须 STOP（列表组件接线时强制，
+	# 否则条目收不到 gui_input 点选）
+	var slots_stoppable := true
+	var skill_list_early: Control = hud.find_child("SkillList", true, false)
+	if skill_list_early != null:
+		for i in range(1, skill_list_early.get_child_count()):
+			var item: Control = skill_list_early.get_at(i - 1)
+			if item != null and item.mouse_filter != Control.MOUSE_FILTER_STOP:
+				push_error("[Check] 技能格条目 %s 应为 STOP（gui_input 点选依赖），实际 %d"
+					% [item.name, item.mouse_filter])
+				slots_stoppable = false
+	print("[Check] skill slots clickable=%s" % slots_stoppable)
+	if not slots_stoppable:
 		ok = false
 
 	# 技能栏：6 格 + 键位角标 1~6 + 冷却态（第 3 格 8s，其余就绪）

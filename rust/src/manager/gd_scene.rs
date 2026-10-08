@@ -50,8 +50,10 @@ impl IControl for GdScene {
     }
 
     fn ready(&mut self) {
-        // 设置鼠标过滤器为穿透
-        self.base_mut().set_mouse_filter(godot::classes::control::MouseFilter::PASS);
+        // 鼠标过滤器 IGNORE：场景根全屏覆盖，只做容器——既不拦截点击
+        // 也不参与 hover（PASS 虽放行点击但会被 gui_get_hovered_control 报为
+        // hovered，会让"无 UI 悬停才开火"这类判断永远不成立）
+        self.base_mut().set_mouse_filter(godot::classes::control::MouseFilter::IGNORE);
 
         // 检查是否有 GdSceneRoot 管理此场景
         let is_managed = self.base().has_meta("__managed");

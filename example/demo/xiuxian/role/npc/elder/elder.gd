@@ -5,7 +5,7 @@ extends XiuNpcBase
 func _init() -> void:
 	display_name = "执事长老"
 	role_name = "执事长老"
-	timeline_path = "res://example/demo/xiuxian/role/elder/elder_timeline.txt"
+	timeline_path = "res://example/demo/xiuxian/role/npc/elder/elder_timeline.txt"
 	entry_stage = "elder_talk"
 	npc_cell = Vector2i(10, 9)
 	ai_behavior = 0  # AI_IDLE 站桩

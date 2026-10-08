@@ -649,3 +649,31 @@ bind 协议（经 `GdViewSetting`，rust/src/manager/setting.rs，写即持久�
   keycode/physical 任一匹配即 `toggle()`；键名支持 escape/enter/space/tab/f1..f12）。
 - 改 ui_form.rs 后必须 `./build.sh debug`（cargo build 不会同步二进制到
   addons/gamecore/bin/，headless check 跑的是旧库——症状：改了代码但行为不变/panic 仍在）。
+
+## Hotbar 快捷装备栏（rust/src/ui/ui_hotbar.rs）
+
+数字键绑定 + 选中高亮框的槽位栏组件（装备栏/道具栏通用）：
+
+```xml
+<Hotbar name="EquipSlots" slot_count="4" slot_size="46,46" separation="6"
+        key_bind="true" selected_index="0"
+        slot_bg="#171f1aeb" slot_border="#6b6147ff"
+        highlight_color="#f2ca59ff" text_color="#f2ead2ff"
+        @s_selected="_on_selected" />
+```
+
+- **槽位**：ready 装配（不随 tscn 打包）——每格 Panel（自绘背景/描边/圆角）+
+  左上角键位角标 Label（`KeyNum`，1..N）+ 居中图标文字 Label（`Glyph`，
+  `set_slot_glyph(i, text)` 设置，emoji 占位；正式素材可扩展 TextureRect）。
+- **数字键**：`key_bind` 开启时按 1..N 选中对应格（`unhandled_key_input`，
+  不抢 UI 焦点；编辑器内忽略）。**点击选择**：槽位 `gui_input` 左键
+  （构建期闭包补绑槽位索引，转发顺序 = (event, index)，与方法签名一致）。
+- **高亮框**：选中格描边 3px 高亮色 / 未选中 1px 描边（StyleBoxFlat 覆盖）。
+- **信号**：`s_selected(index)`（-1 = 清除）；初始 `selected_index` 只刷样式
+  不发信号——**消费者 ready 后经 `get_selected()` 自行读取初值补报**
+  （数字键同格重复按下不重复上报）。
+- **装备联动范式**（范本 example/demo/xiuxian/…/mainhud_equipbar.gd）：
+  控制器把「选中槽位 → 物品 id」写 GdState（mainhud.equip），
+  消费方（player.gd）watch 同名键开/关能力（枪支 → 开启射击）——UI 与角色零耦合。
+  玩家侧：持枪时左/右键按住朝鼠标连射（fire_toward_mouse，UI 悬停/暂停守卫），
+  左键寻路仅在未持枪时生效（_unhandled_input 按 gun_equipped 分流）。

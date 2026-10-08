@@ -93,6 +93,9 @@ pub struct GdHurtbox {
     /// 血量组件路径（默认空 = 自动在父节点上找 GdHealth）
     #[export]
     health_path: NodePath,
+    /// 防御值：实际伤害 = max(1, 伤害 - 防御)，0 = 无减免
+    #[export]
+    defense: f64,
     /// 受击后无敌时间交给 GdHealth 处理，此处仅转发
 
     base: Base<Area2D>,
@@ -103,6 +106,7 @@ impl IArea2D for GdHurtbox {
     fn init(base: Base<Area2D>) -> Self {
         Self {
             health_path: NodePath::default(),
+            defense: 0.0,
             base,
         }
     }
@@ -114,7 +118,7 @@ impl GdHurtbox {
     #[signal]
     fn s_hurt(amount: f64);
 
-    /// 接收伤害并转发给血量组件，返回是否生效
+    /// 接收伤害并转发给血量组件（先经防御减伤：max(1, 伤害 - 防御)），返回是否生效
     #[func]
     pub fn take_damage(&mut self, amount: f64) -> bool {
         let Some(mut health) = self.resolve_health() else {
@@ -125,10 +129,11 @@ impl GdHurtbox {
             );
             return false;
         };
-        let applied = health.bind_mut().take_damage(amount);
+        // 防御减伤：至少造成 1 点，保证攻击不会完全无效
+        let effective = (amount - self.defense).max(1.0);
+        let applied = health.bind_mut().take_damage(effective);
         if applied {
-            let a = amount;
-            self.base_mut().emit_signal("s_hurt", &[a.to_variant()]);
+            self.base_mut().emit_signal("s_hurt", &[effective.to_variant()]);
         }
         applied
     }
