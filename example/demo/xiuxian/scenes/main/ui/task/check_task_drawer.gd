@@ -98,14 +98,41 @@ func _run() -> void:
 	else:
 		push_error("[Check] DrawerPanel 不存在")
 		ok = false
-	# 抽屉内任务列表正常建条目（daily 页签 = 状态层 xiuxian_task 视图，日常任务 1 条）
+	# 5. 任务列表按接取状态动态显示（进行中/已完成两页签，数据由 XiuTaskState 驱动）：
+	#    基线为空 → 接取进"进行中" → 推满待领取仍留"进行中" → 领奖后移入"已完成"
 	if tabs:
-		var list: GdUIVList = tabs.find_child("TaskList", true, false)
-		var count: int = list.get_child_count() - 1 if list else -1
-		print("[Check] daily items=%d" % count)
-		if count != 1:
-			push_error("[Check] daily 页签应 1 条（状态层 views 未加载？）")
+		var task := XiuTaskState.ins()
+		task.reset_demo()
+		var lists: Array[Node] = tabs.find_children("TaskList", "", true, false)
+		if lists.size() != 2:
+			push_error("[Check] 应有进行中/已完成两个列表实例，实际 %d" % lists.size())
 			ok = false
+		else:
+			var active_list: GdUIVList = lists[0]
+			var done_list: GdUIVList = lists[1]
+			# 条目数 = 子节点数 - 1（slot 模板）
+			var cnt := func(l: GdUIVList) -> int: return l.get_child_count() - 1
+			print("[Check] baseline active=%d done=%d" % [cnt.call(active_list), cnt.call(done_list)])
+			if int(cnt.call(active_list)) != 0 or int(cnt.call(done_list)) != 0:
+				push_error("[Check] 基线（未接取任何任务）两页签都应为空")
+				ok = false
+			task.accept_task("main_001")
+			print("[Check] accepted active=%d done=%d" % [cnt.call(active_list), cnt.call(done_list)])
+			if int(cnt.call(active_list)) != 1 or int(cnt.call(done_list)) != 0:
+				push_error("[Check] 接取后进行中应 1 条、已完成 0 条")
+				ok = false
+			for i in 3:
+				task.advance_task("main_001")
+			if int(cnt.call(active_list)) != 1 or int(cnt.call(done_list)) != 0:
+				push_error("[Check] 已完成待领取应留在进行中页签")
+				ok = false
+			task.complete_task("main_001")
+			print("[Check] submitted active=%d done=%d" % [cnt.call(active_list), cnt.call(done_list)])
+			if int(cnt.call(active_list)) != 0 or int(cnt.call(done_list)) != 1:
+				push_error("[Check] 领奖后应移入已完成页签")
+				ok = false
+			# 还原基线，避免污染后续断言与其他测试
+			task.reset_demo()
 
 	# 6. 遮罩点击关闭
 	var overlay: ColorRect = found.find_child("Overlay", true, false)

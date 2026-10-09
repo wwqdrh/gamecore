@@ -28,6 +28,8 @@ var max_hp: int = 100
 var mp: int = 50
 var max_mp: int = 50
 var spirit_stones: int = 20
+## 金币（市井货币：镇上消费/任务奖励；与修真界灵石区分）
+var coins: int = 0
 var attrs: Dictionary = DEFAULT_ATTRS.duplicate(true)
 
 
@@ -188,6 +190,12 @@ func add_spirit_stones(v: int) -> void:
 	update("spirit_stones", spirit_stones + v, {}, false)
 
 
+## 增加金币（任务奖励等）；返回持有量
+func add_coins(v: int) -> int:
+	update("coins", coins + v, {}, false)
+	return coins
+
+
 ## 消耗灵石；不足时失败返回 false（不产生负数）
 func spend_spirit_stones(v: int) -> bool:
 	if spirit_stones < v:
@@ -211,4 +219,5 @@ func reset_demo() -> void:
 	update("mp", 50, {}, true)
 	update("max_mp", 50, {}, true)
 	update("spirit_stones", 20, {}, true)
+	update("coins", 0, {}, true)
 	update("attrs", DEFAULT_ATTRS.duplicate(true), {}, true)

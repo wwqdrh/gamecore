@@ -48,6 +48,26 @@ map.connected_terrain = "grass"   # tscn 里直接设属性即可
 map.generate(MAP_SEED)
 ```
 
+## 手绘建筑块（paint_rects）
+
+噪声地形只适合野外；宅院/小镇这类需要确定布局的地图，用 `paint_rects` 在
+噪声生成后叠加手绘地形矩形（典型用法：**山地地形当建筑**——矩形是屋子、
+矩形间缝隙是门，山地的不可行走 + 高度场（子弹撞毁）语义自动继承）：
+
+```ini
+# tscn 配置（GdQuickMap 节点属性）
+paint_terrain = "mountain"
+paint_rects = Array[Rect2i]([Rect2i(7, 2, 6, 3), Rect2i(4, 5, 2, 4)])
+```
+
+- 应用时机：噪声填充**之后**、连通性挖洞**之前**——建筑墙不会被桥格打通
+- 想要"纯手绘布局"：把 terrain_thresholds 拉满（如 2 地形填 `(1.01)` →
+  全图 grass，无水无噪声山），再只用 paint_rects 造型
+- 越界部分自动裁剪；paint_terrain 不在 terrain_names 中时整批跳过并告警
+- 范本：`example/demo/xiuxian/map/xiaozhai.tscn`（萧宅：正房/东西厢/南墙带门）、
+  `xiaozhen.tscn`（青石镇：北街三铺面 + 南街三宅院）
+
+
 ## 寻路与通行判定
 
 ```gdscript

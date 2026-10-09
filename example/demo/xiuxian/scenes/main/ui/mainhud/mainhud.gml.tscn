@@ -304,7 +304,7 @@ corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
-[node name="MainHud" type="Control" unique_id=2068412892]
+[node name="MainHud" type="Control" unique_id=999264813]
 layout_mode = 3
 anchors_preset = 0
 anchor_right = 1.0
@@ -316,7 +316,7 @@ metadata/__script_vars = {}
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray()
 
-[node name="TopLayer" type="MarginContainer" parent="." unique_id=771173502]
+[node name="TopLayer" type="MarginContainer" parent="." unique_id=1756466760]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -327,18 +327,18 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="TopRow" type="HBoxContainer" parent="TopLayer" unique_id=319495504]
+[node name="TopRow" type="HBoxContainer" parent="TopLayer" unique_id=20813695]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="PlayerBadge" type="HBoxContainer" parent="TopLayer/TopRow" unique_id=1219163791]
+[node name="PlayerBadge" type="HBoxContainer" parent="TopLayer/TopRow" unique_id=1483418071]
 layout_mode = 2
 size_flags_vertical = 0
 mouse_filter = 2
 metadata/__script_vars = {}
 metadata/__gml_root = true
 
-[node name="AvatarRing" type="Panel" parent="TopLayer/TopRow/PlayerBadge" unique_id=1441769677]
+[node name="AvatarRing" type="Panel" parent="TopLayer/TopRow/PlayerBadge" unique_id=2091763427]
 custom_minimum_size = Vector2(88, 88)
 layout_mode = 2
 mouse_default_cursor_shape = 2
@@ -346,7 +346,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_tb7m5")
 metadata/__signal_pressed = "show:ProfileModal"
 metadata/__script_vars = {}
 
-[node name="AvatarIcon" type="Label" parent="TopLayer/TopRow/PlayerBadge/AvatarRing" unique_id=815932089]
+[node name="AvatarIcon" type="Label" parent="TopLayer/TopRow/PlayerBadge/AvatarRing" unique_id=98918079]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -355,19 +355,19 @@ horizontal_alignment = 1
 vertical_alignment = 1
 metadata/__anchor = "full"
 
-[node name="PlayerInfo" type="VBoxContainer" parent="TopLayer/TopRow/PlayerBadge" unique_id=1637865556]
+[node name="PlayerInfo" type="VBoxContainer" parent="TopLayer/TopRow/PlayerBadge" unique_id=1858708324]
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
 metadata/__script_vars = {}
 
-[node name="@Panel@5" type="Panel" parent="TopLayer/TopRow/PlayerBadge/PlayerInfo" unique_id=1772255333]
+[node name="@Panel@59" type="Panel" parent="TopLayer/TopRow/PlayerBadge/PlayerInfo" unique_id=837621938]
 custom_minimum_size = Vector2(210, 42)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_wpnaj")
 
-[node name="@HBoxContainer@4" type="HBoxContainer" parent="TopLayer/TopRow/PlayerBadge/PlayerInfo/@Panel@5" unique_id=1668531808]
+[node name="@HBoxContainer@58" type="HBoxContainer" parent="TopLayer/TopRow/PlayerBadge/PlayerInfo/@Panel@59" unique_id=1112971689]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -378,41 +378,41 @@ offset_bottom = -6.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="RealmText" type="Label" parent="TopLayer/TopRow/PlayerBadge/PlayerInfo/@Panel@5/@HBoxContainer@4" unique_id=1511866330]
+[node name="RealmText" type="Label" parent="TopLayer/TopRow/PlayerBadge/PlayerInfo/@Panel@59/@HBoxContainer@58" unique_id=218541170]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.41960785, 0.2901961, 0.11764706, 1)
 text = "练气一层"
 vertical_alignment = 1
 
-[node name="@Control@2" type="Control" parent="TopLayer/TopRow/PlayerBadge/PlayerInfo/@Panel@5/@HBoxContainer@4" unique_id=1055532219]
+[node name="@Control@56" type="Control" parent="TopLayer/TopRow/PlayerBadge/PlayerInfo/@Panel@59/@HBoxContainer@58" unique_id=1804688116]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="@Label@3" type="Label" parent="TopLayer/TopRow/PlayerBadge/PlayerInfo/@Panel@5/@HBoxContainer@4" unique_id=387110054]
+[node name="@Label@57" type="Label" parent="TopLayer/TopRow/PlayerBadge/PlayerInfo/@Panel@59/@HBoxContainer@58" unique_id=719828067]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "最高境界"
 vertical_alignment = 1
 
-[node name="@HBoxContainer@7" type="HBoxContainer" parent="TopLayer/TopRow/PlayerBadge/PlayerInfo" unique_id=1737597173]
+[node name="@HBoxContainer@61" type="HBoxContainer" parent="TopLayer/TopRow/PlayerBadge/PlayerInfo" unique_id=40748793]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="LevelText" type="Label" parent="TopLayer/TopRow/PlayerBadge/PlayerInfo/@HBoxContainer@7" unique_id=2071748278]
+[node name="LevelText" type="Label" parent="TopLayer/TopRow/PlayerBadge/PlayerInfo/@HBoxContainer@61" unique_id=1537620691]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9098039, 0.7254902, 0.24313726, 1)
 text = "Lv.1"
 vertical_alignment = 1
 
-[node name="@Panel@6" type="Panel" parent="TopLayer/TopRow/PlayerBadge/PlayerInfo/@HBoxContainer@7" unique_id=1134240737]
+[node name="@Panel@60" type="Panel" parent="TopLayer/TopRow/PlayerBadge/PlayerInfo/@HBoxContainer@61" unique_id=492992874]
 custom_minimum_size = Vector2(90, 10)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_yuuaj")
 
-[node name="LevelFill" type="Panel" parent="TopLayer/TopRow/PlayerBadge/PlayerInfo/@HBoxContainer@7/@Panel@6" unique_id=1336589060]
+[node name="LevelFill" type="Panel" parent="TopLayer/TopRow/PlayerBadge/PlayerInfo/@HBoxContainer@61/@Panel@60" unique_id=1822196762]
 custom_minimum_size = Vector2(0, 10)
 layout_mode = 0
 anchor_bottom = 1.0
@@ -420,32 +420,32 @@ mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_basax")
 metadata/__anchor = "left_wide"
 
-[node name="LevelPct" type="Label" parent="TopLayer/TopRow/PlayerBadge/PlayerInfo/@HBoxContainer@7" unique_id=65598590]
+[node name="LevelPct" type="Label" parent="TopLayer/TopRow/PlayerBadge/PlayerInfo/@HBoxContainer@61" unique_id=1018706477]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.8117647, 0.8901961, 0.78431374, 1)
 text = "0%"
 vertical_alignment = 1
 
-[node name="@Control@8" type="Control" parent="TopLayer/TopRow" unique_id=416483875]
+[node name="@Control@62" type="Control" parent="TopLayer/TopRow" unique_id=1360071949]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="ResourceBar" type="HBoxContainer" parent="TopLayer/TopRow" unique_id=379678082]
+[node name="ResourceBar" type="HBoxContainer" parent="TopLayer/TopRow" unique_id=1249978992]
 layout_mode = 2
 size_flags_vertical = 0
 mouse_filter = 2
 metadata/__script_vars = {}
 metadata/__gml_root = true
 
-[node name="@Panel@12" type="Panel" parent="TopLayer/TopRow/ResourceBar" unique_id=892358093]
+[node name="@Panel@66" type="Panel" parent="TopLayer/TopRow/ResourceBar" unique_id=1763215075]
 custom_minimum_size = Vector2(168, 44)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_5ei7q")
 metadata/__script_vars = {}
 
-[node name="@HBoxContainer@11" type="HBoxContainer" parent="TopLayer/TopRow/ResourceBar/@Panel@12" unique_id=1671985172]
+[node name="@HBoxContainer@65" type="HBoxContainer" parent="TopLayer/TopRow/ResourceBar/@Panel@66" unique_id=1786878409]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -456,24 +456,24 @@ offset_bottom = -6.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Label@9" type="Label" parent="TopLayer/TopRow/ResourceBar/@Panel@12/@HBoxContainer@11" unique_id=613887382]
+[node name="@Label@63" type="Label" parent="TopLayer/TopRow/ResourceBar/@Panel@66/@HBoxContainer@65" unique_id=1106802182]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "💎"
 vertical_alignment = 1
 
-[node name="StoneNum" type="Label" parent="TopLayer/TopRow/ResourceBar/@Panel@12/@HBoxContainer@11" unique_id=1328760204]
+[node name="StoneNum" type="Label" parent="TopLayer/TopRow/ResourceBar/@Panel@66/@HBoxContainer@65" unique_id=2059746833]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "0"
 vertical_alignment = 1
 
-[node name="@Control@10" type="Control" parent="TopLayer/TopRow/ResourceBar/@Panel@12/@HBoxContainer@11" unique_id=1241598858]
+[node name="@Control@64" type="Control" parent="TopLayer/TopRow/ResourceBar/@Panel@66/@HBoxContainer@65" unique_id=1156854743]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="AddStoneBtn" type="Button" parent="TopLayer/TopRow/ResourceBar/@Panel@12/@HBoxContainer@11" unique_id=701022734]
+[node name="AddStoneBtn" type="Button" parent="TopLayer/TopRow/ResourceBar/@Panel@66/@HBoxContainer@65" unique_id=57508449]
 custom_minimum_size = Vector2(26, 26)
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_swyha")
@@ -483,14 +483,14 @@ theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "＋"
 metadata/__signal_pressed = "_on_res_add"
 
-[node name="@Panel@16" type="Panel" parent="TopLayer/TopRow/ResourceBar" unique_id=883997542]
+[node name="@Panel@70" type="Panel" parent="TopLayer/TopRow/ResourceBar" unique_id=1418565196]
 custom_minimum_size = Vector2(140, 44)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_xy6ge")
 metadata/__script_vars = {}
 
-[node name="@HBoxContainer@15" type="HBoxContainer" parent="TopLayer/TopRow/ResourceBar/@Panel@16" unique_id=409218808]
+[node name="@HBoxContainer@69" type="HBoxContainer" parent="TopLayer/TopRow/ResourceBar/@Panel@70" unique_id=1229201055]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -501,24 +501,24 @@ offset_bottom = -6.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Label@13" type="Label" parent="TopLayer/TopRow/ResourceBar/@Panel@16/@HBoxContainer@15" unique_id=648620494]
+[node name="@Label@67" type="Label" parent="TopLayer/TopRow/ResourceBar/@Panel@70/@HBoxContainer@69" unique_id=203229299]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "🧪"
 vertical_alignment = 1
 
-[node name="PillNum" type="Label" parent="TopLayer/TopRow/ResourceBar/@Panel@16/@HBoxContainer@15" unique_id=735130687]
+[node name="PillNum" type="Label" parent="TopLayer/TopRow/ResourceBar/@Panel@70/@HBoxContainer@69" unique_id=617924891]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "x0"
 vertical_alignment = 1
 
-[node name="@Control@14" type="Control" parent="TopLayer/TopRow/ResourceBar/@Panel@16/@HBoxContainer@15" unique_id=162475114]
+[node name="@Control@68" type="Control" parent="TopLayer/TopRow/ResourceBar/@Panel@70/@HBoxContainer@69" unique_id=2084480280]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="AddPillBtn" type="Button" parent="TopLayer/TopRow/ResourceBar/@Panel@16/@HBoxContainer@15" unique_id=1052512082]
+[node name="AddPillBtn" type="Button" parent="TopLayer/TopRow/ResourceBar/@Panel@70/@HBoxContainer@69" unique_id=2134386372]
 custom_minimum_size = Vector2(26, 26)
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_n15h2")
@@ -528,12 +528,12 @@ theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "＋"
 metadata/__signal_pressed = "_on_res_add"
 
-[node name="@Control@17" type="Control" parent="TopLayer/TopRow" unique_id=1520606942]
+[node name="@Control@71" type="Control" parent="TopLayer/TopRow" unique_id=1801968761]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="MiniMap" type="Panel" parent="TopLayer/TopRow" unique_id=1101539001]
+[node name="MiniMap" type="Panel" parent="TopLayer/TopRow" unique_id=286032723]
 custom_minimum_size = Vector2(172, 150)
 layout_mode = 2
 size_flags_vertical = 0
@@ -542,7 +542,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_qpciv")
 metadata/__script_vars = {}
 metadata/__gml_root = true
 
-[node name="MapInner" type="Panel" parent="TopLayer/TopRow/MiniMap" unique_id=225033541]
+[node name="MapInner" type="Panel" parent="TopLayer/TopRow/MiniMap" unique_id=2062819284]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -555,7 +555,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_7qmp3")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Label@18" type="Label" parent="TopLayer/TopRow/MiniMap/MapInner" unique_id=408754497]
+[node name="@Label@72" type="Label" parent="TopLayer/TopRow/MiniMap/MapInner" unique_id=928576823]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -564,7 +564,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 metadata/__anchor = "full"
 
-[node name="PlayerArrow" type="Label" parent="TopLayer/TopRow/MiniMap/MapInner" unique_id=1174308239]
+[node name="PlayerArrow" type="Label" parent="TopLayer/TopRow/MiniMap/MapInner" unique_id=1843078000]
 layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
@@ -579,7 +579,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 metadata/__anchor = "center"
 
-[node name="NorthMark" type="Label" parent="TopLayer/TopRow/MiniMap/MapInner" unique_id=1390368778]
+[node name="NorthMark" type="Label" parent="TopLayer/TopRow/MiniMap/MapInner" unique_id=91793234]
 layout_mode = 0
 anchor_right = 1.0
 offset_top = 4.0
@@ -589,7 +589,7 @@ text = "N"
 horizontal_alignment = 2
 metadata/__anchor = "top_wide"
 
-[node name="MidLayer" type="MarginContainer" parent="." unique_id=1271101368]
+[node name="MidLayer" type="MarginContainer" parent="." unique_id=1538995891]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -600,32 +600,32 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="MidRow" type="HBoxContainer" parent="MidLayer" unique_id=1452887791]
+[node name="MidRow" type="HBoxContainer" parent="MidLayer" unique_id=2124852435]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="QuestBanner" type="HBoxContainer" parent="MidLayer/MidRow" unique_id=319181093]
+[node name="QuestBanner" type="HBoxContainer" parent="MidLayer/MidRow" unique_id=243161351]
 layout_mode = 2
 size_flags_vertical = 0
 mouse_filter = 2
 metadata/__script_vars = {}
 metadata/__gml_root = true
 
-[node name="@Panel@19" type="Panel" parent="MidLayer/MidRow/QuestBanner" unique_id=1171722113]
+[node name="@Panel@73" type="Panel" parent="MidLayer/MidRow/QuestBanner" unique_id=351854935]
 custom_minimum_size = Vector2(12, 48)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_8kbjo")
 metadata/__script_vars = {}
 
-[node name="@Panel@22" type="Panel" parent="MidLayer/MidRow/QuestBanner" unique_id=69459495]
+[node name="@Panel@76" type="Panel" parent="MidLayer/MidRow/QuestBanner" unique_id=819913908]
 custom_minimum_size = Vector2(226, 48)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_7c75b")
 metadata/__script_vars = {}
 
-[node name="@HBoxContainer@21" type="HBoxContainer" parent="MidLayer/MidRow/QuestBanner/@Panel@22" unique_id=950416528]
+[node name="@HBoxContainer@75" type="HBoxContainer" parent="MidLayer/MidRow/QuestBanner/@Panel@76" unique_id=2139994817]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -636,30 +636,30 @@ offset_bottom = -8.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Label@20" type="Label" parent="MidLayer/MidRow/QuestBanner/@Panel@22/@HBoxContainer@21" unique_id=1037559571]
+[node name="@Label@74" type="Label" parent="MidLayer/MidRow/QuestBanner/@Panel@76/@HBoxContainer@75" unique_id=463070900]
 layout_mode = 2
 text = "📜"
 vertical_alignment = 1
 
-[node name="QuestText" type="Label" parent="MidLayer/MidRow/QuestBanner/@Panel@22/@HBoxContainer@21" unique_id=66257222]
+[node name="QuestText" type="Label" parent="MidLayer/MidRow/QuestBanner/@Panel@76/@HBoxContainer@75" unique_id=573028444]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "暂无进行中的任务"
 vertical_alignment = 1
 
-[node name="@Panel@23" type="Panel" parent="MidLayer/MidRow/QuestBanner" unique_id=723333526]
+[node name="@Panel@77" type="Panel" parent="MidLayer/MidRow/QuestBanner" unique_id=963259111]
 custom_minimum_size = Vector2(12, 48)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_m7767")
 metadata/__script_vars = {}
 
-[node name="@Control@24" type="Control" parent="MidLayer/MidRow" unique_id=1686029147]
+[node name="@Control@78" type="Control" parent="MidLayer/MidRow" unique_id=1550428038]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="MenuColumn" type="VBoxContainer" parent="MidLayer/MidRow" unique_id=1047350337]
+[node name="MenuColumn" type="VBoxContainer" parent="MidLayer/MidRow" unique_id=2005194974]
 layout_mode = 2
 size_flags_vertical = 0
 mouse_filter = 2
@@ -668,7 +668,7 @@ metadata/__script_vars = {}
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray()
 
-[node name="MenuCultivate" type="Panel" parent="MidLayer/MidRow/MenuColumn" unique_id=1327153335]
+[node name="MenuCultivate" type="Panel" parent="MidLayer/MidRow/MenuColumn" unique_id=799752575]
 custom_minimum_size = Vector2(84, 84)
 layout_mode = 2
 mouse_default_cursor_shape = 2
@@ -676,7 +676,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_kgg7b")
 metadata/__signal_pressed = "_on_menu_pressed"
 metadata/__script_vars = {}
 
-[node name="@VBoxContainer@27" type="VBoxContainer" parent="MidLayer/MidRow/MenuColumn/MenuCultivate" unique_id=2141150673]
+[node name="@VBoxContainer@81" type="VBoxContainer" parent="MidLayer/MidRow/MenuColumn/MenuCultivate" unique_id=1960670899]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -687,20 +687,20 @@ offset_bottom = -8.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Label@25" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuCultivate/@VBoxContainer@27" unique_id=859144362]
+[node name="@Label@79" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuCultivate/@VBoxContainer@81" unique_id=839731981]
 layout_mode = 2
 size_flags_vertical = 3
 text = "🧘"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="@Label@26" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuCultivate/@VBoxContainer@27" unique_id=267573420]
+[node name="@Label@80" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuCultivate/@VBoxContainer@81" unique_id=1839392125]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "修炼"
 horizontal_alignment = 1
 
-[node name="@Label@28" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuCultivate" unique_id=380908177]
+[node name="@Label@82" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuCultivate" unique_id=1691976275]
 layout_mode = 0
 anchor_right = 1.0
 offset_top = 6.0
@@ -710,7 +710,7 @@ text = "●"
 horizontal_alignment = 2
 metadata/__anchor = "top_wide"
 
-[node name="MenuGongfa" type="Panel" parent="MidLayer/MidRow/MenuColumn" unique_id=706635011]
+[node name="MenuGongfa" type="Panel" parent="MidLayer/MidRow/MenuColumn" unique_id=1754578652]
 custom_minimum_size = Vector2(84, 84)
 layout_mode = 2
 mouse_default_cursor_shape = 2
@@ -718,7 +718,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_ds76n")
 metadata/__signal_pressed = "_on_menu_pressed"
 metadata/__script_vars = {}
 
-[node name="@VBoxContainer@31" type="VBoxContainer" parent="MidLayer/MidRow/MenuColumn/MenuGongfa" unique_id=582968374]
+[node name="@VBoxContainer@85" type="VBoxContainer" parent="MidLayer/MidRow/MenuColumn/MenuGongfa" unique_id=567991270]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -729,20 +729,20 @@ offset_bottom = -8.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Label@29" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuGongfa/@VBoxContainer@31" unique_id=519075560]
+[node name="@Label@83" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuGongfa/@VBoxContainer@85" unique_id=804975108]
 layout_mode = 2
 size_flags_vertical = 3
 text = "📖"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="@Label@30" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuGongfa/@VBoxContainer@31" unique_id=1991006223]
+[node name="@Label@84" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuGongfa/@VBoxContainer@85" unique_id=260087753]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "功法"
 horizontal_alignment = 1
 
-[node name="@Label@32" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuGongfa" unique_id=148636142]
+[node name="@Label@86" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuGongfa" unique_id=1104795894]
 layout_mode = 0
 anchor_right = 1.0
 offset_top = 6.0
@@ -752,7 +752,7 @@ text = "●"
 horizontal_alignment = 2
 metadata/__anchor = "top_wide"
 
-[node name="MenuBag" type="Panel" parent="MidLayer/MidRow/MenuColumn" unique_id=1730940836]
+[node name="MenuBag" type="Panel" parent="MidLayer/MidRow/MenuColumn" unique_id=641578867]
 custom_minimum_size = Vector2(84, 84)
 layout_mode = 2
 mouse_default_cursor_shape = 2
@@ -760,7 +760,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_vw4gd")
 metadata/__signal_pressed = "show:BagModal"
 metadata/__script_vars = {}
 
-[node name="@VBoxContainer@35" type="VBoxContainer" parent="MidLayer/MidRow/MenuColumn/MenuBag" unique_id=1548099506]
+[node name="@VBoxContainer@89" type="VBoxContainer" parent="MidLayer/MidRow/MenuColumn/MenuBag" unique_id=1665611555]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -771,20 +771,20 @@ offset_bottom = -8.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Label@33" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuBag/@VBoxContainer@35" unique_id=864845047]
+[node name="@Label@87" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuBag/@VBoxContainer@89" unique_id=1071000661]
 layout_mode = 2
 size_flags_vertical = 3
 text = "👝"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="@Label@34" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuBag/@VBoxContainer@35" unique_id=656879743]
+[node name="@Label@88" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuBag/@VBoxContainer@89" unique_id=840221861]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "储物袋"
 horizontal_alignment = 1
 
-[node name="@Label@36" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuBag" unique_id=692478932]
+[node name="@Label@90" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuBag" unique_id=450976930]
 layout_mode = 0
 anchor_right = 1.0
 offset_top = 6.0
@@ -794,7 +794,7 @@ text = "●"
 horizontal_alignment = 2
 metadata/__anchor = "top_wide"
 
-[node name="MenuTask" type="Panel" parent="MidLayer/MidRow/MenuColumn" unique_id=683977414]
+[node name="MenuTask" type="Panel" parent="MidLayer/MidRow/MenuColumn" unique_id=1172568109]
 custom_minimum_size = Vector2(84, 84)
 layout_mode = 2
 mouse_default_cursor_shape = 2
@@ -802,7 +802,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_hswhl")
 metadata/__signal_pressed = "show:TaskDrawer"
 metadata/__script_vars = {}
 
-[node name="@VBoxContainer@39" type="VBoxContainer" parent="MidLayer/MidRow/MenuColumn/MenuTask" unique_id=1516732966]
+[node name="@VBoxContainer@93" type="VBoxContainer" parent="MidLayer/MidRow/MenuColumn/MenuTask" unique_id=24448964]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -813,20 +813,20 @@ offset_bottom = -8.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Label@37" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuTask/@VBoxContainer@39" unique_id=1091181645]
+[node name="@Label@91" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuTask/@VBoxContainer@93" unique_id=1914230012]
 layout_mode = 2
 size_flags_vertical = 3
 text = "📜"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="@Label@38" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuTask/@VBoxContainer@39" unique_id=1074394053]
+[node name="@Label@92" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuTask/@VBoxContainer@93" unique_id=1331828116]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "任务"
 horizontal_alignment = 1
 
-[node name="MenuMarket" type="Panel" parent="MidLayer/MidRow/MenuColumn" unique_id=456266112]
+[node name="MenuMarket" type="Panel" parent="MidLayer/MidRow/MenuColumn" unique_id=746773341]
 custom_minimum_size = Vector2(84, 84)
 layout_mode = 2
 mouse_default_cursor_shape = 2
@@ -834,7 +834,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_ld1j1")
 metadata/__signal_pressed = "show:StoreModal"
 metadata/__script_vars = {}
 
-[node name="@VBoxContainer@42" type="VBoxContainer" parent="MidLayer/MidRow/MenuColumn/MenuMarket" unique_id=716753564]
+[node name="@VBoxContainer@96" type="VBoxContainer" parent="MidLayer/MidRow/MenuColumn/MenuMarket" unique_id=64500231]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -845,20 +845,20 @@ offset_bottom = -8.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Label@40" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuMarket/@VBoxContainer@42" unique_id=1897825427]
+[node name="@Label@94" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuMarket/@VBoxContainer@96" unique_id=1701047244]
 layout_mode = 2
 size_flags_vertical = 3
 text = "🏮"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="@Label@41" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuMarket/@VBoxContainer@42" unique_id=1892537477]
+[node name="@Label@95" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuMarket/@VBoxContainer@96" unique_id=141817627]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "坊市"
 horizontal_alignment = 1
 
-[node name="@Label@43" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuMarket" unique_id=1779912155]
+[node name="@Label@97" type="Label" parent="MidLayer/MidRow/MenuColumn/MenuMarket" unique_id=1954104023]
 layout_mode = 0
 anchor_right = 1.0
 offset_top = 6.0
@@ -868,7 +868,7 @@ text = "●"
 horizontal_alignment = 2
 metadata/__anchor = "top_wide"
 
-[node name="BottomLayer" type="MarginContainer" parent="." unique_id=1080374629]
+[node name="BottomLayer" type="MarginContainer" parent="." unique_id=799729404]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -879,16 +879,16 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="BottomColumn" type="VBoxContainer" parent="BottomLayer" unique_id=158825504]
+[node name="BottomColumn" type="VBoxContainer" parent="BottomLayer" unique_id=769458115]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="@Control@44" type="Control" parent="BottomLayer/BottomColumn" unique_id=1740974528]
+[node name="@Control@98" type="Control" parent="BottomLayer/BottomColumn" unique_id=94087613]
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
 
-[node name="EquipBar" type="HBoxContainer" parent="BottomLayer/BottomColumn" unique_id=1644199261]
+[node name="EquipBar" type="HBoxContainer" parent="BottomLayer/BottomColumn" unique_id=398216058]
 layout_mode = 2
 size_flags_horizontal = 4
 mouse_filter = 2
@@ -897,14 +897,14 @@ metadata/__script_vars = {}
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray()
 
-[node name="EquipTitle" type="Label" parent="BottomLayer/BottomColumn/EquipBar" unique_id=1109337810]
+[node name="EquipTitle" type="Label" parent="BottomLayer/BottomColumn/EquipBar" unique_id=2021910792]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "装备"
 vertical_alignment = 1
 metadata/__script_vars = {}
 
-[node name="EquipSlots" type="GdUIHotbar" parent="BottomLayer/BottomColumn/EquipBar" unique_id=730278840]
+[node name="EquipSlots" type="GdUIHotbar" parent="BottomLayer/BottomColumn/EquipBar" unique_id=1518873438]
 separation = 6
 slot_bg = Color(0.09019608, 0.12156863, 0.101960786, 0.92156863)
 slot_border = Color(0.41960785, 0.38039216, 0.2784314, 1)
@@ -914,7 +914,7 @@ layout_mode = 2
 metadata/__signal_s_selected = "_on_equip_selected"
 metadata/__script_vars = {}
 
-[node name="SkillBar" type="VBoxContainer" parent="BottomLayer/BottomColumn" unique_id=104305265]
+[node name="SkillBar" type="VBoxContainer" parent="BottomLayer/BottomColumn" unique_id=2092863774]
 layout_mode = 2
 size_flags_horizontal = 4
 mouse_filter = 2
@@ -949,7 +949,7 @@ metadata/__script_vars = {
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray()
 
-[node name="SkillList" type="GdUIHList" parent="BottomLayer/BottomColumn/SkillBar" unique_id=196858413]
+[node name="SkillList" type="GdUIHList" parent="BottomLayer/BottomColumn/SkillBar" unique_id=785431500]
 layout_mode = 2
 metadata/__signal_s_click_item = "_on_skill_clicked"
 metadata/__script_vars = {
@@ -1005,7 +1005,7 @@ metadata/__script_data = [{
 "key": "6"
 }]
 
-[node name="SkillSlot" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList" unique_id=2003007035]
+[node name="SkillSlot" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList" unique_id=1790016524]
 visible = false
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
@@ -1018,7 +1018,7 @@ metadata/__script_vars = {}
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray("icon", "key", "cd")
 
-[node name="IconBox" type="CenterContainer" parent="BottomLayer/BottomColumn/SkillBar/SkillList/SkillSlot" unique_id=1288569565]
+[node name="IconBox" type="CenterContainer" parent="BottomLayer/BottomColumn/SkillBar/SkillList/SkillSlot" unique_id=289182754]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1030,12 +1030,12 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="SlotIcon" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/SkillSlot/IconBox" unique_id=897386511]
+[node name="SlotIcon" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/SkillSlot/IconBox" unique_id=1243903910]
 layout_mode = 2
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="CdMask" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList/SkillSlot" unique_id=1236506431]
+[node name="CdMask" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList/SkillSlot" unique_id=1660175336]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1045,7 +1045,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_wv5b0")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CdText" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/SkillSlot" unique_id=90716334]
+[node name="CdText" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/SkillSlot" unique_id=718181987]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1058,7 +1058,7 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="KeyBadge" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/SkillSlot" unique_id=1268139018]
+[node name="KeyBadge" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/SkillSlot" unique_id=642868461]
 layout_mode = 0
 anchor_top = 1.0
 anchor_right = 1.0
@@ -1074,7 +1074,7 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="@Panel@48" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList" unique_id=61988977]
+[node name="@Panel@102" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList" unique_id=1291118769]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -1092,7 +1092,7 @@ metadata/__item_data = {
 "key": "1"
 }
 
-[node name="IconBox" type="CenterContainer" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@48" unique_id=982129197]
+[node name="IconBox" type="CenterContainer" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@102" unique_id=593846870]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1104,13 +1104,13 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="SlotIcon" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@48/IconBox" unique_id=414609282]
+[node name="SlotIcon" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@102/IconBox" unique_id=310689812]
 layout_mode = 2
 text = "🌀"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="CdMask" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@48" unique_id=1618943742]
+[node name="CdMask" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@102" unique_id=1917251029]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1120,7 +1120,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_wv5b0")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CdText" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@48" unique_id=2023524882]
+[node name="CdText" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@102" unique_id=55327274]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1133,7 +1133,7 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="KeyBadge" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@48" unique_id=477242595]
+[node name="KeyBadge" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@102" unique_id=1029877287]
 layout_mode = 0
 anchor_top = 1.0
 anchor_right = 1.0
@@ -1150,7 +1150,7 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="@Panel@49" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList" unique_id=542618589]
+[node name="@Panel@103" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList" unique_id=2021701751]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -1168,7 +1168,7 @@ metadata/__item_data = {
 "key": "2"
 }
 
-[node name="IconBox" type="CenterContainer" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@49" unique_id=822043215]
+[node name="IconBox" type="CenterContainer" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@103" unique_id=328488096]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1180,13 +1180,13 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="SlotIcon" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@49/IconBox" unique_id=978987908]
+[node name="SlotIcon" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@103/IconBox" unique_id=203760994]
 layout_mode = 2
 text = "⚡"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="CdMask" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@49" unique_id=442741400]
+[node name="CdMask" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@103" unique_id=1722756821]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1196,7 +1196,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_wv5b0")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CdText" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@49" unique_id=720408810]
+[node name="CdText" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@103" unique_id=1465049116]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1209,7 +1209,7 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="KeyBadge" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@49" unique_id=1279082255]
+[node name="KeyBadge" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@103" unique_id=2115386843]
 layout_mode = 0
 anchor_top = 1.0
 anchor_right = 1.0
@@ -1226,7 +1226,7 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="@Panel@50" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList" unique_id=409937706]
+[node name="@Panel@104" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList" unique_id=763025233]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -1245,7 +1245,7 @@ metadata/__item_data = {
 "key": "3"
 }
 
-[node name="IconBox" type="CenterContainer" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@50" unique_id=937367191]
+[node name="IconBox" type="CenterContainer" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@104" unique_id=945688767]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1257,13 +1257,13 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="SlotIcon" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@50/IconBox" unique_id=1204576728]
+[node name="SlotIcon" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@104/IconBox" unique_id=2113186633]
 layout_mode = 2
 text = "🌙"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="CdMask" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@50" unique_id=233109746]
+[node name="CdMask" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@104" unique_id=264867861]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1273,7 +1273,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_wv5b0")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CdText" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@50" unique_id=108325218]
+[node name="CdText" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@104" unique_id=810067842]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1287,7 +1287,7 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="KeyBadge" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@50" unique_id=1562367964]
+[node name="KeyBadge" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@104" unique_id=773656086]
 layout_mode = 0
 anchor_top = 1.0
 anchor_right = 1.0
@@ -1304,7 +1304,7 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="@Panel@51" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList" unique_id=1632248881]
+[node name="@Panel@105" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList" unique_id=737944939]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -1322,7 +1322,7 @@ metadata/__item_data = {
 "key": "4"
 }
 
-[node name="IconBox" type="CenterContainer" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@51" unique_id=509147307]
+[node name="IconBox" type="CenterContainer" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@105" unique_id=510322801]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1334,13 +1334,13 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="SlotIcon" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@51/IconBox" unique_id=400906870]
+[node name="SlotIcon" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@105/IconBox" unique_id=828810363]
 layout_mode = 2
 text = "🍃"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="CdMask" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@51" unique_id=1587966091]
+[node name="CdMask" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@105" unique_id=1139037841]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1350,7 +1350,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_wv5b0")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CdText" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@51" unique_id=282417109]
+[node name="CdText" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@105" unique_id=760594373]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1363,7 +1363,7 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="KeyBadge" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@51" unique_id=1379367988]
+[node name="KeyBadge" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@105" unique_id=826936762]
 layout_mode = 0
 anchor_top = 1.0
 anchor_right = 1.0
@@ -1380,7 +1380,7 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="@Panel@52" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList" unique_id=1709438814]
+[node name="@Panel@106" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList" unique_id=887223713]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -1398,7 +1398,7 @@ metadata/__item_data = {
 "key": "5"
 }
 
-[node name="IconBox" type="CenterContainer" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@52" unique_id=448848477]
+[node name="IconBox" type="CenterContainer" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@106" unique_id=547406124]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1410,13 +1410,13 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="SlotIcon" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@52/IconBox" unique_id=68272090]
+[node name="SlotIcon" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@106/IconBox" unique_id=1203016768]
 layout_mode = 2
 text = "🧘"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="CdMask" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@52" unique_id=970339760]
+[node name="CdMask" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@106" unique_id=770951501]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1426,7 +1426,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_wv5b0")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CdText" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@52" unique_id=246749337]
+[node name="CdText" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@106" unique_id=226074228]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1439,7 +1439,7 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="KeyBadge" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@52" unique_id=923785428]
+[node name="KeyBadge" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@106" unique_id=1050849926]
 layout_mode = 0
 anchor_top = 1.0
 anchor_right = 1.0
@@ -1456,7 +1456,7 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="@Panel@53" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList" unique_id=2068124655]
+[node name="@Panel@107" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList" unique_id=1309923411]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -1474,7 +1474,7 @@ metadata/__item_data = {
 "key": "6"
 }
 
-[node name="IconBox" type="CenterContainer" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@53" unique_id=527638701]
+[node name="IconBox" type="CenterContainer" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@107" unique_id=1838915422]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1486,13 +1486,13 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="SlotIcon" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@53/IconBox" unique_id=1099735221]
+[node name="SlotIcon" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@107/IconBox" unique_id=1156443457]
 layout_mode = 2
 text = "🗡️"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="CdMask" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@53" unique_id=807970403]
+[node name="CdMask" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@107" unique_id=110641111]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1502,7 +1502,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_wv5b0")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CdText" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@53" unique_id=1745121373]
+[node name="CdText" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@107" unique_id=1630210143]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -1515,7 +1515,7 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="KeyBadge" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@53" unique_id=2050054973]
+[node name="KeyBadge" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@107" unique_id=1351858884]
 layout_mode = 0
 anchor_top = 1.0
 anchor_right = 1.0
@@ -1532,7 +1532,7 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="XpBar" type="Panel" parent="BottomLayer/BottomColumn/SkillBar" unique_id=137161980]
+[node name="XpBar" type="Panel" parent="BottomLayer/BottomColumn/SkillBar" unique_id=161466173]
 custom_minimum_size = Vector2(500, 26)
 layout_mode = 2
 mouse_filter = 2
@@ -1565,7 +1565,7 @@ metadata/__script_vars = {
 }]
 }
 
-[node name="@HBoxContainer@47" type="HBoxContainer" parent="BottomLayer/BottomColumn/SkillBar/XpBar" unique_id=545559829]
+[node name="@HBoxContainer@101" type="HBoxContainer" parent="BottomLayer/BottomColumn/SkillBar/XpBar" unique_id=1065990621]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1576,19 +1576,19 @@ offset_bottom = -4.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Label@45" type="Label" parent="BottomLayer/BottomColumn/SkillBar/XpBar/@HBoxContainer@47" unique_id=181702764]
+[node name="@Label@99" type="Label" parent="BottomLayer/BottomColumn/SkillBar/XpBar/@HBoxContainer@101" unique_id=137008487]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
 text = "💠"
 vertical_alignment = 1
 
-[node name="@Label@46" type="Label" parent="BottomLayer/BottomColumn/SkillBar/XpBar/@HBoxContainer@47" unique_id=1146142337]
+[node name="@Label@100" type="Label" parent="BottomLayer/BottomColumn/SkillBar/XpBar/@HBoxContainer@101" unique_id=650715679]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "灵气经验"
 vertical_alignment = 1
 
-[node name="XpTrack" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/XpBar/@HBoxContainer@47" unique_id=2012562654]
+[node name="XpTrack" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/XpBar/@HBoxContainer@101" unique_id=1995904455]
 custom_minimum_size = Vector2(0, 12)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -1596,7 +1596,7 @@ size_flags_vertical = 4
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_0o4is")
 
-[node name="XpFill" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/XpBar/@HBoxContainer@47/XpTrack" unique_id=1082413206]
+[node name="XpFill" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/XpBar/@HBoxContainer@101/XpTrack" unique_id=347303390]
 custom_minimum_size = Vector2(0, 12)
 layout_mode = 0
 anchor_bottom = 1.0
@@ -1604,7 +1604,7 @@ mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_128w4")
 metadata/__anchor = "left_wide"
 
-[node name="XpText" type="Label" parent="BottomLayer/BottomColumn/SkillBar/XpBar/@HBoxContainer@47" unique_id=645284806]
+[node name="XpText" type="Label" parent="BottomLayer/BottomColumn/SkillBar/XpBar/@HBoxContainer@101" unique_id=667811200]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "0/100"

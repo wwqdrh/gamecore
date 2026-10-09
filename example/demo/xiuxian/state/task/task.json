@@ -1,0 +1,78 @@
+{
+	"version": 1,
+	"pipeline": "gjson",
+	"desc": "任务静态定义总表（GJson 格式，供 XiuTaskTable 加载查询）。category: 主线/支线/日常/宗门/悬赏；unlock=false 需 precondition 前置任务完成后开放；steps=完成所需步数。rewards 支持字段：exp（修为）/spirit_stones（灵石）/coins（金币）/items[{id,count}]（道具）。objectives 描述完成条件（type=talk 与 target_role 角色对话即推进一步，供 UI 展示与对白引用）。giver=接取地点角色提示。",
+	"tasks": {
+		"main_001": {
+			"id": "main_001", "name": "初入仙途", "category": "主线",
+			"desc": "离开青石镇，前往青云宗报到。", "unlock": true,
+			"precondition": "", "steps": 3, "giver": "执事长老",
+			"objectives": [{"type": "goto", "desc": "前往青云宗山门"}, {"type": "talk", "target_role": "执事长老", "desc": "向执事长老报到"}, {"type": "goto", "desc": "入住外门弟子舍"}],
+			"rewards": {"exp": 400, "spirit_stones": 30,
+				"items": [{"id": "herb_lingzhi", "count": 2}, {"id": "pill_hp", "count": 3}]}
+		},
+		"main_002": {
+			"id": "main_002", "name": "灵田风波", "category": "主线",
+			"desc": "调查灵田减产之谜，驱逐作乱的地灵鼠。", "unlock": true,
+			"precondition": "main_001", "steps": 3, "giver": "外门弟子",
+			"objectives": [{"type": "goto", "desc": "前往灵田"}, {"type": "kill", "target_role": "地灵鼠", "desc": "驱逐作乱的地灵鼠"}, {"type": "talk", "target_role": "外门弟子", "desc": "回报调查结果"}],
+			"rewards": {"exp": 600, "spirit_stones": 50,
+				"items": [{"id": "ore_coldiron", "count": 3}]}
+		},
+		"main_003": {
+			"id": "main_003", "name": "秘境探幽", "category": "主线",
+			"desc": "持秘境残图进入落霞秘境，寻机上探三层。", "unlock": false,
+			"precondition": "main_002", "steps": 5, "giver": "执事长老",
+			"objectives": [{"type": "collect", "target_role": "map_secret", "desc": "集齐秘境残图"}, {"type": "goto", "desc": "进入落霞秘境一层"}, {"type": "goto", "desc": "探至秘境二层"}, {"type": "kill", "target_role": "守境石傀", "desc": "击败守境石傀"}, {"type": "goto", "desc": "抵达秘境三层入口"}],
+			"rewards": {"exp": 1000, "spirit_stones": 100,
+				"items": [{"id": "pill_break", "count": 1}]}
+		},
+		"side_001": {
+			"id": "side_001", "name": "采药济世", "category": "支线",
+			"desc": "为回春堂采集血参十株，救治镇上疫病。", "unlock": true,
+			"precondition": "", "steps": 2, "giver": "白芷",
+			"objectives": [{"type": "collect", "target_role": "herb_xueshen", "desc": "采集血参"}, {"type": "talk", "target_role": "白芷", "desc": "交给药铺掌柜"}],
+			"rewards": {"exp": 150, "spirit_stones": 20,
+				"items": [{"id": "herb_xueshen", "count": 2}]}
+		},
+		"side_002": {
+			"id": "side_002", "name": "铸剑问道", "category": "支线",
+			"desc": "替欧冶氏收集寒铁，铸成一柄本命飞剑。", "unlock": false,
+			"precondition": "side_001", "steps": 4, "giver": "铁牛",
+			"objectives": [{"type": "collect", "target_role": "ore_coldiron", "desc": "收集寒铁"}, {"type": "talk", "target_role": "铁牛", "desc": "交付寒铁"}, {"type": "goto", "desc": "等待铸剑"}, {"type": "talk", "target_role": "铁牛", "desc": "取回本命飞剑"}],
+			"rewards": {"exp": 300, "spirit_stones": 40,
+				"items": [{"id": "sword_qingfeng", "count": 1}]}
+		},
+		"side_003": {
+			"id": "side_003", "name": "家主嘱托", "category": "支线",
+			"desc": "萧老爷希望云舟去和丫鬟小翠聊一聊，听听宅子里的近况。", "unlock": true,
+			"precondition": "", "steps": 1, "giver": "萧老爷",
+			"objectives": [{"type": "talk", "target_role": "小翠", "desc": "和丫鬟小翠谈一谈"}],
+			"rewards": {"coins": 50}
+		},
+		"daily_001": {
+			"id": "daily_001", "name": "每日签到", "category": "日常",
+			"desc": "每日到掌门处签到，领取基本供奉。", "unlock": true,
+			"precondition": "", "steps": 1, "giver": "执事长老",
+			"objectives": [{"type": "talk", "target_role": "执事长老", "desc": "每日签到"}],
+			"rewards": {"exp": 80, "spirit_stones": 10,
+				"items": [{"id": "pill_hp", "count": 1}]}
+		},
+		"guild_001": {
+			"id": "guild_001", "name": "宗门巡逻", "category": "宗门",
+			"desc": "巡视山门四处阵眼，清理滋扰妖兽。", "unlock": true,
+			"precondition": "", "steps": 2, "giver": "执事长老",
+			"objectives": [{"type": "goto", "desc": "巡视四处阵眼"}, {"type": "kill", "target_role": "妖兽", "desc": "清理滋扰妖兽"}],
+			"rewards": {"exp": 200, "spirit_stones": 25,
+				"items": [{"id": "pill_mp", "count": 2}]}
+		},
+		"bounty_001": {
+			"id": "bounty_001", "name": "悬赏·血衣楼", "category": "悬赏",
+			"desc": "追查血衣楼细作，取回失窃的宗门名录。", "unlock": false,
+			"precondition": "guild_001", "steps": 3, "giver": "执事长老",
+			"objectives": [{"type": "talk", "target_role": "贾先生", "desc": "从说书先生处打听线索"}, {"type": "kill", "target_role": "血衣楼细作", "desc": "击败血衣楼细作"}, {"type": "talk", "target_role": "执事长老", "desc": "取回宗门名录"}],
+			"rewards": {"exp": 500, "spirit_stones": 80,
+				"items": [{"id": "map_secret", "count": 1}]}
+		}
+	}
+}

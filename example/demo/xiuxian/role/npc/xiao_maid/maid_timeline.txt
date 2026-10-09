@@ -1,0 +1,46 @@
+# 丫鬟小翠对话时间线（萧宅丫鬟，本角色专属）
+#
+# 对话进度记录：stage 经 flag 门控（与 master_timeline 同规则）——
+#   任务进行中 [maid_task@task_side_003_accepted] 优先进入，聊完即完成
+#   任务（@task_complete:side_003 → 50 金币）；完成后走熟络问候段；
+#   日常段 [maid_talk@!task_side_003_accepted] 只在未接任务时作为入口。
+# 红线：置 flag 的 stage 结尾必须是选项或 goto（防行推进时 flag 失配断线）。
+
+# 任务进行中：与云舟聊天即完成任务
+[maid_task@task_side_003_accepted;!task_side_003_done]
+(小翠,云舟)
+哎？老爷让你来陪我聊天的？嘿嘿，那我可就不客气啦——
+（两人从晒药的讲究聊到镇上的八卦，好一会儿才停下）
+@task_complete:side_003
+- 聊痛快了，回去回话。@goto:maid_end
+
+# 任务完成后：熟络的问候
+[maid_after@task_side_003_done]
+(小翠,云舟)
+又来啦？改天再给我讲讲外头的见闻呀。
+- 好说好说。@goto:maid_end
+
+# 日常闲聊（未接任务时的入口）
+[maid_talk@!task_side_003_accepted]
+(小翠,云舟)
+哎，你就是萧老爷说的那位小客人？我在西厢晒药材呢。
+@set_flag:met_xiao_maid
+- 西厢都晒些什么？@goto:maid_herb
+- 宅子里有什么好玩的？@goto:maid_fun
+
+[maid_herb]
+(小翠)
+血参、灵芝，还有老爷宝贝的几株凝魂草——说是拿命换来的。
+晒药材最忌下雨，一下雨我就得往回抢，可累啦。
+:goto:maid_end
+
+[maid_fun]
+(小翠)
+可别！老爷的祠堂不许进，东厢的箱子不许碰，
+剩下就数后院那口水井——也……也不许靠近。
+反正无聊就找我，我给你讲镇上的八卦！
+:goto:maid_end
+
+[maid_end]
+(小翠)
+南门出去就是青石镇。铁匠铺的铁牛叔打铁可响了，隔两条街都听得见。

@@ -105,23 +105,29 @@ func _on_bag_changed(_value: Variant = null, _metas: Variant = null) -> void:
 	num.text = "x%d" % total
 
 
-## 任务横幅：首个进行中（accepted）任务，无则取首个可接任务，再无则提示文案
+## 任务横幅：只反映玩家已接取的任务——首个进行中（accepted，名称+步数进度），
+## 无则首个已完成待领取（completed），再无则提示文案
+## （未接取 available/locked 不上横幅；submitted 已领奖不占横幅）
 func _on_task_views_changed(_value: Variant = null, _metas: Variant = null) -> void:
 	var text: Label = find_child("QuestText", true, false)
 	if text == null:
 		return
 	var shown := {}
 	for v in _task_bean.views:
-		if str(v.get("btn_state", "")) == "go" and str(v.get("progress", "0/1")) != "0/1":
+		if str(v.get("status", "")) == XiuTaskState.STATUS_ACCEPTED:
 			shown = v
 			break
+	var claimable := false
 	if shown.is_empty():
 		for v in _task_bean.views:
-			if str(v.get("btn_state", "")) == "go":
+			if str(v.get("status", "")) == XiuTaskState.STATUS_COMPLETED:
 				shown = v
+				claimable = true
 				break
 	if shown.is_empty():
 		text.text = "暂无进行中的任务"
+	elif claimable:
+		text.text = "可领取：%s" % str(shown.get("title", ""))
 	else:
 		text.text = "%s %s" % [str(shown.get("title", "")), str(shown.get("progress", ""))]
 

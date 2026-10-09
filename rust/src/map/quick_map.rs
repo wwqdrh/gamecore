@@ -22,7 +22,7 @@
 //   terrain_thresholds 噪声上界（升序，前 n-1 个生效；第 i 档: value < thresholds[i]）
 
 use godot::prelude::*;
-use godot::builtin::{Color, GString, PackedColorArray, PackedFloat64Array, PackedStringArray, Rect2, Vector2, Vector2i};
+use godot::builtin::{Array, Color, GString, PackedColorArray, PackedFloat64Array, PackedStringArray, Rect2, Rect2i, Vector2, Vector2i};
 use godot::classes::{INode2D, Image, ImageTexture, Node2D, ResourceLoader, Shader, ShaderMaterial, TileMapLayer, TileSet, TileSetAtlasSource, TileSetSource, Texture2D};
 use godot::classes::image::Format as ImageFormat;
 
@@ -156,6 +156,16 @@ pub struct GdQuickMap {
     #[export]
     connected_terrain: GString,
 
+    /// 手绘地形矩形（噪声生成后叠加）：把矩形内所有格子覆写为 paint_terrain
+    /// 指定的地形。典型用法是把山地地形当"建筑"——矩形是屋子、缝隙是门，
+    /// 山地自身的不可行走 + 高度场（子弹撞毁）语义随之继承。
+    /// 应用时机在噪声填充之后、连通性挖洞之前（建筑墙不会被桥格打通）
+    #[export]
+    paint_rects: Array<Rect2i>,
+    /// paint_rects 应用的地形名（须在 terrain_names 中；空 = 跳过叠加）
+    #[export]
+    paint_terrain: GString,
+
     // ---- 运行时状态 ----
     /// 每格地形下标，-1 = 未生成
     grid: Vec<i32>,
@@ -193,6 +203,8 @@ impl INode2D for GdQuickMap {
             blocked_terrains: PackedStringArray::new(),
             terrain_heights: PackedInt32Array::new(),
             connected_terrain: GString::new(),
+            paint_rects: Array::new(),
+            paint_terrain: GString::from("mountain"),
             grid: Vec::new(),
             names: Vec::new(),
             colors: Vec::new(),
@@ -511,11 +523,64 @@ impl GdQuickMap {
             }
         }
 
+        // 手绘叠加：把 paint_rects 覆写为 paint_terrain（如山地=建筑），
+        // 在连通性挖洞之前应用——建筑墙不会被桥格打通
+        self.apply_paint_rects();
+
         // 连通性保证：渲染前把可通行区域挖通（桥格改主地形，渲染自然一致）
         self.ensure_walkable_connected();
 
         self.rebuild_layers();
         self.base_mut().queue_redraw();
+    }
+
+    // ---- 手绘叠加 ----
+
+    /// 把 paint_rects 内的格子覆写为 paint_terrain（generate_internal 调达）。
+    /// 越界部分裁剪；paint_terrain 不在 terrain_names 中时整批跳过并告警。
+    fn apply_paint_rects(&mut self) {
+        if self.paint_rects.is_empty() {
+            return;
+        }
+        if self.grid.is_empty() || self.names.is_empty() {
+            return;
+        }
+        let paint_name = self.paint_terrain.to_string();
+        if paint_name.is_empty() {
+            return;
+        }
+        let Some(ti) = self.names.iter().position(|s| *s == paint_name) else {
+            godot_warn!(
+                "GdQuickMap: paint_terrain \"{}\" 不在 terrain_names 中，跳过手绘叠加",
+                paint_name
+            );
+            return;
+        };
+        let ti = ti as i32;
+        let w = self.width.max(1);
+        let h = self.height.max(1);
+        let mut painted = 0usize;
+        for rect in self.paint_rects.iter_shared() {
+            let x0 = rect.position.x.max(0);
+            let y0 = rect.position.y.max(0);
+            let x1 = (rect.position.x + rect.size.x).min(w);
+            let y1 = (rect.position.y + rect.size.y).min(h);
+            for cy in y0..y1 {
+                for cx in x0..x1 {
+                    let i = (cy * w + cx) as usize;
+                    if self.grid[i] != ti {
+                        self.grid[i] = ti;
+                        painted += 1;
+                    }
+                }
+            }
+        }
+        if painted > 0 {
+            // 同步缓存（blocked_indices / heights 在 build_terrain_table 后
+            // 由 rebuild 逻辑维护；这里只改地形归属，缓存下标不变无需处理，
+            // 但 blocked/heights 查询按下标进行——grid 值已是正确下标）
+            self.base_mut().queue_redraw();
+        }
     }
 
     // ---- 连通性保证 ----

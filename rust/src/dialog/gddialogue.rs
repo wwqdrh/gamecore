@@ -57,6 +57,8 @@ pub struct GdDialogue {
     playing: bool,
     /// 对话控制节点的缓存引用
     dialogue_control: Option<Gd<Node>>,
+    /// precheck 安装时 control 尚未就绪的标记（next() 时重试安装）
+    precheck_stale: bool,
 }
 
 #[godot_api]
@@ -78,6 +80,7 @@ impl INode for GdDialogue {
             in_response: false,
             playing: false,
             dialogue_control: None,
+            precheck_stale: false,
         }
     }
 
@@ -318,6 +321,17 @@ impl GdDialogue {
         }
     }
 
+    /// 强制停止播放（触发器 cancel_dialog / 外部中止对话时用）：
+    /// 复位播放与选项等待状态，timeline 跳到结尾（stage 进度清干净）
+    #[func]
+    pub fn stop(&mut self) {
+        self.playing = false;
+        self.in_response = false;
+        if let Some(ref mut timeline) = self.timeline {
+            timeline.goto_end();
+        }
+    }
+
     /// 执行选择分支的响应动作
     #[func]
     pub fn exec_response(&mut self, data: VarDictionary, role: GString) {
@@ -445,8 +459,34 @@ impl GdDialogue {
     pub fn initial(&mut self, data: GString) {
         let data_str = data.to_string();
         let mut timeline = Timeline::new(&data_str);
-        self.register_check(&mut timeline);
         self.timeline = Some(timeline);
+        self.install_precheck();
+    }
+
+    /// 从 entry_stage 启动对话：flag 条件满足则直达，否则回退到第一个
+    /// 满足条件的 stage（对话进度记录：已看过的段落经 flag 门控自动跳过）；
+    /// entry 为空或无任何 stage 满足时从头开始/直接结束
+    #[func]
+    pub fn start_from(&mut self, entry: GString) {
+        if self.in_response {
+            return;
+        }
+        if self.precheck_stale {
+            self.install_precheck();
+        }
+        let entry_ok = !entry.is_empty()
+            && self
+                .timeline
+                .as_ref()
+                .is_some_and(|t| t.check_stage_flag(&entry.to_string()));
+        if entry_ok {
+            self.goto_stage(entry);
+        } else if let Some(ref mut timeline) = self.timeline {
+            // 回到开头：next() 内部的 get_first_flag 会选出第一个满足
+            // flag 条件的 stage；一个都不满足则直接到结尾
+            timeline.goto_begin();
+        }
+        self.next(GString::new());
     }
 
     /// 跳转到指定 stage
@@ -528,12 +568,58 @@ impl GdDialogue {
         base.get_node_or_null(path)
     }
 
-    /// 注册 Timeline 的 precheck 回调
-    fn register_check(&self, timeline: &mut Timeline) {
-        // precheck 回调：调用 dialogue_control 上的方法检查 flag
-        // 由于 Rust 闭包无法捕获 Gd<Node>（非 Send），这里使用简单的默认实现
-        // 实际的 flag 检查由 GDScript 侧通过 stage_precheck 实现
-        timeline.set_precheck(Box::new(|_expr| true));
+    /// 安装 Timeline 的 precheck 回调（stage flag 门控）
+    ///
+    /// precheck 在 timeline 内部被同步调用（next/goto_stage），绝不能再
+    /// 借用 self（GdCell 单借用重入会 panic），所以闭包只捕获 control 的
+    /// Gd<Node> 克隆，表达式直接对 control 求值。
+    ///
+    /// stage flag 语法（[stage@expr1;expr2]，全部通过才可进入该 stage）：
+    ///   `flagname`          → control.has_flag("flagname")
+    ///   `!flagname`         → 取反
+    ///   `method:arg1,arg2`  → control.callv(method, args)，falsy 不过
+    fn install_precheck(&mut self) {
+        let control = self.get_dialogue_control();
+        if let Some(ref mut timeline) = self.timeline {
+            match control {
+                Some(c) => {
+                    self.precheck_stale = false;
+                    timeline.set_precheck(Box::new(move |token: &str| {
+                        Self::eval_flag_expr(&c, token)
+                    }));
+                }
+                None => {
+                    // control 未注册：先放行，next() 时发现 stale 会重装
+                    self.precheck_stale = true;
+                    timeline.set_precheck(Box::new(|_expr| true));
+                }
+            }
+        }
+    }
+
+    /// 对单个 flag 表达式求值（不借用 self，可安全在 precheck 闭包内调用）
+    fn eval_flag_expr(control: &Gd<Node>, token: &str) -> bool {
+        let token = token.trim();
+        let (negate, expr) = match token.strip_prefix('!') {
+            Some(rest) => (true, rest.trim()),
+            None => (false, token),
+        };
+        if expr.is_empty() {
+            return !negate;
+        }
+        let mut ctl = control.clone();
+        let res: Variant = if let Some((m, args)) = expr.split_once(':') {
+            let var_args: VarArray = args.split(',').map(|s| s.to_variant()).collect();
+            ctl.callv(m, &var_args)
+        } else {
+            // 无冒号的裸标记：按 has_flag 处理
+            ctl.call("has_flag", &[expr.to_variant()])
+        };
+        let truthy: bool = res.try_to::<bool>().unwrap_or_else(|_| {
+            // 非布尔返回值：非空字符串视为真，其余视为假
+            res.try_to::<GString>().map_or(false, |s| !s.is_empty())
+        });
+        truthy != negate
     }
 
     /// 从文件路径加载 Timeline 数据

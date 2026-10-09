@@ -54,16 +54,16 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[node name="ItemRoot" type="Panel" unique_id=554023936]
+[node name="ItemRoot" type="Panel" unique_id=1609702386]
 custom_minimum_size = Vector2(0, 84)
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_ovwul")
 script = ExtResource("1_8ayk1")
 metadata/__script_vars = {}
 metadata/__gml_root = true
-metadata/__data_contract = PackedStringArray("icon", "title", "desc", "progress", "reward1", "reward2", "btn_text", "btn_state")
+metadata/__data_contract = PackedStringArray("icon", "id", "title", "desc", "progress", "reward1", "reward2", "btn_text", "btn_state")
 
-[node name="ItemMargin" type="MarginContainer" parent="." unique_id=1244811317]
+[node name="ItemMargin" type="MarginContainer" parent="." unique_id=2133898051]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -75,18 +75,18 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="ItemRow" type="HBoxContainer" parent="ItemMargin" unique_id=1326343415]
+[node name="ItemRow" type="HBoxContainer" parent="ItemMargin" unique_id=1905739880]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="@Panel@684" type="Panel" parent="ItemMargin/ItemRow" unique_id=2101449185]
+[node name="@Panel@55" type="Panel" parent="ItemMargin/ItemRow" unique_id=315386286]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_or5mg")
 
-[node name="ItemIcon" type="Label" parent="ItemMargin/ItemRow/@Panel@684" unique_id=775193591]
+[node name="ItemIcon" type="Label" parent="ItemMargin/ItemRow/@Panel@55" unique_id=195936520]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -97,32 +97,32 @@ metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 metadata/__anchor = "full"
 
-[node name="@Control@685" type="Control" parent="ItemMargin/ItemRow" unique_id=1216147820]
+[node name="@Control@56" type="Control" parent="ItemMargin/ItemRow" unique_id=566440269]
 custom_minimum_size = Vector2(10, 0)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="@VBoxContainer@686" type="VBoxContainer" parent="ItemMargin/ItemRow" unique_id=1214260041]
+[node name="@VBoxContainer@57" type="VBoxContainer" parent="ItemMargin/ItemRow" unique_id=43775046]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 mouse_filter = 2
 
-[node name="ItemTitle" type="Label" parent="ItemMargin/ItemRow/@VBoxContainer@686" unique_id=64356751]
+[node name="ItemTitle" type="Label" parent="ItemMargin/ItemRow/@VBoxContainer@57" unique_id=1147551983]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
 metadata/__tpl_text = "title"
 metadata/__tpl_keys = "text"
 
-[node name="ItemDesc" type="Label" parent="ItemMargin/ItemRow/@VBoxContainer@686" unique_id=1068975357]
+[node name="ItemDesc" type="Label" parent="ItemMargin/ItemRow/@VBoxContainer@57" unique_id=184906103]
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
 theme_override_colors/font_color = Color(0.5411765, 0.47843137, 0.34509805, 1)
 metadata/__tpl_text = "desc"
 metadata/__tpl_keys = "text"
 
-[node name="ItemProgress" type="Label" parent="ItemMargin/ItemRow" unique_id=1148402060]
+[node name="ItemProgress" type="Label" parent="ItemMargin/ItemRow" unique_id=689567162]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.36078432, 0.3019608, 0.18039216, 1)
@@ -130,12 +130,12 @@ vertical_alignment = 1
 metadata/__tpl_text = "progress"
 metadata/__tpl_keys = "text"
 
-[node name="@Control@687" type="Control" parent="ItemMargin/ItemRow" unique_id=710704147]
+[node name="@Control@58" type="Control" parent="ItemMargin/ItemRow" unique_id=1783164270]
 custom_minimum_size = Vector2(14, 0)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Reward1" type="Label" parent="ItemMargin/ItemRow" unique_id=1427783505]
+[node name="Reward1" type="Label" parent="ItemMargin/ItemRow" unique_id=1547838520]
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
 theme_override_colors/font_color = Color(0.2901961, 0.3529412, 0.22745098, 1)
@@ -143,12 +143,12 @@ vertical_alignment = 1
 metadata/__tpl_text = "reward1"
 metadata/__tpl_keys = "text"
 
-[node name="@Control@688" type="Control" parent="ItemMargin/ItemRow" unique_id=1636857930]
+[node name="@Control@59" type="Control" parent="ItemMargin/ItemRow" unique_id=915484454]
 custom_minimum_size = Vector2(12, 0)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Reward2" type="Label" parent="ItemMargin/ItemRow" unique_id=2119730424]
+[node name="Reward2" type="Label" parent="ItemMargin/ItemRow" unique_id=435974380]
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
 theme_override_colors/font_color = Color(0.2901961, 0.3529412, 0.22745098, 1)
@@ -156,12 +156,12 @@ vertical_alignment = 1
 metadata/__tpl_text = "reward2"
 metadata/__tpl_keys = "text"
 
-[node name="@Control@689" type="Control" parent="ItemMargin/ItemRow" unique_id=1975155575]
+[node name="@Control@60" type="Control" parent="ItemMargin/ItemRow" unique_id=75171828]
 custom_minimum_size = Vector2(14, 0)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="ItemBtn" type="Button" parent="ItemMargin/ItemRow" unique_id=1358246893]
+[node name="ItemBtn" type="Button" parent="ItemMargin/ItemRow" unique_id=623225141]
 custom_minimum_size = Vector2(84, 40)
 layout_mode = 2
 size_flags_vertical = 4

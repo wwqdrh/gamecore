@@ -14,9 +14,9 @@ grow_vertical = 2
 [node name="World" type="Node2D" parent="."]
 
 [node name="MapManager" type="GdMapManager" parent="."]
-map_paths = PackedStringArray("xiuxian_town=res://example/demo/xiuxian/map/town.tscn", "xiuxian_map_a=res://example/demo/xiuxian/map/map_a.tscn", "xiuxian_map_b=res://example/demo/xiuxian/map/map_b.tscn")
-initial_map = "xiuxian_town"
-initial_spawn = Vector2i(6, 10)
+map_paths = PackedStringArray("xiuxian_xiaozhai=res://example/demo/xiuxian/map/xiaozhai.tscn", "xiuxian_xiaozhen=res://example/demo/xiuxian/map/xiaozhen.tscn", "xiuxian_town=res://example/demo/xiuxian/map/town.tscn", "xiuxian_map_a=res://example/demo/xiuxian/map/map_a.tscn", "xiuxian_map_b=res://example/demo/xiuxian/map/map_b.tscn")
+initial_map = "xiuxian_xiaozhai"
+initial_spawn = Vector2i(10, 8)
 click_teleport = false
 
 [node name="Player" parent="." instance=ExtResource("2_player")]

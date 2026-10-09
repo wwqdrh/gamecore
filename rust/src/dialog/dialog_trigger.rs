@@ -143,6 +143,12 @@ impl INode for GdDialogTrigger {
         }
     }
 
+    fn ready(&mut self) {
+        // 加入触发器分组：多个 NPC 触发圈重叠时，start_dialog 靠分组互查
+        // 距离，只让离玩家最近的那个触发
+        self.base_mut().add_to_group("dialog_trigger");
+    }
+
     fn physics_process(&mut self, delta: f64) {
         // 对话进行中：轮询 GdDialogue 播完（is_playing=false）后收尾
         if self.dialog_active {
@@ -230,6 +236,13 @@ impl GdDialogTrigger {
         if self.cooldown_timer > 0.0 {
             return false;
         }
+        // 多个触发器范围重叠时，只让离玩家最近的那个触发（PROXIMITY 的
+        // 重试与 INTERACT 的下次按键都会再尝试，让位方自然后继）
+        if matches!(self.trigger_mode, TRIGGER_PROXIMITY | TRIGGER_INTERACT)
+            && !self.is_nearest_candidate()
+        {
+            return false;
+        }
         let mut dia = match self.resolve_dialogue() {
             Some(d) => d,
             None => return false,
@@ -289,19 +302,12 @@ impl GdDialogTrigger {
         }
 
         // 重置 timeline 位置：NPC 自带 timeline 则先加载（每 NPC 各自的对话文本），
-        // 有 entry_stage 跳到指定 stage，否则回到开头，保证 NPC 可重复触发完整对话
+        // 然后经 start_from 进入对话——entry_stage 的 flag 条件满足则直达，
+        // 否则回退到第一个满足 flag 条件的 stage（对话进度跳过靠这个机制）
         if !self.timeline_path.is_empty() {
             dia.bind_mut().set_timeline_path(self.timeline_path.clone());
         }
-        if !self.entry_stage.is_empty() {
-            dia.bind_mut().goto_stage(self.entry_stage.clone());
-        } else {
-            let stages = dia.bind_mut().all_stages();
-            if let Some(first) = stages.as_slice().first() {
-                dia.bind_mut().goto_stage(first.clone());
-            }
-        }
-        dia.bind_mut().next(GString::new());
+        dia.bind_mut().start_from(self.entry_stage.clone());
 
         self.dialog_active = true;
         self.fired_once = true;
@@ -318,6 +324,43 @@ impl GdDialogTrigger {
     }
 
     // ---- 内部实现 ----
+
+    /// 多触发圈重叠时的最近者判定：遍历 "dialog_trigger" 分组，若存在
+    /// 同样在玩家范围内、且宿主距离玩家更近的其他触发器，则本触发器让位
+    fn is_nearest_candidate(&self) -> bool {
+        let Some(host) = self.base().get_parent() else {
+            return true;
+        };
+        let Some(player) = self.resolve_player() else {
+            return true;
+        };
+        let (Some(hp), Some(pp)) = (Self::pos_of(&host), Self::pos_of(&player)) else {
+            return true;
+        };
+        let my_dist = hp.distance_to(pp);
+        let tree = self.base().get_tree();
+        for node in tree.get_nodes_in_group("dialog_trigger").iter_shared() {
+            let other: Gd<GdDialogTrigger> = match node.clone().try_cast() {
+                Ok(o) => o,
+                Err(_) => continue,
+            };
+            if other.instance_id() == self.base().instance_id() {
+                continue;
+            }
+            let ob = other.bind();
+            if ob.dialog_active || !ob.player_in_range() {
+                continue;
+            }
+            if let Some(ohost) = ob.base().get_parent() {
+                if let Some(op) = Self::pos_of(&ohost) {
+                    if op.distance_to(pp) < my_dist {
+                        return false;
+                    }
+                }
+            }
+        }
+        true
+    }
 
     /// 解析 GdDialogue：dialogue_path 优先，回退宿主子节点
     fn resolve_dialogue(&self) -> Option<Gd<GdDialogue>> {
@@ -497,6 +540,12 @@ impl GdDialogTrigger {
         if let Some(p) = self.resolve_player() {
             if let Ok(mut m) = p.try_cast::<GdRoleMover>() {
                 m.bind_mut().set_paused(false);
+            }
+        }
+        // 强制取消时对话可能仍在播放：停掉共享 Dialogue，避免卡死后续触发
+        if let Some(mut dia) = self.resolve_dialogue() {
+            if dia.bind().is_playing() {
+                dia.bind_mut().stop();
             }
         }
         self.base_mut().emit_signal("s_dialog_ended", &[]);

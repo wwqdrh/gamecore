@@ -1,0 +1,45 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://example/demo/xiuxian/role/npc/herb_shop/herb_shop.tscn" id="1_herb"]
+[ext_resource type="PackedScene" path="res://example/demo/xiuxian/role/npc/blacksmith/blacksmith.tscn" id="2_smith"]
+[ext_resource type="PackedScene" path="res://example/demo/xiuxian/role/npc/storyteller/storyteller.tscn" id="3_story"]
+
+[node name="QingShiZhen" type="GdQuickMap"]
+width = 28
+height = 18
+cell_size = 32
+seed_value = 20261002
+noise_scale = 7.0
+draw_grid_lines = true
+terrain_names = PackedStringArray("grass", "mountain")
+terrain_thresholds = PackedFloat64Array(1.01)
+terrain_dualgrid_textures = PackedStringArray("res://example/map/assets/tileset_grass.png", "")
+terrain_heights = PackedInt32Array(0, 3)
+blocked_terrains = PackedStringArray("mountain")
+connected_terrain = "grass"
+paint_terrain = "mountain"
+paint_rects = Array[Rect2i]([Rect2i(3, 4, 5, 3), Rect2i(10, 4, 5, 3), Rect2i(17, 4, 5, 3), Rect2i(4, 11, 4, 3), Rect2i(9, 11, 4, 3), Rect2i(14, 11, 6, 3)])
+
+[node name="TeleportWest" type="GdMapMarker" parent="."]
+cell = Vector2i(1, 9)
+cell_size = 32
+target_alias = "xiuxian_xiaozhai"
+target_cell = Vector2i(9, 9)
+label = "返回萧宅"
+
+[node name="TeleportEast" type="GdMapMarker" parent="."]
+cell = Vector2i(26, 9)
+cell_size = 32
+color = Color(1, 0.72, 0.3, 1)
+target_alias = "xiuxian_town"
+target_cell = Vector2i(6, 10)
+label = "前往青云坊"
+
+[node name="NpcHerbShop" parent="." instance=ExtResource("1_herb")]
+position = Vector2(176, 272)
+
+[node name="NpcBlacksmith" parent="." instance=ExtResource("2_smith")]
+position = Vector2(400, 272)
+
+[node name="NpcStoryteller" parent="." instance=ExtResource("3_story")]
+position = Vector2(592, 272)

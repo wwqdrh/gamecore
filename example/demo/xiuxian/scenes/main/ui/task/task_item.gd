@@ -11,6 +11,7 @@ extends Panel
 # 编辑 task_item.gml 时对照此处即可知道条目会收到哪些数据；
 # 未在此声明的 key 仍走 GML {{模板}} 绑定与 __item_data meta 兜底。
 @export var icon: String = ""
+@export var id: String = ""
 @export var title: String = ""
 @export var desc: String = ""
 @export var progress: String = ""
@@ -24,4 +25,15 @@ extends Panel
 ## btn: 发出信号的按钮；参数由信号绑定的智能补绑机制自动传入
 ## 数据直接读本脚本契约变量，无需再沿父链解析 __item_data meta
 func _on_task_action(btn: Control) -> void:
-	print("[TaskItem] 点击任务按钮: ", title, " state=", btn_state)
+	match btn_state:
+		"reward":
+			# 已完成待领取：真实写状态层领取奖励
+			# （complete_task 发奖 → refresh_views → 全部任务列表响应式刷新，
+			#  本条目随之移入"已完成"页签）
+			if XiuTaskState.ins().complete_task(id):
+				print("[TaskItem] 领取任务奖励: ", title)
+		"go":
+			# 进行中：导航目标暂未接入，仅打印占位
+			print("[TaskItem] 前往任务: ", title, " 进度=", progress)
+		_:
+			pass  # locked（未解锁）/ done（已领奖留档）无动作

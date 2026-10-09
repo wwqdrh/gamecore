@@ -1,0 +1,79 @@
+# 萧远山（萧老爷）对话时间线（萧宅家主，本角色专属）
+#
+# 对话进度记录：stage 经 flag 门控（GdDialogue precheck → control.has_flag
+# → XiuDialogState 持久化），触发器 start_from 按 flag 自动选段——
+#   - 初见段 [master_intro@!met_xiao_master] 只在首次对话进入（进入即置 flag）
+#   - 任务段按 task_side_003_accepted / task_side_003_done（XiuTaskState
+#     接取/完成时写入）三态流转：可接 → 进行中 → 完成日常
+# 两条写作红线：
+#   1. 置 flag 的 stage，本段结尾必须是选项或 goto——行推进时若当前
+#      stage 的 flag 已失配，timeline 会判定过期直接 goto_end 断掉对话
+#   2. 门控段落必须排在无条件分支段落之前（start_from 从头扫描取第一个
+#      满足条件的 stage；无条件 stage 恒通过）
+
+# 首次对话：寒暄引出父亲旧事 + 可接任务
+[master_intro@!met_xiao_master]
+(萧老爷,云舟)
+云家小子？这一路风尘，倒比你爹当年年轻时稳当。
+@set_flag:met_xiao_master
+- 长辈认得我父亲？@goto:master_father
+- 有什么能帮忙的吗？@goto:master_task_offer
+- 打扰了，在下借宝地歇脚。@goto:master_guest
+
+# 任务可接（已相识、未接、未完成）：交代差事
+[master_task_offer@met_xiao_master;!task_side_003_accepted;!task_side_003_done]
+(萧老爷)
+云舟啊，来得正好。院里小翠每日晒药闷得慌，你去陪她说说话——
+就当替我这个做家主的关心下下人。
+- 好，我去去就来。@goto:master_task_ok
+- 改日再说吧。@goto:master_end
+
+# 任务进行中：催促
+[master_task_pending@met_xiao_master;task_side_003_accepted;!task_side_003_done]
+(萧老爷)
+见过小翠了吗？西厢出门左转便是，别让她等急了。
+- 这就去。@goto:master_end
+
+# 任务完成后：日常再访
+[master_catchup@met_xiao_master;task_side_003_done]
+(萧老爷)
+和你小翠妹妹聊过了？这丫头念叨你半天了，看来聊得投缘。
+- 再讲讲我父亲的事。@goto:master_father
+- 没什么事，路过看看。@goto:master_guest
+
+# ---- 以下为各分支（只能经 goto 进入）----
+
+[master_task_ok]
+(萧老爷)
+好孩子。去吧，她在西厢晒药材呢。
+@task_accept:side_003
+:goto:master_end
+
+[master_father]
+(萧老爷)
+何止认得。当年你父亲云澈在这萧宅住过一冬，与我论道斗气，
+临走还留了半卷手札。自打进了落霞秘境，就再没出来喽。
+- 手札还在吗？@goto:master_note
+- 秘境……我正要去找他。@goto:master_wish
+
+[master_note]
+(萧老爷)
+在祠堂收着。等你斗之气凝出气旋再来取不迟——
+看不懂的东西，拿着是祸不是福。
+:goto:master_end
+
+[master_wish]
+(萧老爷)
+有志气。不过秘境凶险，先把根基打牢。
+镇上回春堂的白芷姑娘有些门道，去了替我问声好。
+:goto:master_end
+
+[master_guest]
+(萧老爷)
+客什么客，你爹的儿子就是半个萧家人。
+院里随意走，别翻东厢的箱子就行。
+:goto:master_end
+
+[master_end]
+(萧老爷)
+去吧。宅子南门出去就是青石镇，缺什么先找白芷。

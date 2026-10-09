@@ -1,0 +1,37 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://example/demo/xiuxian/role/npc/xiao_master/xiao_master.tscn" id="1_master"]
+[ext_resource type="PackedScene" path="res://example/demo/xiuxian/role/npc/xiao_lady/xiao_lady.tscn" id="2_lady"]
+[ext_resource type="PackedScene" path="res://example/demo/xiuxian/role/npc/xiao_maid/xiao_maid.tscn" id="3_maid"]
+
+[node name="XiaoZhai" type="GdQuickMap"]
+width = 20
+height = 14
+cell_size = 32
+seed_value = 20261001
+noise_scale = 7.0
+draw_grid_lines = true
+terrain_names = PackedStringArray("grass", "forest", "mountain")
+terrain_thresholds = PackedFloat64Array(0.75, 1.01)
+terrain_dualgrid_textures = PackedStringArray("res://example/map/assets/tileset_grass.png", "", "")
+terrain_heights = PackedInt32Array(0, 0, 3)
+blocked_terrains = PackedStringArray("mountain")
+connected_terrain = "grass"
+paint_terrain = "mountain"
+paint_rects = Array[Rect2i]([Rect2i(7, 2, 6, 3), Rect2i(14, 5, 2, 4), Rect2i(4, 5, 2, 4), Rect2i(3, 10, 6, 1), Rect2i(11, 10, 6, 1)])
+
+[node name="TeleportSouth" type="GdMapMarker" parent="."]
+cell = Vector2i(9, 11)
+cell_size = 32
+target_alias = "xiuxian_xiaozhen"
+target_cell = Vector2i(13, 9)
+label = "前往青石镇"
+
+[node name="NpcXiaoMaster" parent="." instance=ExtResource("1_master")]
+position = Vector2(304, 208)
+
+[node name="NpcXiaoLady" parent="." instance=ExtResource("2_lady")]
+position = Vector2(400, 240)
+
+[node name="NpcXiaoMaid" parent="." instance=ExtResource("3_maid")]
+position = Vector2(208, 240)

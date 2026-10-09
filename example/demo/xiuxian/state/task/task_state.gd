@@ -1,8 +1,17 @@
 # 任务状态 Bean（分类：任务）—— 仙途 demo 游戏状态层
 #
-# 职责：持有全量任务总表（不区分解锁状态，未解锁任务同样入库）+ 运行进度，
-#       属性自动经 GDCORE 持久化到 GJson 存档（user://coredata.data，
+# 职责：持有全量任务总表（不区分解锁状态，未解锁任务同样入库）+ 运行进度
+#       （接取/推进/完成/提交）+ 奖励发放，属性自动经 GDCORE 持久化到
+#       GJson 存档（user://coredata.data，
 #       路径 init;xiuxian_task;tasks / init;xiuxian_task;progress;任务id;...）。
+#
+# 数据源：任务**定义**在 state/task/task.json（明文源，pipeline=gjson 管线
+#   加密为 task.gjson，经 XiuTaskTable 静态加载；改文件即改全游戏目录）；
+#   本 Bean 只持有**运行数据**（首次注册从定义表派生总表写入存档 + 进度）。
+#
+# 对话联动：接取/完成时同步 flag（task_<id>_accepted / task_<id>_done）到
+#   XiuDialogState（持久化）——台词本用 [stage@task_xxx_accepted] 门控
+#   任务相关段落，任务结束后对应选项/对话自动消失。
 #
 # 查询方式（三选一）：
 #   1. 便捷方法：get_task / get_all_tasks / get_tasks_by_category / get_tasks_by_status ...
@@ -20,75 +29,19 @@ const STATUS_ACCEPTED := "accepted"      # 进行中
 const STATUS_COMPLETED := "completed"    # 已完成待提交
 const STATUS_SUBMITTED := "submitted"    # 已提交领奖
 
-## 全量任务总表（静态目录：含未解锁任务；id -> 定义）
-const DEFAULT_TASKS: Dictionary = {
-	"main_001": {
-		"id": "main_001", "name": "初入仙途", "category": "主线",
-		"desc": "离开青石镇，前往青云宗报到。", "unlock": true,
-		"precondition": "", "steps": 3,
-		"rewards": {"exp": 400, "spirit_stones": 30,
-			"items": [{"id": "herb_lingzhi", "count": 2}, {"id": "pill_hp", "count": 3}]},
-	},
-	"main_002": {
-		"id": "main_002", "name": "灵田风波", "category": "主线",
-		"desc": "调查灵田减产之谜，驱逐作乱的地灵鼠。", "unlock": true,
-		"precondition": "main_001", "steps": 3,
-		"rewards": {"exp": 600, "spirit_stones": 50,
-			"items": [{"id": "ore_coldiron", "count": 3}]},
-	},
-	"main_003": {
-		"id": "main_003", "name": "秘境探幽", "category": "主线",
-		"desc": "持秘境残图进入落霞秘境，寻机上探三层。", "unlock": false,
-		"precondition": "main_002", "steps": 5,
-		"rewards": {"exp": 1000, "spirit_stones": 100,
-			"items": [{"id": "pill_break", "count": 1}]},
-	},
-	"side_001": {
-		"id": "side_001", "name": "采药济世", "category": "支线",
-		"desc": "为回春堂采集血参十株，救治镇上疫病。", "unlock": true,
-		"precondition": "", "steps": 2,
-		"rewards": {"exp": 150, "spirit_stones": 20,
-			"items": [{"id": "herb_xueshen", "count": 2}]},
-	},
-	"side_002": {
-		"id": "side_002", "name": "铸剑问道", "category": "支线",
-		"desc": "替欧冶氏收集寒铁，铸成一柄本命飞剑。", "unlock": false,
-		"precondition": "side_001", "steps": 4,
-		"rewards": {"exp": 300, "spirit_stones": 40,
-			"items": [{"id": "sword_qingfeng", "count": 1}]},
-	},
-	"daily_001": {
-		"id": "daily_001", "name": "每日签到", "category": "日常",
-		"desc": "每日到掌门处签到，领取基本供奉。", "unlock": true,
-		"precondition": "", "steps": 1,
-		"rewards": {"exp": 80, "spirit_stones": 10,
-			"items": [{"id": "pill_hp", "count": 1}]},
-	},
-	"guild_001": {
-		"id": "guild_001", "name": "宗门巡逻", "category": "宗门",
-		"desc": "巡视山门四处阵眼，清理滋扰妖兽。", "unlock": true,
-		"precondition": "", "steps": 2,
-		"rewards": {"exp": 200, "spirit_stones": 25,
-			"items": [{"id": "pill_mp", "count": 2}]},
-	},
-	"bounty_001": {
-		"id": "bounty_001", "name": "悬赏·血衣楼", "category": "悬赏",
-		"desc": "追查血衣楼细作，取回失窃的宗门名录。", "unlock": false,
-		"precondition": "guild_001", "steps": 3,
-		"rewards": {"exp": 500, "spirit_stones": 80,
-			"items": [{"id": "map_secret", "count": 1}]},
-	},
-}
-
-## 全量任务总表（不区分解锁状态；首次注册写入存档，此后随存档恢复）
-var tasks: Dictionary = DEFAULT_TASKS.duplicate(true)
+## 全量任务总表（静态目录：含未解锁任务；首次注册由 task.gjson 定义表派生，
+## 此后随存档恢复；定义本身的权威来源是 task.json，重置经 XiuTaskTable 读取）
+var tasks: Dictionary = XiuTaskTable.get_tasks()
 
 ## 运行进度（task_id -> {step: int, status: String}；仅已接取/有进展的任务有记录）
 var progress: Dictionary = {}
 
 ## 展示视图（UIVList 模板契约字段：category/icon/title/desc/progress/
-## reward1/reward2/btn_text/btn_state）——由 tasks+progress 派生，
-## 进度/总表变化后调 refresh_views() 重建，UI 列表 data="bean:xiuxian_task:views"
+## reward1/reward2/btn_text/btn_state/status/status_group）——由 tasks+progress
+## 派生，进度/总表变化后调 refresh_views() 重建，
+## UI 列表 data="bean:xiuxian_task:views"。
+## status_group：任务列表页签过滤字段（"active"=进行中 accepted/completed、
+## "done"=已完成 submitted 留档、""=未接取 available/locked 不进列表）
 var views: Array = []
 
 ## 总表中文分类 -> 列表页签 category id
@@ -121,6 +74,8 @@ func refresh_views() -> void:
 		var total := int(t.get("steps", 1))
 		var r: Dictionary = t.get("rewards", {})
 		var locked := status == STATUS_LOCKED
+		var r2 := "✨ %d" % int(r.get("exp", 0)) if int(r.get("exp", 0)) > 0 \
+				else ("🪙 %d" % int(r.get("coins", 0)) if int(r.get("coins", 0)) > 0 else "")
 		out.append({
 			"id": tid,
 			"category": cid,
@@ -129,11 +84,24 @@ func refresh_views() -> void:
 			"desc": str(t.get("desc", "")),
 			"progress": "%d/%d" % [step, total],
 			"reward1": "💎 %d" % int(r.get("spirit_stones", 0)),
-			"reward2": "✨ %d" % int(r.get("exp", 0)),
-			"btn_text": "封印" if locked else ("领取" if status == STATUS_COMPLETED else "前往"),
-			"btn_state": "locked" if locked else ("reward" if status == STATUS_COMPLETED else "go"),
+			"reward2": r2,
+			"status": status,
+			"status_group": _status_group(status),
+			"btn_text": "封印" if locked else ("领取" if status == STATUS_COMPLETED \
+					else ("✅ 已完成" if status == STATUS_SUBMITTED else "前往")),
+			"btn_state": "locked" if locked else ("reward" if status == STATUS_COMPLETED \
+					else ("done" if status == STATUS_SUBMITTED else "go")),
 		})
 	update("views", out, {}, false)
+
+
+## 视图状态组（任务列表页签过滤）：
+## accepted/completed → "active"（进行中），submitted → "done"（已完成留档），
+## available/locked → ""（未接取，不进任务列表）
+func _status_group(status: String) -> String:
+	if status == STATUS_ACCEPTED or status == STATUS_COMPLETED:
+		return "active"
+	return "done" if status == STATUS_SUBMITTED else ""
 
 
 # ------------------------------------------------------------------ 查询
@@ -225,8 +193,50 @@ func advance_task(task_id: String) -> int:
 	return step
 
 
-## 还原演示基线（目录 + 进度清空；跨运行确定性测试用）
+## 接取任务：available → accepted；成功返回 true
+## （同步 flag task_<id>_accepted 到 XiuDialogState，供台词本门控）
+func accept_task(task_id: String) -> bool:
+	if get_task_status(task_id) != STATUS_AVAILABLE:
+		return false
+	set_task_status(task_id, STATUS_ACCEPTED)
+	XiuDialogState.ins().set_flag("task_%s_accepted" % task_id)
+	return true
+
+
+## 完成任务并立即发放奖励（coins→金币 / exp→修为 / spirit_stones→灵石 /
+## items→道具入包），状态直达 submitted；可从 accepted/completed 调用。
+## （同步 flag task_<id>_done 到 XiuDialogState，台词本的任务段落随之关闭）
+func complete_task(task_id: String) -> bool:
+	var st := get_task_status(task_id)
+	if st != STATUS_ACCEPTED and st != STATUS_COMPLETED:
+		return false
+	set_task_status(task_id, STATUS_COMPLETED)
+	_grant_rewards(task_id)
+	set_task_status(task_id, STATUS_SUBMITTED)
+	XiuDialogState.ins().set_flag("task_%s_done" % task_id)
+	print("[XiuTaskState] 任务完成: %s %s" % [task_id, str(get_task(task_id).get("name", ""))])
+	return true
+
+
+## 发放任务奖励（各资源路由到对应 Bean）
+func _grant_rewards(task_id: String) -> void:
+	var r: Dictionary = get_task(task_id).get("rewards", {})
+	var ch := XiuCharacterState.ins()
+	if int(r.get("exp", 0)) > 0:
+		ch.add_exp(int(r.exp))
+	if int(r.get("spirit_stones", 0)) != 0:
+		ch.add_spirit_stones(int(r.spirit_stones))
+	if int(r.get("coins", 0)) != 0:
+		ch.add_coins(int(r.coins))
+	var item_bean := XiuItemState.ins()
+	for it in r.get("items", []):
+		item_bean.add_item(str(it.get("id", "")), int(it.get("count", 1)))
+
+
+## 还原演示基线（目录 + 进度清空；跨运行确定性测试用）。
+## 同时清掉对话联动 flag（任务门控段落复原）
 func reset_demo() -> void:
-	update("tasks", DEFAULT_TASKS.duplicate(true), {}, true)
+	update("tasks", XiuTaskTable.get_tasks(), {}, true)
 	update("progress", {}, {}, true)
 	refresh_views()
+	XiuDialogState.ins().reset_demo()

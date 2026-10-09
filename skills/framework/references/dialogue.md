@@ -126,6 +126,82 @@ func has_flag(flag: String) -> bool:
 
 同一场对话期间不会重复触发；对话结束自动恢复移动。
 
+**最近触发**：多个 NPC 触发圈重叠时（触发器 ready 自动入 `"dialog_trigger"`
+分组），只有离玩家最近的那个能启动对话——让位方经 PROXIMITY 重试 /
+INTERACT 下次按键自然后继。`cancel_dialog()` 会同时停掉共享 GdDialogue
+的播放（否则 `is_playing=true` 会卡住其他触发器）。
+
+## 对话进度记录（stage flag 门控）
+
+timeline 的 stage 可声明 flag 条件，GdDialogue 启动/推进时经 precheck
+（control 的 `has_flag`）过滤，**不满足条件的段落自动跳过**——这是
+"对话看过一次、之后不再重复" 的实现基础：
+
+```text
+[stage名@flag1;!flag2]        # 全部满足才可进入；! 前缀取反
+[stage名@has_flag:flag1]      # method:args 形式（裸标记等价 has_flag:xxx）
+```
+
+- **选段机制** `GdDialogue.start_from(entry)`：entry 的 flag 满足则直达；
+  否则从 timeline 开头扫描取**第一个满足条件的 stage**（一个都不满足则
+  结束）。触发器 start_dialog 内部走的就是这个入口。
+- **写作红线**（违反会断对话/选错段）：
+  1. 置 flag 的 stage（如初见段 `@set_flag:met_xxx`），本段结尾必须是
+     选项或 goto——行推进时当前 stage 的 flag 已失配会被判定过期直接
+     goto_end；
+  2. 门控段落必须排在无条件段落**之前**（扫描取第一个满足的 stage，
+     无条件 stage 恒通过）；无条件分支段只能放文件尾部经 goto 进入。
+- **持久化**：flag 存对话 control 的 `has_flag`/`set_flag`。demo 里
+  DialogBox 委托 `XiuDialogState`（GdBean，随存档持久化）→ 对话进度跨
+  运行保留；框架侧 control 是任意实现 has_flag 的节点。
+- 典型结构（初见 / 日常再访 两段式）：
+
+```text
+[npc_intro@!met_npc]
+(角色,玩家)
+首次见面的自我介绍……
+@set_flag:met_npc
+- 选项A@goto:npc_branch
+- 告辞。@goto:npc_end
+
+[npc_catchup@met_npc]
+(角色)
+熟络后的简短寒暄……
+- 选项A@goto:npc_branch
+- 告辞。@goto:npc_end
+```
+
+## 任务联动（demo 命令字）
+
+`XiuTaskState`（见 state-data.md「静态定义表管线」）接取/完成任务时把
+`task_<id>_accepted` / `task_<id>_done` 写入 XiuDialogState → 台词本用
+flag 门控任务段落，任务结束后对应选项自动消失：
+
+```text
+[npc_task_offer@met_npc;!task_side_003_accepted;!task_side_003_done]
+(角色,玩家)
+交代任务的台词……
+- 接受。@goto:npc_task_ok          # 任务落点行挂 @task_accept
+- 改日再说。@goto:npc_end
+
+[npc_task_ok]
+(角色)
+应承台词。
+@task_accept:side_003              # DialogBox → XiuTaskState.accept_task
+:goto:npc_end
+
+[npc_task_pending@met_npc;task_side_003_accepted;!task_side_003_done]
+(角色)
+任务进行中的催促……
+
+# 完成方 NPC（对话内直接结算奖励）
+[npc_task_done_chat@task_side_003_accepted;!task_side_003_done]
+(角色,玩家)
+交付台词……
+@task_complete:side_003            # 完成并发放奖励（coins/exp/items → 各 Bean）
+- 收尾选项。@goto:npc_end
+```
+
 ## 选项动作 → 命令字（对话驱动 UI / NPC 行为）
 
 选项动作与行函数都是 `fn[:参数]` 表达式，支持 `;` 链式（`@open_ui:StoreModal;end`）。
@@ -198,6 +274,10 @@ role/
   （无 display_name/portrait → 对话回退角色名、不显示立绘）。
 - **立绘**：三 NPC 各自 `assets/dialog_basic.png`（XiuNpcBase 自动探测），
   DialogBox 左侧槽位按行切换，验证脚本 `test/check_dialog_portrait.gd`。
+- **对话进度 + 任务**：萧宅/青石镇 6 NPC，萧老爷 timeline 四段门控
+  （初见→可接任务→进行中→完成日常），验证脚本
+  `example/demo/xiuxian/check_task_flow.gd`（最近触发 / 进度跳过 /
+  接取 / 50 金币奖励 / 幂等 / 重置）。
 - **地图侧**：NPC 场景作为地图场景（town.tscn）子节点实例化，随地图加载/释放；
   主场景 MapManager `initial_map = "xiuxian_town"` 默认进主城。
 - **验收**：`check_npc_flow.gd`（落位/接线/timeline 归属/AI 行为与网格游走合法性/

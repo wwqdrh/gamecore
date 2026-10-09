@@ -17,15 +17,16 @@
 #
 # 同时提供状态函数，可被 timeline 函数（@set_flag:xxx）或
 # 触发器条件（condition_fn = "has_flag:xxx"）调用：
-#   set_flag / has_flag / clear_flag
-#   set_counter / add_counter / get_counter
+#   set_flag / has_flag / clear_flag —— 委托 XiuDialogState（跨运行持久化，
+#     对话进度记录：GdDialogue 的 stage flag 门控 [stage@flag] 也走这里）
+#   set_counter / add_counter / get_counter —— 运行时计数（不持久化）
+# 任务联动命令：task_accept:任务id / task_complete:任务id（发放奖励）
 extends CanvasLayer
 
 ## GdDialogue 节点路径
 @export var dialogue_path: NodePath
 
 var dialogue: GdDialogue
-var flags := {}
 var counters := {}
 var current_role := ""
 var responding := false
@@ -172,18 +173,33 @@ func close_ui(ui_id: String) -> void:
 # 对话状态函数（timeline 函数 / 触发器条件都可调用）
 # ---------------------------------------------------------------------------
 
-## 设置标记：timeline 中写 @set_flag:标记名
+## 设置标记：timeline 中写 @set_flag:标记名（委托 XiuDialogState 持久化）
 func set_flag(flag: String) -> void:
-	flags[flag] = true
+	XiuDialogState.ins().set_flag(flag)
 
 
 ## 查询标记：触发器条件写 condition_fn = "has_flag:标记名"
 func has_flag(flag: String) -> bool:
-	return flags.has(flag)
+	return XiuDialogState.ins().has_flag(flag)
 
 
 func clear_flag(flag: String) -> void:
-	flags.erase(flag)
+	XiuDialogState.ins().clear_flag(flag)
+
+
+## 接取任务：timeline 中写 @task_accept:任务id
+func task_accept(task_id: String) -> void:
+	if XiuTaskState.ins().accept_task(task_id):
+		print("[DialogBox] 接受任务: %s" % task_id)
+
+
+## 完成任务并领取奖励：timeline 中写 @task_complete:任务id
+func task_complete(task_id: String) -> void:
+	if XiuTaskState.ins().complete_task(task_id):
+		var r: Dictionary = XiuTaskState.ins().get_task(task_id).get("rewards", {})
+		var coins := int(r.get("coins", 0))
+		if coins > 0:
+			print("[DialogBox] 获得金币 +%d" % coins)
 
 
 func set_counter(key: String, value: int) -> void:

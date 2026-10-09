@@ -55,26 +55,40 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[node name="TaskScroll" type="ScrollContainer" unique_id=1686638547]
+[node name="TaskScroll" type="ScrollContainer" unique_id=306056308]
 size_flags_vertical = 3
 script = ExtResource("1_s0es4")
 metadata/__script_vars = {
-"category": ""
+"status_group": ""
 }
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray()
 
-[node name="TaskList" type="GdUIVList" parent="." unique_id=620513407]
+[node name="ListBox" type="VBoxContainer" parent="." unique_id=1607017560]
 layout_mode = 2
 size_flags_horizontal = 3
-metadata/__data_var = "bean:xiuxian_task:views"
-metadata/__filter_key = "category"
+size_flags_vertical = 3
+mouse_filter = 2
 metadata/__script_vars = {
-"category": ""
+"status_group": ""
 }
+
+[node name="EmptyHint" type="Label" parent="ListBox" unique_id=1085055099]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5411765, 0.47843137, 0.34509805, 1)
+text = "暂无任务，去 NPC 处接取吧"
+horizontal_alignment = 1
+
+[node name="TaskList" type="GdUIVList" parent="ListBox" unique_id=216636449]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+metadata/__data_var = "bean:xiuxian_task:views"
+metadata/__filter_key = "status_group"
 metadata/__filter_value = ""
 
-[node name="ItemRoot" type="Panel" parent="TaskList" unique_id=509076149]
+[node name="ItemRoot" type="Panel" parent="ListBox/TaskList" unique_id=1058952207]
 visible = false
 custom_minimum_size = Vector2(0, 84)
 layout_mode = 2
@@ -83,9 +97,9 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_fm6vd")
 script = ExtResource("2_drlh4")
 metadata/__script_vars = {}
 metadata/__gml_root = true
-metadata/__data_contract = PackedStringArray("icon", "title", "desc", "progress", "reward1", "reward2", "btn_text", "btn_state")
+metadata/__data_contract = PackedStringArray("icon", "id", "title", "desc", "progress", "reward1", "reward2", "btn_text", "btn_state")
 
-[node name="ItemMargin" type="MarginContainer" parent="TaskList/ItemRoot" unique_id=794185228]
+[node name="ItemMargin" type="MarginContainer" parent="ListBox/TaskList/ItemRoot" unique_id=2062801894]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -97,18 +111,18 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="ItemRow" type="HBoxContainer" parent="TaskList/ItemRoot/ItemMargin" unique_id=1930517517]
+[node name="ItemRow" type="HBoxContainer" parent="ListBox/TaskList/ItemRoot/ItemMargin" unique_id=1298646508]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="@Panel@589" type="Panel" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=284932740]
+[node name="@Panel@49" type="Panel" parent="ListBox/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=132381986]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_xlg2g")
 
-[node name="ItemIcon" type="Label" parent="TaskList/ItemRoot/ItemMargin/ItemRow/@Panel@589" unique_id=240953786]
+[node name="ItemIcon" type="Label" parent="ListBox/TaskList/ItemRoot/ItemMargin/ItemRow/@Panel@49" unique_id=1863491250]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -119,32 +133,32 @@ metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 metadata/__anchor = "full"
 
-[node name="@Control@590" type="Control" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=2138313469]
+[node name="@Control@50" type="Control" parent="ListBox/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1630895561]
 custom_minimum_size = Vector2(10, 0)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="@VBoxContainer@591" type="VBoxContainer" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=2061585892]
+[node name="@VBoxContainer@51" type="VBoxContainer" parent="ListBox/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=2112128392]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 mouse_filter = 2
 
-[node name="ItemTitle" type="Label" parent="TaskList/ItemRoot/ItemMargin/ItemRow/@VBoxContainer@591" unique_id=1619121061]
+[node name="ItemTitle" type="Label" parent="ListBox/TaskList/ItemRoot/ItemMargin/ItemRow/@VBoxContainer@51" unique_id=125313556]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
 metadata/__tpl_text = "title"
 metadata/__tpl_keys = "text"
 
-[node name="ItemDesc" type="Label" parent="TaskList/ItemRoot/ItemMargin/ItemRow/@VBoxContainer@591" unique_id=1136511011]
+[node name="ItemDesc" type="Label" parent="ListBox/TaskList/ItemRoot/ItemMargin/ItemRow/@VBoxContainer@51" unique_id=1866605186]
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
 theme_override_colors/font_color = Color(0.5411765, 0.47843137, 0.34509805, 1)
 metadata/__tpl_text = "desc"
 metadata/__tpl_keys = "text"
 
-[node name="ItemProgress" type="Label" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1261710916]
+[node name="ItemProgress" type="Label" parent="ListBox/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1829466682]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.36078432, 0.3019608, 0.18039216, 1)
@@ -152,12 +166,12 @@ vertical_alignment = 1
 metadata/__tpl_text = "progress"
 metadata/__tpl_keys = "text"
 
-[node name="@Control@592" type="Control" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1307078514]
+[node name="@Control@52" type="Control" parent="ListBox/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1185914878]
 custom_minimum_size = Vector2(14, 0)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Reward1" type="Label" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1316658589]
+[node name="Reward1" type="Label" parent="ListBox/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1366461181]
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
 theme_override_colors/font_color = Color(0.2901961, 0.3529412, 0.22745098, 1)
@@ -165,12 +179,12 @@ vertical_alignment = 1
 metadata/__tpl_text = "reward1"
 metadata/__tpl_keys = "text"
 
-[node name="@Control@593" type="Control" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=480470420]
+[node name="@Control@53" type="Control" parent="ListBox/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=112115406]
 custom_minimum_size = Vector2(12, 0)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Reward2" type="Label" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1298357526]
+[node name="Reward2" type="Label" parent="ListBox/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=2145015965]
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
 theme_override_colors/font_color = Color(0.2901961, 0.3529412, 0.22745098, 1)
@@ -178,12 +192,12 @@ vertical_alignment = 1
 metadata/__tpl_text = "reward2"
 metadata/__tpl_keys = "text"
 
-[node name="@Control@594" type="Control" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1333496777]
+[node name="@Control@54" type="Control" parent="ListBox/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=1986899586]
 custom_minimum_size = Vector2(14, 0)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="ItemBtn" type="Button" parent="TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=58133420]
+[node name="ItemBtn" type="Button" parent="ListBox/TaskList/ItemRoot/ItemMargin/ItemRow" unique_id=435913273]
 custom_minimum_size = Vector2(84, 40)
 layout_mode = 2
 size_flags_vertical = 4

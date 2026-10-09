@@ -1,35 +1,23 @@
 <ui>
   <!-- 页签切换容器：复用框架 TabContainer/Tab，页签切换为原生行为
 	   每个 Tab 页通过 <Gml> 引用 task_list.gml（各自独立实例）。
-	   分类过滤：<script> 定义各页签分类标识，<Gml data-category="分类变量">
-	   经具名数据映射注入子文件的 category 变量——task_list.gml 的 UIVList
-	   filter_value_var="category" 取该值过滤 bean:task_list:tasks 全量数据，
-	   各页签只显示自己分类的任务；
-	   task_list.gd 每 5s 轮换分类插入任务时，对应页签的列表自动增长
-	   （响应式数据绑定 + 分类过滤演示） -->
+	   按玩家接取状态过滤（数据字段 status_group，由 XiuTaskState.refresh_views 派生）：
+	   · 进行中 = accepted（推进中）/ completed（已完成待领取）
+	   · 已完成 = submitted（已提交领奖，留档展示）
+	   未接取（available/locked）不进列表——任务列表随接取/完成动态增减，
+	   数据联动链路：accept/advance/complete_task → refresh_views →
+	   watch("views") → 各页签列表自动刷新 -->
   <script>
-	// 各页签的任务分类标识（与任务视图数据的 category 字段匹配）
-	var cat_daily = "daily"
-	var cat_main = "main"
-	var cat_side = "side"
-	var cat_guild = "guild"
-	var cat_bounty = "bounty"
+	// 各页签的状态组标识（与任务视图数据的 status_group 字段匹配）
+	var grp_active = "active"
+	var grp_done = "done"
   </script>
   <TabContainer name="TaskTabs" anchor="full" tabs_visible="true" current_tab="0">
-	<Tab title="日常">
-	  <Gml src="task_list.gml" data-category="cat_daily" />
+	<Tab title="进行中">
+	  <Gml src="task_list.gml" data-status_group="grp_active" />
 	</Tab>
-	<Tab title="主线">
-	  <Gml src="task_list.gml" data-category="cat_main" />
-	</Tab>
-	<Tab title="支线">
-	  <Gml src="task_list.gml" data-category="cat_side" />
-	</Tab>
-	<Tab title="宗门">
-	  <Gml src="task_list.gml" data-category="cat_guild" />
-	</Tab>
-	<Tab title="悬赏">
-	  <Gml src="task_list.gml" data-category="cat_bounty" />
+	<Tab title="已完成">
+	  <Gml src="task_list.gml" data-status_group="grp_done" />
 	</Tab>
   </TabContainer>
 </ui>
