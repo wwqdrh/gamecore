@@ -148,6 +148,10 @@ impl INode for GdSceneRoot {
         // 从 GdConfigManager 加载场景配置
         self.load_scenes_from_config();
 
+        // 自适应分辨率：按 game_config.json display 配置启用 content scale
+        // （headless 测试自动跳过；未配置 = 零影响）
+        super::display_fit::GdDisplayFit::apply_from_config(false);
+
         // 检查是否有 SCENES 属性自动注册
         let base = self.base().clone();
         let scenes_var = base.get("SCENES");

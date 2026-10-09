@@ -38,6 +38,9 @@ var _task_bean: GdBean
 
 
 func _ready() -> void:
+	# 自适应分辨率：按 game_config.json display 配置启用 content scale
+	# （headless 测试自动跳过；GdSceneRoot 流程已应用，此处覆盖直开组合根的启动路径）
+	GdDisplayFit.apply_display_fit(false)
 	# HUD 覆盖游戏世界：根与三层布局容器鼠标穿透（不影响子交互节点）
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	for layer in ["TopLayer", "TopRow", "MidLayer", "MidRow", "BottomLayer", "BottomColumn"]:

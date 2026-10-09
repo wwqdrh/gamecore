@@ -7,6 +7,7 @@
 pub mod gd_scene;
 pub mod gd_scene_root;
 pub mod config_manager;
+pub mod display_fit;
 pub mod input;
 pub mod audio;
 pub mod camera;
