@@ -34,6 +34,17 @@ pub struct GdViewCamera {
     #[var(pub)]
     design_size: Vector2,
 
+    /// 地图贴合开关（fit map）：绑定地图边界（update_limit）后，视野尺寸
+    /// 变化时自动按 视口/地图 计算缩放，使地图矩形恰好铺满视口——
+    /// 窗口缩放/全屏分辨率变化地图始终自适应，不再露四周空白。
+    /// 关闭后回退旧"设计尺寸"自适应逻辑
+    #[var(pub)]
+    fit_map: bool,
+
+    /// 当前绑定的地图矩形（update_limit/reset_limit 时从边界回读派生；
+    /// 无有效边界 = None）
+    map_rect: Option<Rect2>,
+
     /// 震动恢复速度
     #[export]
     shake_recover_speed: f64,
@@ -135,6 +146,8 @@ impl ICamera2D for GdViewCamera {
         Self {
             move_speed: 4.8,
             design_size: Vector2::new(1152.0, 648.0),
+            fit_map: true,
+            map_rect: None,
             shake_recover_speed: 16.0,
             lock_distance: 16.0,
             zoom_min: 1.0,
@@ -486,6 +499,9 @@ impl GdViewCamera {
         if !limits.w.is_nan() {
             self.base_mut().set_limit(Side::BOTTOM, limits.w as i32);
         }
+        // 边界即地图矩形：回读派生矩形并立即贴合缩放（地图铺满视口）
+        self.sync_map_rect();
+        self.fit_to_map();
     }
 
     /// 禁用边界限制
@@ -495,6 +511,7 @@ impl GdViewCamera {
         self.base_mut().set_limit(Side::BOTTOM, 99999);
         self.base_mut().set_limit(Side::LEFT, -99999);
         self.base_mut().set_limit(Side::TOP, -99999);
+        self.map_rect = None;
     }
 
     /// 重置边界限制
@@ -508,6 +525,7 @@ impl GdViewCamera {
         self.base_mut().set_limit(Side::BOTTOM, bottom);
         self.base_mut().set_limit(Side::LEFT, left);
         self.base_mut().set_limit(Side::TOP, top);
+        self.sync_map_rect();
     }
 
     /// 平移到指定位置
@@ -766,8 +784,13 @@ impl GdViewCamera {
     }
 
     /// 调整缩放（由 viewport size_changed 信号调用）
+    /// 有地图矩形（fit_map 启用）→ 地图贴合：地图恰好铺满视口不露空白；
+    /// 无地图 → 退回旧"设计尺寸"自适应逻辑
     #[func]
     fn adjust_zoom(&mut self) {
+        if self.fit_to_map() {
+            return;
+        }
         self.reset_limit();
         let viewport_size = self.base().get_viewport_rect().size;
         let zoom_x = viewport_size.x / self.design_size.x;
@@ -782,10 +805,51 @@ impl GdViewCamera {
             self.base_mut().set_zoom(Vector2::new(zoom_y, zoom_y));
         }
     }
+
+    /// 地图贴合缩放：zoom = max(视口宽/地图宽, 视口高/地图高)，
+    /// 视野恰好覆盖地图矩形——地图铺满屏幕且不超出边界限制。
+    /// 窗口缩放/全屏切换（viewport size_changed）自动重算（adjust_zoom 入口）。
+    /// 无地图矩形 / fit_map 关闭 / 尺寸非法时返回 false（调用方退回旧逻辑）
+    #[func]
+    fn fit_to_map(&mut self) -> bool {
+        if !self.fit_map {
+            return false;
+        }
+        let Some(rect) = self.map_rect else {
+            return false;
+        };
+        let vp = self.base().get_viewport_rect().size;
+        if rect.size.x <= 0.0 || rect.size.y <= 0.0 || vp.x <= 0.0 || vp.y <= 0.0 {
+            return false;
+        }
+        let zx = vp.x / rect.size.x;
+        let zy = vp.y / rect.size.y;
+        let need = if zx > zy { zx } else { zy };
+        // 覆盖进行中的手动缩放动画（tween 会逐帧覆写 zoom）
+        self.is_zoom = false;
+        self.base_mut().set_zoom(Vector2::new(need as f32, need as f32));
+        true
+    }
 }
 
 /// 私有方法实现
 impl GdViewCamera {
+    /// 从相机当前边界回读地图矩形（无界/非法 → None）
+    fn sync_map_rect(&mut self) {
+        let l = self.base().get_limit(Side::LEFT) as f32;
+        let r = self.base().get_limit(Side::RIGHT) as f32;
+        let t = self.base().get_limit(Side::TOP) as f32;
+        let b = self.base().get_limit(Side::BOTTOM) as f32;
+        let w = r - l;
+        let h = b - t;
+        // 无界（disable_limit 的 ±99999、Camera2D 默认 ±10000000）视为未绑定地图
+        if w > 0.0 && h > 0.0 && w < 1_000_000.0 && h < 1_000_000.0 {
+            self.map_rect = Some(Rect2::new(Vector2::new(l, t), Vector2::new(w, h)));
+        } else {
+            self.map_rect = None;
+        }
+    }
+
     /// 创建径向模糊层
     fn create_radial_layer(&mut self) {
         let mut radial_blur = ColorRect::new_alloc();

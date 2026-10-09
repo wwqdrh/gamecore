@@ -83,6 +83,33 @@ var name = setting.get_value("player_name", "默认名")
 setting.watch("difficulty", func(_path): _apply_difficulty())
 ```
 
+## GdDisplayFit — 自适应分辨率（content scale）
+
+解决「窗口缩放/全屏更高分辨率时 UI 与地图不跟随放大」：以设计基准分辨率为
+逻辑坐标系，引擎将整个画布（GML UI + 字体 + 游戏世界）等比缩放到真实窗口。
+
+```json
+// game_config.json（缺省不启用，框架零影响）
+"display": {
+  "enabled": true,
+  "base_width": 1920, "base_height": 1080,
+  "mode": "canvas_items",   // canvas_items(矢量/字体清晰) / viewport / disabled
+  "aspect": "keep"          // keep(黑边补齐不变形) / expand / keep_width / keep_height
+}
+```
+
+```gdscript
+# 应用时机（一般无需手动调用）：
+# · GdSceneRoot.ready 自动调用（管理器场景流全覆盖）
+# · 直开 GML 组合根等无 GdSceneRoot 的启动路径：
+GdDisplayFit.apply_display_fit(false)
+# headless（-s 测试/CI）自动跳过，合成输入事件坐标语义不变；force=true 仅测试用
+```
+
+配合 GdViewCamera 的地图贴合（fit map）：视口逻辑尺寸恒定（content scale），
+无 content scale 的裸窗口下相机也会按 视口/地图 自动缩放——两条链路都保证
+全屏不露空白。校验：`test/check_display_fit.gd`。
+
 ## GdViewCamera — 相机管理器
 
 ```gdscript
@@ -94,10 +121,19 @@ cam.make_current()
 cam.follow(player, true, true)     # (target, 立即, 启用)
 
 # 边界限制（left, right, top, bottom）
+# 绑定边界即绑定地图矩形：内部自动"地图贴合"缩放（fit_map 默认开）
 cam.update_limit(Vector4(0, MAP_W * CELL, 0, MAP_H * CELL))
 cam.disable_limit(); cam.reset_limit()
 
-# 缩放（档位式）
+# 地图贴合（fit map，默认启用）：zoom = max(视口宽/地图宽, 视口高/地图高)，
+# 地图矩形恰好铺满视口（不露四周空白）；窗口缩放/全屏切换
+# （viewport size_changed）自动重算。换图只需重新 update_limit。
+# 透明不变形：视野恒在地图矩形内，边界限制始终有效。
+# 关闭：cam.fit_map = false（回退 design_size 设计尺寸自适应）
+cam.fit_to_map()                       # 手动触发（一般不需要）
+
+# 缩放（档位式，与 fit map 独立；fit 后调用会覆盖贴合结果——
+# 需要更深/更浅的画面缩放请在 update_limit 之前设置或勿混用）
 cam.zoom_min = 1.5; cam.zoom_max = 2.5
 cam.start_zoom(2, -1.0, -1.0)      # (档位, zmin, zmax)，-1 用默认
 cam.reset_zoom()

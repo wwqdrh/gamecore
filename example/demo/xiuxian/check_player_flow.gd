@@ -110,13 +110,12 @@ func _run() -> void:
 		"相机左/上边界应为 0")
 	check(camera.get_limit(SIDE_RIGHT) == w * 32 and camera.get_limit(SIDE_BOTTOM) == h * 32,
 		"相机右/下边界应为地图矩形 (%d, %d)" % [w * 32, h * 32])
-	# 等缩放 tween 完成（start_zoom 平滑过渡到 zoom_max）
-	var zi := 0
-	while camera.zoom.x < 2.49 and zi < 120:
-		await process_frame
-		zi += 1
-	check(absf(camera.zoom.x - 2.5) < 0.01,
-		"相机应放大到 zoom 2.5（视野小于地图边界限制才生效），实际 %s" % camera.zoom)
+	# 地图贴合（fit map）：zoom 应为 max(视口/地图)，视野恰好覆盖地图矩形
+	# （update_limit 内即时生效，无 tween 等待；窗口/全屏尺寸变化自动重算）
+	var vp: Vector2 = camera.get_viewport_rect().size
+	var need: float = maxf(vp.x / (w * 32.0), vp.y / (h * 32.0))
+	check(absf(camera.zoom.x - need) < 0.01,
+		"相机应地图贴合 zoom=%.3f（max(视口/地图)），实际 %s" % [need, camera.zoom])
 	print("[Player] camera: follow=%s limits=(%d,%d,%d,%d) zoom=%s" % [
 		camera.follow_node != null,
 		camera.get_limit(SIDE_LEFT), camera.get_limit(SIDE_RIGHT),

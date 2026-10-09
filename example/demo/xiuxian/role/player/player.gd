@@ -7,7 +7,7 @@
 #   - GdMapManager：落格后 try_teleport(世界坐标) 命中传送点即切图；
 #     s_map_changed 后重定位出生点、重绑地图、刷新相机边界
 #   - GdViewCamera（GdSceneRoot 自动挂载并注册进组件表）：follow 跟随玩家 +
-#     update_limit 限制相机边界在地图矩形内 + 放大到视野小于地图的档位
+#     update_limit 限制相机边界在地图矩形内 + 地图贴合自适应缩放（不露空白）
 #   - 战斗：GdHealth（受击无敌帧）+ GdHurtbox（layer2 玩家受击盒）+
 #     GdShooter（发射 GdBullet，mask=4 打敌受击盒 layer3）
 #   - 装备联动（GdState 状态总线）：mainhud 装备栏 Hotbar 选中槽位 → 写
@@ -184,16 +184,14 @@ func _apply_camera(map: Node, snap: bool) -> void:
 		camera = scene_root.get_component("ViewCamera")
 	if camera == null or not camera.has_method("follow"):
 		return  # 相机缺失，_process 中重试
-	# 边界限制在地图矩形内 + 视野放大（zoom 2.5 → 视野 768x432，
-	# 小于最小地图 832x512，边界限制才能生效不越界）
+	# 边界限制在地图矩形内；缩放交给相机"地图贴合"自适应——
+	# update_limit 内部按 视口/地图 算出恰好铺满屏幕的 zoom（不露空白），
+	# 窗口缩放/全屏切换（viewport size_changed）自动重算，无需硬编码档位
 	camera.follow(self, snap, true)
 	var w: int = map.get_map_width()
 	var h: int = map.get_map_height()
 	var cs: int = map.get_cell_size_px()
 	camera.update_limit(Vector4(0, w * cs, 0, h * cs))
-	if camera.zoom_max < 2.5:
-		camera.zoom_max = 2.5
-	camera.start_zoom(2, -1.0, -1.0)
 
 
 func _on_map_changed(_alias: String) -> void:
