@@ -1,0 +1,311 @@
+{
+  "version": 1,
+  "pipeline": "gjson",
+  "desc": "斗气等阶经验体系：11 阶 × 10 级。levels[i] = 阶内第 i+1 级升下一级所需经验（第 10 级攒满即满足突破经验条件）；阶间突破需 breakthrough.items 全部齐备，突破后进入下一阶 1 级、经验清零。顶阶（dou_di）无突破。",
+  "max_rank_order": 10,
+  "levels_per_rank": 10,
+  "rank_index": {
+    "dou_zhiqi": 0,
+    "dou_zhe": 1,
+    "dou_shi": 2,
+    "da_dou_shi": 3,
+    "dou_ling": 4,
+    "dou_wang": 5,
+    "dou_huang": 6,
+    "dou_zong": 7,
+    "dou_zun": 8,
+    "dou_sheng": 9,
+    "dou_di": 10
+  },
+  "ranks": [
+    {
+      "id": "dou_zhiqi",
+      "name": "斗之气",
+      "order": 0,
+      "base": 100,
+      "levels": [
+        100,
+        200,
+        300,
+        400,
+        500,
+        600,
+        700,
+        800,
+        900,
+        1000
+      ],
+      "breakthrough": {
+        "items": [
+          {
+            "id": "break_qizhe",
+            "count": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": "dou_zhe",
+      "name": "斗者",
+      "order": 1,
+      "base": 400,
+      "levels": [
+        400,
+        800,
+        1200,
+        1600,
+        2000,
+        2400,
+        2800,
+        3200,
+        3600,
+        4000
+      ],
+      "breakthrough": {
+        "items": [
+          {
+            "id": "break_doushi",
+            "count": 2
+          }
+        ]
+      }
+    },
+    {
+      "id": "dou_shi",
+      "name": "斗师",
+      "order": 2,
+      "base": 1600,
+      "levels": [
+        1600,
+        3200,
+        4800,
+        6400,
+        8000,
+        9600,
+        11200,
+        12800,
+        14400,
+        16000
+      ],
+      "breakthrough": {
+        "items": [
+          {
+            "id": "break_dadoushi",
+            "count": 2
+          }
+        ]
+      }
+    },
+    {
+      "id": "da_dou_shi",
+      "name": "大斗师",
+      "order": 3,
+      "base": 6400,
+      "levels": [
+        6400,
+        12800,
+        19200,
+        25600,
+        32000,
+        38400,
+        44800,
+        51200,
+        57600,
+        64000
+      ],
+      "breakthrough": {
+        "items": [
+          {
+            "id": "break_douling",
+            "count": 2
+          },
+          {
+            "id": "herb_ninghun",
+            "count": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": "dou_ling",
+      "name": "斗灵",
+      "order": 4,
+      "base": 25600,
+      "levels": [
+        25600,
+        51200,
+        76800,
+        102400,
+        128000,
+        153600,
+        179200,
+        204800,
+        230400,
+        256000
+      ],
+      "breakthrough": {
+        "items": [
+          {
+            "id": "break_douwang",
+            "count": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": "dou_wang",
+      "name": "斗王",
+      "order": 5,
+      "base": 102400,
+      "levels": [
+        102400,
+        204800,
+        307200,
+        409600,
+        512000,
+        614400,
+        716800,
+        819200,
+        921600,
+        1024000
+      ],
+      "breakthrough": {
+        "items": [
+          {
+            "id": "break_douhuang",
+            "count": 2
+          }
+        ]
+      }
+    },
+    {
+      "id": "dou_huang",
+      "name": "斗皇",
+      "order": 6,
+      "base": 409600,
+      "levels": [
+        409600,
+        819200,
+        1228800,
+        1638400,
+        2048000,
+        2457600,
+        2867200,
+        3276800,
+        3686400,
+        4096000
+      ],
+      "breakthrough": {
+        "items": [
+          {
+            "id": "break_douzong",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "dou_zong",
+      "name": "斗宗",
+      "order": 7,
+      "base": 1638400,
+      "levels": [
+        1638400,
+        3276800,
+        4915200,
+        6553600,
+        8192000,
+        9830400,
+        11468800,
+        13107200,
+        14745600,
+        16384000
+      ],
+      "breakthrough": {
+        "items": [
+          {
+            "id": "break_douzun",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "dou_zun",
+      "name": "斗尊",
+      "order": 8,
+      "base": 6553600,
+      "levels": [
+        6553600,
+        13107200,
+        19660800,
+        26214400,
+        32768000,
+        39321600,
+        45875200,
+        52428800,
+        58982400,
+        65536000
+      ],
+      "breakthrough": {
+        "items": [
+          {
+            "id": "break_dousheng",
+            "count": 2
+          },
+          {
+            "id": "mat_longxue",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "dou_sheng",
+      "name": "斗圣",
+      "order": 9,
+      "base": 26214400,
+      "levels": [
+        26214400,
+        52428800,
+        78643200,
+        104857600,
+        131072000,
+        157286400,
+        183500800,
+        209715200,
+        235929600,
+        262144000
+      ],
+      "breakthrough": {
+        "items": [
+          {
+            "id": "break_doudi",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "dou_di",
+      "name": "斗帝",
+      "order": 10,
+      "base": 104857600,
+      "levels": [
+        104857600,
+        209715200,
+        314572800,
+        419430400,
+        524288000,
+        629145600,
+        734003200,
+        838860800,
+        943718400,
+        1048576000
+      ],
+      "breakthrough": {
+        "items": []
+      }
+    }
+  ]
+}

@@ -4,8 +4,9 @@
 // 参考 C++ 版 dialogue.cpp 实现，暴露给 GDScript 的接口与 C++ 版一致
 //
 // 属性：dialogue_control_path, timeline, click_next, skip, skip_can_next, skip_time, handle_fn
-// 方法：next, exec_response, is_registered_role, register_role_node, get_role_pos
-//       initial, goto_stage, all_stages, has_next, stage_index
+// 方法：next, exec_response, is_registered_role, register_role_node,
+//       register_role_meta, get_role_display_name, get_role_portrait,
+//       get_role_pos, initial, goto_stage, all_stages, has_next, stage_index
 // 信号：s_finished
 
 use godot::prelude::*;
@@ -14,6 +15,12 @@ use godot::classes::{INode, Node};
 use godot::obj::WithBaseField;
 use gamedialog::{Timeline, SceneManager};
 use std::collections::HashMap;
+
+/// 角色元数据（Speaker 注册，UI 展示用；display_name 为空时 UI 回退角色名）
+struct RoleMeta {
+    display_name: String,
+    portrait: String,
+}
 
 #[derive(GodotClass)]
 #[class(base = Node)]
@@ -42,6 +49,8 @@ pub struct GdDialogue {
     scene_manager: SceneManager,
     /// 角色注册表 (role -> NodePath)
     role_target: HashMap<String, NodePath>,
+    /// 角色元数据 (role -> 展示名/立绘)，来自 GdRoleSpeaker，随行下发
+    role_meta: HashMap<String, RoleMeta>,
     /// 是否在等待 response 选择
     in_response: bool,
     /// 对话是否正在播放中（第一条 next 后为 true，timeline 播完为 false）
@@ -65,6 +74,7 @@ impl INode for GdDialogue {
             timeline: None,
             scene_manager: SceneManager::new(),
             role_target: HashMap::new(),
+            role_meta: HashMap::new(),
             in_response: false,
             playing: false,
             dialogue_control: None,
@@ -185,6 +195,31 @@ impl GdDialogue {
         self.role_target.insert(role_str, path);
     }
 
+    /// 注册角色元数据（展示名/立绘；触发器启动对话时从 GdRoleSpeaker 自动注册）
+    #[func]
+    pub fn register_role_meta(&mut self, role: GString, display_name: GString, portrait: GString) {
+        self.role_meta.insert(role.to_string(), RoleMeta {
+            display_name: display_name.to_string(),
+            portrait: portrait.to_string(),
+        });
+    }
+
+    /// 查询角色展示名（未注册或为空返回 ""）
+    #[func]
+    pub fn get_role_display_name(&self, role: GString) -> GString {
+        self.role_meta.get(&role.to_string())
+            .map(|m| GString::from(m.display_name.as_str()))
+            .unwrap_or_default()
+    }
+
+    /// 查询角色立绘贴图路径（未注册或未配置返回 ""）
+    #[func]
+    pub fn get_role_portrait(&self, role: GString) -> GString {
+        self.role_meta.get(&role.to_string())
+            .map(|m| GString::from(m.portrait.as_str()))
+            .unwrap_or_default()
+    }
+
     /// 获取角色节点的全局位置
     #[func]
     pub fn get_role_pos(&self, role: GString) -> Variant {
@@ -232,9 +267,19 @@ impl GdDialogue {
         self.playing = true;
 
         let mut dia_line = VarDictionary::new();
-        dia_line.set("name", word.get_name());
+        let speaker_name = word.get_name();
+        dia_line.set("name", speaker_name.clone());
         dia_line.set("text", word.get_text());
         dia_line.set("stage", word.get_stage());
+        // 角色元数据随行下发（展示名/立绘；未配置的键不注入，UI 回退角色名/隐藏立绘）
+        if let Some(meta) = self.role_meta.get(&speaker_name.to_string()) {
+            if !meta.display_name.is_empty() {
+                dia_line.set("display_name", meta.display_name.as_str());
+            }
+            if !meta.portrait.is_empty() {
+                dia_line.set("portrait", meta.portrait.as_str());
+            }
+        }
 
         // 处理 functions
         for expr in word.get_functions() {

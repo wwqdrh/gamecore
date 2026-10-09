@@ -1,8 +1,13 @@
 # 道具状态 Bean（分类：道具）—— 仙途 demo 游戏状态层
 #
-# 职责：持有全量道具总表（不区分解锁状态，未解锁/未产出道具同样入库）
-#       + 背包持有量，属性自动经 GDCORE 持久化到 GJson 存档
+# 职责：持有全量道具总表（不区分锁定状态，未解锁/未产出道具同样入库）
+#       + 背包持有量 + 道具锁定进度（游戏进度状态，随存档持久化），
+#       属性自动经 GDCORE 持久化到 GJson 存档
 #       （user://coredata.data，路径 init;xiuxian_item;items / init;xiuxian_item;bag）。
+#
+# 数据源：道具**定义**已迁移到 state/item/item.gjson（GJson 定义表，
+# 经 XiuItemTable 静态加载；改文件即改全游戏目录，无需动代码）；
+# 本 Bean 只持有**运行数据**（首次注册从定义表派生总表写入存档 + 背包）。
 #
 # 查询方式（三选一）：
 #   1. 便捷方法：get_item / get_all_items / get_items_by_type / get_items_by_rarity / search_items
@@ -16,55 +21,18 @@ const TYPE_MATERIAL := "材料"
 const TYPE_EQUIP := "装备"
 const TYPE_SPECIAL := "特殊"
 
-## 全量道具总表（静态目录：含未解锁；id -> 定义）
-const DEFAULT_ITEMS: Dictionary = {
-	"pill_hp": {
-		"id": "pill_hp", "name": "回春丹", "type": TYPE_CONSUME, "rarity": "凡品",
-		"desc": "服用后恢复少量气血。", "price": 10, "stack": 99, "unlock": true,
-	},
-	"pill_mp": {
-		"id": "pill_mp", "name": "凝神丹", "type": TYPE_CONSUME, "rarity": "凡品",
-		"desc": "服用后恢复少量灵力。", "price": 12, "stack": 99, "unlock": true,
-	},
-	"pill_break": {
-		"id": "pill_break", "name": "破境丹", "type": TYPE_CONSUME, "rarity": "仙品",
-		"desc": "冲击瓶颈时服用，可提升破境成功率。", "price": 2000, "stack": 9, "unlock": false,
-	},
-	"herb_lingzhi": {
-		"id": "herb_lingzhi", "name": "灵芝", "type": TYPE_MATERIAL, "rarity": "灵品",
-		"desc": "百年灵芝，炼丹常用辅材。", "price": 40, "stack": 999, "unlock": true,
-	},
-	"herb_xueshen": {
-		"id": "herb_xueshen", "name": "血参", "type": TYPE_MATERIAL, "rarity": "凡品",
-		"desc": "药性温和的补血药材。", "price": 8, "stack": 999, "unlock": true,
-	},
-	"ore_coldiron": {
-		"id": "ore_coldiron", "name": "寒铁矿", "type": TYPE_MATERIAL, "rarity": "灵品",
-		"desc": "蕴含寒气的矿石，铸剑上品。", "price": 60, "stack": 999, "unlock": true,
-	},
-	"sword_qingfeng": {
-		"id": "sword_qingfeng", "name": "青锋剑", "type": TYPE_EQUIP, "rarity": "灵品",
-		"desc": "青云宗制式飞剑，锋锐轻灵。", "price": 500, "stack": 1, "unlock": true,
-	},
-	"robe_yunwen": {
-		"id": "robe_yunwen", "name": "云纹袍", "type": TYPE_EQUIP, "rarity": "灵品",
-		"desc": "绣有云纹法阵的护身法袍。", "price": 450, "stack": 1, "unlock": false,
-	},
-	"token_sect": {
-		"id": "token_sect", "name": "宗门令牌", "type": TYPE_SPECIAL, "rarity": "灵品",
-		"desc": "出入青云宗各处的身份凭证。", "price": 0, "stack": 1, "unlock": true,
-	},
-	"map_secret": {
-		"id": "map_secret", "name": "秘境残图", "type": TYPE_SPECIAL, "rarity": "仙品",
-		"desc": "落霞秘境的残缺地图，拼齐可指引传送。", "price": 0, "stack": 1, "unlock": false,
-	},
-}
-
-## 全量道具总表（不区分解锁状态；首次注册写入存档，此后随存档恢复）
-var items: Dictionary = DEFAULT_ITEMS.duplicate(true)
+## 全量道具总表（运行数据：首次注册由 item.gjson 定义表派生，此后随存档恢复；
+## 定义本身的权威来源是 item.gjson，重置/补档经 XiuItemTable 读取）
+var items: Dictionary = XiuItemTable.get_items()
 
 ## 背包持有量（item_id -> 数量；运行数据）
 var bag: Dictionary = {}
+
+## 道具锁定进度（游戏进度状态：item_id -> true 锁定；随存档持久化）。
+## 静态定义表 item.json 不携带 unlock 字段——锁定/解锁随玩家游玩进度
+## 变化，属于运行时状态，由本 Bean 持有；未记录的道具视为已解锁。
+## 初始锁定集 DEFAULT_LOCKED 为演示剧情设定（高阶道具开局封印）
+var locked_items: Dictionary = DEFAULT_LOCKED.duplicate()
 
 ## 背包展示视图（UIGrid 模板契约字段：category/icon/count/name/desc/
 ## quality/locked）——由 items+bag 派生（只含有持有量 >0 的道具），
@@ -75,6 +43,14 @@ var bag_views: Array = []
 const TYPE_TO_CAT := {"消耗": "pill", "材料": "material", "装备": "tool", "特殊": "talisman"}
 ## 道具类型 -> 网格图标
 const TYPE_ICONS := {"消耗": "🧪", "材料": "🌿", "装备": "⚔️", "特殊": "📜"}
+
+## 演示初始锁定集（高阶道具开局封印；定义表不再携带 unlock，此集属
+## 游戏进度初始化数据，解锁后由运行时移除）
+const DEFAULT_LOCKED := {
+	"pill_break": true, "robe_yunwen": true, "map_secret": true,
+	"break_douhuang": true, "break_douzong": true, "break_douzun": true,
+	"break_dousheng": true, "mat_longxue": true, "break_doudi": true,
+}
 
 
 ## 注册/获取单例 Bean（GdBean.bean 幂等：重复调用返回同一实例）。
@@ -105,7 +81,7 @@ func refresh_bag_views() -> void:
 			"name": str(it.get("name", id)),
 			"desc": str(it.get("desc", "")),
 			"quality": "稀有" if str(it.get("rarity", "")) == "灵品" else "",
-			"locked": not bool(it.get("unlock", true)),
+			"locked": is_item_locked(id),
 		})
 	update("bag_views", out, {}, false)
 
@@ -117,7 +93,7 @@ func get_item(item_id: String) -> Dictionary:
 	return items.get(item_id, {})
 
 
-## 全量道具列表（含未解锁——总表不区分解锁状态）
+## 全量道具列表（含未解锁入包的道具——总表不区分锁定状态）
 func get_all_items() -> Array:
 	return items.values()
 
@@ -126,7 +102,7 @@ func get_item_ids() -> Array:
 	return items.keys()
 
 
-## 按类型查询（消耗/材料/装备/特殊），含未解锁
+## 按类型查询（消耗/材料/装备/特殊），返回全量定义
 func get_items_by_type(type_name: String) -> Array:
 	var out: Array = []
 	for it in items.values():
@@ -135,7 +111,7 @@ func get_items_by_type(type_name: String) -> Array:
 	return out
 
 
-## 按品阶查询（凡品/灵品/仙品），含未解锁
+## 按品阶查询（凡品/灵品/仙品），返回全量定义
 func get_items_by_rarity(rarity: String) -> Array:
 	var out: Array = []
 	for it in items.values():
@@ -144,7 +120,7 @@ func get_items_by_rarity(rarity: String) -> Array:
 	return out
 
 
-## 关键字搜索（匹配名称或描述，子串包含），含未解锁
+## 关键字搜索（匹配名称或描述，子串包含），返回全量定义
 func search_items(keyword: String) -> Array:
 	var out: Array = []
 	for it in items.values():
@@ -171,6 +147,22 @@ func get_bag_list() -> Array:
 
 # ------------------------------------------------------------------ 变更
 
+## 道具是否锁定（游戏进度状态，见 locked_items 注释）
+func is_item_locked(item_id: String) -> bool:
+	return bool(locked_items.get(item_id, false))
+
+
+## 解锁道具（游戏进度推进后调用；先改成员再 update 落盘）并刷新视图
+func unlock_item(item_id: String) -> void:
+	if not bool(locked_items.get(item_id, false)):
+		return
+	var d: Dictionary = locked_items.duplicate(true)
+	d.erase(item_id)
+	locked_items = d
+	update("locked_items", d, {}, false)
+	refresh_bag_views()
+
+
 func add_item(item_id: String, count: int = 1) -> void:
 	var b: Dictionary = bag.duplicate(true)
 	b[item_id] = int(b.get(item_id, 0)) + count
@@ -194,8 +186,11 @@ func remove_item(item_id: String, count: int = 1) -> bool:
 	return true
 
 
-## 还原演示基线（目录 + 背包清空；跨运行确定性测试用）
+## 还原演示基线（目录重置为 item.gjson 定义 + 背包清空 + 锁定集回到
+## 初始锁定；跨运行确定性测试用）
 func reset_demo() -> void:
-	update("items", DEFAULT_ITEMS.duplicate(true), {}, true)
+	update("items", XiuItemTable.get_items(), {}, true)
 	update("bag", {}, {}, true)
+	locked_items = DEFAULT_LOCKED.duplicate()
+	update("locked_items", locked_items, {}, true)
 	refresh_bag_views()

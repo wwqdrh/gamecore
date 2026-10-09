@@ -4,8 +4,10 @@
 #
 # 覆盖：分类 Bean 注册（幂等单例）、全量任务/道具总表查询（含未解锁）、
 #       分类/状态/品阶/关键字过滤、任务推进与状态机、道具增减、
-#       人物经验升级与境界、跨分类联动（任务奖励发放）、
-#       GJson 路径直查与整库 dump、reset_demo 基线还原。
+#       等阶经验体系（level.gjson 11 阶 × 10 级：阶内升级/阶满封顶/
+#       突破材料查询/突破扣料进阶）、人物经验升级与境界、
+#       跨分类联动（任务奖励发放）、GJson 路径直查与整库 dump、
+#       reset_demo 基线还原。
 extends SceneTree
 var ok := true
 
@@ -71,12 +73,21 @@ func _initialize() -> void:
 	print("[State] task flow: status=%s step=%s" % [
 		task.get_task_status("main_001"), task.get_progress("main_001").get("step")])
 
-	# 4. 道具总表：全量/分类/品阶/关键字（均含未解锁）
-	check(item.get_all_items().size() == 10, "道具总表应有 10 条（含未解锁）")
-	check(item.get_items_by_type("消耗").size() == 3, "消耗类应 3 条")
-	check(item.get_items_by_rarity("仙品").size() == 2, "仙品应 2 条（破境丹/秘境残图，含未解锁）")
-	check(item.search_items("丹").size() == 4, "搜「丹」应命中 4 条（3 丹药名 + 灵芝描述炼丹，含未解锁）")
+	# 4. 道具总表：全量/分类/品阶/关键字（均含未解锁；定义源自 item.gjson）
+	check(item.get_all_items().size() == 24, "道具总表应有 24 条（含未解锁）")
+	check(item.get_items_by_type("消耗").size() == 13, "消耗类应 13 条")
+	check(item.get_items_by_type("材料").size() == 7, "材料类应 7 条")
+	check(item.get_items_by_rarity("仙品").size() == 7, "仙品应 7 条（含未解锁）")
+	check(item.get_items_by_rarity("帝品").size() == 1, "帝品应 1 条（帝品雏丹）")
+	check(item.search_items("丹").size() == 10, "搜「丹」应命中 10 条")
 	check(str(item.get_item("map_secret").get("name")) == "秘境残图", "未解锁道具定义应可查")
+	# 静态定义表直查（XiuItemTable，非 Bean）
+	check(str(XiuItemTable.get_item("break_qizhe").get("name")) == "聚气散",
+		"定义表应可查突破材料 聚气散")
+	check(XiuItemTable.get_items_by_use("breakthrough").size() == 12,
+		"突破材料定义应 12 条")
+	check(str(XiuItemTable.get_item("pill_exp_m").get("use")) == "exp",
+		"修为丹应标记 use=exp")
 	# 背包增减
 	item.add_item("pill_hp", 5)
 	check(item.get_count("pill_hp") == 5, "pill_hp 应持有 5")
@@ -98,7 +109,8 @@ func _initialize() -> void:
 	check(gained == 2 and character.level == 3 and character.exp == 50,
 		"350 经验应从 1 级升到 3 级余 50（got level=%d exp=%d gained=%d）" % [
 			character.level, character.exp, gained])
-	check(character.get_realm() == "练气", "3 级境界应为 练气")
+	check(character.get_realm() == "斗之气", "3 级境界应为 斗之气")
+	check(character.get_realm_title() == "斗之气三段", "3 级显示名应为 斗之气三段")
 	check(character.hp == 140 and character.max_hp == 140, "升级应刷新满血 140")
 	character.add_spirit_stones(30)
 	check(character.spirit_stones == 50, "灵石 20+30 应为 50")
@@ -111,7 +123,61 @@ func _initialize() -> void:
 	print("[State] character: lv=%d exp=%d realm=%s stones=%d" % [
 		character.level, character.exp, character.get_realm(), character.spirit_stones])
 
+	# 5b. 等阶经验体系定义表（level.json→加密 level.gjson 产物，XiuLevelTable 静态查询）
+	# 管线回归：产物存在、确为密文（非 '{' 开头）、解密回环与明文源一致
+	var lv_gjson := "res://example/demo/xiuxian/state/level/level.gjson"
+	var lv_src := "res://example/demo/xiuxian/state/level/level.json"
+	check(FileAccess.file_exists(lv_gjson), "level.gjson 加密产物应存在（重跑 test/regen_gjson.gd）")
+	var enc := FileAccess.get_file_as_bytes(lv_gjson)
+	check(enc.size() > 0 and enc[0] != 0x7b, "level.gjson 应为密文（不应以 '{' 开头）")
+	check(GdJsonCodec.decrypt_to_text(enc) == FileAccess.get_file_as_string(lv_src),
+		"level.gjson 解密应与明文 level.json 逐字节一致")
+	check(XiuLevelTable.get_rank_count() == 11, "等阶应 11 阶（斗之气→斗帝）")
+	check(XiuLevelTable.get_max_level() == 110, "全局等级上限应为 110")
+	check(XiuLevelTable.get_level_exp(1) == 100, "斗之气一段升二段应需 100 经验")
+	check(XiuLevelTable.get_level_exp(10) == 1000, "斗之气十段升满应需 1000 经验")
+	check(XiuLevelTable.get_level_exp(11) == 400, "斗者一段升二段应需 400 经验")
+	check(XiuLevelTable.get_level_exp(110) == 0, "顶阶满级应无升级需求（返回 0）")
+	check(XiuLevelTable.is_rank_full(10), "10 级应为斗之气阶满")
+	check(not XiuLevelTable.is_rank_full(11), "11 级不应为阶满")
+	check(XiuLevelTable.get_rank_title_at(3) == "斗之气三段", "3 级应显示 斗之气三段")
+	check(XiuLevelTable.get_rank_title_at(110) == "斗帝圆满", "满级应显示 斗帝圆满")
+	var bt_reqs: Array = XiuLevelTable.get_breakthrough_items("da_dou_shi")
+	check(bt_reqs.size() == 2, "大斗师突破应需 2 种材料（玄玉膏+凝魂草）")
+	print("[State] level table: ranks=%d max_lv=%d bt(dadoushi)=%s" % [
+		XiuLevelTable.get_rank_count(), XiuLevelTable.get_max_level(),
+		str(bt_reqs)])
+
+	# 5c. 等阶突破流程：阶满封顶 → 材料不足失败 → 备料成功进阶
+	check(not character.is_rank_full(), "3 级不应处于阶满")
+	var big: int = character.add_exp(6000)
+	check(character.level == 10 and character.is_rank_full(),
+		"6000 经验应从 3 级升到 10 级阶满（got lv=%d gained=%d）" % [character.level, big])
+	check(int(character.exp) == 1000, "阶满经验应封顶 1000（got %d）" % int(character.exp))
+	check(not character.can_breakthrough(), "无突破材料时 can_breakthrough 应为 false")
+	check(not character.try_breakthrough(), "无突破材料时突破应失败")
+	var mats: Array = character.get_breakthrough_materials()
+	check(mats.size() == 1 and str(mats[0].get("id")) == "break_qizhe",
+		"斗之气突破应需聚气散")
+	item.add_item("break_qizhe", 3)
+	check(character.can_breakthrough(), "备齐聚气散 x3 后应可突破")
+	check(character.try_breakthrough(), "突破应成功")
+	check(character.level == 11 and int(character.exp) == 0,
+		"突破后应进入斗者一段、经验清零")
+	check(character.get_realm() == "斗者", "突破后境界应为 斗者")
+	check(item.get_count("break_qizhe") == 0, "突破材料应被扣除")
+	print("[State] breakthrough: lv=%d realm=%s" % [
+		character.level, character.get_realm_title()])
+
 	# 6. 跨分类联动：提交 main_001 → 道具入库 + 经验/灵石 + 状态 submitted
+	# （5c 已推进到斗者一段，先重置基线并复原第 4 节末状态：
+	#   3 级余 50 / 灵石 40 / 背包回春丹 3）
+	gs.reset_demo()
+	character.add_exp(350)
+	character.add_spirit_stones(20)
+	item.add_item("pill_hp", 3)
+	check(character.level == 3 and int(character.exp) == 50,
+		"联动前置：应为 3 级余 50（got lv=%d exp=%d）" % [character.level, character.exp])
 	var summary: Dictionary = gs.apply_task_rewards("main_001")
 	check(not summary.is_empty(), "任务奖励发放应成功")
 	check(int(summary["levels"]) == 1, "400 经验应再升 1 级（3→4）")

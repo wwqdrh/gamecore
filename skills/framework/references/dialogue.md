@@ -52,9 +52,12 @@ d.s_finished.connect(...)
 
 ```gdscript
 func handle_line(line: Dictionary):
-    # line = {name, text, stage, response: [{text, fn, stage}, ...]}
-    name_label.text = line["name"]
+    # line = {name, text, stage, response: [{text, fn, stage}, ...],
+    #         display_name: 展示名(可选, Speaker 注册时随行下发),
+    #         portrait: 立绘路径(可选, 空键=未配置)}
+    name_label.text = line.get("display_name", "") or line["name"]
     text_label.text = line["text"]
+    _show_portrait(line.get("portrait", ""))
     _build_responses(line.get("response", []))
 ```
 
@@ -63,11 +66,30 @@ func handle_line(line: Dictionary):
 ```gdscript
 var speaker = GdRoleSpeaker.new()
 speaker.role_name = "旅人"        # 必须与 timeline 中的角色名一致
+speaker.display_name = "老旅人"   # 可选：UI 显示名（非空时替代角色名）
+speaker.portrait = "res://.../assets/dialog_basic.png"  # 可选：对话立绘
 npc.add_child(speaker)
 ```
 
-触发器启动对话时自动把双方 Speaker 注册进 GdDialogue，对话框即可按角色名定位
-人物节点（站位、朝向、动画联动）。
+触发器启动对话时自动把双方 Speaker 注册进 GdDialogue（register_role_node +
+register_role_meta），对话框即可按角色名定位人物节点（站位、朝向、动画联动）。
+
+## 角色立绘（portrait）
+
+- 链路：Speaker.portrait → 触发器 `register_role_meta(role, display_name,
+  portrait)` → `next()` 组行时注入 `line.display_name / line.portrait` →
+  DialogBox `_set_portrait()` 按行切换（空路径/加载失败隐藏，无立绘角色
+  如玩家不显示）。
+- 查询 API：`GdDialogue.get_role_portrait(role)` / `get_role_display_name(role)`
+  （未注册返回 ""）。
+- 显示参数（DialogBox 范本）：TextureRect `EXPAND_IGNORE_SIZE +
+  STRETCH_KEEP_ASPECT_CENTERED`（任意尺寸素材等比自适应居中），槽位 400x696
+  竖版比例（素材 1152x2048 / 1520x2720；2x 大小），悬浮在对话框**外部左侧**
+  （panel 子节点负坐标 position(-416,-490)，右缘距面板左缘 16px、底边与面板
+  底边齐平），不挤压面板内文本区；1920x1080 下左缘 x≈94、顶边 y≈360 不出屏；**mouse_filter 必须 IGNORE**（点击穿透到 click_catcher
+  推进对话，否则立绘吞点击）。
+- 约定：立绘放角色脚本同目录 `assets/dialog_basic.png`——demo NPC 由
+  XiuNpcBase 自动探测填入（`portrait` 导出可显式覆盖），零配置。
 
 ## GdDialogTrigger — 触发器
 
@@ -172,7 +194,10 @@ role/
   GdDialogue（**不预载 timeline**，触发时由 trigger 加载各角色自己的文件）
   + DialogBox（**layer=3 置顶**，全屏 click_catcher 鼠标推进，open_ui/close_ui
   命令分发）。
-- **玩家侧**：Player 加入 `"player"` 分组（触发器解析玩家）+ GdRoleSpeaker 子节点。
+- **玩家侧**：Player 加入 `"player"` 分组（触发器解析玩家）+ GdRoleSpeaker 子节点
+  （无 display_name/portrait → 对话回退角色名、不显示立绘）。
+- **立绘**：三 NPC 各自 `assets/dialog_basic.png`（XiuNpcBase 自动探测），
+  DialogBox 左侧槽位按行切换，验证脚本 `test/check_dialog_portrait.gd`。
 - **地图侧**：NPC 场景作为地图场景（town.tscn）子节点实例化，随地图加载/释放；
   主场景 MapManager `initial_map = "xiuxian_town"` 默认进主城。
 - **验收**：`check_npc_flow.gd`（落位/接线/timeline 归属/AI 行为与网格游走合法性/

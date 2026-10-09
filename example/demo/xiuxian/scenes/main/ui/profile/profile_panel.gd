@@ -81,11 +81,24 @@ func _on_close_pressed() -> void:
 
 # ---------- 中央突破按钮（profile_realm.gml 的 @pressed） ----------
 func _on_breakthrough_pressed() -> void:
-	# 突破演示：消耗当前层经验进度（>=100% 才可突破），境界由 level 数据驱动
-	# （add_exp 升级后 watch 自动刷新全面板）
+	# 突破流程（经验体系定义见 state/level/level.gjson）：
+	#   阶内 10 段经验攒满（进度 >= 100%）→ 需要等阶突破：
+	#   突破材料齐备 → try_breakthrough 扣材料进下一阶一段；材料不足给提示
+	#   阶内未满 → 经验不足以升级，仅提示进度
 	var pct: float = _char_bean.get_exp_progress()
-	if pct >= 1.0:
+	if _char_bean.is_rank_full():
+		if _char_bean.try_breakthrough():
+			print("[ProfilePanel] 突破成功 → ", _char_bean.get_realm_title())
+		else:
+			var lacking: Array = []
+			for m in _char_bean.get_breakthrough_materials():
+				if int(m.get("have", 0)) < int(m.get("need", 0)):
+					lacking.append("%s(%d/%d)" % [
+						str(m.get("name", "")), int(m.get("have", 0)),
+						int(m.get("need", 0))])
+			print("[ProfilePanel] 突破材料不足：%s" % "、".join(lacking))
+	elif pct >= 1.0:
 		_char_bean.add_exp(_char_bean.exp_to_next(int(_char_bean.level)))
-		print("[ProfilePanel] 突破成功 → ", _char_bean.get_realm_title())
+		print("[ProfilePanel] 升级成功 → ", _char_bean.get_realm_title())
 	else:
-		print("[ProfilePanel] 突破进度 %d%%，未满" % roundi(pct * 100.0))
+		print("[ProfilePanel] 修炼进度 %d%%，未满" % roundi(pct * 100.0))

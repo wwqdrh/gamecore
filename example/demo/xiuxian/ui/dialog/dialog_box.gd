@@ -1,7 +1,11 @@
 # DialogBox - 简易对话框 UI（配合 GdDialogue 使用）
 #
 # GdDialogue 会把每条对话行打包成 Dictionary 回调 handle_line：
-#   { name: 角色名, text: 文本, stage: 当前stage, response: [{text, fn, stage}] }
+#   { name: 角色名, text: 文本, stage: 当前stage, response: [{text, fn, stage}],
+#     display_name: 展示名(可选), portrait: 立绘路径(可选) }
+# 展示名/立绘来自说话角色的 GdRoleSpeaker 元数据（触发器注册，随行下发）：
+#   display_name 非空时替代角色名显示；portrait 非空时在对话框外左侧
+#   显示立绘并按行切换。
 # 点击（全屏捕获）/ E / 空格推进对话；出现 response 选项时显示按钮，
 # 点击按钮调用 dialogue.exec_response()（goto/continue/end 会自动续播）。
 #
@@ -27,6 +31,7 @@ var current_role := ""
 var responding := false
 
 var panel: Panel
+var portrait_rect: TextureRect
 var name_label: Label
 var text_label: Label
 var choices_panel: PanelContainer
@@ -53,7 +58,9 @@ func handle_line(line: Dictionary) -> void:
 	click_catcher.show()
 	current_role = str(line.get("name", ""))
 	text_label.text = str(line.get("text", ""))
-	name_label.text = current_role
+	var disp := str(line.get("display_name", ""))
+	name_label.text = disp if not disp.is_empty() else current_role
+	_set_portrait(str(line.get("portrait", "")))
 
 	responding = false
 	choices_panel.hide()
@@ -122,6 +129,21 @@ func _close() -> void:
 	panel.hide()
 	choices_panel.hide()
 	click_catcher.hide()
+
+
+## 按行切换立绘：空路径或加载失败隐藏（无立绘角色如玩家不占位遮挡文本）
+func _set_portrait(path: String) -> void:
+	if path.is_empty():
+		portrait_rect.visible = false
+		portrait_rect.texture = null
+		return
+	var tex: Texture2D = load(path)
+	if tex == null:
+		portrait_rect.visible = false
+		portrait_rect.texture = null
+		return
+	portrait_rect.texture = tex
+	portrait_rect.visible = true
 
 
 # ---------------------------------------------------------------------------
@@ -206,6 +228,23 @@ func _build_ui() -> void:
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(panel)
 
+	# 立绘：悬浮在对话框外部左侧（Panel 默认不裁切子节点，负坐标即可
+	# 落在面板外），右缘距面板左缘 16px，底边与面板底边齐平——
+	# 人物立在对话框旁，不挤压面板内文本区。
+	# 尺寸按立绘素材宽高比（约 0.56，1520x2720）取 400x696（2x，视口
+	# 1920x1080 下顶边 y≈360、左缘 x≈94 均不出屏），EXPAND_IGNORE_SIZE +
+	# KEEP_ASPECT_CENTERED：任意尺寸素材自适应缩放居中。
+	# 鼠标 IGNORE：点击穿透到 click_catcher，保证点击推进对话不被立绘吞掉。
+	portrait_rect = TextureRect.new()
+	portrait_rect.position = Vector2(-416, -490)
+	portrait_rect.size = Vector2(400, 696)
+	portrait_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	portrait_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	portrait_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	portrait_rect.visible = false
+	panel.add_child(portrait_rect)
+
+	# 文本区占面板全宽（立绘在面板外左侧，不占面板内空间）
 	name_label = Label.new()
 	name_label.position = Vector2(28, 14)
 	name_label.add_theme_font_size_override("font_size", 22)

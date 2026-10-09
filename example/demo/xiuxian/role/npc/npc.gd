@@ -6,7 +6,8 @@
 # 组合框架能力（零自写对话/AI 逻辑）：
 #   - GdRoleMover：宿主（网格移动；对话期间被触发器 set_paused 暂停
 #     并自动与玩家互相面向）
-#   - GdRoleSpeaker：把本节点绑定到 timeline 角色名（触发器启动对话时自动注册）
+#   - GdRoleSpeaker：把本节点绑定到 timeline 角色名（触发器启动对话时自动注册；
+#     展示名/立绘随元数据下发，对话框按行切换显示）
 #   - GdDialogTrigger：TRIGGER_INTERACT —— 玩家进入 trigger_radius 后按 E 触发
 #     （interact_action 未注册 InputMap 动作时框架自动回退物理 E 键）；
 #     timeline_path 指向本角色目录下的专属 timeline（触发时加载进共享 Dialogue）
@@ -32,6 +33,9 @@ const AI_NO_BRAIN := -1
 @export var display_name := "路人"
 ## 对话角色名（须与 timeline 中角色名一致）
 @export var role_name := "路人"
+## 对话立绘贴图路径（空 = 自动探测本角色目录 assets/dialog_basic.png，
+## 不存在则无立绘；显式配置优先）
+@export var portrait := ""
 ## 本角色专属 timeline 文件路径（触发对话时加载进共享 GdDialogue）
 @export var timeline_path := ""
 ## 对话入口舞台名（空 = timeline 开头）
@@ -158,9 +162,16 @@ func _wire_dialogue() -> void:
 # ---- 对话三件套装配 ----
 
 func _make_dialog_parts() -> void:
+	if portrait.is_empty():
+		# 自动探测：立绘约定放在角色脚本同目录 assets/dialog_basic.png
+		var auto := String(get_script().resource_path.get_base_dir()).path_join("assets/dialog_basic.png")
+		if FileAccess.file_exists(auto):
+			portrait = auto
 	var speaker := GdRoleSpeaker.new()
 	speaker.name = "Speaker"
 	speaker.role_name = role_name
+	speaker.display_name = display_name
+	speaker.portrait = portrait
 	add_child(speaker)
 
 	trigger = GdDialogTrigger.new()

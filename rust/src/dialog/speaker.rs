@@ -29,6 +29,11 @@ pub struct GdRoleSpeaker {
     #[export]
     display_name: GString,
 
+    /// 立绘贴图路径（可选，对话框按行切换显示；空 = 无立绘）
+    /// 如 res://.../role/npc/elder/assets/dialog_basic.png
+    #[export]
+    portrait: GString,
+
     base: Base<Node>,
 }
 
@@ -38,6 +43,7 @@ impl INode for GdRoleSpeaker {
         GdRoleSpeaker {
             role_name: GString::new(),
             display_name: GString::new(),
+            portrait: GString::new(),
             base,
         }
     }
@@ -45,5 +51,5 @@ impl INode for GdRoleSpeaker {
 
 #[godot_api]
 impl GdRoleSpeaker {
-    // role_name / display_name 的 getter 由 #[export] 自动生成
+    // role_name / display_name / portrait 的 getter 由 #[export] 自动生成
 }

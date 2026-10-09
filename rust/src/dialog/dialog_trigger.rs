@@ -244,20 +244,30 @@ impl GdDialogTrigger {
         let host = self.base().get_parent();
         let player = self.resolve_player();
 
-        // 注册宿主与玩家的对话角色（GdRoleSpeaker 提供角色名）
+        // 注册宿主与玩家的对话角色（GdRoleSpeaker 提供角色名/展示名/立绘）
         if let Some(ref host) = host {
             if let Some(sp) = Self::find_speaker(host) {
-                let name = sp.bind().get_role_name();
+                let (name, disp, portrait) = {
+                    let b = sp.bind();
+                    (b.get_role_name(), b.get_display_name(), b.get_portrait())
+                };
                 if !name.is_empty() {
-                    dia.bind_mut().register_role_node(name, host.clone());
+                    let mut d = dia.bind_mut();
+                    d.register_role_node(name.clone(), host.clone());
+                    d.register_role_meta(name, disp, portrait);
                 }
             }
         }
         if let Some(ref p) = player {
             if let Some(sp) = Self::find_speaker(p) {
-                let name = sp.bind().get_role_name();
+                let (name, disp, portrait) = {
+                    let b = sp.bind();
+                    (b.get_role_name(), b.get_display_name(), b.get_portrait())
+                };
                 if !name.is_empty() {
-                    dia.bind_mut().register_role_node(name, p.clone());
+                    let mut d = dia.bind_mut();
+                    d.register_role_node(name.clone(), p.clone());
+                    d.register_role_meta(name, disp, portrait);
                 }
             }
         }

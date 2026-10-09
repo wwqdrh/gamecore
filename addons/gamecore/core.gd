@@ -6,6 +6,11 @@ extends EditorPlugin
 ##   - 自动扫描项目中的 .gml，调用 Rust 侧 GdUiBuilder 构建并生成
 ##     同名 .gml.tscn（真实场景文件，可运行/可挂载）；.gml 修改后
 ##     对应 .gml.tscn 自动重新生成（GML 是唯一源码，tscn 是生成产物）
+##   - 自动扫描项目中的明文 .json 定义表，经 GdJsonCodec 加密生成
+##     同名 .gjson 产物（静态定义表管线：.json 是唯一源码，.gjson 是
+##     加密生成物，运行时 Table 类只读 .gjson；产物勿手改勿提交外发）
+##     .gjson 双击以 GdJson 资源打开（Rust 侧 ResourceFormatLoader 接管，
+##     不按纯文本打开——密文无文本编辑意义）
 
 const GML_POLL_INTERVAL := 1.0
 ## 生成文件说明（打印在输出面板，避免用户误以为 tscn 可手改）
@@ -14,6 +19,7 @@ const GEN_NOTE := "[GmlAutoGen] .gml.tscn 由 .gml 自动生成，请勿手动�
 var _console_panel: CanvasLayer
 var _scan_timer: Timer
 var _gml_mtimes: Dictionary = {}
+var _json_mtimes: Dictionary = {}
 
 
 func _enter_tree():
@@ -31,18 +37,18 @@ func _enter_tree():
 
 
 func _ready() -> void:
-	# 轮询扫描 .gml 并同步生成 .gml.tscn
+	# 轮询扫描 .gml / .json 并同步生成 .gml.tscn / .gjson 产物
 	_scan_timer = Timer.new()
 	_scan_timer.wait_time = GML_POLL_INTERVAL
-	_scan_timer.timeout.connect(_poll_gml_files)
+	_scan_timer.timeout.connect(_poll_generated_files)
 	add_child(_scan_timer)
 	_scan_timer.start()
 	# 编辑器启动 2 秒后先做一次完整扫描（等文件系统扫描就绪），
-	# 为缺失/过期的 .gml 补生成 tscn
+	# 为缺失/过期的 .gml / .json 补生成产物
 	var first_timer := Timer.new()
 	first_timer.one_shot = true
 	first_timer.wait_time = 2.0
-	first_timer.timeout.connect(_poll_gml_files)
+	first_timer.timeout.connect(_poll_generated_files)
 	add_child(first_timer)
 	first_timer.start()
 
@@ -102,11 +108,23 @@ func _remove_editor_doc_cache() -> void:
 			printerr("[gamecore] 删除编辑器 docs 缓存失败（%s）: %s" % [cache_file, error_string(err)])
 
 
-## 轮询：收集项目内全部 .gml 文件，与上次 mtime 比对，
-## 对新增/修改的文件重新生成对应 .gml.tscn
-func _poll_gml_files() -> void:
+## 轮询：gml→tscn 与 json→gjson 两类产物统一入口
+func _poll_generated_files() -> void:
+	var need_fs_scan := false
+	if _poll_gml_files():
+		need_fs_scan = true
+	if _poll_json_files():
+		need_fs_scan = true
+	if need_fs_scan:
+		# 通知编辑器文件系统有新产物生成
+		EditorInterface.get_resource_filesystem().scan()
+
+
+## 轮询 .gml：收集项目内全部 .gml 文件，与上次 mtime 比对，
+## 对新增/修改的文件重新生成对应 .gml.tscn。有产物写入返回 true。
+func _poll_gml_files() -> bool:
 	var files := PackedStringArray()
-	_collect_gml_files("res://", files)
+	_collect_files_by_ext("res://", "gml", files)
 
 	var changed: Array[String] = []
 	var seen := {}
@@ -130,7 +148,7 @@ func _poll_gml_files() -> void:
 			_gml_mtimes.erase(path)
 
 	if changed.is_empty():
-		return
+		return false
 
 	var saved := false
 	for path in changed:
@@ -143,14 +161,13 @@ func _poll_gml_files() -> void:
 			var tscn_path: String = path + ".tscn"
 			if tscn_path in open_scenes:
 				EditorInterface.reload_scene_from_path(tscn_path)
-		# 通知编辑器文件系统有新 tscn 生成
-		EditorInterface.get_resource_filesystem().scan()
+	return saved
 
 
-## 用 DirAccess 递归收集 .gml 文件（res:// 绝对路径）
+## 用 DirAccess 递归收集指定扩展名文件（res:// 绝对路径）
 ## 不走 EditorFileSystem：其树在后台扫描完成前为空，且新文件要等 scan 才可见；
 ## 目录遍历跳过引擎缓存与构建产物目录
-func _collect_gml_files(dir_path: String, out: PackedStringArray) -> void:
+func _collect_files_by_ext(dir_path: String, ext: String, out: PackedStringArray) -> void:
 	var dir := DirAccess.open(dir_path)
 	if dir == null:
 		return
@@ -159,8 +176,8 @@ func _collect_gml_files(dir_path: String, out: PackedStringArray) -> void:
 	while name != "":
 		if dir.current_is_dir():
 			if name != "." and name != ".." and name != ".godot" and name != "target":
-				_collect_gml_files(dir_path.path_join(name), out)
-		elif name.get_extension() == "gml":
+				_collect_files_by_ext(dir_path.path_join(name), ext, out)
+		elif name.get_extension() == ext:
 			out.append(dir_path.path_join(name))
 		name = dir.get_next()
 	dir.list_dir_end()
@@ -191,7 +208,90 @@ func _generate_tscn(gml_path: String) -> bool:
 	return true
 
 
-## 把 gml 加入纯文本扩展（编辑器中双击用文本编辑器打开源码）。
+# ---------- 静态定义表管线：明文 .json 源 → 加密 .gjson 产物 ----------
+
+const GJSON_GEN_NOTE := "[GjsonAutoGen] .gjson 由 .json 加密生成，请勿手动编辑（改动会在下次 .json 保存时被覆盖）"
+
+## 管线标记字段：定义表源文件顶层声明 "pipeline": "gjson" 才进管线
+## （opt-in——.json 是通用扩展名，运行时配置如 game_config.json 走明文，
+## 不可无差别转换；与 test/regen_gjson.gd 保持一致）
+const GJSON_PIPELINE_KEY := "pipeline"
+const GJSON_PIPELINE_VALUE := "gjson"
+
+## 轮询 .json：与上次 mtime 比对，对新增/修改的定义表生成加密 .gjson。
+## 有产物写入返回 true。
+func _poll_json_files() -> bool:
+	var files := PackedStringArray()
+	_collect_files_by_ext("res://", "json", files)
+
+	var changed: Array[String] = []
+	var seen := {}
+	for path in files:
+		seen[path] = true
+		var mtime := FileAccess.get_modified_time(path)
+		var last = _json_mtimes.get(path)
+		if last == null:
+			_json_mtimes[path] = mtime
+			if _is_gjson_fresh(path):
+				continue
+			changed.append(path)
+		elif last != mtime:
+			_json_mtimes[path] = mtime
+			changed.append(path)
+
+	# 源 .json 被删除时清理对应生成物
+	for path in _json_mtimes.keys():
+		if not seen.has(path):
+			_json_mtimes.erase(path)
+
+	if changed.is_empty():
+		return false
+
+	var saved := false
+	for path in changed:
+		if _generate_gjson(path):
+			saved = true
+	return saved
+
+
+## 对应 .gjson 是否存在且不旧于 .json（首次扫描用于跳过未变更文件）
+func _is_gjson_fresh(json_path: String) -> bool:
+	var gjson_path := json_path.get_basename() + ".gjson"
+	if not FileAccess.file_exists(gjson_path):
+		return false
+	return FileAccess.get_modified_time(gjson_path) >= FileAccess.get_modified_time(json_path)
+
+
+## 读明文 .json → 校验管线标记与可解析 → GdJsonCodec 加密 → 写同名 .gjson，
+## 成功返回 true
+func _generate_gjson(json_path: String) -> bool:
+	var text := FileAccess.get_file_as_string(json_path)
+	var parsed: Variant = JSON.parse_string(text)
+	if parsed == null:
+		printerr("[GjsonAutoGen] %s JSON 解析失败，跳过生成（保留旧的 .gjson）" % json_path)
+		return false
+	# opt-in：只有声明了管线标记的定义表源文件才生成加密产物
+	if not (parsed is Dictionary) \
+			or str((parsed as Dictionary).get(GJSON_PIPELINE_KEY, "")) != GJSON_PIPELINE_VALUE:
+		return false
+	var gjson_path := json_path.get_basename() + ".gjson"
+	var encrypted := GdJsonCodec.encrypt_text(text)
+	var f := FileAccess.open(gjson_path, FileAccess.WRITE)
+	if f == null:
+		printerr("[GjsonAutoGen] %s 写入失败" % gjson_path)
+		return false
+	f.store_buffer(encrypted)
+	f.close()
+	print(GJSON_GEN_NOTE)
+	print("[GjsonAutoGen] %s -> %s" % [json_path, gjson_path])
+	return true
+
+
+## 把 gml 加入纯文本扩展（FileSystem 面板可见、双击用文本编辑器打开）。
+## 注意：gjson 不在纯文本扩展里——它是加密产物（密文无文本编辑意义），
+## 双击按文本打开只会产生无效 UTF-8 错误日志；由 Rust 侧注册的
+## ResourceFormatLoader（state/gjson_loader.rs）接管，双击以 GdJson 资源
+## 打开。此处每次启动强制把 gjson 从既有设置中剔除（清掉历史残留）。
 ## 注意：Godot 4.6 内部按「逗号分隔的 String」解析该设置
 ## （editor_file_system.cpp: (String)EDITOR_GET(...).split(",")），
 ## 必须写回 String；写成 PackedStringArray 会被强转成带引号括号的
@@ -209,7 +309,7 @@ func _register_gml_text_extension() -> void:
 	var parts := PackedStringArray()
 	for ext in extensions:
 		var e := String(ext).strip_edges()
-		if e != "" and e != "gml":
+		if e != "" and e != "gml" and e != "gjson":
 			parts.append(e)
 	parts.append("gml")
 	# 始终以 String 形式写回（4.6 引擎按 String 解析）

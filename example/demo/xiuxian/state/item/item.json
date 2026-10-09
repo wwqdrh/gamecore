@@ -1,0 +1,251 @@
+{
+	"version": 1,
+	"pipeline": "gjson",
+	"desc": "道具静态定义总表（GJson 格式，供 XiuItemTable 加载查询）。type: 消耗/材料/装备/特殊；rarity: 凡品/灵品/仙品/帝品；use=breakthrough 的道具为等阶突破材料（to_rank=目标阶 id）；use=exp 的道具服用获得 exp 点修为。其余字段与背包 Bean 契约一致。",
+	"items": {
+		"pill_hp": {
+			"id": "pill_hp",
+			"name": "回春丹",
+			"type": "消耗",
+			"rarity": "凡品",
+			"desc": "服用后恢复少量气血。",
+			"price": 10,
+			"stack": 99
+		},
+		"pill_mp": {
+			"id": "pill_mp",
+			"name": "凝神丹",
+			"type": "消耗",
+			"rarity": "凡品",
+			"desc": "服用后恢复少量灵力。",
+			"price": 12,
+			"stack": 99
+		},
+		"pill_break": {
+			"id": "pill_break",
+			"name": "破境丹",
+			"type": "消耗",
+			"rarity": "仙品",
+			"desc": "冲击瓶颈时服用，可提升破境成功率。",
+			"price": 2000,
+			"stack": 9
+		},
+		"herb_lingzhi": {
+			"id": "herb_lingzhi",
+			"name": "灵芝",
+			"type": "材料",
+			"rarity": "灵品",
+			"desc": "百年灵芝，炼丹常用辅材。",
+			"price": 40,
+			"stack": 999
+		},
+		"herb_xueshen": {
+			"id": "herb_xueshen",
+			"name": "血参",
+			"type": "材料",
+			"rarity": "凡品",
+			"desc": "药性温和的补血药材。",
+			"price": 8,
+			"stack": 999
+		},
+		"ore_coldiron": {
+			"id": "ore_coldiron",
+			"name": "寒铁矿",
+			"type": "材料",
+			"rarity": "灵品",
+			"desc": "蕴含寒气的矿石，铸剑上品。",
+			"price": 60,
+			"stack": 999
+		},
+		"sword_qingfeng": {
+			"id": "sword_qingfeng",
+			"name": "青锋剑",
+			"type": "装备",
+			"rarity": "灵品",
+			"desc": "青云宗制式飞剑，锋锐轻灵。",
+			"price": 500,
+			"stack": 1
+		},
+		"robe_yunwen": {
+			"id": "robe_yunwen",
+			"name": "云纹袍",
+			"type": "装备",
+			"rarity": "灵品",
+			"desc": "绣有云纹法阵的护身法袍。",
+			"price": 450,
+			"stack": 1
+		},
+		"token_sect": {
+			"id": "token_sect",
+			"name": "宗门令牌",
+			"type": "特殊",
+			"rarity": "灵品",
+			"desc": "出入青云宗各处的身份凭证。",
+			"price": 0,
+			"stack": 1
+		},
+		"map_secret": {
+			"id": "map_secret",
+			"name": "秘境残图",
+			"type": "特殊",
+			"rarity": "仙品",
+			"desc": "落霞秘境的残缺地图，拼齐可指引传送。",
+			"price": 0,
+			"stack": 1
+		},
+		"break_qizhe": {
+			"id": "break_qizhe",
+			"name": "聚气散",
+			"type": "消耗",
+			"rarity": "凡品",
+			"desc": "凝聚斗之气旋所需的基础药散，斗之气突破斗者时服用。",
+			"price": 50,
+			"stack": 99,
+			"use": "breakthrough",
+			"to_rank": "dou_zhe"
+		},
+		"break_doushi": {
+			"id": "break_doushi",
+			"name": "凝罡丹",
+			"type": "消耗",
+			"rarity": "灵品",
+			"desc": "将斗之气凝为罡气的丹药，斗者突破斗师必备。",
+			"price": 400,
+			"stack": 99,
+			"use": "breakthrough",
+			"to_rank": "dou_shi"
+		},
+		"break_dadoushi": {
+			"id": "break_dadoushi",
+			"name": "破障丹",
+			"type": "消耗",
+			"rarity": "灵品",
+			"desc": "打通经脉屏障的猛药，斗师晋入大斗师时服用。",
+			"price": 1200,
+			"stack": 99,
+			"use": "breakthrough",
+			"to_rank": "da_dou_shi"
+		},
+		"break_douling": {
+			"id": "break_douling",
+			"name": "玄玉膏",
+			"type": "材料",
+			"rarity": "灵品",
+			"desc": "玄玉山千年玉髓熬制的膏方，冲关斗灵的辅药。",
+			"price": 4000,
+			"stack": 999,
+			"use": "breakthrough",
+			"to_rank": "dou_ling"
+		},
+		"herb_ninghun": {
+			"id": "herb_ninghun",
+			"name": "凝魂草",
+			"type": "材料",
+			"rarity": "灵品",
+			"desc": "生于极寒之地的灵草，可稳固魂魄助人破境。",
+			"price": 2500,
+			"stack": 999,
+			"use": "breakthrough",
+			"to_rank": "dou_ling"
+		},
+		"break_douwang": {
+			"id": "break_douwang",
+			"name": "风灵果",
+			"type": "消耗",
+			"rarity": "灵品",
+			"desc": "汲取风之灵气的异果，斗灵突破斗王时服用。",
+			"price": 12000,
+			"stack": 99,
+			"use": "breakthrough",
+			"to_rank": "dou_wang"
+		},
+		"break_douhuang": {
+			"id": "break_douhuang",
+			"name": "天心莲液",
+			"type": "消耗",
+			"rarity": "仙品",
+			"desc": "天心莲凝聚的灵液，斗王突破斗皇的稀世珍品。",
+			"price": 50000,
+			"stack": 9,
+			"use": "breakthrough",
+			"to_rank": "dou_huang"
+		},
+		"break_douzong": {
+			"id": "break_douzong",
+			"name": "离魂淬体丹",
+			"type": "消耗",
+			"rarity": "仙品",
+			"desc": "淬炼肉身、离魂重塑的丹药，斗皇冲击斗宗所需。",
+			"price": 200000,
+			"stack": 9,
+			"use": "breakthrough",
+			"to_rank": "dou_zong"
+		},
+		"break_douzun": {
+			"id": "break_douzun",
+			"name": "九幽凝魂丹",
+			"type": "消耗",
+			"rarity": "仙品",
+			"desc": "以九幽地髓炼制，斗宗突破斗尊时护住神魂。",
+			"price": 800000,
+			"stack": 9,
+			"use": "breakthrough",
+			"to_rank": "dou_zun"
+		},
+		"break_dousheng": {
+			"id": "break_dousheng",
+			"name": "菩提心髓",
+			"type": "材料",
+			"rarity": "仙品",
+			"desc": "万年菩提树的心髓，悟道成圣的至宝。",
+			"price": 3000000,
+			"stack": 9,
+			"use": "breakthrough",
+			"to_rank": "dou_sheng"
+		},
+		"mat_longxue": {
+			"id": "mat_longxue",
+			"name": "龙血精",
+			"type": "材料",
+			"rarity": "仙品",
+			"desc": "远古龙族精血凝结，可再造肉身根基。",
+			"price": 5000000,
+			"stack": 9,
+			"use": "breakthrough",
+			"to_rank": "dou_sheng"
+		},
+		"break_doudi": {
+			"id": "break_doudi",
+			"name": "帝品雏丹",
+			"type": "消耗",
+			"rarity": "帝品",
+			"desc": "帝品丹药的雏形，斗圣问鼎斗帝的最后阶梯。",
+			"price": 10000000,
+			"stack": 9,
+			"use": "breakthrough",
+			"to_rank": "dou_di"
+		},
+		"pill_exp_s": {
+			"id": "pill_exp_s",
+			"name": "聚灵散",
+			"type": "消耗",
+			"rarity": "凡品",
+			"desc": "服用后获得 500 点修为。",
+			"price": 80,
+			"stack": 99,
+			"use": "exp",
+			"exp": 500
+		},
+		"pill_exp_m": {
+			"id": "pill_exp_m",
+			"name": "凝碧丹",
+			"type": "消耗",
+			"rarity": "灵品",
+			"desc": "服用后获得 5000 点修为。",
+			"price": 900,
+			"stack": 99,
+			"use": "exp",
+			"exp": 5000
+		}
+	}
+}

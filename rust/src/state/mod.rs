@@ -5,6 +5,8 @@
 
 pub mod linklist;
 pub mod gjson;
+pub mod json_codec;
+pub mod gjson_loader;
 pub mod coredata;
 pub mod bean;
 pub mod state_store;

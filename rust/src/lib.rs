@@ -49,6 +49,9 @@ unsafe impl ExtensionLibrary for GameKitCore {
             // 编辑器中按纯文本打开/编辑）。工作流改为：.gml 是纯文本源码，
             // 编辑器插件扫描后调用 GdUiBuilder.build_scene_file 自动生成
             // 同名 .gml.tscn（真实场景文件），gml 修改后 tscn 自动再生成。
+            // .gjson 相反：是加密产物（密文无文本编辑意义），必须注册
+            // ResourceFormatLoader，编辑器双击以 GdJson 资源打开而非文本
+            state::gjson_loader::register_gjson_loader();
         }
     }
 
@@ -60,6 +63,7 @@ unsafe impl ExtensionLibrary for GameKitCore {
 
     fn on_stage_deinit(stage: InitStage) {
         if stage == InitStage::Scene {
+            state::gjson_loader::unregister_gjson_loader();
             debug::debug_draw::unregister_gddebugdraw_singleton();
             pool::spawn_pool::unregister_gdspawnpool_singleton();
             event::event_bus::unregister_gdeventbus_singleton();

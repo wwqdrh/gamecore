@@ -14,7 +14,7 @@
 # 玩家远程：GdShooter 发 GdBullet（mask=4 打敌受击盒），见 role/player/。
 #
 # 变体小怪：不需要子脚本——不同颜色的 tscn 直接覆写导出值
-# （max_health/attack/defense/body_color/speed/sight_range/...）。
+# （max_health/attack/defense/body_color/speed/sight_range/exp_reward/...）。
 # 子类扩展（新行为/新技能）时 extends XiuEnemyBase。
 class_name XiuEnemyBase
 extends GdRoleMover
@@ -39,6 +39,8 @@ extends GdRoleMover
 @export var enemy_cell := Vector2i(-1, -1)
 ## 身体颜色（不同小怪不同色）
 @export var body_color := Color(0.45, 0.8, 0.4)
+## 击败经验（玩家击败本敌人获得，写入 XiuCharacterState 修为）
+@export var exp_reward := 20
 
 const AI_HUNTER := 5
 
@@ -179,10 +181,43 @@ func _on_died() -> void:
 	if brain != null:
 		brain.enable = false
 	set_process(false)
+	_award_exp()
 	# 倒地淡出后移除
 	var tw := create_tween()
 	tw.tween_property(self, "modulate", Color(1, 1, 1, 0), 0.35)
 	tw.tween_callback(queue_free)
+
+
+## 击败奖励：exp_reward 写入角色状态修为（阶段内升级由 add_exp 自动处理），
+## 并在尸体位置弹出「+N 修为」飘字
+func _award_exp() -> void:
+	if exp_reward <= 0:
+		return
+	var state := XiuCharacterState.ins()
+	var gained: int = state.add_exp(exp_reward)
+	print("[Enemy] 击败 %s：+%d 修为（升 %d 级 → %s）" % [
+		display_name, exp_reward, gained, state.get_realm_title()])
+	_spawn_exp_popup(exp_reward)
+
+
+## 飘字：+N 修为（上浮渐隐，随尸体一起释放）
+func _spawn_exp_popup(amount: int) -> void:
+	var label := Label.new()
+	label.text = "+%d 修为" % amount
+	label.add_theme_font_size_override("font_size", 13)
+	label.add_theme_color_override("font_color", Color(1.0, 0.85, 0.4))
+	label.add_theme_color_override("font_outline_color", Color(0.1, 0.05, 0.02))
+	label.add_theme_constant_override("outline_size", 4)
+	label.position = Vector2(-30, -46)
+	label.size = Vector2(60, 16)
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(label)
+	var tw := create_tween()
+	tw.set_parallel(true)
+	tw.tween_property(label, "position:y", label.position.y - 28.0, 0.7) \
+		.set_ease(Tween.EASE_OUT)
+	tw.tween_property(label, "modulate:a", 0.0, 0.7).set_ease(Tween.EASE_IN)
 
 
 # ---- 视觉：身体 + 头顶名 + 血条（正式素材就位后替换） ----
