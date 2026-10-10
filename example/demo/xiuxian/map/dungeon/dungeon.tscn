@@ -1,0 +1,19 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://example/demo/xiuxian/map/dungeon/dungeon_map.gd" id="1_floor"]
+
+[node name="Dungeon" type="GdQuickMap"]
+width = 36
+height = 26
+cell_size = 32
+seed_value = 20261010
+noise_scale = 6.0
+draw_grid_lines = false
+terrain_names = PackedStringArray("grass", "forest", "mountain")
+terrain_thresholds = PackedFloat64Array(0.72, 1.01)
+terrain_dualgrid_textures = PackedStringArray("res://example/map/assets/tileset_grass.png", "", "")
+blocked_terrains = PackedStringArray("mountain")
+connected_terrain = "grass"
+
+[node name="Floor" type="Node" parent="."]
+script = ExtResource("1_floor")

@@ -35,5 +35,7 @@
 		   content_margin="56" close_on_overlay="true" key_bind="escape">
 	  <Gml src="setting/settings_panel.gml" />
 	</Modal>
+	<!-- 秘境结算弹窗已迁移至探索场景（scenes/explore/ui/explore.gml）：
+		 进入秘境 = 整场景切换，结算在 explore HUD 中展示，关闭后回主场景 -->
   </Control>
 </ui>

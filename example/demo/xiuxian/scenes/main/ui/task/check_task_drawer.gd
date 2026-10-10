@@ -19,6 +19,8 @@ func _initialize() -> void:
 
 
 func _run() -> void:
+	# 存档隔离：测试全程跑在专用档 _test 上，严禁污染玩家真实存档
+	load("res://example/demo/xiuxian/state/test_save_guard.gd").isolate()
 	# 1. 全部 gml 可构建 + 重生成 tscn
 	var builder := GdUiBuilder.new()
 	var ok := true
@@ -37,6 +39,7 @@ func _run() -> void:
 	var scene: PackedScene = load(DIR + "task_drawer.gml.tscn")
 	if scene == null:
 		push_error("[Check] task_drawer.gml.tscn 加载失败")
+		load("res://example/demo/xiuxian/state/test_save_guard.gd").restore()
 		quit(1)
 		return
 	var holder: Control = Control.new()
@@ -58,6 +61,7 @@ func _run() -> void:
 	if found == null:
 		push_error("[Check] GdUIManager.find_ui(\"TaskDrawer\") 返回 null（注册链路断）")
 		print("[Check] RESULT=FAIL")
+		load("res://example/demo/xiuxian/state/test_save_guard.gd").restore()
 		quit(1)
 		return
 	if found != drawer:
@@ -160,4 +164,5 @@ func _run() -> void:
 		ok = false
 
 	print("[Check] RESULT=%s" % ("PASS" if ok else "FAIL"))
+	load("res://example/demo/xiuxian/state/test_save_guard.gd").restore()
 	quit(0 if ok else 1)

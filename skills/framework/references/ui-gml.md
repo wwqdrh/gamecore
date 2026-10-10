@@ -677,3 +677,27 @@ bind 协议（经 `GdViewSetting`，rust/src/manager/setting.rs，写即持久�
   消费方（player.gd）watch 同名键开/关能力（枪支 → 开启射击）——UI 与角色零耦合。
   玩家侧：持枪时左/右键按住朝鼠标连射（fire_toward_mouse，UI 悬停/暂停守卫），
   左键寻路仅在未持枪时生效（_unhandled_input 按 gun_equipped 分流）。
+
+
+## GdBean.watch 回调去重红线
+
+`GdBean.watch(key, cb)` 按**回调哈希**去重（registered_callback）：
+同一个 Callable 重复注册会被**静默忽略，只有首个 key 生效**。
+多 key 共用一个处理函数时，必须各包一层独立 lambda：
+
+```gdscript
+# 错误：三个 watch 只有 level 生效（exp/attrs 变更 UI 不刷新）
+bean.watch("level", _on_char_changed)
+bean.watch("exp", _on_char_changed)
+bean.watch("attrs", _on_char_changed)
+
+# 正确：独立 lambda（不同哈希），处理函数复用
+bean.watch("level", func(v = null, m = null): _on_char_changed())
+bean.watch("exp", func(v = null, m = null): _on_char_changed())
+bean.watch("attrs", func(v = null, m = null): _on_char_changed())
+```
+
+注意：watch key 的分号路径 `"a.b;c"` 是**嵌套属性路径**语法（取 parts[0]
+做段解析），不是多 key 分组——不能用它一次注册多个平级 key。
+范本：explore/ui/explore.gd（floor/total_floors/status）、
+mainhud/mainhud.gd（level/exp/attrs）。

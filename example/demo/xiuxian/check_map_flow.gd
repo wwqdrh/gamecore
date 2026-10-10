@@ -35,6 +35,8 @@ func _initialize() -> void:
 
 
 func _run() -> void:
+	# 存档隔离：测试全程跑在专用档 _test 上，严禁污染玩家真实存档
+	load("res://example/demo/xiuxian/state/test_save_guard.gd").isolate()
 	# 0. GDCORE 单例（管理器注册后端）
 	var core: Object = Engine.get_singleton("GDCORE")
 	check(core != null, "GDCORE 单例应已注册")
@@ -180,4 +182,5 @@ func _finish() -> void:
 		print("[Map] RESULT=PASS")
 	else:
 		print("[Map] RESULT=FAIL")
+	load("res://example/demo/xiuxian/state/test_save_guard.gd").restore()
 	quit(0 if ok else 1)

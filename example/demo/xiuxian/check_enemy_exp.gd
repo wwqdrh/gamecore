@@ -24,6 +24,8 @@ func _init() -> void:
 
 
 func _run() -> void:
+	# 存档隔离：测试全程跑在专用档 _test 上，严禁污染玩家真实存档
+	load("res://example/demo/xiuxian/state/test_save_guard.gd").isolate()
 	var gs = XiuGameState.ins()
 	gs.reset_demo()
 	var character = XiuCharacterState.ins()
@@ -70,4 +72,5 @@ func _run() -> void:
 	gs.reset_demo()
 	print("[EnemyExp] RESULT=%s（%d/%d PASS）"
 		% ["FAIL" if _fails > 0 else "PASS", _total - _fails, _total])
+	load("res://example/demo/xiuxian/state/test_save_guard.gd").restore()
 	quit(1 if _fails > 0 else 0)

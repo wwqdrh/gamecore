@@ -9,8 +9,8 @@
 #   mainhud_quest.gml      左中：任务卷轴横幅
 #   mainhud_minimap.gml    右上：小地图
 #   mainhud_menus.gml+gd   右侧功能按钮列（高亮由状态驱动）
-#   mainhud_skillbar.gml+gd 底部技能栏 + 灵气经验条
-#   skill_item.gml+gd      技能格条目契约（图标/键位/冷却）
+#   mainhud_equipbar.gml+gd 底部道具栏（枪/剑/丹药，数字键选择）
+#   （技能栏已迁移至探索场景 scenes/explore/ui/explore_skillbar.gml）
 #
 # 跨区块联动 —— GdState 临时状态总线（非持久化，单例 GDSTATE）：
 #   · 命令上行：功能按钮/技能格点击 set_state 写入状态总线
@@ -35,6 +35,7 @@ const STONE_GAIN := 100
 var _char_bean: GdBean
 var _item_bean: GdBean
 var _task_bean: GdBean
+var _calendar_bean: XiuCalendarState
 
 
 func _ready() -> void:
@@ -64,12 +65,17 @@ func _bind_game_state() -> void:
 	_char_bean = XiuCharacterState.ins()
 	_item_bean = XiuItemState.ins()
 	_task_bean = XiuTaskState.ins()
-	_char_bean.watch("level", _on_char_changed)
-	_char_bean.watch("exp", _on_char_changed)
-	_char_bean.watch("attrs", _on_char_changed)
+	# 红线：watch 按回调哈希去重（同一 Callable 重复注册被静默忽略）；
+	# 多 key 共用一个处理函数必须各包一层独立 lambda（分号路径是嵌套属性语法，非多 key）
+	_char_bean.watch("level", func(v = null, m = null): _on_char_changed())
+	_char_bean.watch("exp", func(v = null, m = null): _on_char_changed())
+	_char_bean.watch("attrs", func(v = null, m = null): _on_char_changed())
 	_char_bean.watch("spirit_stones", _on_stones_changed)
 	_item_bean.watch("bag_views", _on_bag_changed)
 	_task_bean.watch("views", _on_task_views_changed)
+	# 游戏天数徽章（CalendarManager 按游戏时长推算写入）
+	_calendar_bean = XiuCalendarState.ins()
+	_calendar_bean.watch("day", _on_day_changed)
 
 
 ## 玩家徽章：境界标题 / 等级 / 经验条（注册即回调当前值）
@@ -133,6 +139,13 @@ func _on_task_views_changed(_value: Variant = null, _metas: Variant = null) -> v
 		text.text = "可领取：%s" % str(shown.get("title", ""))
 	else:
 		text.text = "%s %s" % [str(shown.get("title", "")), str(shown.get("progress", ""))]
+
+
+## 顶部中央天数徽章
+func _on_day_changed(value: Variant = null, _metas: Variant = null) -> void:
+	var lbl: Label = find_child("DayText", true, false)
+	if lbl:
+		lbl.text = "第 %d 天" % int(value)
 
 
 func _fmt_thousands(v: int) -> String:

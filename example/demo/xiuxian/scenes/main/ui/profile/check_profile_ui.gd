@@ -17,6 +17,8 @@ func _initialize() -> void:
 
 
 func _run() -> void:
+	# 存档隔离：测试全程跑在专用档 _test 上，严禁污染玩家真实存档
+	load("res://example/demo/xiuxian/state/test_save_guard.gd").isolate()
 	var builder := GdUiBuilder.new()
 	var ok := true
 
@@ -36,6 +38,7 @@ func _run() -> void:
 	var panel_scene: PackedScene = load(DIR + "profile_panel.gml.tscn")
 	if panel_scene == null:
 		push_error("[Check] profile_panel.gml.tscn 加载失败")
+		load("res://example/demo/xiuxian/state/test_save_guard.gd").restore()
 		quit(1)
 		return
 	var holder := Control.new()
@@ -115,4 +118,5 @@ func _run() -> void:
 			ok = false
 
 	print("[Check] %s" % ("ALL GREEN" if ok else "FAILED"))
+	load("res://example/demo/xiuxian/state/test_save_guard.gd").restore()
 	quit(0 if ok else 1)

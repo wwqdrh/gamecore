@@ -1,19 +1,19 @@
 # 校验脚本：修仙主界面 HUD GML 结构验证
 # 运行：godot --headless --path . -s res://example/demo/xiuxian/scenes/main/ui/mainhud/check_mainhud_ui.gd
 # 职责：1) 全部 gml 构建校验并重生成同名 tscn（等效编辑器插件产物）
-#       2) 实例化主 HUD 验证 <Gml> 组合 / 三层布局 / 技能栏数据驱动（6 格 + 冷却）
-#          / 功能按钮 GdState 上报与高亮互斥 / 技能点选上报 / 资源加号回调 / 鼠标穿透
+#       2) 实例化主 HUD 验证 <Gml> 组合 / 三层布局 / 装备栏
+#          / 功能按钮 GdState 上报与高亮互斥 / 资源加号回调 / 鼠标穿透
+#       （技能栏+经验条已迁探索场景，其契约校验在 check_explore_ui.gd）
 extends SceneTree
 
 const DIR := "res://example/demo/xiuxian/scenes/main/ui/mainhud/"
 const GML_FILES := [
 	"mainhud.gml", "mainhud_player.gml", "mainhud_resources.gml",
 	"mainhud_quest.gml", "mainhud_minimap.gml", "mainhud_menus.gml",
-	"mainhud_skillbar.gml", "mainhud_equipbar.gml", "skill_item.gml",
+	"mainhud_equipbar.gml", "skill_item.gml",
 ]
 
 const KEY_MENU := "mainhud.menu"
-const KEY_SKILL := "mainhud.skill"
 
 
 func _initialize() -> void:
@@ -21,6 +21,8 @@ func _initialize() -> void:
 
 
 func _run() -> void:
+	# 存档隔离：测试全程跑在专用档 _test 上，严禁污染玩家真实存档
+	load("res://example/demo/xiuxian/state/test_save_guard.gd").isolate()
 	var builder := GdUiBuilder.new()
 	var ok := true
 
@@ -45,6 +47,7 @@ func _run() -> void:
 	var hud_scene: PackedScene = load(DIR + "mainhud.gml.tscn")
 	if hud_scene == null:
 		push_error("[Check] mainhud.gml.tscn 加载失败")
+		load("res://example/demo/xiuxian/state/test_save_guard.gd").restore()
 		quit(1)
 		return
 	var holder := Control.new()
@@ -59,7 +62,7 @@ func _run() -> void:
 
 	# <Gml> 引用的子视图
 	for view_name in ["PlayerBadge", "ResourceBar", "QuestBanner", "MiniMap",
-			"MenuColumn", "SkillBar", "XpBar", "EquipBar", "EquipSlots", "EquipTitle"]:
+			"MenuColumn", "EquipBar", "EquipSlots", "EquipTitle"]:
 		if hud.find_child(view_name, true, false) == null:
 			push_error("[Check] 子视图 %s 不存在" % view_name)
 			ok = false
@@ -106,62 +109,6 @@ func _run() -> void:
 	else:
 		print("[Check] layout passthrough OK (all IGNORE)")
 
-	# 列表条目反断言：技能格条目根必须 STOP（列表组件接线时强制，
-	# 否则条目收不到 gui_input 点选）
-	var slots_stoppable := true
-	var skill_list_early: Control = hud.find_child("SkillList", true, false)
-	if skill_list_early != null:
-		for i in range(1, skill_list_early.get_child_count()):
-			var item: Control = skill_list_early.get_at(i - 1)
-			if item != null and item.mouse_filter != Control.MOUSE_FILTER_STOP:
-				push_error("[Check] 技能格条目 %s 应为 STOP（gui_input 点选依赖），实际 %d"
-					% [item.name, item.mouse_filter])
-				slots_stoppable = false
-	print("[Check] skill slots clickable=%s" % slots_stoppable)
-	if not slots_stoppable:
-		ok = false
-
-	# 技能栏：6 格 + 键位角标 1~6 + 冷却态（第 3 格 8s，其余就绪）
-	var skill_list: Control = hud.find_child("SkillList", true, false)
-	if skill_list == null:
-		push_error("[Check] SkillList 不存在")
-		quit(1)
-		return
-	var n_slots: int = skill_list.get_child_count() - 1
-	print("[Check] skill slots=%d" % n_slots)
-	if n_slots != 6:
-		push_error("[Check] 期望 6 技能格，实际 %d" % n_slots)
-		ok = false
-	for i in 6:
-		var slot: Control = skill_list.get_at(i)
-		var key_label: Label = slot.find_child("KeyBadge", true, false)
-		var cd_label: Label = slot.find_child("CdText", true, false)
-		var cd_mask: Control = slot.find_child("CdMask", true, false)
-		if key_label == null or cd_label == null or cd_mask == null:
-			push_error("[Check] 技能格 %d 缺少键位/冷却节点" % i)
-			ok = false
-			continue
-		var expect_key := str(i + 1)
-		var expect_cd := "8s" if i == 2 else ""
-		if key_label.text != expect_key or cd_label.text != expect_cd \
-				or cd_label.visible != (i == 2) or cd_mask.visible != (i == 2):
-			push_error("[Check] 技能格 %d 数据错误: key=%s cd=%s vis=%s" % [
-				i, key_label.text, cd_label.text, cd_label.visible])
-			ok = false
-	print("[Check] skill slot contracts OK (slot3 cd=8s)")
-
-	# 经验条：状态层基线（reset 后 1 级 0 经验）→ 文本 0/100 + 填充条
-	var xp_fill: Control = hud.find_child("XpFill", true, false)
-	var xp_texts := 0
-	for node in hud.find_children("*", "Label", true, false):
-		if node.text == "0/100":
-			xp_texts += 1
-	if xp_fill == null or xp_texts != 1:
-		push_error("[Check] 经验条填充/文本失败")
-		ok = false
-	else:
-		print("[Check] xp bar OK (fill + 320/600)")
-
 	# 功能按钮：初始高亮 修炼（状态驱动：mainhud.gd _ready 写初始值）
 	var menus: Control = hud.find_child("MenuColumn", true, false)
 	var btn_cultivate: Control = hud.find_child("MenuCultivate", true, false)
@@ -194,15 +141,6 @@ func _run() -> void:
 		else:
 			print("[Check] menu highlight switch OK")
 
-	# 技能点选上报：点第 3 格（键位 3，含冷却）-> 状态 "3"
-	var slot3: Control = skill_list.get_at(2)
-	skill_list.emit_signal("s_click_item", slot3)
-	var skill_val: Variant = Engine.get_singleton("GDSTATE").get_state(KEY_SKILL)
-	print("[Check] skill click -> state=%s" % str(skill_val))
-	if str(skill_val) != "3":
-		push_error("[Check] 技能点选状态上报失败")
-		ok = false
-
 	# 资源加号回调：@pressed 真实连接（回退到 mainhud.gd _on_res_add）
 	var add_btn: Button = hud.find_child("AddStoneBtn", true, false)
 	if add_btn == null or not hud.has_method("_on_res_add"):
@@ -218,7 +156,7 @@ func _run() -> void:
 	# 不支持的值静默回退 FILL 会导致组件撑满整行/整屏高）
 	var height_cases := {
 		"PlayerBadge": 120.0, "ResourceBar": 120.0, "QuestBanner": 120.0,
-		"MiniMap": 200.0, "MenuColumn": 450.0, "SkillBar": 150.0,
+		"MiniMap": 200.0, "MenuColumn": 560.0,  # 5 按钮（含秘境）自然内容高度 ~524
 	}
 	for view_name in height_cases:
 		var view: Control = hud.find_child(view_name, true, false)
@@ -246,7 +184,6 @@ func _run() -> void:
 			push_error("[Check] 按钮内标签 %s '%s' 超出按钮范围 %s" % [lbl.name, lbl.text, rel])
 			ok = false
 	var minimap: Control = hud.find_child("MiniMap", true, false)
-	var skillbar: Control = hud.find_child("SkillBar", true, false)
 	if minimap != null:
 		var mp: Vector2 = minimap.global_position - holder_origin
 		var right_gap: float = holder.size.x - (mp.x + minimap.size.x)
@@ -254,24 +191,7 @@ func _run() -> void:
 		if mp.x < holder.size.x * 0.7 or right_gap > 30.0:
 			push_error("[Check] 小地图未贴右上")
 			ok = false
-	if skillbar != null:
-		var sp: Vector2 = skillbar.global_position - holder_origin
-		var center_off: float = absf((sp.x + skillbar.size.x / 2.0) - holder.size.x / 2.0)
-		var bottom_gap: float = holder.size.y - (sp.y + skillbar.size.y)
-		print("[Check] skillbar center_off=%.0f bottom_gap=%.0f" % [center_off, bottom_gap])
-		if center_off > 30.0 or bottom_gap > 40.0:
-			push_error("[Check] 技能栏未居中贴底")
-			ok = false
-
-	# 技能格键位角标在格子内（bottom_wide + 负 top margin）
-	var slot0: Control = skill_list.get_at(0)
-	var key0: Label = slot0.find_child("KeyBadge", true, false)
-	var rel_key: Vector2 = key0.global_position - slot0.global_position
-	print("[Check] KeyBadge rel=%s (slot %s)" % [rel_key, slot0.size])
-	if rel_key.y < 0.0 or rel_key.y + key0.size.y > slot0.size.y + 1.0 \
-			or rel_key.x < 0.0 or rel_key.x + key0.size.x > slot0.size.x + 1.0:
-		push_error("[Check] 键位角标超出技能格范围")
-		ok = false
 
 	print("[Check] %s" % ("ALL GREEN" if ok else "FAILED"))
+	load("res://example/demo/xiuxian/state/test_save_guard.gd").restore()
 	quit(0 if ok else 1)

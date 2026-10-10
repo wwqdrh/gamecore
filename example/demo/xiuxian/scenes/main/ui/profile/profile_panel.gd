@@ -27,11 +27,13 @@ func _ready() -> void:
 	# 状态层数据绑定（watch 注册即回调当前值，无需手动刷初始 UI）
 	_char_bean = XiuCharacterState.ins()
 	_item_bean = XiuItemState.ins()
-	_char_bean.watch("level", _on_char_changed)
-	_char_bean.watch("exp", _on_char_changed)
-	_char_bean.watch("hp", _on_char_changed)
-	_char_bean.watch("mp", _on_char_changed)
-	_char_bean.watch("attrs", _on_char_changed)
+	# 红线：watch 按回调哈希去重（同一 Callable 重复注册被静默忽略）；
+	# 多 key 共用一个处理函数必须各包一层独立 lambda（分号路径是嵌套属性语法，非多 key）
+	_char_bean.watch("level", func(v = null, m = null): _on_char_changed())
+	_char_bean.watch("exp", func(v = null, m = null): _on_char_changed())
+	_char_bean.watch("hp", func(v = null, m = null): _on_char_changed())
+	_char_bean.watch("mp", func(v = null, m = null): _on_char_changed())
+	_char_bean.watch("attrs", func(v = null, m = null): _on_char_changed())
 	_item_bean.watch("bag_views", _on_bag_changed)
 
 

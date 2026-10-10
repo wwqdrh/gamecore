@@ -17,6 +17,8 @@ func _initialize() -> void:
 
 
 func _run() -> void:
+	# 存档隔离：测试全程跑在专用档 _test 上，严禁污染玩家真实存档
+	load("res://example/demo/xiuxian/state/test_save_guard.gd").isolate()
 	var ok := true
 
 	# 1. 组合根构建 + 重生成 tscn（<Gml> 传递构建全部子组件）
@@ -24,6 +26,7 @@ func _run() -> void:
 	var scene: PackedScene = builder.build_scene_file(MAIN_GML)
 	if scene == null:
 		push_error("[Check] main.gml 构建失败: %s" % builder.last_error())
+		load("res://example/demo/xiuxian/state/test_save_guard.gd").restore()
 		quit(1)
 		return
 	var err := ResourceSaver.save(scene, MAIN_GML + ".tscn")
@@ -52,11 +55,13 @@ func _run() -> void:
 	var drawer: Control = demo.find_child("TaskDrawer", true, false)
 	if drawer == null:
 		push_error("[Check] 组合树中找不到 TaskDrawer")
+		load("res://example/demo/xiuxian/state/test_save_guard.gd").restore()
 		quit(1)
 		return
 	var menu_task: Control = demo.find_child("MenuTask", true, false)
 	if menu_task == null:
 		push_error("[Check] mainhud 中找不到 MenuTask 按钮")
+		load("res://example/demo/xiuxian/state/test_save_guard.gd").restore()
 		quit(1)
 		return
 	var ev: InputEventMouseButton = InputEventMouseButton.new()
@@ -135,6 +140,7 @@ func _run() -> void:
 	var menu_bag: Control = demo.find_child("MenuBag", true, false)
 	if menu_bag == null:
 		push_error("[Check] mainhud 中找不到 MenuBag 按钮")
+		load("res://example/demo/xiuxian/state/test_save_guard.gd").restore()
 		quit(1)
 		return
 	menu_bag.emit_signal("gui_input", ev)
@@ -193,6 +199,7 @@ func _run() -> void:
 	var avatar: Control = demo.find_child("AvatarRing", true, false)
 	if avatar == null:
 		push_error("[Check] mainhud 中找不到 AvatarRing")
+		load("res://example/demo/xiuxian/state/test_save_guard.gd").restore()
 		quit(1)
 		return
 	avatar.emit_signal("gui_input", ev)
@@ -331,4 +338,5 @@ func _run() -> void:
 		ok = false
 
 	print("[Check] RESULT=%s" % ("PASS" if ok else "FAIL"))
+	load("res://example/demo/xiuxian/state/test_save_guard.gd").restore()
 	quit(0 if ok else 1)

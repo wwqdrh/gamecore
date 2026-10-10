@@ -1,0 +1,80 @@
+# 演武教头·秦重对话时间线（青云坊演武堂，本角色专属）
+#
+# 剧情主线：宗门大比（task.json: sect_tournament，steps=2）
+#   · 第 7 天前：大比未开（[arena_wait@!day7_arrived]），提示去秘境历练
+#   · 第 7 天：CalendarManager 解锁并自动接取任务（flag day7_arrived +
+#     task_sect_tournament_accepted）→ 玩家来演武堂找教头开赛
+#   · [arena_open] 选项 → @start_match（npc.gd 方法）：刷比武弟子 + 任务 1/2
+#   · 击败对手 → 对手死亡回调置 tournament_won + 任务 2/2（completed）
+#   · 再与教头对话 [arena_win] → @task_complete:sect_tournament 领奖
+#
+# 门控段顺序红线：置 flag 的 stage 结尾必须是选项或 goto；
+# 门控段排在无条件段之前（start_from 从头扫描取第一个满足条件的 stage）。
+
+# 首次见面（引出大比设定 + 指引秘境历练）
+[arena_intro@!met_arena_master]
+(秦重,云舟)
+生面孔。演武堂重地，闲人免进——哦？萧宅的客卿，失敬失敬。
+@set_flag:met_arena_master
+- 宗门大比是什么阵仗？@goto:arena_ask
+- 打扰了，路过看看。@goto:arena_end
+
+[arena_ask]
+(秦重)
+宗门大比，七年一回。青云坊各家弟子同台夺魁，
+魁首得青云剑一柄，另有长老亲传的进阶丹药。
+- 我能参加吗？@goto:arena_ready_hint
+- 先观观战。@goto:arena_end
+
+[arena_ready_hint]
+(秦重)
+萧老爷的面子，自然算你一个。大比前几日好好磨炼——
+听说落霞秘境开了口子，进去历练历练，胜过在这儿扎马步。
+（主界面点「秘境」即可进入历练；大比第 7 天开赛。）
+:goto:arena_end
+
+# 大比未开（第 7 天前再来）：催促练功
+[arena_wait@!day7_arrived]
+(秦重)
+急什么，大比还有几日。回去把身子骨练结实点，
+真金不怕火炼，到时候擂台上见分晓。
+:goto:arena_end
+
+# 开赛后：任务进行中，可开赛
+[arena_open@day7_arrived;task_sect_tournament_accepted;!tournament_won]
+(秦重)
+来得正好！今日头一场就是你——对面是铁匠铺请来的武痴，
+拳脚硬得很。点到为止，莫要见血。
+- 开始比试！@goto:arena_start_match
+- 容我准备片刻。@goto:arena_end
+
+[arena_start_match]
+(秦重)
+好胆识！擂台见真章——武痴，上！
+@start_match
+:goto:arena_end
+
+# 比试进行中（对手还在台上）：催战
+[arena_fighting@match_started;!tournament_won]
+(秦重)
+武痴还在台上候着呢，别磨蹭，上擂台！
+:goto:arena_end
+
+# 夺魁后：领奖（@task_complete 发放任务奖励并关闭任务）
+[arena_win@tournament_won;!task_sect_tournament_done]
+(秦重)
+好小子，招式里有点自己的东西了。魁首是你的——
+青云剑归你，这是大比的彩头，收好。
+@task_complete:sect_tournament
+- 多谢教头成全。@goto:arena_end
+
+# 领奖后的日常
+[arena_after@task_sect_tournament_done]
+(秦重)
+魁首别懈怠。秘境深处的妖王，可比武痴难缠多了——
+什么时候敢去闯三楼，再来找我讨教。
+:goto:arena_end
+
+[arena_end]
+(秦重)
+去吧。练功要紧，伤药管够——演武堂后堂自取。

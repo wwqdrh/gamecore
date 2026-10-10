@@ -63,6 +63,8 @@ unsafe impl ExtensionLibrary for GameKitCore {
     fn on_main_loop_frame() {
         manager::setting::restore_persisted_once();
         state::gdcore::connect_gml_auto_connect_hook();
+        // 每存档游玩时长周期落盘（内部 30s 节流）
+        state::gdcore::playtime_autoflush_tick();
     }
 
     fn on_stage_deinit(stage: InitStage) {

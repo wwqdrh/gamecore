@@ -1,0 +1,944 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/explore/ui/explore.gd" id="1_giyp2"]
+[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/explore/ui/explore_skillbar.gd" id="2_05by2"]
+[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/explore/ui/skill_item.gd" id="3_st1vu"]
+[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/explore/ui/dungeon/dungeon_settle.gd" id="4_32blm"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pmg16"]
+bg_color = Color(0.18039216, 0.14117648, 0.21176471, 0.84705883)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+corner_radius_bottom_right = 22
+corner_radius_bottom_left = 22
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fxtof"]
+bg_color = Color(0.14117648, 0.23529412, 0.18039216, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7gl6w"]
+bg_color = Color(0.039215688, 0.078431375, 0.0627451, 0.7529412)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0acpe"]
+bg_color = Color(0.18039216, 0.2901961, 0.22745098, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.9098039, 0.7254902, 0.24313726, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fp224"]
+bg_color = Color(0.14117648, 0.23529412, 0.18039216, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.3372549, 0.4392157, 0.36078432, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yu8hf"]
+bg_color = Color(0.30980393, 0.7647059, 0.72156864, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mcqsf"]
+bg_color = Color(0.18039216, 0.14117648, 0.21176471, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[node name="ExploreHud" type="Control" unique_id=686577098]
+layout_mode = 3
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource("1_giyp2")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray()
+
+[node name="TopLayer" type="MarginContainer" parent="." unique_id=1065736172]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 10.0
+offset_right = -14.0
+mouse_filter = 2
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="TopRow" type="HBoxContainer" parent="TopLayer" unique_id=900156255]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="@Control@2" type="Control" parent="TopLayer/TopRow" unique_id=1136423979]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="FloorBanner" type="Panel" parent="TopLayer/TopRow" unique_id=990754425]
+custom_minimum_size = Vector2(360, 44)
+layout_mode = 2
+size_flags_vertical = 0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_pmg16")
+
+[node name="FloorText" type="Label" parent="TopLayer/TopRow/FloorBanner" unique_id=1944776516]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.9490196, 0.8509804, 0.54901963, 1)
+text = "落霞秘境"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__anchor = "full"
+
+[node name="@Control@3" type="Control" parent="TopLayer/TopRow" unique_id=1656404124]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="LeaveBtn" type="Button" parent="TopLayer/TopRow" unique_id=343057857]
+custom_minimum_size = Vector2(140, 44)
+layout_mode = 2
+size_flags_vertical = 0
+mouse_default_cursor_shape = 2
+text = "离开秘境 ✕"
+metadata/__signal_pressed = "_on_leave_pressed"
+
+[node name="BottomLayer" type="MarginContainer" parent="." unique_id=1778356118]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 240.0
+offset_right = -240.0
+offset_bottom = -12.0
+mouse_filter = 2
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="BottomColumn" type="VBoxContainer" parent="BottomLayer" unique_id=1953866762]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="@Control@4" type="Control" parent="BottomLayer/BottomColumn" unique_id=779297684]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="SkillBar" type="VBoxContainer" parent="BottomLayer/BottomColumn" unique_id=145036933]
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+script = ExtResource("2_05by2")
+metadata/__script_vars = {
+"skills": [{
+"cd": "",
+"icon": "🌀",
+"key": "1"
+}, {
+"cd": "",
+"icon": "⚡",
+"key": "2"
+}, {
+"cd": "8s",
+"icon": "🌙",
+"key": "3"
+}, {
+"cd": "",
+"icon": "🍃",
+"key": "4"
+}, {
+"cd": "",
+"icon": "🧘",
+"key": "5"
+}, {
+"cd": "",
+"icon": "🗡️",
+"key": "6"
+}]
+}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray()
+
+[node name="SkillList" type="GdUIHList" parent="BottomLayer/BottomColumn/SkillBar" unique_id=537403474]
+layout_mode = 2
+metadata/__signal_s_click_item = "_on_skill_clicked"
+metadata/__script_vars = {
+"skills": [{
+"cd": "",
+"icon": "🌀",
+"key": "1"
+}, {
+"cd": "",
+"icon": "⚡",
+"key": "2"
+}, {
+"cd": "8s",
+"icon": "🌙",
+"key": "3"
+}, {
+"cd": "",
+"icon": "🍃",
+"key": "4"
+}, {
+"cd": "",
+"icon": "🧘",
+"key": "5"
+}, {
+"cd": "",
+"icon": "🗡️",
+"key": "6"
+}]
+}
+metadata/__script_data = [{
+"cd": "",
+"icon": "🌀",
+"key": "1"
+}, {
+"cd": "",
+"icon": "⚡",
+"key": "2"
+}, {
+"cd": "8s",
+"icon": "🌙",
+"key": "3"
+}, {
+"cd": "",
+"icon": "🍃",
+"key": "4"
+}, {
+"cd": "",
+"icon": "🧘",
+"key": "5"
+}, {
+"cd": "",
+"icon": "🗡️",
+"key": "6"
+}]
+
+[node name="SkillSlot" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList" unique_id=1676366353]
+visible = false
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_fxtof")
+script = ExtResource("3_st1vu")
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "key", "cd")
+
+[node name="IconBox" type="CenterContainer" parent="BottomLayer/BottomColumn/SkillBar/SkillList/SkillSlot" unique_id=133052248]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+mouse_filter = 2
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="SlotIcon" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/SkillSlot/IconBox" unique_id=237805073]
+layout_mode = 2
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="CdMask" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList/SkillSlot" unique_id=1570535355]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_7gl6w")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CdText" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/SkillSlot" unique_id=1769656038]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__tpl_text = "cd"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="KeyBadge" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/SkillSlot" unique_id=1206360955]
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = -24.0
+offset_right = -14.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+horizontal_alignment = 1
+metadata/__tpl_text = "key"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="@Panel@8" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList" unique_id=1666523882]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_fxtof")
+script = ExtResource("3_st1vu")
+icon = "🌀"
+key = "1"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "key", "cd")
+metadata/__item_data = {
+"cd": "",
+"icon": "🌀",
+"key": "1"
+}
+
+[node name="IconBox" type="CenterContainer" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@8" unique_id=1643175352]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+mouse_filter = 2
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="SlotIcon" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@8/IconBox" unique_id=1535815188]
+layout_mode = 2
+text = "🌀"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="CdMask" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@8" unique_id=1283999233]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_7gl6w")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CdText" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@8" unique_id=1500760010]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__tpl_text = "cd"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="KeyBadge" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@8" unique_id=955615065]
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = -24.0
+offset_right = -14.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "1"
+horizontal_alignment = 1
+metadata/__tpl_text = "key"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="@Panel@9" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList" unique_id=1445064965]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_fxtof")
+script = ExtResource("3_st1vu")
+icon = "⚡"
+key = "2"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "key", "cd")
+metadata/__item_data = {
+"cd": "",
+"icon": "⚡",
+"key": "2"
+}
+
+[node name="IconBox" type="CenterContainer" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@9" unique_id=1940553593]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+mouse_filter = 2
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="SlotIcon" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@9/IconBox" unique_id=1385467252]
+layout_mode = 2
+text = "⚡"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="CdMask" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@9" unique_id=811862177]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_7gl6w")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CdText" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@9" unique_id=779275708]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__tpl_text = "cd"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="KeyBadge" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@9" unique_id=1641549186]
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = -24.0
+offset_right = -14.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "2"
+horizontal_alignment = 1
+metadata/__tpl_text = "key"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="@Panel@10" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList" unique_id=1764096281]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_fxtof")
+script = ExtResource("3_st1vu")
+icon = "🌙"
+key = "3"
+cd = "8s"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "key", "cd")
+metadata/__item_data = {
+"cd": "8s",
+"icon": "🌙",
+"key": "3"
+}
+
+[node name="IconBox" type="CenterContainer" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@10" unique_id=1176983192]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+mouse_filter = 2
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="SlotIcon" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@10/IconBox" unique_id=1273748654]
+layout_mode = 2
+text = "🌙"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="CdMask" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@10" unique_id=854525305]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_7gl6w")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CdText" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@10" unique_id=1908062421]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "8s"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__tpl_text = "cd"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="KeyBadge" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@10" unique_id=19634985]
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = -24.0
+offset_right = -14.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "3"
+horizontal_alignment = 1
+metadata/__tpl_text = "key"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="@Panel@11" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList" unique_id=987981195]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_fxtof")
+script = ExtResource("3_st1vu")
+icon = "🍃"
+key = "4"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "key", "cd")
+metadata/__item_data = {
+"cd": "",
+"icon": "🍃",
+"key": "4"
+}
+
+[node name="IconBox" type="CenterContainer" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@11" unique_id=198254818]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+mouse_filter = 2
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="SlotIcon" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@11/IconBox" unique_id=542291883]
+layout_mode = 2
+text = "🍃"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="CdMask" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@11" unique_id=521623844]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_7gl6w")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CdText" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@11" unique_id=1673839212]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__tpl_text = "cd"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="KeyBadge" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@11" unique_id=1371916937]
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = -24.0
+offset_right = -14.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "4"
+horizontal_alignment = 1
+metadata/__tpl_text = "key"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="@Panel@12" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList" unique_id=11113991]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_fxtof")
+script = ExtResource("3_st1vu")
+icon = "🧘"
+key = "5"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "key", "cd")
+metadata/__item_data = {
+"cd": "",
+"icon": "🧘",
+"key": "5"
+}
+
+[node name="IconBox" type="CenterContainer" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@12" unique_id=822574592]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+mouse_filter = 2
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="SlotIcon" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@12/IconBox" unique_id=1120020470]
+layout_mode = 2
+text = "🧘"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="CdMask" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@12" unique_id=1348993805]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_7gl6w")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CdText" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@12" unique_id=1800594223]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__tpl_text = "cd"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="KeyBadge" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@12" unique_id=33530281]
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = -24.0
+offset_right = -14.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "5"
+horizontal_alignment = 1
+metadata/__tpl_text = "key"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="@Panel@13" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList" unique_id=55438146]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_fxtof")
+script = ExtResource("3_st1vu")
+icon = "🗡️"
+key = "6"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray("icon", "key", "cd")
+metadata/__item_data = {
+"cd": "",
+"icon": "🗡️",
+"key": "6"
+}
+
+[node name="IconBox" type="CenterContainer" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@13" unique_id=1409717625]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+mouse_filter = 2
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="SlotIcon" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@13/IconBox" unique_id=1252955210]
+layout_mode = 2
+text = "🗡️"
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="CdMask" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@13" unique_id=1536308922]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_7gl6w")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CdText" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@13" unique_id=138964446]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/__tpl_text = "cd"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="KeyBadge" type="Label" parent="BottomLayer/BottomColumn/SkillBar/SkillList/@Panel@13" unique_id=1139134968]
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = -24.0
+offset_right = -14.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "6"
+horizontal_alignment = 1
+metadata/__tpl_text = "key"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="XpBar" type="Panel" parent="BottomLayer/BottomColumn/SkillBar" unique_id=681057146]
+custom_minimum_size = Vector2(500, 26)
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_0acpe")
+metadata/__script_vars = {
+"skills": [{
+"cd": "",
+"icon": "🌀",
+"key": "1"
+}, {
+"cd": "",
+"icon": "⚡",
+"key": "2"
+}, {
+"cd": "8s",
+"icon": "🌙",
+"key": "3"
+}, {
+"cd": "",
+"icon": "🍃",
+"key": "4"
+}, {
+"cd": "",
+"icon": "🧘",
+"key": "5"
+}, {
+"cd": "",
+"icon": "🗡️",
+"key": "6"
+}]
+}
+
+[node name="@HBoxContainer@7" type="HBoxContainer" parent="BottomLayer/BottomColumn/SkillBar/XpBar" unique_id=1830948302]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 4.0
+offset_right = -12.0
+offset_bottom = -4.0
+mouse_filter = 2
+metadata/__anchor = "full"
+
+[node name="@Label@5" type="Label" parent="BottomLayer/BottomColumn/SkillBar/XpBar/@HBoxContainer@7" unique_id=1525392108]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "💠"
+vertical_alignment = 1
+
+[node name="@Label@6" type="Label" parent="BottomLayer/BottomColumn/SkillBar/XpBar/@HBoxContainer@7" unique_id=1245288170]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "灵气经验"
+vertical_alignment = 1
+
+[node name="XpTrack" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/XpBar/@HBoxContainer@7" unique_id=1766440817]
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_fp224")
+
+[node name="XpFill" type="Panel" parent="BottomLayer/BottomColumn/SkillBar/XpBar/@HBoxContainer@7/XpTrack" unique_id=850332568]
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 0
+anchor_bottom = 1.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_yu8hf")
+metadata/__anchor = "left_wide"
+
+[node name="XpText" type="Label" parent="BottomLayer/BottomColumn/SkillBar/XpBar/@HBoxContainer@7" unique_id=2140296473]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "0/100"
+vertical_alignment = 1
+
+[node name="DungeonSettleModal" type="GdUIModal" parent="." unique_id=1933391817]
+content_margin = 56
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+metadata/__ui_id = "DungeonSettleModal"
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="Overlay" type="ColorRect" parent="DungeonSettleModal" unique_id=221463144]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.55)
+
+[node name="ContentArea" type="MarginContainer" parent="DungeonSettleModal" unique_id=1952186255]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+theme_override_constants/margin_left = 56
+theme_override_constants/margin_top = 56
+theme_override_constants/margin_right = 56
+theme_override_constants/margin_bottom = 56
+
+[node name="SettleRoot" type="Panel" parent="DungeonSettleModal/ContentArea" unique_id=1922376923]
+custom_minimum_size = Vector2(460, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_mcqsf")
+script = ExtResource("4_32blm")
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray()
+
+[node name="@VBoxContainer@15" type="VBoxContainer" parent="DungeonSettleModal/ContentArea/SettleRoot" unique_id=967686838]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = -24.0
+mouse_filter = 2
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="Title" type="Label" parent="DungeonSettleModal/ContentArea/SettleRoot/@VBoxContainer@15" unique_id=2104175377]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.8509804, 0.54901963, 1)
+text = "秘境通关结算"
+horizontal_alignment = 1
+
+[node name="LineFloors" type="Label" parent="DungeonSettleModal/ContentArea/SettleRoot/@VBoxContainer@15" unique_id=1442002395]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "扫荡层数：-"
+horizontal_alignment = 1
+
+[node name="LineExp" type="Label" parent="DungeonSettleModal/ContentArea/SettleRoot/@VBoxContainer@15" unique_id=174226152]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "获得修为：+0"
+horizontal_alignment = 1
+
+[node name="LineStones" type="Label" parent="DungeonSettleModal/ContentArea/SettleRoot/@VBoxContainer@15" unique_id=2016117532]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "获得灵石：+0"
+horizontal_alignment = 1
+
+[node name="@Label@14" type="Label" parent="DungeonSettleModal/ContentArea/SettleRoot/@VBoxContainer@15" unique_id=79641690]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "—— 战利品 ——"
+horizontal_alignment = 1
+
+[node name="ItemList" type="VBoxContainer" parent="DungeonSettleModal/ContentArea/SettleRoot/@VBoxContainer@15" unique_id=1523550166]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="CloseBtn" type="Button" parent="DungeonSettleModal/ContentArea/SettleRoot/@VBoxContainer@15" unique_id=205772336]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+text = "收下奖励"
+metadata/__signal_pressed = "_on_close_pressed"

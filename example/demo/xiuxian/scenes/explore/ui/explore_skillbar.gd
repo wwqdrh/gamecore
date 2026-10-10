@@ -1,5 +1,5 @@
-# 主界面技能栏控制器 —— 由 mainhud_skillbar.gml 的 <ui script="mainhud_skillbar.gd">
-# 声明，挂载到技能栏根节点（SkillBar）。
+# 秘境技能栏控制器 —— 由 explore_skillbar.gml 的 <ui script="explore_skillbar.gd">
+# 声明，挂载到技能栏根节点（SkillBar）。自 mainhud_skillbar 迁移（仅探索场景显示）。
 #
 # 职责（GdState 状态总线模式中的「视图」）：
 #   命令上行：点选技能格 -> 读条目 __item_data 取键位 -> 写 KEY_SKILL
@@ -7,7 +7,7 @@
 #   状态下行：灵气经验条 watch 状态层 XiuCharacterState（bean: xiuxian_character）
 #   经验变化 → 填充宽度 + 文本（exp/exp_to_next）
 extends VBoxContainer
-## 与 mainhud.gd 的 KEY_SKILL 一致（demo 各自声明，避免 class_name 缓存依赖）
+## 键名沿用 mainhud.skill（玩家侧消费方 watch 同名键，跨场景兼容）
 const KEY_SKILL := "mainhud.skill"
 
 var _char_bean: GdBean

@@ -178,6 +178,15 @@ func set_task_status(task_id: String, status: String) -> void:
 	refresh_views()
 
 
+## 解锁任务：locked → available（日历/剧情到点触发，如第 7 天宗门大比）。
+## 非 locked 状态调用无副作用返回 false
+func unlock_task(task_id: String) -> bool:
+	if get_task_status(task_id) != STATUS_LOCKED:
+		return false
+	set_task_status(task_id, STATUS_AVAILABLE)
+	return true
+
+
 ## 推进一步：step+1，达到 steps 总数自动转 completed，返回新 step
 func advance_task(task_id: String) -> int:
 	var t: Dictionary = get_task(task_id)

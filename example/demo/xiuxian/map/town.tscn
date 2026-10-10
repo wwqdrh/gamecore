@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" path="res://example/demo/xiuxian/role/npc/elder/elder.tscn" id="1_elder"]
 [ext_resource type="PackedScene" path="res://example/demo/xiuxian/role/npc/merchant/merchant.tscn" id="2_merchant"]
 [ext_resource type="PackedScene" path="res://example/demo/xiuxian/role/npc/disciple/disciple.tscn" id="3_disciple"]
+[ext_resource type="PackedScene" path="res://example/demo/xiuxian/role/npc/arena_master/arena_master.tscn" id="4_arena"]
 
 [node name="QingYunFang" type="GdQuickMap"]
 width = 32
@@ -41,3 +42,6 @@ position = Vector2(560, 432)
 
 [node name="NpcDisciple" parent="." instance=ExtResource("3_disciple")]
 position = Vector2(752, 240)
+
+[node name="NpcArenaMaster" parent="." instance=ExtResource("4_arena")]
+position = Vector2(656, 336)

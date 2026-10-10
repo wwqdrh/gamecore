@@ -18,11 +18,18 @@ use godot::prelude::*;
 use godot::builtin::{GString, StringName, VarArray, Variant};
 use godot::classes::{Engine, IObject, Object};
 
+use crate::state::bean::{instance_alive, snapshot_obj};
+
 /// 单条订阅
 struct Subscription {
     id: u64,
     callable: Callable,
     once: bool,
+    /// 订阅时快照的目标对象 InstanceId（无对象目标为 None）。
+    /// 发布路径严禁对死回调 is_valid() 探活——GDScript self-lambda 在引擎侧持
+    /// self 裸指针，对象释放后探活会解引用悬垂指针读出垃圾 ObjectID，
+    /// ObjectDB 报 slot >= slot_max（详见 state::bean::WatchCb 注释）。
+    obj: Option<i64>,
 }
 
 #[derive(GodotClass)]
@@ -95,7 +102,12 @@ impl GdEventBus {
         let Some(list) = self.subscribers.get_mut(&key) else {
             return;
         };
-        // 先收集调用，避免回调内部再订阅/退订导致迭代失效
+        // 先清理目标已销毁的订阅（按订阅时快照的 ObjectID 判活，见 Subscription 注释），
+        // 再收集调用，避免回调内部再订阅/退订导致迭代失效
+        list.retain(|s| match s.obj {
+            Some(id) => instance_alive(id),
+            None => true,
+        });
         let calls: Vec<(Callable, u64, bool)> = list
             .iter()
             .map(|s| (s.callable.clone(), s.id, s.once))
@@ -104,9 +116,7 @@ impl GdEventBus {
             if once {
                 list.retain(|s| s.id != id);
             }
-            if callable.is_valid() {
-                callable.callv(&args);
-            }
+            callable.callv(&args);
         }
         if list.is_empty() {
             self.subscribers.remove(&key);
@@ -151,6 +161,8 @@ impl GdEventBus {
         }
         let id = self.next_id;
         self.next_id += 1;
+        // 订阅时对象存活，快照读取合法
+        let obj = snapshot_obj(&callback);
         self.subscribers
             .entry(event.to_string())
             .or_default()
@@ -158,6 +170,7 @@ impl GdEventBus {
                 id,
                 callable: callback,
                 once,
+                obj,
             });
         id as i64
     }

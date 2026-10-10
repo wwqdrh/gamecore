@@ -36,5 +36,11 @@
 	  <Control size_flags_vertical="expand_fill" />
 	  <Label class="footnote-text" text="ESC 打开设置 · GML 框架 demo" align="center" />
 	</VBoxContainer>
+	<!-- 存档选择弹窗：开始游戏 → title_menu.gd 打开并列出 3 个槽位
+		 （空档「新游戏」/ 有档「继续游戏」），选择后 change_scene 进入主场景 -->
+	<Modal name="SaveModal" ui_id="SaveModal" anchor="full"
+		   content_margin="56" close_on_overlay="true">
+	  <Gml src="save_modal.gml" />
+	</Modal>
   </Panel>
 </ui>

@@ -7,7 +7,7 @@ use std::collections::HashMap;
 use std::sync::LazyLock;
 
 use godot::prelude::*;
-use godot::classes::{Engine, IRefCounted, Json};
+use godot::classes::{Engine, IRefCounted, Json, Object};
 use godot::builtin::{VarArray, VarDictionary};
 
 use super::coredata::GdCoreData;
@@ -25,6 +25,73 @@ const PROPERTY_USAGE_STORE_IF_NULL: i64 = 4096;
 static BEAN_INSTANCES: LazyLock<parking_lot::Mutex<HashMap<String, i64>>> =
     LazyLock::new(|| parking_lot::Mutex::new(HashMap::new()));
 
+/// watch 注册项：回调 + 注册时快照的目标对象 id + 去重哈希。
+///
+/// 为什么必须存 ObjectID 快照、严禁在通知路径调用 `Callable::is_valid()` 探活：
+/// GDScript 的 self-lambda（`func(v): _on_xxx()` 形式，self 为 Node/Control 等
+/// 非 RefCounted 对象）在引擎侧（GDScriptLambdaSelfCallable）持有 self 的**裸指针**，
+/// 对象释放后指针悬垂；而 `CallableCustom::is_valid()` 默认实现会经
+/// `get_object()` 解引用该悬垂指针，从已释放内存里读出垃圾 ObjectID，
+/// ObjectDB 报 `Condition "slot >= slot_max"`（object.h get_instance 越界断言），
+/// 表现为场景切换/面板关闭后 Bean.update 通知时刷错误。
+/// 改为用【注册时】捕获的 ObjectID 经 ObjectDB 查活：该 id 的 slot 必然在
+/// 历史分配范围内（永不越界），对象已释放或 slot 已复用均 validator 失配
+/// → 静默返回空 → 安全判死，全程不触碰已死回调本体。
+#[derive(Clone)]
+pub(crate) struct WatchCb {
+    cb: Callable,
+    /// 注册时回调目标对象的 InstanceId（无对象目标的回调为 None，保守不清理）
+    obj: Option<i64>,
+    /// 注册时哈希（registered_callback / registered 去重表的键）
+    pub(crate) hash: u32,
+}
+
+impl WatchCb {
+    pub(crate) fn new(cb: Callable) -> Self {
+        // 注册时对象必然存活，get_object_id 读取的是合法内存
+        let obj = snapshot_obj(&cb);
+        let hash = cb.hash_u32();
+        Self { cb, obj, hash }
+    }
+
+    /// 目标对象是否仍存活（无对象目标的回调保守视为存活）
+    pub(crate) fn is_alive(&self) -> bool {
+        match self.obj {
+            Some(id) => instance_alive(id),
+            None => true,
+        }
+    }
+}
+
+/// 注册时快照回调目标对象的 InstanceId（仅可在对象存活时调用——如注册时机）
+pub(crate) fn snapshot_obj(cb: &Callable) -> Option<i64> {
+    cb.object_id().map(|id| id.to_i64())
+}
+
+/// 按快照 id 判活：ObjectDB 查询。快照 id 的 slot 必在历史分配范围内（永不
+/// 触发 slot >= slot_max）；已释放或 slot 已复用均 validator 失配 → 静默空。
+pub(crate) fn instance_alive(id: i64) -> bool {
+    Gd::<Object>::try_from_instance_id(InstanceId::from_i64(id)).is_ok()
+}
+
+/// 通知前统一清理目标已销毁的监听项（机制见 WatchCb 注释），并回收去重表哈希；
+/// 返回存活回调快照——先克隆再遍历，回调内再注册/注销/改同键不会迭代失效
+/// （与 GdState::notify 的重入安全策略一致）。registered 为去重表，值类型不限。
+pub(crate) fn prune_watch<V>(
+    list: &mut Vec<WatchCb>,
+    registered: &mut HashMap<u32, V>,
+) -> Vec<Callable> {
+    list.retain(|w| {
+        if w.is_alive() {
+            true
+        } else {
+            registered.remove(&w.hash);
+            false
+        }
+    });
+    list.iter().map(|w| w.cb.clone()).collect()
+}
+
 #[derive(GodotClass)]
 #[class(base = RefCounted)]
 pub struct GdBean {
@@ -37,9 +104,9 @@ pub struct GdBean {
     initial_data: VarDictionary,
     bind_ui_text_node: VarDictionary,
 
-    callback_map: HashMap<String, Vec<Callable>>,
+    callback_map: HashMap<String, Vec<WatchCb>>,
     registered_callback: HashMap<u32, bool>,
-    property_cb_map: HashMap<String, Vec<Callable>>,
+    property_cb_map: HashMap<String, Vec<WatchCb>>,
     property_val_cache: HashMap<String, Variant>,
 
     base: Base<RefCounted>,
@@ -462,7 +529,7 @@ impl GdBean {
             self.property_cb_map.insert(key_str.clone(), Vec::new());
         }
         if let Some(callbacks) = self.property_cb_map.get_mut(&key_str) {
-            callbacks.push(cb.clone());
+            callbacks.push(WatchCb::new(cb.clone()));
         }
 
         let first_val = self.base_mut().call(&method_name, &[]);
@@ -484,8 +551,9 @@ impl GdBean {
         let key_str = key.to_string();
         if let Some(cached) = self.property_val_cache.get(&key_str) {
             if &val != cached {
-                if let Some(callbacks) = self.property_cb_map.get(&key_str) {
-                    for cb in callbacks {
+                if let Some(callbacks) = self.property_cb_map.get_mut(&key_str) {
+                    let cbs = prune_watch(callbacks, &mut self.registered_callback);
+                    for cb in &cbs {
                         cb.call(&[val.clone()]);
                     }
                 }
@@ -759,9 +827,10 @@ impl GdBean {
         }
 
         if let Some(callbacks) = self.callback_map.get_mut(&key_str) {
-            callbacks.retain(|cb| cb.is_valid());
-            for cb in callbacks.iter() {
-                // cb.call(&[value.clone(), metas.clone().to_variant()]);
+            // 死监听清理：严禁 is_valid() 探活（self-lambda 悬垂指针 → slot >= slot_max），
+            // 用注册时快照的 ObjectID 判活，见 WatchCb / prune_watch 注释
+            let cbs = prune_watch(callbacks, &mut self.registered_callback);
+            for cb in cbs.iter() {
                 // 获取回调期望的参数数量
                 let arg_count = cb.get_argument_count();
                 let args = if arg_count >= 2 {
@@ -852,7 +921,7 @@ impl GdBean {
             self.callback_map.insert(key_str.clone(), Vec::new());
         }
         if let Some(callbacks) = self.callback_map.get_mut(&key.to_string()) {
-            callbacks.push(callback.clone());
+            callbacks.push(WatchCb::new(callback.clone()));
         }
         self.registered_callback.insert(cbid, true);
 
@@ -867,6 +936,26 @@ impl GdBean {
             vec![val.clone()]
         };
         callback.call(&args);
+    }
+
+    /// 取消键监听（与 watch 配对；hash 与注册时不匹配时静默忽略）。
+    /// 生命周期短于 Bean 的 UI 应在退出时调用，即时、确定性地解除监听；
+    /// 即便不调用，通知路径也会按注册时快照的 ObjectID 自动清理死监听
+    /// （见 WatchCb 注释），本方法只是零成本的主动清理途径。
+    #[func]
+    fn unwatch(&mut self, key: GString, callback: Callable) {
+        let cbid = callback.hash_u32();
+        if !self.registered_callback.contains_key(&cbid) {
+            return;
+        }
+        let key_str = key.to_string();
+        if let Some(list) = self.callback_map.get_mut(&key_str) {
+            list.retain(|w| w.hash != cbid);
+            if list.is_empty() {
+                self.callback_map.remove(&key_str);
+            }
+        }
+        self.registered_callback.remove(&cbid);
     }
 
     #[func]
@@ -973,8 +1062,8 @@ impl GdBean {
 
             let val = self.get_value_by_key(key.clone());
             if let Some(callbacks) = self.callback_map.get_mut(&key_str) {
-                callbacks.retain(|cb| cb.is_valid());
-                for cb in callbacks.iter() {
+                let cbs = prune_watch(callbacks, &mut self.registered_callback);
+                for cb in cbs.iter() {
                     cb.call(&[val.clone(), VarDictionary::new().to_variant()]);
                 }
             }

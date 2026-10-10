@@ -176,3 +176,42 @@ MapManager.try_teleport(角色全局坐标)  # 命中传送点格子即触发切
 - ready 自动加入 `__gdmap_marker` 分组（GdMapManager 经此收集）
 - `contains_world_point(world_pos)` 命中判定 / `get_center()` 格心全局坐标 / `place_at(cell)` 重定位
 - 信号 `s_triggered`（管理器命中时发出）
+
+## 场景分类与随机副本（demo 范本：xiuxian 秘境）
+
+场景分两类：**固定场景**（手工 tscn，注册进 map_paths 即可，如萧宅/青石镇/青云坊）
+与**随机场景**（一张"壳" tscn，运行时按种子重新出图，如秘境 dungeon.tscn）。
+随机场景在注册表里仍是普通别名——「随机」体现在种子与刷怪，不走特殊通道。
+
+实现要点（范本 example/demo/xiuxian/map/dungeon/ + scenes/main/dungeon_manager.gd）：
+
+```gdscript
+# 随机地图 = GdQuickMap 根（静态基础参数）+ 楼层控制器子节点（dungeon_map.gd）：
+# _process 首帧（父地图 ready 之后）：
+map.generate(int(state.floor_seed()))          # 层种子出图（同种子同图，可复现）
+# 随机刷怪：变体 tscn instantiate → 覆写导出值 → map.add_child（enemy 自吸附可行走格）
+# boss 变体：同 tscn 覆写 display_name/max_health/... + scale
+# 清场判定：每只怪 health.s_died 计数，清零发 s_floor_cleared
+```
+
+- 流程分两个场景（进入秘境 = **整场景切换** change_scene，走 GdScene 转场遮罩）：
+  · main 场景 DungeonManager：start_run() 记录入口（固定地图+玩家所在格）→
+    change_scene("探索场景")；从探索回来后 wire 时按 from_map 送回入口
+  · explore 场景 ExploreManager：wire 后 open_map(随机别名) → 接楼层
+    s_floor_cleared → 非 boss 层延时 advance_floor 重开 → boss 层清空发奖 +
+    弹结算窗 → 关闭后 change_scene 回主场景；中途 abandon() 放弃
+  · **清场信号防重放**：楼层控制器 `_alive <= 0` 即发 s_floor_cleared，
+    同帧多杀会重放信号——结算/换层处理器必须带「run 进行中」守卫
+    （`_state.status != RUNNING` 直接忽略），否则结算后迟到的信号会二次发奖
+  · 场景注册表分离：主场景 MapManager 只注册固定场景；随机场景只在
+    explore 场景的 MapManager 注册（auto_load=false，业务手动开图）
+  · 转场防重入红线：GdSceneRoot.change_scene 在转场动画期间（is_changing）
+    拒绝切换——业务侧同步调用可能失败，必须 _process 逐帧重试（带次数上限）；
+    场景节点 _exit_tree 注销组件表必须 call_deferred（场景替换发生在
+    GdSceneRoot 的 Rust 调用栈内，同步回调 unregister_component 会重入 panic）
+- 层种子 = run_seed + floor * 7919（同次挑战内每层不同、单层可复现）；
+  刷怪位置/掉落共用该种子 → 结算结果可追溯
+- 状态数据进 GdBean（XiuDungeonState：status/floor/run_seed/from_map/
+  settle_view/boss_cleared），存档恢复残留 running 由控制器 _wire 作废
+- 进度持久化注意：boss_cleared 这类"一次性"标记必须放 Bean 并提供
+  reset_demo（跨运行确定性测试依赖）

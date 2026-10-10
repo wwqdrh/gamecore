@@ -31,6 +31,8 @@ func _initialize() -> void:
 
 
 func _run() -> void:
+	# 存档隔离：测试全程跑在专用档 _test 上，严禁污染玩家真实存档
+	load("res://example/demo/xiuxian/state/test_save_guard.gd").isolate()
 	var main_scene: PackedScene = load("res://example/demo/xiuxian/scenes/main/index.tscn")
 	check(main_scene != null, "scenes/main/index.tscn 应可加载")
 	if main_scene == null:
@@ -207,4 +209,5 @@ func _finish() -> void:
 		print("[Enemy] RESULT=PASS")
 	else:
 		print("[Enemy] RESULT=FAIL")
+	load("res://example/demo/xiuxian/state/test_save_guard.gd").restore()
 	quit(0 if ok else 1)

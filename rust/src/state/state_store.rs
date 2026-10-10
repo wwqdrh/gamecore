@@ -11,13 +11,15 @@ use std::collections::HashMap;
 use godot::prelude::*;
 use godot::classes::{Engine, IObject, Object};
 
+use super::bean::{prune_watch, WatchCb};
+
 #[derive(GodotClass)]
 #[class(base = Object)]
 pub struct GdState {
     /// 键 -> 当前值
     values: HashMap<String, Variant>,
     /// 键 -> 监听回调列表
-    watchers: HashMap<String, Vec<Callable>>,
+    watchers: HashMap<String, Vec<WatchCb>>,
     /// 回调 hash -> 注册的键（防重复注册 + unwatch 定位）
     registered: HashMap<u32, String>,
     base: Base<Object>,
@@ -48,7 +50,7 @@ impl GdState {
             }
         }
         self.values.insert(key_str.clone(), value.clone());
-        Self::notify(&mut self.watchers, &key_str, value);
+        Self::notify(&mut self.watchers, &mut self.registered, &key_str, value);
     }
 
     /// 读取状态（未设置返回 nil）
@@ -86,7 +88,7 @@ impl GdState {
         self.watchers
             .entry(key_str.clone())
             .or_default()
-            .push(callback.clone());
+            .push(WatchCb::new(callback.clone()));
         self.registered.insert(cbid, key_str.clone());
 
         // 注册即回调当前值（GdBean 同语义）：监听方 _ready 里 watch 即完成初始同步
@@ -108,7 +110,7 @@ impl GdState {
             _ => return,
         }
         if let Some(list) = self.watchers.get_mut(&key_str) {
-            list.retain(|cb| cb.hash_u32() != cbid);
+            list.retain(|w| w.hash != cbid);
             if list.is_empty() {
                 self.watchers.remove(&key_str);
             }
@@ -118,17 +120,16 @@ impl GdState {
 }
 
 impl GdState {
-    /// 通知某键的全部监听者（先克隆回调列表再调用，允许回调内再写状态——重入安全）
+    /// 通知某键的全部监听者（先清理死监听并克隆回调列表再调用，
+    /// 允许回调内再写状态——重入安全；死监听清理见 bean::WatchCb 注释）
     fn notify(
-        watchers: &mut HashMap<String, Vec<Callable>>,
+        watchers: &mut HashMap<String, Vec<WatchCb>>,
+        registered: &mut HashMap<u32, String>,
         key_str: &str,
         value: Variant,
     ) {
         let cbs: Vec<Callable> = match watchers.get_mut(key_str) {
-            Some(list) => {
-                list.retain(|cb| cb.is_valid());
-                list.clone()
-            }
+            Some(list) => prune_watch(list, registered),
             None => return,
         };
         for cb in cbs {

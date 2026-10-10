@@ -1,9 +1,9 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/ui/mainhud/mainhud_skillbar.gd" id="1_0mhdu"]
-[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/ui/mainhud/skill_item.gd" id="2_0r1bx"]
+[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/explore/ui/explore_skillbar.gd" id="1_4bsnr"]
+[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/explore/ui/skill_item.gd" id="2_7j5np"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jsa6q"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8cea0"]
 bg_color = Color(0.14117648, 0.23529412, 0.18039216, 1)
 border_width_left = 2
 border_width_top = 2
@@ -15,14 +15,14 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_oukil"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7elnd"]
 bg_color = Color(0.039215688, 0.078431375, 0.0627451, 0.7529412)
 corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hbhr0"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rfaie"]
 bg_color = Color(0.18039216, 0.2901961, 0.22745098, 1)
 border_width_left = 2
 border_width_top = 2
@@ -34,7 +34,7 @@ corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hq5nd"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kvfuq"]
 bg_color = Color(0.14117648, 0.23529412, 0.18039216, 1)
 border_width_left = 1
 border_width_top = 1
@@ -46,16 +46,16 @@ corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fsgd8"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0jmmg"]
 bg_color = Color(0.30980393, 0.7647059, 0.72156864, 1)
 corner_radius_top_left = 6
 corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
-[node name="SkillBar" type="VBoxContainer" unique_id=246274202]
+[node name="SkillBar" type="VBoxContainer" unique_id=1061301718]
 mouse_filter = 2
-script = ExtResource("1_0mhdu")
+script = ExtResource("1_4bsnr")
 metadata/__script_vars = {
 "skills": [{
 "cd": "",
@@ -86,7 +86,7 @@ metadata/__script_vars = {
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray()
 
-[node name="SkillList" type="GdUIHList" parent="." unique_id=1971672269]
+[node name="SkillList" type="GdUIHList" parent="." unique_id=1775644056]
 layout_mode = 2
 metadata/__signal_s_click_item = "_on_skill_clicked"
 metadata/__script_vars = {
@@ -142,20 +142,20 @@ metadata/__script_data = [{
 "key": "6"
 }]
 
-[node name="SkillSlot" type="Panel" parent="SkillList" unique_id=2035158289]
+[node name="SkillSlot" type="Panel" parent="SkillList" unique_id=676548554]
 visible = false
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_jsa6q")
-script = ExtResource("2_0r1bx")
+theme_override_styles/panel = SubResource("StyleBoxFlat_8cea0")
+script = ExtResource("2_7j5np")
 metadata/__script_vars = {}
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray("icon", "key", "cd")
 
-[node name="IconBox" type="CenterContainer" parent="SkillList/SkillSlot" unique_id=271096372]
+[node name="IconBox" type="CenterContainer" parent="SkillList/SkillSlot" unique_id=496826320]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -167,22 +167,22 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="SlotIcon" type="Label" parent="SkillList/SkillSlot/IconBox" unique_id=1696322326]
+[node name="SlotIcon" type="Label" parent="SkillList/SkillSlot/IconBox" unique_id=49502351]
 layout_mode = 2
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="CdMask" type="Panel" parent="SkillList/SkillSlot" unique_id=762721115]
+[node name="CdMask" type="Panel" parent="SkillList/SkillSlot" unique_id=2055920144]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_oukil")
+theme_override_styles/panel = SubResource("StyleBoxFlat_7elnd")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CdText" type="Label" parent="SkillList/SkillSlot" unique_id=85066824]
+[node name="CdText" type="Label" parent="SkillList/SkillSlot" unique_id=1175796960]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -195,7 +195,7 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="KeyBadge" type="Label" parent="SkillList/SkillSlot" unique_id=343041867]
+[node name="KeyBadge" type="Label" parent="SkillList/SkillSlot" unique_id=1040914257]
 layout_mode = 0
 anchor_top = 1.0
 anchor_right = 1.0
@@ -211,13 +211,13 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="@Panel@96" type="Panel" parent="SkillList" unique_id=2139096200]
+[node name="@Panel@19" type="Panel" parent="SkillList" unique_id=653838295]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_jsa6q")
-script = ExtResource("2_0r1bx")
+theme_override_styles/panel = SubResource("StyleBoxFlat_8cea0")
+script = ExtResource("2_7j5np")
 icon = "🌀"
 key = "1"
 metadata/__script_vars = {}
@@ -229,7 +229,7 @@ metadata/__item_data = {
 "key": "1"
 }
 
-[node name="IconBox" type="CenterContainer" parent="SkillList/@Panel@96" unique_id=51517686]
+[node name="IconBox" type="CenterContainer" parent="SkillList/@Panel@19" unique_id=1799341077]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -241,23 +241,23 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="SlotIcon" type="Label" parent="SkillList/@Panel@96/IconBox" unique_id=1846447342]
+[node name="SlotIcon" type="Label" parent="SkillList/@Panel@19/IconBox" unique_id=1900726828]
 layout_mode = 2
 text = "🌀"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="CdMask" type="Panel" parent="SkillList/@Panel@96" unique_id=1849991288]
+[node name="CdMask" type="Panel" parent="SkillList/@Panel@19" unique_id=1727696510]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_oukil")
+theme_override_styles/panel = SubResource("StyleBoxFlat_7elnd")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CdText" type="Label" parent="SkillList/@Panel@96" unique_id=989994593]
+[node name="CdText" type="Label" parent="SkillList/@Panel@19" unique_id=109421559]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -270,7 +270,7 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="KeyBadge" type="Label" parent="SkillList/@Panel@96" unique_id=1477876640]
+[node name="KeyBadge" type="Label" parent="SkillList/@Panel@19" unique_id=1370678677]
 layout_mode = 0
 anchor_top = 1.0
 anchor_right = 1.0
@@ -287,13 +287,13 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="@Panel@97" type="Panel" parent="SkillList" unique_id=990313364]
+[node name="@Panel@20" type="Panel" parent="SkillList" unique_id=600257749]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_jsa6q")
-script = ExtResource("2_0r1bx")
+theme_override_styles/panel = SubResource("StyleBoxFlat_8cea0")
+script = ExtResource("2_7j5np")
 icon = "⚡"
 key = "2"
 metadata/__script_vars = {}
@@ -305,7 +305,7 @@ metadata/__item_data = {
 "key": "2"
 }
 
-[node name="IconBox" type="CenterContainer" parent="SkillList/@Panel@97" unique_id=216062796]
+[node name="IconBox" type="CenterContainer" parent="SkillList/@Panel@20" unique_id=1222035605]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -317,23 +317,23 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="SlotIcon" type="Label" parent="SkillList/@Panel@97/IconBox" unique_id=1381375484]
+[node name="SlotIcon" type="Label" parent="SkillList/@Panel@20/IconBox" unique_id=2087959636]
 layout_mode = 2
 text = "⚡"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="CdMask" type="Panel" parent="SkillList/@Panel@97" unique_id=217782754]
+[node name="CdMask" type="Panel" parent="SkillList/@Panel@20" unique_id=2037853633]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_oukil")
+theme_override_styles/panel = SubResource("StyleBoxFlat_7elnd")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CdText" type="Label" parent="SkillList/@Panel@97" unique_id=723842208]
+[node name="CdText" type="Label" parent="SkillList/@Panel@20" unique_id=138513519]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -346,7 +346,7 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="KeyBadge" type="Label" parent="SkillList/@Panel@97" unique_id=669475377]
+[node name="KeyBadge" type="Label" parent="SkillList/@Panel@20" unique_id=854068474]
 layout_mode = 0
 anchor_top = 1.0
 anchor_right = 1.0
@@ -363,13 +363,13 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="@Panel@98" type="Panel" parent="SkillList" unique_id=812853201]
+[node name="@Panel@21" type="Panel" parent="SkillList" unique_id=1730280433]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_jsa6q")
-script = ExtResource("2_0r1bx")
+theme_override_styles/panel = SubResource("StyleBoxFlat_8cea0")
+script = ExtResource("2_7j5np")
 icon = "🌙"
 key = "3"
 cd = "8s"
@@ -382,7 +382,7 @@ metadata/__item_data = {
 "key": "3"
 }
 
-[node name="IconBox" type="CenterContainer" parent="SkillList/@Panel@98" unique_id=818509298]
+[node name="IconBox" type="CenterContainer" parent="SkillList/@Panel@21" unique_id=1949193874]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -394,23 +394,23 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="SlotIcon" type="Label" parent="SkillList/@Panel@98/IconBox" unique_id=1492172496]
+[node name="SlotIcon" type="Label" parent="SkillList/@Panel@21/IconBox" unique_id=2004382135]
 layout_mode = 2
 text = "🌙"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="CdMask" type="Panel" parent="SkillList/@Panel@98" unique_id=1441845350]
+[node name="CdMask" type="Panel" parent="SkillList/@Panel@21" unique_id=374801098]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_oukil")
+theme_override_styles/panel = SubResource("StyleBoxFlat_7elnd")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CdText" type="Label" parent="SkillList/@Panel@98" unique_id=655720744]
+[node name="CdText" type="Label" parent="SkillList/@Panel@21" unique_id=288652426]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -424,7 +424,7 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="KeyBadge" type="Label" parent="SkillList/@Panel@98" unique_id=1090196045]
+[node name="KeyBadge" type="Label" parent="SkillList/@Panel@21" unique_id=363775428]
 layout_mode = 0
 anchor_top = 1.0
 anchor_right = 1.0
@@ -441,13 +441,13 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="@Panel@99" type="Panel" parent="SkillList" unique_id=2092005151]
+[node name="@Panel@22" type="Panel" parent="SkillList" unique_id=691513780]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_jsa6q")
-script = ExtResource("2_0r1bx")
+theme_override_styles/panel = SubResource("StyleBoxFlat_8cea0")
+script = ExtResource("2_7j5np")
 icon = "🍃"
 key = "4"
 metadata/__script_vars = {}
@@ -459,7 +459,7 @@ metadata/__item_data = {
 "key": "4"
 }
 
-[node name="IconBox" type="CenterContainer" parent="SkillList/@Panel@99" unique_id=1332723879]
+[node name="IconBox" type="CenterContainer" parent="SkillList/@Panel@22" unique_id=1146535582]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -471,23 +471,23 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="SlotIcon" type="Label" parent="SkillList/@Panel@99/IconBox" unique_id=137872955]
+[node name="SlotIcon" type="Label" parent="SkillList/@Panel@22/IconBox" unique_id=1520011520]
 layout_mode = 2
 text = "🍃"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="CdMask" type="Panel" parent="SkillList/@Panel@99" unique_id=1858550265]
+[node name="CdMask" type="Panel" parent="SkillList/@Panel@22" unique_id=2067952766]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_oukil")
+theme_override_styles/panel = SubResource("StyleBoxFlat_7elnd")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CdText" type="Label" parent="SkillList/@Panel@99" unique_id=696628388]
+[node name="CdText" type="Label" parent="SkillList/@Panel@22" unique_id=1869220488]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -500,7 +500,7 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="KeyBadge" type="Label" parent="SkillList/@Panel@99" unique_id=2122632483]
+[node name="KeyBadge" type="Label" parent="SkillList/@Panel@22" unique_id=960822965]
 layout_mode = 0
 anchor_top = 1.0
 anchor_right = 1.0
@@ -517,13 +517,13 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="@Panel@100" type="Panel" parent="SkillList" unique_id=178132182]
+[node name="@Panel@23" type="Panel" parent="SkillList" unique_id=1867904185]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_jsa6q")
-script = ExtResource("2_0r1bx")
+theme_override_styles/panel = SubResource("StyleBoxFlat_8cea0")
+script = ExtResource("2_7j5np")
 icon = "🧘"
 key = "5"
 metadata/__script_vars = {}
@@ -535,7 +535,7 @@ metadata/__item_data = {
 "key": "5"
 }
 
-[node name="IconBox" type="CenterContainer" parent="SkillList/@Panel@100" unique_id=1807980625]
+[node name="IconBox" type="CenterContainer" parent="SkillList/@Panel@23" unique_id=198540621]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -547,23 +547,23 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="SlotIcon" type="Label" parent="SkillList/@Panel@100/IconBox" unique_id=1863561213]
+[node name="SlotIcon" type="Label" parent="SkillList/@Panel@23/IconBox" unique_id=1336610893]
 layout_mode = 2
 text = "🧘"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="CdMask" type="Panel" parent="SkillList/@Panel@100" unique_id=400220434]
+[node name="CdMask" type="Panel" parent="SkillList/@Panel@23" unique_id=648002360]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_oukil")
+theme_override_styles/panel = SubResource("StyleBoxFlat_7elnd")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CdText" type="Label" parent="SkillList/@Panel@100" unique_id=718453874]
+[node name="CdText" type="Label" parent="SkillList/@Panel@23" unique_id=929273266]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -576,7 +576,7 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="KeyBadge" type="Label" parent="SkillList/@Panel@100" unique_id=852751991]
+[node name="KeyBadge" type="Label" parent="SkillList/@Panel@23" unique_id=1806150733]
 layout_mode = 0
 anchor_top = 1.0
 anchor_right = 1.0
@@ -593,13 +593,13 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="@Panel@101" type="Panel" parent="SkillList" unique_id=2125325868]
+[node name="@Panel@24" type="Panel" parent="SkillList" unique_id=1527713734]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_jsa6q")
-script = ExtResource("2_0r1bx")
+theme_override_styles/panel = SubResource("StyleBoxFlat_8cea0")
+script = ExtResource("2_7j5np")
 icon = "🗡️"
 key = "6"
 metadata/__script_vars = {}
@@ -611,7 +611,7 @@ metadata/__item_data = {
 "key": "6"
 }
 
-[node name="IconBox" type="CenterContainer" parent="SkillList/@Panel@101" unique_id=1813435281]
+[node name="IconBox" type="CenterContainer" parent="SkillList/@Panel@24" unique_id=1409828085]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -623,23 +623,23 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="SlotIcon" type="Label" parent="SkillList/@Panel@101/IconBox" unique_id=599599950]
+[node name="SlotIcon" type="Label" parent="SkillList/@Panel@24/IconBox" unique_id=1511621198]
 layout_mode = 2
 text = "🗡️"
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="CdMask" type="Panel" parent="SkillList/@Panel@101" unique_id=1878082476]
+[node name="CdMask" type="Panel" parent="SkillList/@Panel@24" unique_id=1691795109]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_oukil")
+theme_override_styles/panel = SubResource("StyleBoxFlat_7elnd")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CdText" type="Label" parent="SkillList/@Panel@101" unique_id=1669887865]
+[node name="CdText" type="Label" parent="SkillList/@Panel@24" unique_id=1844140243]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -652,7 +652,7 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="KeyBadge" type="Label" parent="SkillList/@Panel@101" unique_id=2114796249]
+[node name="KeyBadge" type="Label" parent="SkillList/@Panel@24" unique_id=1066898088]
 layout_mode = 0
 anchor_top = 1.0
 anchor_right = 1.0
@@ -669,11 +669,11 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="XpBar" type="Panel" parent="." unique_id=1488304273]
+[node name="XpBar" type="Panel" parent="." unique_id=582906872]
 custom_minimum_size = Vector2(500, 26)
 layout_mode = 2
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_hbhr0")
+theme_override_styles/panel = SubResource("StyleBoxFlat_rfaie")
 metadata/__script_vars = {
 "skills": [{
 "cd": "",
@@ -702,7 +702,7 @@ metadata/__script_vars = {
 }]
 }
 
-[node name="@HBoxContainer@95" type="HBoxContainer" parent="XpBar" unique_id=1321102824]
+[node name="@HBoxContainer@18" type="HBoxContainer" parent="XpBar" unique_id=495578640]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -713,35 +713,35 @@ offset_bottom = -4.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Label@93" type="Label" parent="XpBar/@HBoxContainer@95" unique_id=882381281]
+[node name="@Label@16" type="Label" parent="XpBar/@HBoxContainer@18" unique_id=95986440]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
 text = "💠"
 vertical_alignment = 1
 
-[node name="@Label@94" type="Label" parent="XpBar/@HBoxContainer@95" unique_id=211891082]
+[node name="@Label@17" type="Label" parent="XpBar/@HBoxContainer@18" unique_id=1086219867]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "灵气经验"
 vertical_alignment = 1
 
-[node name="XpTrack" type="Panel" parent="XpBar/@HBoxContainer@95" unique_id=649075651]
+[node name="XpTrack" type="Panel" parent="XpBar/@HBoxContainer@18" unique_id=235772055]
 custom_minimum_size = Vector2(0, 12)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_hq5nd")
+theme_override_styles/panel = SubResource("StyleBoxFlat_kvfuq")
 
-[node name="XpFill" type="Panel" parent="XpBar/@HBoxContainer@95/XpTrack" unique_id=1273613725]
+[node name="XpFill" type="Panel" parent="XpBar/@HBoxContainer@18/XpTrack" unique_id=1459590586]
 custom_minimum_size = Vector2(0, 12)
 layout_mode = 0
 anchor_bottom = 1.0
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_fsgd8")
+theme_override_styles/panel = SubResource("StyleBoxFlat_0jmmg")
 metadata/__anchor = "left_wide"
 
-[node name="XpText" type="Label" parent="XpBar/@HBoxContainer@95" unique_id=681060939]
+[node name="XpText" type="Label" parent="XpBar/@HBoxContainer@18" unique_id=2024815344]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "0/100"

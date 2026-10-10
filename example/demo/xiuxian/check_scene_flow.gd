@@ -12,6 +12,8 @@ func _initialize() -> void:
 
 
 func _run() -> void:
+	# 存档隔离：测试全程跑在专用档 _test 上，严禁污染玩家真实存档
+	load("res://example/demo/xiuxian/state/test_save_guard.gd").isolate()
 	var ok := true
 	root.size = Vector2(1920, 1080)
 
@@ -19,6 +21,7 @@ func _run() -> void:
 	var packed: PackedScene = load("res://example/demo/xiuxian/index.tscn")
 	if packed == null:
 		push_error("[Flow] xiuxian/index.tscn 加载失败")
+		load("res://example/demo/xiuxian/state/test_save_guard.gd").restore()
 		quit(1)
 		return
 	var scene_root: Node = packed.instantiate()
@@ -70,9 +73,20 @@ func _run() -> void:
 			push_error("[Flow] 标题按钮未水平居中")
 			ok = false
 
-	# 4. 点开始游戏 → 转场（0.5s 淡出 + 0.5s 淡入）→ main 场景
+	# 4. 点开始游戏 → 存档弹窗 → 选空槽三进入（不碰玩家真实档）→ 转场 → main 场景
 	if btn_start != null:
+		# 先删槽三测试档，保证「空档 → 新游戏」路径
+		if FileAccess.file_exists("user://coredata_3.data"):
+			DirAccess.remove_absolute("user://coredata_3.data")
 		btn_start.emit_signal("pressed")
+		# 弹窗打开（0.22s 动画）
+		await create_timer(0.6).timeout
+		var slot3_btn: Control = scene_root.find_child("Slot3Btn", true, false)
+		if slot3_btn == null:
+			push_error("[Flow] 点开始后未找到存档弹窗槽位按钮（SaveModal/Slot3Btn）")
+			ok = false
+		else:
+			slot3_btn.emit_signal("pressed")
 		# 转场最长 2×0.5s + 余量
 		await create_timer(2.4).timeout
 		for i in 4:
@@ -104,4 +118,9 @@ func _run() -> void:
 			ok = false
 
 	print("[Flow] RESULT=%s" % ("PASS" if ok else "FAIL"))
+	load("res://example/demo/xiuxian/state/test_save_guard.gd").restore()
+	if FileAccess.file_exists("user://coredata_3.data"):
+		DirAccess.remove_absolute("user://coredata_3.data")
+	if FileAccess.file_exists("user://coredata_3.data"):
+		DirAccess.remove_absolute("user://coredata_3.data")
 	quit(0 if ok else 1)

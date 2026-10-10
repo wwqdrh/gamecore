@@ -284,3 +284,20 @@ role/
   范围边沿/E 触发/推进/复位/解除暂停/商人选项 open_ui 开商店）。注意 E 键边沿：
   release 与 press 同物理帧会丢边沿，测试里两次按键间必须 `await physics_frame`
   消费释放状态。
+
+## 日历/时间驱动的剧情解锁（demo 范本：宗门大比）
+
+对话 flag 不只能由对话自己置——外部系统（日历/计时器）也能写 flag 驱动
+timeline 门控。范本：xiuxian 宗门大比（task_sect_tournament，unlock=false）：
+
+- `CalendarManager`（主场景根，0.5s 节流）按 WeatherManager 游戏时长推算
+  「第 N 天」写 XiuCalendarState（mainhud 徽章 watch）；
+- 第 7 天 → `XiuTaskState.unlock_task()+accept_task()`（自动接取）+
+  `XiuDialogState.set_flag("day7_arrived")` + toast；
+- 演武教头 timeline 各段按 `day7_arrived` / `task_sect_tournament_accepted` /
+  `match_started` / `tournament_won` / `task_sect_tournament_done` 门控流转；
+  NPC 专属动作（@start_match 刷比武对手）写成 npc.gd 方法（对话命令
+  分发第 2 优先级），对手 `health.s_died` 回调置 flag + 推进任务。
+- 外部系统解锁要幂等：重进应用/跳天重复调用不得重复接取（status 判断 +
+  set_flag 天然幂等）；存档恢复后补触发一次（wire 时按当前天数自查）。
+- 验收：`check_tournament_flow.gd`（天数推进/自动解锁/开赛刷怪/夺魁/领奖/幂等）。

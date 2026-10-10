@@ -1,11 +1,12 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/title/ui/title_menu.gd" id="1_ew0ey"]
+[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/title/ui/title_menu.gd" id="1_ybnmy"]
+[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/title/ui/save_modal.gd" id="2_jjqqh"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ybnmy"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xtous"]
 bg_color = Color(0.08627451, 0.1254902, 0.17254902, 1)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jjqqh"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_x608s"]
 content_margin_left = 16.0
 content_margin_top = 8.0
 content_margin_right = 16.0
@@ -21,7 +22,7 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xtous"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sdx7q"]
 content_margin_left = 16.0
 content_margin_top = 8.0
 content_margin_right = 16.0
@@ -37,7 +38,7 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_x608s"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pvr2p"]
 content_margin_left = 16.0
 content_margin_top = 8.0
 content_margin_right = 16.0
@@ -48,18 +49,195 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[node name="TitleMenu" type="Panel" unique_id=1662295409]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rctkr"]
+bg_color = Color(0.10980392, 0.15294118, 0.2, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.5411765, 0.41568628, 0.11764706, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_t8b2m"]
+bg_color = Color(0.14117648, 0.1882353, 0.24313726, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.22745098, 0.2901961, 0.3529412, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qtrng"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.18039216, 0.2901961, 0.22745098, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.5411765, 0.41568628, 0.11764706, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_x211t"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.08039216, 0.1901961, 0.12745097, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.5411765, 0.41568628, 0.11764706, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ifxw0"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.30039215, 0.4101961, 0.34745097, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2freq"]
+bg_color = Color(0.14117648, 0.1882353, 0.24313726, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.22745098, 0.2901961, 0.3529412, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_k73o4"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.18039216, 0.2901961, 0.22745098, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.5411765, 0.41568628, 0.11764706, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_t2s7y"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.08039216, 0.1901961, 0.12745097, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.5411765, 0.41568628, 0.11764706, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2m5mp"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.30039215, 0.4101961, 0.34745097, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gh7m7"]
+bg_color = Color(0.14117648, 0.1882353, 0.24313726, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.22745098, 0.2901961, 0.3529412, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_o8r7k"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.18039216, 0.2901961, 0.22745098, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.5411765, 0.41568628, 0.11764706, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_d0xow"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.08039216, 0.1901961, 0.12745097, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.5411765, 0.41568628, 0.11764706, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xnokl"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.30039215, 0.4101961, 0.34745097, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="TitleMenu" type="Panel" unique_id=921323367]
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_ybnmy")
-script = ExtResource("1_ew0ey")
+theme_override_styles/panel = SubResource("StyleBoxFlat_xtous")
+script = ExtResource("1_ybnmy")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray()
 
-[node name="MenuColumn" type="VBoxContainer" parent="." unique_id=1911997796]
+[node name="MenuColumn" type="VBoxContainer" parent="." unique_id=1706091263]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -67,53 +245,254 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Control@2" type="Control" parent="MenuColumn" unique_id=1445369211]
+[node name="@Control@2" type="Control" parent="MenuColumn" unique_id=642468076]
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
 
-[node name="@Label@3" type="Label" parent="MenuColumn" unique_id=1526036060]
+[node name="@Label@3" type="Label" parent="MenuColumn" unique_id=2014116523]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9098039, 0.8509804, 0.65882355, 1)
 text = "仙  途"
 horizontal_alignment = 1
 
-[node name="@Label@4" type="Label" parent="MenuColumn" unique_id=1913774139]
+[node name="@Label@4" type="Label" parent="MenuColumn" unique_id=2035843936]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.5411765, 0.6039216, 0.6901961, 1)
 text = "— 修 仙 问 道 · demo —"
 horizontal_alignment = 1
 
-[node name="@Control@5" type="Control" parent="MenuColumn" unique_id=1144433211]
+[node name="@Control@5" type="Control" parent="MenuColumn" unique_id=1727590934]
 custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="BtnStart" type="Button" parent="MenuColumn" unique_id=180582733]
+[node name="BtnStart" type="Button" parent="MenuColumn" unique_id=1029058872]
 custom_minimum_size = Vector2(260, 56)
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_styles/normal = SubResource("StyleBoxFlat_jjqqh")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_xtous")
-theme_override_styles/hover = SubResource("StyleBoxFlat_x608s")
+theme_override_styles/normal = SubResource("StyleBoxFlat_x608s")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_sdx7q")
+theme_override_styles/hover = SubResource("StyleBoxFlat_pvr2p")
 theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "开 始 游 戏"
 metadata/__signal_pressed = "_on_start_pressed"
 
-[node name="BtnQuit" type="Button" parent="MenuColumn" unique_id=855782960]
+[node name="BtnQuit" type="Button" parent="MenuColumn" unique_id=1195157764]
 custom_minimum_size = Vector2(260, 56)
 layout_mode = 2
 size_flags_horizontal = 4
 text = "退 出 游 戏"
 metadata/__signal_pressed = "_on_quit_pressed"
 
-[node name="@Control@6" type="Control" parent="MenuColumn" unique_id=1867554675]
+[node name="@Control@6" type="Control" parent="MenuColumn" unique_id=1175659365]
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
 
-[node name="@Label@7" type="Label" parent="MenuColumn" unique_id=2061881337]
+[node name="@Label@7" type="Label" parent="MenuColumn" unique_id=1493277116]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.3529412, 0.41568628, 0.47843137, 1)
 text = "ESC 打开设置 · GML 框架 demo"
 horizontal_alignment = 1
+
+[node name="SaveModal" type="GdUIModal" parent="." unique_id=1518344272]
+content_margin = 56
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+metadata/__ui_id = "SaveModal"
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="Overlay" type="ColorRect" parent="SaveModal" unique_id=1266720689]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.55)
+
+[node name="ContentArea" type="MarginContainer" parent="SaveModal" unique_id=74918196]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+theme_override_constants/margin_left = 56
+theme_override_constants/margin_top = 56
+theme_override_constants/margin_right = 56
+theme_override_constants/margin_bottom = 56
+
+[node name="SaveRoot" type="Panel" parent="SaveModal/ContentArea" unique_id=1594728258]
+custom_minimum_size = Vector2(560, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_rctkr")
+script = ExtResource("2_jjqqh")
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray()
+
+[node name="@VBoxContainer@14" type="VBoxContainer" parent="SaveModal/ContentArea/SaveRoot" unique_id=650079977]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = -24.0
+mouse_filter = 2
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="Title" type="Label" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@14" unique_id=166060606]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9098039, 0.8509804, 0.65882355, 1)
+text = "选 择 存 档"
+horizontal_alignment = 1
+
+[node name="Slot1" type="Panel" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@14" unique_id=520045691]
+custom_minimum_size = Vector2(0, 84)
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_t8b2m")
+
+[node name="@HBoxContainer@9" type="HBoxContainer" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@14/Slot1" unique_id=1688576410]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = -14.0
+offset_bottom = -14.0
+mouse_filter = 2
+metadata/__anchor = "full"
+
+[node name="Slot1Name" type="Label" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@14/Slot1/@HBoxContainer@9" unique_id=78175938]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+text = "存档一"
+
+[node name="@VBoxContainer@8" type="VBoxContainer" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@14/Slot1/@HBoxContainer@9" unique_id=1176805459]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="Slot1Line1" type="Label" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@14/Slot1/@HBoxContainer@9/@VBoxContainer@8" unique_id=35356816]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.68235296, 0.73333335, 0.7882353, 1)
+text = "暂无存档"
+
+[node name="Slot1Line2" type="Label" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@14/Slot1/@HBoxContainer@9/@VBoxContainer@8" unique_id=1364148392]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.68235296, 0.73333335, 0.7882353, 1)
+
+[node name="Slot1Btn" type="Button" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@14/Slot1/@HBoxContainer@9" unique_id=1714681184]
+custom_minimum_size = Vector2(120, 44)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_qtrng")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_x211t")
+theme_override_styles/hover = SubResource("StyleBoxFlat_ifxw0")
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "新游戏"
+metadata/__signal_pressed = "_on_slot1_pressed"
+
+[node name="Slot2" type="Panel" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@14" unique_id=768911929]
+custom_minimum_size = Vector2(0, 84)
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_2freq")
+
+[node name="@HBoxContainer@11" type="HBoxContainer" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@14/Slot2" unique_id=1571184385]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = -14.0
+offset_bottom = -14.0
+mouse_filter = 2
+metadata/__anchor = "full"
+
+[node name="Slot2Name" type="Label" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@14/Slot2/@HBoxContainer@11" unique_id=1260681352]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+text = "存档二"
+
+[node name="@VBoxContainer@10" type="VBoxContainer" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@14/Slot2/@HBoxContainer@11" unique_id=617215812]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="Slot2Line1" type="Label" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@14/Slot2/@HBoxContainer@11/@VBoxContainer@10" unique_id=406385195]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.68235296, 0.73333335, 0.7882353, 1)
+text = "暂无存档"
+
+[node name="Slot2Line2" type="Label" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@14/Slot2/@HBoxContainer@11/@VBoxContainer@10" unique_id=558196983]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.68235296, 0.73333335, 0.7882353, 1)
+
+[node name="Slot2Btn" type="Button" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@14/Slot2/@HBoxContainer@11" unique_id=2103353496]
+custom_minimum_size = Vector2(120, 44)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_k73o4")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_t2s7y")
+theme_override_styles/hover = SubResource("StyleBoxFlat_2m5mp")
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "新游戏"
+metadata/__signal_pressed = "_on_slot2_pressed"
+
+[node name="Slot3" type="Panel" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@14" unique_id=1625408241]
+custom_minimum_size = Vector2(0, 84)
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_gh7m7")
+
+[node name="@HBoxContainer@13" type="HBoxContainer" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@14/Slot3" unique_id=644514439]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = -14.0
+offset_bottom = -14.0
+mouse_filter = 2
+metadata/__anchor = "full"
+
+[node name="Slot3Name" type="Label" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@14/Slot3/@HBoxContainer@13" unique_id=2063075431]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+text = "存档三"
+
+[node name="@VBoxContainer@12" type="VBoxContainer" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@14/Slot3/@HBoxContainer@13" unique_id=458965618]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="Slot3Line1" type="Label" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@14/Slot3/@HBoxContainer@13/@VBoxContainer@12" unique_id=1257983698]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.68235296, 0.73333335, 0.7882353, 1)
+text = "暂无存档"
+
+[node name="Slot3Line2" type="Label" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@14/Slot3/@HBoxContainer@13/@VBoxContainer@12" unique_id=1692586293]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.68235296, 0.73333335, 0.7882353, 1)
+
+[node name="Slot3Btn" type="Button" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@14/Slot3/@HBoxContainer@13" unique_id=1675319585]
+custom_minimum_size = Vector2(120, 44)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_o8r7k")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_d0xow")
+theme_override_styles/hover = SubResource("StyleBoxFlat_xnokl")
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "新游戏"
+metadata/__signal_pressed = "_on_slot3_pressed"
+
+[node name="BackBtn" type="Button" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@14" unique_id=2076807352]
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+text = "返 回"
+metadata/__signal_pressed = "_on_back_pressed"

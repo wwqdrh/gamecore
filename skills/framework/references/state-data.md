@@ -14,7 +14,43 @@ var slot = GDCORE.get_save_id()
 GDCORE.add_global_node("player", player)
 var p = GDCORE.get_global_node("player")
 GDCORE.remove_global_node("player")
+
+# 每存档累计游玩时长（真实秒，跨开关应用累积）
+var secs = GDCORE.get_play_time()   # 当前存档：历史落盘值 + 本次会话已进行时长
+GDCORE.flush_play_time()            # 立即落盘（切存档/退出/每 30 秒自动触发，一般无需手动调）
 ```
+
+> 游玩时长持久化在各存档 GdCoreData 的 `playtime;total`（真实秒）。
+> 自动落盘时机：`set_save_id` 切档（并入旧档）、进程退出、每 30 秒兜底
+> （崩退最多丢 30 秒）。GdWeatherManager 的 `auto_start_from_ticks` 默认
+> 取此值作为初始时间基准。
+
+### 存档槽位 / 新游戏与继续游戏
+
+- 存档是否存在 = `FileAccess.file_exists("user://coredata_{id}.data")`（id 空 = `coredata.data`）。
+- **切档语义已内建**：`set_save_id(id)` 对所有已注册 Bean 执行 `do_switch_core`——
+  新档（空库）→ Bean 字段重置为 `initial_data` 默认值并写盘（= 新游戏）；
+  旧档 → 从文件读回全部字段并广播 watch（= 继续游戏）。业务只需切 id 后进场景。
+- **读非当前档摘要**（存档列表 UI）：临时 `GdCoreData.build(path, "{}", false, "init")`
+  直查文件字段（如 `init;xiuxian_character;level`、`playtime;total`），不影响当前档缓存；
+  不存在的文件 build 只给内存默认值，不会建文件。update 每次立即落盘。
+- 范本：`example/demo/xiuxian/scenes/title/ui/save_modal.gd`（3 槽位弹窗，
+  空档「新游戏」/ 有档「境界·天数·时长 + 继续游戏」）+ `check_title_save.gd`。
+
+### 测试存档隔离（铁律）
+
+demo 无头测试**严禁**跑在玩家真实默认档（save_id ""）上——reset_demo/场景流
+写入/标题入口测试都会整档覆盖玩家进度（与玩家进程 30s playtime flush 互相
+last-writer-wins）。规则：
+
+- 测试 `_run()` 开头（任何 `XxxState.ins()` 之前）调用
+  `load("res://example/demo/xiuxian/state/test_save_guard.gd").isolate()`，
+  退出前 `....restore()`（isolate 自愈：清残留测试档再切 "_test"）。
+- **走标题 UI 进入游戏的测试**（dungeon_flow / scene_flow 等）必须点
+  **空槽三**（Slot3Btn，save_id "3"）进入并清理 coredata_3.data——
+  存档一 = 玩家真实活档，点它 = 在玩家进程实时写入的档上断言，必翻车。
+- check_title_save（存档 UI 专项）自带零污染协议：槽一只读不写。
+- 探针工具：`xiuxian/state/probe_save.gd`（解密查各档 level/day/stones/playtime）。
 
 ## GdCoreData — 核心数据引擎（Resource）
 
@@ -64,6 +100,7 @@ bean.update(key, value, metas, force=true)          # 单字段更新
 bean.updates({"a": 1, "b": 2}, metas, force=true)   # 批量更新
 bean.emit(PackedStringArray(["times"]), force=true) # 手动推送变更
 bean.watch(key, callback)                           # 订阅
+bean.unwatch(key, callback)                         # 退订（key/cb 与注册时不匹配静默忽略）
 bean.watch_property(key, cb)                        # 属性订阅
 bean.get_value_by_key(key)                          # 读
 bean.flush(excludes)                                # 立即冲刷待推送变更
@@ -74,6 +111,16 @@ bean.bind_node_text("name", control)                # 直接绑定控件文本
 bean.update_by_expression(expr)                     # 表达式更新
 bean.switch_core(core)                              # 切换 CoreData 后端
 ```
+
+**watch 死监听自动清理（框架行为）**：Bean 是进程级单例，生命周期长于场景——
+UI 注册 watch 后随场景释放时，死回调残留在 Bean 的监听表里。框架在每次通知前
+按【注册时快照的目标 ObjectID】判活并自动清理死监听（GdBean / GdState / GdEventBus
+统一此机制）。**严禁改回用 `Callable::is_valid()` 探活**：GDScript self-lambda
+（self 为 Node/Control 等非 RefCounted）在引擎侧持 self 裸指针，对象释放后探活
+会解引用悬垂指针读出垃圾 ObjectID，ObjectDB 报 `Condition "slot >= slot_max"`
+（engine object.h get_instance 越界断言，报错点在 Bean.update 的通知链上）。
+生命周期短于 Bean 的 UI 可在 `_exit_tree` 里 `unwatch` 即时退订（可选，不调用
+也会被自动清理）。
 
 ## UI 联动（典型闭环）
 

@@ -48,6 +48,22 @@ func _on_menu_pressed(btn: Control) -> void:
 	_state().set_state(KEY_MENU, NAME_TO_ID.get(String(btn.name), ""))
 
 
+## 「秘境」动作按钮：不进功能页互斥，直接经组件表调 DungeonManager.start_run()
+## （跨组件查找一律走 GdSceneRoot 组件注册表，禁止 get_parent 链/find_child 魔法）
+func _on_dungeon_pressed(_btn: Control) -> void:
+	var mgr: Node = _scene_root().get_component("DungeonManager")
+	if mgr != null and mgr.has_method("start_run"):
+		mgr.start_run()
+
+
+## 场景根（GdSceneRoot）：经 GDCORE 全局节点表获取（manager_id 默认 "default"）
+func _scene_root() -> Node:
+	if not Engine.has_singleton("GDCORE"):
+		return null
+	var node: Object = Engine.get_singleton("GDCORE").get_global_node("default")
+	return node if node is Node else null
+
+
 ## 状态下行：互斥高亮当前功能按钮
 func _on_menu_changed(value: Variant) -> void:
 	if value == null:

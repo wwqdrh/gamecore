@@ -60,13 +60,15 @@ func advance_to_end(dialogue: Node, dialog_box: Node) -> void:
 
 
 func _run() -> void:
+	# 存档隔离：测试全程跑在专用档 _test 上，严禁污染玩家真实存档
+	load("res://example/demo/xiuxian/state/test_save_guard.gd").isolate()
 	# 0. 状态基线
 	var tasks: XiuTaskState = XiuTaskState.ins()
 	var ch: XiuCharacterState = XiuCharacterState.ins()
 	var dlg: XiuDialogState = XiuDialogState.ins()
 	tasks.reset_demo()
 	ch.reset_demo()
-	check(XiuTaskTable.count() == 9, "任务定义表应有 9 条（8 迁移 + side_003），实际 %d" % XiuTaskTable.count())
+	check(XiuTaskTable.count() == 10, "任务定义表应有 10 条（8 迁移 + side_003 + sect_tournament），实际 %d" % XiuTaskTable.count())
 
 	# 1. 装配
 	var main_scene: PackedScene = load("res://example/demo/xiuxian/scenes/main/index.tscn")
@@ -157,12 +159,14 @@ func _run() -> void:
 	check(maid_trigger.start_dialog(), "小翠对话应可触发（直接调用）")
 	var maid_text := str(dialog_box.text_label.text)
 	check(maid_text.contains("陪我聊天"), "应进入任务对话段，实际：%s" % maid_text)
-	await advance_once(dialogue, dialog_box)  # 第二行挂 @task_complete:side_003
+	await advance_once(dialogue, dialog_box)  # 第 2 行（八卦）
+	await advance_once(dialogue, dialog_box)  # 第 3 行（大比伏笔）
+	await advance_once(dialogue, dialog_box)  # 第 4 行挂 @task_complete:side_003
 	check(tasks.get_task_status("side_003") == "submitted", "任务应完成并提交（submitted）")
 	check(int(ch.coins) == 50, "奖励应为 50 金币，实际 %d" % int(ch.coins))
 	check(dlg.has_flag("task_side_003_done"), "应同步任务完成 flag")
 	check(not tasks.complete_task("side_003"), "已提交任务重复完成应返回 false")
-	await advance_once(dialogue, dialog_box, "聊痛快")
+	await advance_once(dialogue, dialog_box, "知道啦")
 	await advance_to_end(dialogue, dialog_box)
 	check(not dialogue.is_playing(), "小翠对话应播完")
 	print("[Task] completed: coins=%s" % str(ch.coins))
@@ -190,4 +194,5 @@ func _finish() -> void:
 		print("[Task] RESULT=PASS")
 	else:
 		print("[Task] RESULT=FAIL")
+	load("res://example/demo/xiuxian/state/test_save_guard.gd").restore()
 	quit(0 if ok else 1)
