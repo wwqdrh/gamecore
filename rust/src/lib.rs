@@ -56,8 +56,12 @@ unsafe impl ExtensionLibrary for GameKitCore {
     }
 
     // gml 自举钩子：Scene stage init 时 main loop 尚未创建，延迟到首帧连接
-    // node_added 监听（幂等，连接成功后立即返回）
+    // node_added 监听（幂等，连接成功后立即返回）。
+    // 同时在进程首帧一次性恢复持久化设置（音频/全屏/垂直同步）——不能放
+    // Scene stage init（main loop 未创建，根窗口不可用），也不能依赖设置 UI
+    // 懒构建（标题场景无设置 UI，全屏要进主场景才生效）。
     fn on_main_loop_frame() {
+        manager::setting::restore_persisted_once();
         state::gdcore::connect_gml_auto_connect_hook();
     }
 

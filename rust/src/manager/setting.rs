@@ -14,11 +14,15 @@ use godot::classes::{
 use godot::classes::display_server::VSyncMode;
 use godot::classes::window::Mode;
 use godot::global::{linear_to_db, db_to_linear};
+use std::sync::atomic::{AtomicBool, Ordering};
 
 use crate::state::coredata::GdCoreData;
 
 /// 已知设置的持久化键名（音量按总线名小写 + fullscreen/vsync）
 const VOLUME_BUSES: [&str; 4] = ["Master", "Music", "Audio", "Voice"];
+
+/// 进程级一次性恢复标记（restore_persisted_once）
+static SETTINGS_RESTORED: AtomicBool = AtomicBool::new(false);
 
 #[derive(GodotClass)]
 #[class(base = RefCounted)]
@@ -158,9 +162,16 @@ impl GdViewSetting {
                 Self::apply_volume(&bus_name, v.to::<f64>());
             }
         }
+        // 全屏恢复：只应用"开启"偏好。窗口化是进程启动默认态，restore 严禁
+        // 主动强制 WINDOWED——本管理器是懒构建的（首个设置组件 ready 时才 build），
+        // 若在会话中途强制窗口化会踢掉用户已做的系统级全屏（如 macOS 绿灯按钮），
+        // 表现为「标题页全屏 → 点开始游戏进主场景时被弹回固定窗口」。
+        // 关闭全屏只应来自用户显式切换（SettingSwitch → set_fullscreen）。
         if self.has_stored(GString::from("fullscreen")) {
             let fs = self.get_value(GString::from("fullscreen"), false.to_variant());
-            self.apply_fullscreen(fs.to::<bool>());
+            if fs.to::<bool>() {
+                self.apply_fullscreen(true);
+            }
         }
         if self.has_stored(GString::from("vsync")) && !Self::is_headless() {
             let vs = self.get_value(GString::from("vsync"), true.to_variant());
@@ -168,6 +179,26 @@ impl GdViewSetting {
             DisplayServer::singleton().window_set_vsync_mode(mode);
         }
     }
+}
+
+/// 应用启动时一次性恢复持久化设置（音频音量/全屏/垂直同步）。
+///
+/// 背景：此前 GdViewSetting 只在设置 UI（SettingSwitch 等接口组件）首次
+/// ready 时才经 ui_form::fetch_setting 懒构建并 load_and_apply——标题场景
+/// 没有设置 UI，用户在设置里开启的全屏要等进主场景才生效（症状：
+/// 「启动在标题页是窗口，点开始游戏进主场景才突然全屏」）。改为进程
+/// 首帧（lib.rs on_main_loop_frame）主动恢复，每进程仅一次（幂等）。
+pub fn restore_persisted_once() {
+    if SETTINGS_RESTORED.swap(true, Ordering::Relaxed) {
+        return;
+    }
+    // build 内部 do_init → load_and_apply：恢复音量 + 全屏（只应用 true，
+    // 详见 load_and_apply 注释）+ 垂直同步。headless / 编辑器内自动跳过应用。
+    let _setting = GdViewSetting::build(
+        GString::from("user://settings.data"),
+        GString::from("setting"),
+    );
+    godot_print!("[GdViewSetting] 启动恢复持久化设置（音频/全屏/垂直同步）");
 }
 
 // 私有实现

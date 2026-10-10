@@ -66,7 +66,14 @@ enemy.add_child(hitbox)
   持枪=auto_fire_mouse 随装备联动开关，左键/右键都开火；未持枪时左键留给寻路）
   + `role/player/bullet.tscn`
   （根 type="GdBullet"、mask=4、Polygon2D 圆形视觉）
-- 验收：`check_enemy_flow.gd`（装配/追击/接触伤害/子弹减伤数值/击杀回收/连通性）
+- 玩家近战/装备系统：同脚本 GdMelee + WeaponMount 武器挂点——
+  mainhud 装备栏选中槽位写 GdState "mainhud.equip"，player watch 后按
+  物品 id 切换攻击模式（gun=射击 / sword_qingfeng=近战 / 其他=徒手），
+  并把对应武器图形节点装配到 WeaponMount（剑=Polygon2D 剑刃 + 护手握柄，
+  枪=矩形枪身枪口，简单基础图形占位）；挥击时挂点转向回弹做动感反馈
+- 验收：`check_enemy_flow.gd`（装配/追击/接触伤害/子弹减伤数值/击杀回收/连通性）、
+  `check_equip_flow.gd`（装备栏数字键/点击选择/模式互斥/武器图形装配/挥击信号）、
+  `check_melee.gd`（近战组件单元验收）
 
 ## GdShooter — 射击组件（Node）
 
@@ -108,6 +115,46 @@ shooter.s_fired.connect(func(muzzle, dir): print("开火"))
 验收：`test/check_input_routing.gd`（点 UI 不开火/点世界开火/按住连射/
 宿主暂停拦截/未配置按键不响）、`test/check_bullet_terrain.gd`
 （射程销毁/撞山销毁/高海拔飞越/lifetime 统一出口）。
+
+## GdMelee — 近战攻击组件（Node2D）
+
+挂宿主 Node2D 下，ready 自动创建内嵌挥击盒 `SwingHitbox`（GdHitbox 子节点 +
+矩形判定形状，layer=0 / monitorable=false / mask=target_mask 默认 4 指向敌方
+受击盒）。挥击 = 判定盒定位到 `dir * attack_offset`（rotation = dir.angle()）
+并使能 `swing_window` 秒，重叠扫描与伤害由内嵌 GdHitbox 完成，窗口结束复位。
+
+**注意 base 必须是 Node2D**：Area2D 挂在普通 Node（非 CanvasItem）下变换
+继承会断链（global_position 不含祖先 Node2D 偏移），组件因此继承 Node2D。
+
+攻击输入路由与 GdShooter 同套约定：`auto_attack_mouse = true` 时走
+unhandled 事件路由（点 UI 不攻击/点世界攻击、按住连击、release 被吞时
+Input 校准复位、宿主 is_paused() 暂停期不接输入）。
+
+```gdscript
+var melee = GdMelee.new()
+melee.auto_attack_mouse = true      # unhandled 路由自动挥击：点 UI 不攻击/点世界攻击
+melee.attack_button_left = true     # 攻击按键（默认左键开、右键关）
+melee.attack_damage = 30.0          # 单次挥击伤害（写入内嵌 GdHitbox）
+melee.attack_cooldown = 0.45        # 挥击间隔（秒）
+melee.attack_range = 56.0           # 判定盒长度（沿攻击方向，像素）
+melee.attack_width = 48.0           # 判定盒宽度（垂直攻击方向）
+melee.swing_window = 0.12           # 判定盒使能窗口（秒）
+melee.target_mask = 4               # 目标受击盒掩码（4 = 敌方 layer3）
+melee.hit_cooldown = 0.1            # 窗口期命中冷却（影响一次挥击命中数）
+host.add_child(melee)
+
+# 手动挥击（auto_attack_mouse=false 时完全由外部驱动）
+melee.swing(Vector2(1, 0))          # 朝方向挥击 -> bool
+melee.swing_at_point(target_pos)    # 朝世界坐标
+melee.swing_toward_mouse()          # 朝鼠标
+melee.stop()                        # 立即终止（装备切换时）
+melee.is_swinging()                 # 是否在挥击窗口中
+
+melee.s_swing.connect(func(dir): print("挥击 ", dir))
+```
+
+验收：`test/check_melee.gd`（装配/挥击定位/冷却/窗口复位/范围内命中掉血/
+范围外不误伤/stop 终止）。
 
 ## GdBullet — 池化子弹（Area2D）
 

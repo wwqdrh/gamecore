@@ -9,10 +9,13 @@
 #   - GdViewCamera（GdSceneRoot 自动挂载并注册进组件表）：follow 跟随玩家 +
 #     update_limit 限制相机边界在地图矩形内 + 地图贴合自适应缩放（不露空白）
 #   - 战斗：GdHealth（受击无敌帧）+ GdHurtbox（layer2 玩家受击盒）+
-#     GdShooter（发射 GdBullet，mask=4 打敌受击盒 layer3）
+#     GdShooter（发射 GdBullet，mask=4 打敌受击盒 layer3）+
+#     GdMelee（挥击判定盒，内嵌 GdHitbox 扫描，mask=4 打敌受击盒 layer3）
 #   - 装备联动（GdState 状态总线）：mainhud 装备栏 Hotbar 选中槽位 → 写
-#     mainhud.equip（物品 id）；本脚本 watch 同名键——枪支 → 开启射击能力
-#     （左键/右键按住朝鼠标连射）；未持枪时左键恢复点击寻路
+#     mainhud.equip（物品 id）；本脚本 watch 同名键——
+#     枪支 → 射击模式（左键/右键按住朝鼠标连射）；近战武器 → 近战模式
+#     （点击朝鼠标挥击）；未装备武器 → 左键恢复点击寻路
+#   - 武器装配（WeaponMount）：装备变化时把对应武器图形节点挂到人物身上
 #
 # 组件查找：一律经 GdSceneRoot 组件表（get_component），禁止 get_parent
 # 链遍历 / find_child 魔法查找——场景根经 GDCORE 全局节点表获取。
@@ -34,8 +37,14 @@ var camera: Camera2D = null
 var scene_root: Node = null
 var health: Node = null
 var shooter: Node = null
-## 当前是否装备枪支（true = 左键/右键朝鼠标射击，false = 左键点击寻路）
-var gun_equipped := false
+var melee: Node = null
+var weapon_mount: Node2D = null
+## 当前攻击模式："gun" = 射击 / "melee" = 近战 / "" = 徒手（左键点击寻路）
+var attack_mode := ""
+## 兼容字段：持枪状态（射击模式下 true）
+var gun_equipped: bool:
+	get:
+		return attack_mode == "gun"
 
 # 上次落格判定用格子（-9999 = 未初始化，首帧强制判定一次）
 var last_cell := Vector2i(-9999, -9999)
@@ -106,6 +115,32 @@ func _make_combat() -> void:
 	shooter.bullet_scene_path = "res://example/demo/xiuxian/role/player/bullet.tscn"
 	add_child(shooter)
 
+	# 近战组件：内嵌 GdHitbox 挥击盒（mask=4 打敌受击盒 layer3）。
+	# 默认关闭 auto_attack_mouse（徒手模式），装备近战武器时经装备联动开启
+	melee = GdMelee.new()
+	melee.name = "Melee"
+	melee.auto_attack_mouse = false
+	melee.attack_button_left = true
+	melee.attack_damage = attack * 1.6  # 近战伤害更高（贴脸风险换收益）
+	melee.attack_cooldown = 0.45
+	melee.attack_range = 56.0
+	melee.attack_width = 48.0
+	melee.swing_window = 0.12
+	melee.target_mask = 4
+	add_child(melee)
+	melee.s_swing.connect(func(_dir: Vector2) -> void:
+		# 挥击反馈：武器挂点转向挥击方向并回弹（简单图形下的动感占位）
+		if weapon_mount != null:
+			var tw := create_tween()
+			weapon_mount.rotation = _dir.angle()
+			tw.tween_property(weapon_mount, "rotation", _dir.angle() * 0.5, 0.18))
+
+	# 武器挂点：装备变化时把对应武器图形装配到这里
+	weapon_mount = Node2D.new()
+	weapon_mount.name = "WeaponMount"
+	weapon_mount.position = Vector2(10, 6)
+	add_child(weapon_mount)
+
 
 func _on_damaged(_amount: float, _current: float) -> void:
 	# 受击闪红
@@ -118,15 +153,99 @@ func _on_damaged(_amount: float, _current: float) -> void:
 
 ## 装备栏选择联动（watch 注册即回调当前值；value=nil = 尚未初始化，跳过）
 ## 红线：watch 回调内禁止同步调用 GDSTATE 任何方法（重入 panic）
+## 攻击模式互斥：gun=射击 / 近战武器=挥击 / 其他=徒手（左键留给点击寻路）
 func _on_equip_changed(value: Variant = null, _key: Variant = null) -> void:
 	if value == null:
 		return
-	gun_equipped = str(value) == "gun"
-	# 持枪 → 框架开火路由开启（unhandled 阶段：点 UI 不开火/点世界开火）；
-	# 未持枪 → 关闭，左键留给点击寻路（本脚本 _unhandled_input）
+	var item := str(value)
+	# 攻击模式归一化：gun=射击 / melee=近战武器 / ""=徒手（左键留给点击寻路）
+	if item == "gun":
+		attack_mode = "gun"
+	elif WEAPON_MELEE.has(item):
+		attack_mode = "melee"
+	else:
+		attack_mode = ""
+	# 射击模式 → 框架开火路由开启；近战模式 → 挥击路由开启；
+	# 徒手 → 两者全关，左键留给点击寻路（本脚本 _unhandled_input）
 	if shooter != null:
-		shooter.auto_fire_mouse = gun_equipped
-	print("[Player] 装备: %s → 射击能力 %s" % [value, "开" if gun_equipped else "关"])
+		shooter.auto_fire_mouse = attack_mode == "gun"
+	if melee != null:
+		melee.auto_attack_mouse = attack_mode == "melee"
+		if attack_mode != "melee":
+			melee.stop()
+	_apply_weapon_visual(item)
+	print("[Player] 装备: %s → 攻击模式 %s" % [value, attack_mode if attack_mode != "" else "徒手"])
+
+
+# ---- 武器装配： WeaponMount 挂简单基础图形（正式素材就位后替换） ----
+
+## 近战武器 id 集（与 item.json 装备类道具对应）
+const WEAPON_MELEE := ["sword_qingfeng"]
+
+
+## 装配武器图形：清空挂点 → 按物品 id 挂对应节点（徒手=空）
+func _apply_weapon_visual(item: String) -> void:
+	if weapon_mount == null:
+		return
+	for child in weapon_mount.get_children():
+		child.queue_free()
+	match item:
+		"gun":
+			weapon_mount.add_child(_make_gun_visual())
+		_:
+			if WEAPON_MELEE.has(item):
+				weapon_mount.add_child(_make_sword_visual())
+
+
+## 枪：灰色矩形枪身 + 深色枪口（横向持握，朝向由挥击/开火反馈旋转）
+func _make_gun_visual() -> Node2D:
+	var gun := Node2D.new()
+	gun.name = "WeaponGun"
+	var body := ColorRect.new()
+	body.name = "GunBody"
+	body.color = Color(0.45, 0.48, 0.55)
+	body.size = Vector2(18, 6)
+	body.position = Vector2(0, -3)
+	body.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	gun.add_child(body)
+	var muzzle := ColorRect.new()
+	muzzle.name = "GunMuzzle"
+	muzzle.color = Color(0.2, 0.22, 0.26)
+	muzzle.size = Vector2(5, 4)
+	muzzle.position = Vector2(18, -2)
+	muzzle.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	gun.add_child(muzzle)
+	return gun
+
+
+## 剑：多边形剑刃 + 十字护手 + 握柄（斜上持握）
+func _make_sword_visual() -> Node2D:
+	var sword := Node2D.new()
+	sword.name = "WeaponSword"
+	sword.rotation = -0.6  # 斜上持握
+	var blade := Polygon2D.new()
+	blade.name = "Blade"
+	blade.color = Color(0.82, 0.88, 0.95)
+	blade.polygon = PackedVector2Array([
+		Vector2(0, -2), Vector2(26, -1), Vector2(30, 0),
+		Vector2(26, 1), Vector2(0, 2),
+	])
+	sword.add_child(blade)
+	var guard := ColorRect.new()
+	guard.name = "Guard"
+	guard.color = Color(0.72, 0.55, 0.2)
+	guard.size = Vector2(3, 10)
+	guard.position = Vector2(-1, -5)
+	guard.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	sword.add_child(guard)
+	var hilt := ColorRect.new()
+	hilt.name = "Hilt"
+	hilt.color = Color(0.4, 0.28, 0.15)
+	hilt.size = Vector2(8, 3)
+	hilt.position = Vector2(-9, -1.5)
+	hilt.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	sword.add_child(hilt)
+	return sword
 
 
 # ---- 接线 ----
@@ -234,12 +353,13 @@ func _process(_delta: float) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	# 本回调只在「点击未被 UI 消费」时收到（事件路由，引擎保证）。
-	# 未持枪：左键点击地面 → BFS 寻路；持枪时左键已被 GdShooter 开火路由
-	# 消费（set_input_as_handled），且此处也按 gun_equipped 分流双保险。
+	# 未装备武器：左键点击地面 → BFS 寻路；射击/近战模式时左键已被
+	# GdShooter / GdMelee 的 unhandled 路由消费（set_input_as_handled），
+	# 此处按 attack_mode 分流双保险。
 	if event is InputEventMouseButton and event.pressed \
 			and event.button_index == MOUSE_BUTTON_LEFT:
-		# 装备枪支时左键 = 开火（GdShooter unhandled 路由驱动），不再触发寻路
-		if gun_equipped:
+		# 装备武器时左键 = 攻击输入（框架 unhandled 路由驱动），不再触发寻路
+		if attack_mode != "":
 			return
 		_on_map_clicked()
 
