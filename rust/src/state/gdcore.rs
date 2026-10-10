@@ -2,16 +2,24 @@
 // 继承 Object（手动内存），作为 Engine singleton 注册为 "GDCORE"
 // 支持存档 ID 管理，根据 save_id 切换不同的存档文件
 // 存档文件路径：user://coredata_{id}.data（id 为空时为 user://coredata.data）
+// 每存档累计游玩时长：get_play_time/flush_play_time，持久化在
+// GdCoreData 的 playtime;total（真实秒，跨开关应用累积）
 
 use std::collections::HashMap;
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 
 use godot::prelude::*;
-use godot::classes::{Engine, IObject, Object, Node, SceneTree};
+use godot::classes::{Engine, IObject, Object, Node, SceneTree, Time};
 use godot::builtin::{StringName, VarDictionary};
 
 use super::coredata::GdCoreData;
 use super::bean::GdBean;
+
+/// 每存档游玩时长的持久化位置（GdCoreData 的 scope/field）
+const PLAYTIME_SCOPE: &str = "playtime";
+const PLAYTIME_FIELD: &str = "total";
+/// 自动落盘间隔（毫秒）：崩退最多丢这个窗口内的时长
+const PLAYTIME_AUTOFLUSH_MS: u64 = 30_000;
 
 #[derive(GodotClass)]
 #[class(base = Object)]
@@ -20,6 +28,9 @@ pub struct GDCore {
     core_data_cache: HashMap<String, Gd<GdCoreData>>,
     /// 全局节点映射 (alias -> Node)
     global_nodes: VarDictionary,
+    /// 当前存档本次会话的开始时刻（get_ticks_msec）——会话时长实时累加在
+    /// 持久化值之上，落盘（flush/切档/退出）时并入并重置起点
+    session_start_ms: i64,
     base: Base<Object>,
 }
 
@@ -39,6 +50,7 @@ impl IObject for GDCore {
             save_id: GString::new(),
             core_data_cache,
             global_nodes: VarDictionary::new(),
+            session_start_ms: Time::singleton().get_ticks_msec() as i64,
             base,
         }
     }
@@ -67,6 +79,9 @@ impl GDCore {
         if self.save_id.to_string() == id_str {
             return;
         }
+
+        // 会话时长属于旧存档：切档前先落盘（并入旧档累计值）
+        self.flush_play_time();
 
         if !self.core_data_cache.contains_key(&id_str) {
             let filename = if id_str.is_empty() {
@@ -115,9 +130,47 @@ impl GDCore {
         let key = alias.to_variant();
         self.global_nodes.erase(&key);
     }
+
+    /// 当前存档的累计游玩时长（真实秒）= 历史落盘值 + 本次会话已进行时长。
+    /// 跨开关应用累积：每次落盘（flush/切档/退出/每 30 秒自动）都会把会话
+    /// 时长并入存档文件的 playtime;total，重新打开接着累计。
+    #[func]
+    pub fn get_play_time(&self) -> f64 {
+        let id = self.save_id.to_string();
+        let Some(data) = self.core_data_cache.get(&id) else {
+            return 0.0;
+        };
+        stored_playtime(data) + self.session_secs()
+    }
+
+    /// 把当前会话时长并入当前存档的累计值并立即写盘（重置会话起点）。
+    /// 切换存档 / 进程退出 / 每 30 秒会自动调用，业务一般无需手动触发。
+    #[func]
+    fn flush_play_time(&mut self) {
+        let id = self.save_id.to_string();
+        let Some(mut data) = self.core_data_cache.get(&id).cloned() else {
+            return;
+        };
+        let now = Time::singleton().get_ticks_msec() as i64;
+        let total = stored_playtime(&data) + self.session_secs();
+        // action "~" = 强制覆盖写（GJson 默认动作只写不存在的路径）
+        data.bind_mut().update(
+            GString::from(PLAYTIME_FIELD),
+            GString::from("~"),
+            total.to_variant(),
+            GString::from(PLAYTIME_SCOPE),
+        );
+        self.session_start_ms = now;
+    }
 }
 
 impl GDCore {
+    /// 本次会话已进行的秒数（自上次落盘起算）
+    fn session_secs(&self) -> f64 {
+        let now = Time::singleton().get_ticks_msec() as i64;
+        ((now - self.session_start_ms).max(0)) as f64 / 1000.0
+    }
+
     fn notify_beans_switch_core(new_core: &Gd<GdCoreData>) {
         let bean_ids: Vec<(String, i64)> = {
             super::bean::get_all_bean_instances()
@@ -130,11 +183,45 @@ impl GDCore {
     }
 }
 
+/// 读取存档数据中已落盘的累计游玩秒数
+fn stored_playtime(data: &Gd<GdCoreData>) -> f64 {
+    let v = data.bind().value(
+        GString::from(PLAYTIME_FIELD),
+        0.0.to_variant(),
+        GString::from(PLAYTIME_SCOPE),
+    );
+    v.try_to::<f64>().unwrap_or(0.0)
+}
+
+/// 自动落盘节拍（on_main_loop_frame 每帧调用，内部按间隔过滤）
+static LAST_AUTOFLUSH_MS: AtomicU64 = AtomicU64::new(0);
+
+/// 每隔 PLAYTIME_AUTOFLUSH_MS 把当前会话时长并入当前存档（崩退保护）。
+/// 由 lib.rs 首帧钩子每帧驱动，命中间隔才实际写盘。
+pub fn playtime_autoflush_tick() {
+    let now = Time::singleton().get_ticks_msec() as u64;
+    let last = LAST_AUTOFLUSH_MS.load(Ordering::Relaxed);
+    if now.saturating_sub(last) < PLAYTIME_AUTOFLUSH_MS {
+        return;
+    }
+    LAST_AUTOFLUSH_MS.store(now, Ordering::Relaxed);
+    if let Some(mut core) = gdcore_singleton() {
+        core.bind_mut().flush_play_time();
+    }
+}
+
+/// 取 GDCORE 单例（未注册/已注销返回 None）
+fn gdcore_singleton() -> Option<Gd<GDCore>> {
+    let singleton = Engine::singleton().get_singleton(&StringName::from("GDCORE"))?;
+    singleton.try_cast::<GDCore>().ok()
+}
+
 pub fn register_gdcore_singleton() {
     let instance = Gd::<GDCore>::from_init_fn(|base| GDCore::init(base));
     let name = StringName::from("GDCORE");
     Engine::singleton().register_singleton(&name, &instance);
     std::mem::forget(instance);
+    LAST_AUTOFLUSH_MS.store(Time::singleton().get_ticks_msec() as u64, Ordering::Relaxed);
 }
 
 /// gml 自举钩子是否已连接（on_main_loop_frame 每帧探测，连接成功即停止）
@@ -175,6 +262,10 @@ pub fn connect_gml_auto_connect_hook() {
 }
 
 pub fn unregister_gdcore_singleton() {
+    // 退出前最后落盘一次当前会话时长（此后单例注销，无法再 flush）
+    if let Some(mut core) = gdcore_singleton() {
+        core.bind_mut().flush_play_time();
+    }
     let name = StringName::from("GDCORE");
     Engine::singleton().unregister_singleton(&name);
 }

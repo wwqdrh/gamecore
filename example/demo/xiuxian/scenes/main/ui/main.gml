@@ -30,6 +30,12 @@
 		   content_margin="56" close_on_overlay="true">
 	  <Gml src="store/store_panel.gml" />
 	</Modal>
+	<!-- 秘境结算弹窗：DungeonManager.settle 通关后经 GdUIManager.find_ui 打开，
+		 数据 = XiuDungeonState.settle_view（面板 watch 刷新） -->
+	<Modal name="DungeonSettleModal" ui_id="DungeonSettleModal" anchor="full"
+		   content_margin="56" close_on_overlay="true">
+	  <Gml src="dungeon/dungeon_settle.gml" />
+	</Modal>
 	<!-- 设置弹窗：key_bind="escape" → 按 ESC 开/关（toggle），Modal 内建按键绑定 -->
 	<Modal name="SettingModal" ui_id="SettingModal" anchor="full"
 		   content_margin="56" close_on_overlay="true" key_bind="escape">

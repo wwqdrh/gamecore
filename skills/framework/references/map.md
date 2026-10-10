@@ -176,3 +176,31 @@ MapManager.try_teleport(角色全局坐标)  # 命中传送点格子即触发切
 - ready 自动加入 `__gdmap_marker` 分组（GdMapManager 经此收集）
 - `contains_world_point(world_pos)` 命中判定 / `get_center()` 格心全局坐标 / `place_at(cell)` 重定位
 - 信号 `s_triggered`（管理器命中时发出）
+
+## 场景分类与随机副本（demo 范本：xiuxian 秘境）
+
+场景分两类：**固定场景**（手工 tscn，注册进 map_paths 即可，如萧宅/青石镇/青云坊）
+与**随机场景**（一张"壳" tscn，运行时按种子重新出图，如秘境 dungeon.tscn）。
+随机场景在注册表里仍是普通别名——「随机」体现在种子与刷怪，不走特殊通道。
+
+实现要点（范本 example/demo/xiuxian/map/dungeon/ + scenes/main/dungeon_manager.gd）：
+
+```gdscript
+# 随机地图 = GdQuickMap 根（静态基础参数）+ 楼层控制器子节点（dungeon_map.gd）：
+# _process 首帧（父地图 ready 之后）：
+map.generate(int(state.floor_seed()))          # 层种子出图（同种子同图，可复现）
+# 随机刷怪：变体 tscn instantiate → 覆写导出值 → map.add_child（enemy 自吸附可行走格）
+# boss 变体：同 tscn 覆写 display_name/max_health/... + scale
+# 清场判定：每只怪 health.s_died 计数，清零发 s_floor_cleared
+```
+
+- 流程控制器（DungeonManager）挂**主场景根**（与地图/天气同层，不随换图销毁）：
+  start_run() 记录入口（固定地图+玩家所在格）→ open_map(随机别名) →
+  接楼层 s_floor_cleared → 非 boss 层延时后 advance_floor 重开（新实例=新层）→
+  boss 层清空后发奖 + open_map 回入口 + GdUIManager.find_ui("结算Modal").open()
+- 层种子 = run_seed + floor * 7919（同次挑战内每层不同、单层可复现）；
+  刷怪位置/掉落共用该种子 → 结算结果可追溯
+- 状态数据进 GdBean（XiuDungeonState：status/floor/run_seed/from_map/
+  settle_view/boss_cleared），存档恢复残留 running 由控制器 _wire 作废
+- 进度持久化注意：boss_cleared 这类"一次性"标记必须放 Bean 并提供
+  reset_demo（跨运行确定性测试依赖）

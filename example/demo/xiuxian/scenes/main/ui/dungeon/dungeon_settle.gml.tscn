@@ -1,0 +1,75 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/ui/dungeon/dungeon_settle.gd" id="1_mg422"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_x6ghl"]
+bg_color = Color(0.18039216, 0.14117648, 0.21176471, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[node name="SettleRoot" type="Panel" unique_id=2037593540]
+custom_minimum_size = Vector2(460, 0)
+theme_override_styles/panel = SubResource("StyleBoxFlat_x6ghl")
+script = ExtResource("1_mg422")
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray()
+
+[node name="@VBoxContainer@469" type="VBoxContainer" parent="." unique_id=2044692841]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = -24.0
+mouse_filter = 2
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="Title" type="Label" parent="@VBoxContainer@469" unique_id=602283272]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.8509804, 0.54901963, 1)
+text = "秘境通关结算"
+horizontal_alignment = 1
+
+[node name="LineFloors" type="Label" parent="@VBoxContainer@469" unique_id=1920484344]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "扫荡层数：-"
+horizontal_alignment = 1
+
+[node name="LineExp" type="Label" parent="@VBoxContainer@469" unique_id=1407036845]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "获得修为：+0"
+horizontal_alignment = 1
+
+[node name="LineStones" type="Label" parent="@VBoxContainer@469" unique_id=16355805]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "获得灵石：+0"
+horizontal_alignment = 1
+
+[node name="@Label@468" type="Label" parent="@VBoxContainer@469" unique_id=1625401281]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "—— 战利品 ——"
+horizontal_alignment = 1
+
+[node name="ItemList" type="VBoxContainer" parent="@VBoxContainer@469" unique_id=330337236]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="CloseBtn" type="Button" parent="@VBoxContainer@469" unique_id=782755086]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+text = "收下奖励"
+metadata/__signal_pressed = "_on_close_pressed"

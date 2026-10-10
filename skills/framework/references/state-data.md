@@ -14,7 +14,16 @@ var slot = GDCORE.get_save_id()
 GDCORE.add_global_node("player", player)
 var p = GDCORE.get_global_node("player")
 GDCORE.remove_global_node("player")
+
+# 每存档累计游玩时长（真实秒，跨开关应用累积）
+var secs = GDCORE.get_play_time()   # 当前存档：历史落盘值 + 本次会话已进行时长
+GDCORE.flush_play_time()            # 立即落盘（切存档/退出/每 30 秒自动触发，一般无需手动调）
 ```
+
+> 游玩时长持久化在各存档 GdCoreData 的 `playtime;total`（真实秒）。
+> 自动落盘时机：`set_save_id` 切档（并入旧档）、进程退出、每 30 秒兜底
+> （崩退最多丢 30 秒）。GdWeatherManager 的 `auto_start_from_ticks` 默认
+> 取此值作为初始时间基准。
 
 ## GdCoreData — 核心数据引擎（Resource）
 

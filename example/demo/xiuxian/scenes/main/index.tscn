@@ -1,25 +1,37 @@
-[gd_scene load_steps=4 format=3 uid="uid://fsa76hw3xkii"]
+[gd_scene load_steps=5 format=3 uid="uid://fsa76hw3xkii"]
 
 [ext_resource type="PackedScene" path="res://example/demo/xiuxian/scenes/main/ui/main.gml.tscn" id="1_ui"]
 [ext_resource type="PackedScene" path="res://example/demo/xiuxian/role/player/player.tscn" id="2_player"]
 [ext_resource type="Script" path="res://example/demo/xiuxian/ui/dialog/dialog_layer.gd" id="3_dialog"]
+[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/dungeon_manager.gd" id="4_dungeon"]
 
 [node name="Index" type="GdScene"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+
+[node name="WeatherManager" type="GdWeatherManager" parent="."]
+time_scale = 600.0
+rain_chance = 0.35
+weather_path = NodePath("Weather")
 
 [node name="World" type="Node2D" parent="."]
 
 [node name="MapManager" type="GdMapManager" parent="."]
-map_paths = PackedStringArray("xiuxian_xiaozhai=res://example/demo/xiuxian/map/xiaozhai.tscn", "xiuxian_xiaozhen=res://example/demo/xiuxian/map/xiaozhen.tscn", "xiuxian_town=res://example/demo/xiuxian/map/town.tscn", "xiuxian_map_a=res://example/demo/xiuxian/map/map_a.tscn", "xiuxian_map_b=res://example/demo/xiuxian/map/map_b.tscn")
+map_paths = PackedStringArray("xiuxian_xiaozhai=res://example/demo/xiuxian/map/xiaozhai.tscn", "xiuxian_xiaozhen=res://example/demo/xiuxian/map/xiaozhen.tscn", "xiuxian_town=res://example/demo/xiuxian/map/town.tscn", "xiuxian_map_a=res://example/demo/xiuxian/map/map_a.tscn", "xiuxian_map_b=res://example/demo/xiuxian/map/map_b.tscn", "xiuxian_dungeon=res://example/demo/xiuxian/map/dungeon/dungeon.tscn")
 initial_map = "xiuxian_xiaozhai"
 initial_spawn = Vector2i(10, 8)
 click_teleport = false
 
+[node name="DungeonManager" type="CanvasLayer" parent="."]
+layer = 10
+script = ExtResource("4_dungeon")
+
 [node name="Player" parent="." instance=ExtResource("2_player")]
+
+[node name="Weather" type="GdWeather" parent="."]
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="UILayer" type="CanvasLayer" parent="."]
 layer = 1

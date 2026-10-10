@@ -62,6 +62,16 @@
 		<Label class="menu-btn-text" text="任务" align="center" />
 	  </VBoxContainer>
 	</Panel>
+	<!-- 秘境（随机副本）：动作按钮（不进功能页高亮互斥）——经组件表调
+		 DungeonManager.start_run()：随机地图/随机敌人/多层爬塔/通关结算 -->
+	<Panel name="MenuDungeon" class="menu-btn" custom_minimum_size="84,84"
+	      mouse_default_cursor_shape="pointing_hand" @pressed="_on_dungeon_pressed">
+	  <VBoxContainer anchor="full" margin="8 10 8 8" separation="2">
+		<Label class="menu-btn-icon" text="🌀" size_flags_vertical="expand_fill"
+		       align="center" valign="center" />
+		<Label class="menu-btn-text" text="秘境" align="center" />
+	  </VBoxContainer>
+	</Panel>
 	<!-- 坊市（ui/store/）：同储物袋，跨组件触发 StoreModal.open() -->
 	<Panel name="MenuMarket" class="menu-btn" custom_minimum_size="84,84"
 	      mouse_default_cursor_shape="pointing_hand" @pressed="show:StoreModal">
