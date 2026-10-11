@@ -5,6 +5,7 @@
 [ext_resource type="Script" path="res://example/demo/xiuxian/ui/dialog/dialog_layer.gd" id="3_dialog"]
 [ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/dungeon_manager.gd" id="4_dungeon"]
 [ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/calendar_manager.gd" id="5_calendar"]
+[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/map_restore.gd" id="6_restore"]
 
 [node name="Index" type="GdScene"]
 anchors_preset = 15
@@ -22,7 +23,11 @@ weather_path = NodePath("Weather")
 map_paths = PackedStringArray("xiuxian_xiaozhai=res://example/demo/xiuxian/map/xiaozhai.tscn", "xiuxian_xiaozhen=res://example/demo/xiuxian/map/xiaozhen.tscn", "xiuxian_town=res://example/demo/xiuxian/map/town.tscn", "xiuxian_map_a=res://example/demo/xiuxian/map/map_a.tscn", "xiuxian_map_b=res://example/demo/xiuxian/map/map_b.tscn")
 initial_map = "xiuxian_xiaozhai"
 initial_spawn = Vector2i(10, 8)
+auto_load = false
 click_teleport = false
+
+[node name="MapRestore" type="Node" parent="."]
+script = ExtResource("6_restore")
 
 [node name="DungeonManager" type="CanvasLayer" parent="."]
 layer = 10

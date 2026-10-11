@@ -6,7 +6,9 @@
 #      进入独立探索场景（随机地图/随机敌人/多层爬塔/结算都在那边）
 #   2. 送回：从探索场景回来（通关/放弃）后本节点随主场景重建，wire 时检测
 #      from_map 非空 → open_map 送回入口 → 清空入口记录
-#   3. 存档恢复残留 running 状态（重进应用时探索场景未重建）→ _wire 里作废本次进度
+#   3. 场景恢复：重进应用时若秘境仍 running（探索场景未重建）→ 切探索场景
+#      续玩（循 run_seed+floor 复现当层，玩家位置由 XiuPlayerState 恢复）；
+#      入场切换重试耗尽才作废进度（防卡"running 但没进图"）
 #
 # 组件查找约定：经 GdSceneRoot 组件注册表（register_component/get_component），
 # mainhud 跨组件调用 start_run 走同一张表；本节点 _process 逐帧重试注册；
@@ -91,9 +93,15 @@ func _wire() -> bool:
 		return false
 	_wired = true
 	_state = XiuDungeonState.ins()
-	# 存档恢复残留的 running（重进应用时探索场景未重建）：作废本次进度
+	# 秘境进行中（正常路径：start_run 刚记录入口；存档恢复：重进应用时探索
+	# 场景未重建）→ 切探索场景续玩（循 run_seed+floor 复现当层；玩家位置由
+	# XiuPlayerState 恢复，alias 匹配 + 可行走校验）。被转场防重入拒绝则
+	# _process 逐帧重试，耗尽才作废（见 _process 分支）
 	if str(_state.status) == XiuDungeonState.STATUS_RUNNING:
-		_state.finish_run()
+		_retry_enter = true
+		_retry_left = 600
+		set_process(true)
+		return true
 	# 从探索场景回来（通关/放弃，from_map 由 ExploreManager 保留）：送回入口
 	var from_map: String = str(_state.from_map)
 	if from_map != "":

@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" path="res://example/demo/xiuxian/role/npc/xiao_master/xiao_master.tscn" id="1_master"]
 [ext_resource type="PackedScene" path="res://example/demo/xiuxian/role/npc/xiao_lady/xiao_lady.tscn" id="2_lady"]
 [ext_resource type="PackedScene" path="res://example/demo/xiuxian/role/npc/xiao_maid/xiao_maid.tscn" id="3_maid"]
+[ext_resource type="Script" path="res://example/demo/xiuxian/map/deco_harvest.gd" id="4_deco"]
 
 [node name="XiaoZhai" type="GdQuickMap"]
 width = 20
@@ -19,6 +20,19 @@ blocked_terrains = PackedStringArray("mountain")
 connected_terrain = "grass"
 paint_terrain = "mountain"
 paint_rects = Array[Rect2i]([Rect2i(7, 2, 6, 3), Rect2i(14, 5, 2, 4), Rect2i(4, 5, 2, 4), Rect2i(3, 10, 6, 1), Rect2i(11, 10, 6, 1)])
+
+[node name="DecoHarvest" type="Node" parent="."]
+script = ExtResource("4_deco")
+
+[node name="DecoLayer" type="GdDecoLayer" parent="."]
+deco_terrains = PackedStringArray("grass,forest", "forest")
+deco_item_ids = PackedStringArray("ore_coldiron", "ore_amethyst")
+deco_colors = PackedColorArray(0.55, 0.72, 0.92, 1, 0.72, 0.5, 0.92, 1)
+deco_frequencies = PackedFloat64Array(0.02, 0.012)
+deco_mineable = PackedInt32Array(1, 1)
+deco_hits = PackedInt32Array(3, 3)
+deco_callbacks = PackedStringArray("on_ore_harvested", "on_ore_harvested")
+callback_target_path = NodePath("../DecoHarvest")
 
 [node name="TeleportSouth" type="GdMapMarker" parent="."]
 cell = Vector2i(9, 11)

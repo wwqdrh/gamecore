@@ -58,8 +58,28 @@ const DEFAULT_LOCKED := {
 ## GDScript 视其为原生方法覆盖告警，本项目按错误处理）
 static func ins() -> XiuItemState:
 	var b: XiuItemState = GdBean.bean("xiuxian_item", func(): return new())
+	# 旧存档快照缺后加定义（如新增矿石/工具）：从定义表补齐，防止显示裸 id
+	b.merge_new_items()
 	b.refresh_bag_views()
 	return b
+
+
+## 从定义表补齐 items 里缺失的道具定义（旧档升级）。
+## 红线：仅在确有补充时才 update（GdBean.update 同值会短路，先改成员再
+## update 同值不落盘不通知；此处值必不相同，安全）
+func merge_new_items() -> void:
+	var defs: Dictionary = XiuItemTable.get_items()
+	if defs.is_empty():
+		return
+	var merged: Dictionary = items.duplicate(true)
+	var added := 0
+	for id in defs:
+		if not merged.has(id):
+			merged[id] = defs[id]
+			added += 1
+	if added > 0:
+		items = merged
+		update("items", merged, {}, false)
 
 
 ## 重建背包展示视图并通知监听网格
@@ -73,10 +93,22 @@ func refresh_bag_views() -> void:
 			continue
 		var it: Dictionary = get_item(id)
 		var type := str(it.get("type", ""))
+		# 图标：定义表 icon 字段 = 逻辑图片 id（XiuIconMap 登记 emoji 或 res://
+		# 贴图路径）；贴图形态时 icon 字段回退类型 emoji（详情卡 Label 显示用），
+		# 贴图路径单独放 icon_texture（格子 TextureRect 显示）
+		var resolved := XiuIconMap.resolve(str(it.get("icon", "")))
+		var icon := resolved
+		var icon_tex := ""
+		if XiuIconMap.is_texture(resolved):
+			icon_tex = resolved
+			icon = str(TYPE_ICONS.get(type, XiuIconMap.FALLBACK))
+		elif resolved == XiuIconMap.FALLBACK and str(it.get("icon", "")) == "":
+			icon = str(TYPE_ICONS.get(type, XiuIconMap.FALLBACK))
 		out.append({
 			"id": id,
 			"category": TYPE_TO_CAT.get(type, "tool"),
-			"icon": TYPE_ICONS.get(type, "📦"),
+			"icon": icon,
+			"icon_texture": icon_tex,
 			"count": "x%d" % n,
 			"name": str(it.get("name", id)),
 			"desc": str(it.get("desc", "")),

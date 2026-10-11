@@ -246,10 +246,12 @@ impl GdMelee {
         // 判定盒定位：宿主前方 dir * offset，随方向旋转（矩形长边 = 攻击方向）
         hb.set_position(dir * self.attack_offset as f32);
         hb.set_rotation(dir.angle());
-        // 窗口参数变化（damage/hit_cooldown 运行时调整）同步进 GdHitbox
+        // 窗口参数变化（damage/hit_cooldown 运行时调整）同步进 GdHitbox；
+        // target_mask 同步：同一判定盒可运行时切换目标层（如挖矿/战斗共用 GdMelee）
         hb.bind_mut().set_damage(self.attack_damage);
         hb.bind_mut().set_cooldown(self.hit_cooldown);
         hb.bind_mut().set_enabled(true);
+        hb.set_collision_mask(self.target_mask as u32);
         self.swing_timer = self.swing_window;
         self.cooldown_timer = self.attack_cooldown;
         self.base_mut()

@@ -51,6 +51,10 @@ var last_cell := Vector2i(-9999, -9999)
 var path_line: Line2D
 var _wired := false
 
+## 上次位置节流保存（秒）：update 同值自动短路，只在实际移动后落盘
+const POS_SAVE_INTERVAL := 2.0
+var _save_pos_acc := 0.0
+
 
 func _ready() -> void:
 	# 加入 "player" 分组：GdDialogTrigger / 敌人 AI 经分组解析玩家节点
@@ -153,26 +157,39 @@ func _on_damaged(_amount: float, _current: float) -> void:
 
 ## 装备栏选择联动（watch 注册即回调当前值；value=nil = 尚未初始化，跳过）
 ## 红线：watch 回调内禁止同步调用 GDSTATE 任何方法（重入 panic）
-## 攻击模式互斥：gun=射击 / 近战武器=挥击 / 其他=徒手（左键留给点击寻路）
+## 攻击模式互斥：gun=射击 / melee=近战武器 / mine=挖矿 / 其他=徒手（左键留给点击寻路）
 func _on_equip_changed(value: Variant = null, _key: Variant = null) -> void:
 	if value == null:
 		return
 	var item := str(value)
-	# 攻击模式归一化：gun=射击 / melee=近战武器 / ""=徒手（左键留给点击寻路）
+	# 攻击模式归一化：gun=射击 / melee=近战武器 / mine=挖矿 / ""=徒手
 	if item == "gun":
 		attack_mode = "gun"
+	elif item == TOOL_PICKAXE:
+		attack_mode = "mine"
 	elif WEAPON_MELEE.has(item):
 		attack_mode = "melee"
 	else:
 		attack_mode = ""
-	# 射击模式 → 框架开火路由开启；近战模式 → 挥击路由开启；
+	# 射击模式 → 框架开火路由开启；近战/挖矿模式 → 挥击路由开启（同一
+	# GdMelee 判定盒，挥击时同步目标掩码与伤害：战斗打敌受击盒 layer3(4)，
+	# 挖矿打可采集物受击盒 layer5(16)，矿石 GdHealth(3 点) 承载敲击计数）；
 	# 徒手 → 两者全关，左键留给点击寻路（本脚本 _unhandled_input）
 	if shooter != null:
 		shooter.auto_fire_mouse = attack_mode == "gun"
 	if melee != null:
-		melee.auto_attack_mouse = attack_mode == "melee"
-		if attack_mode != "melee":
-			melee.stop()
+		melee.auto_attack_mouse = attack_mode == "melee" or attack_mode == "mine"
+		match attack_mode:
+			"melee":
+				melee.target_mask = TARGET_ENEMY
+				melee.attack_damage = attack * 1.6
+				melee.attack_cooldown = 0.45
+			"mine":
+				melee.target_mask = TARGET_DECO
+				melee.attack_damage = 1.0
+				melee.attack_cooldown = 0.35
+			_:
+				melee.stop()
 	_apply_weapon_visual(item)
 	print("[Player] 装备: %s → 攻击模式 %s" % [value, attack_mode if attack_mode != "" else "徒手"])
 
@@ -181,6 +198,13 @@ func _on_equip_changed(value: Variant = null, _key: Variant = null) -> void:
 
 ## 近战武器 id 集（与 item.json 装备类道具对应）
 const WEAPON_MELEE := ["sword_qingfeng"]
+
+## 挖矿工具 id（item.json 装备类；与 mainhud_equipbar.gd 3 号槽一致）
+const TOOL_PICKAXE := "tool_pickaxe"
+
+## 目标碰撞层（位值）：敌受击盒 layer3 = 4；可采集物受击盒 layer5 = 16
+const TARGET_ENEMY := 4
+const TARGET_DECO := 16
 
 
 ## 装配武器图形：清空挂点 → 按物品 id 挂对应节点（徒手=空）
@@ -192,6 +216,8 @@ func _apply_weapon_visual(item: String) -> void:
 	match item:
 		"gun":
 			weapon_mount.add_child(_make_gun_visual())
+		"tool_pickaxe":
+			weapon_mount.add_child(_make_pickaxe_visual())
 		_:
 			if WEAPON_MELEE.has(item):
 				weapon_mount.add_child(_make_sword_visual())
@@ -248,6 +274,29 @@ func _make_sword_visual() -> Node2D:
 	return sword
 
 
+## 镐：斜握柄 + 弧形镐头（挖矿工具，攻击模式 mine；矿石在 deco 层受击盒）
+func _make_pickaxe_visual() -> Node2D:
+	var pick := Node2D.new()
+	pick.name = "WeaponPickaxe"
+	pick.rotation = -0.5
+	var handle := ColorRect.new()
+	handle.name = "Handle"
+	handle.color = Color(0.45, 0.3, 0.16)
+	handle.size = Vector2(24, 4)
+	handle.position = Vector2(-6, -2)
+	handle.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pick.add_child(handle)
+	var head := Polygon2D.new()
+	head.name = "Head"
+	head.color = Color(0.55, 0.58, 0.65)
+	head.polygon = PackedVector2Array([
+		Vector2(16, -8), Vector2(26, -2), Vector2(24, 2),
+		Vector2(16, -1), Vector2(14, -6),
+	])
+	pick.add_child(head)
+	return pick
+
+
 # ---- 接线 ----
 
 func _wire() -> void:
@@ -291,10 +340,25 @@ func _apply_map(map: Node, snap: bool) -> void:
 	grid_map_path = NodePath("../MapManager/MapLayer/" + alias)
 	# 相机：跟随玩家 + 边界限制在地图矩形内
 	_apply_camera(map, snap)
-	# 出生点（MapManager 已把不可行走出生格吸附到可行走格）
+	# 出生点：优先恢复上次位置（存档记录 alias 与当前图一致且格可行走），
+	# 否则默认出生点（MapManager 已把不可行走出生格吸附到可行走格）
 	if snap:
-		global_position = map_mgr.get_spawn_point()
+		global_position = _resolve_spawn_position(map)
 	last_cell = Vector2i(-9999, -9999)
+
+
+## 出生位置解析：存档「上次位置」（地图匹配 + 落点格可行走校验）优先，
+## 命中则原样落位（保留精确世界坐标，含格子内亚像素），回退默认出生点
+func _resolve_spawn_position(map: Node) -> Vector2:
+	var pos: Dictionary = XiuPlayerState.ins().load_pos()
+	if pos.is_empty():
+		return map_mgr.get_spawn_point()
+	if str(pos["alias"]) != map_mgr.get_current_alias():
+		return map_mgr.get_spawn_point()  # 上次在别的图（如副本）→ 默认出生
+	var world: Vector2 = pos["pos"]
+	if not map.is_walkable(map.world_to_cell(world)):
+		return map_mgr.get_spawn_point()  # 地形可能变化 → 吸附默认点
+	return world
 
 
 func _apply_camera(map: Node, snap: bool) -> void:
@@ -313,13 +377,21 @@ func _apply_camera(map: Node, snap: bool) -> void:
 	camera.update_limit(Vector4(0, w * cs, 0, h * cs))
 
 
+## 保存当前位置（地图 alias + 精确世界坐标；随档持久化，进游戏恢复出生在上次位置）
+func _save_position() -> void:
+	var map: Node = map_mgr.get_current_map()
+	if map == null or not map.has_method("world_to_cell"):
+		return
+	XiuPlayerState.ins().save_pos(map_mgr.get_current_alias(), global_position)
+
+
 func _on_map_changed(_alias: String) -> void:
 	_apply_map(map_mgr.get_current_map(), true)
 
 
 # ---- 传送判定：落格（含点击寻路途经）后查询地图管理器 ----
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	# 注意：不覆写 _physics_process（会遮蔽 GdRoleMover 的 Rust 侧网格驱动）
 	# 接线重试在 process 阶段驱动（MapManager 组件注册也在其 process 中完成，
 	# 同为 process 阶段即可收敛，且不会卡死 deferred flush）
@@ -332,6 +404,11 @@ func _process(_delta: float) -> void:
 			return
 	if map_mgr == null:
 		return
+	# 上次位置节流保存（2s 粒度；update 同值自动短路不落盘）
+	_save_pos_acc += delta
+	if _save_pos_acc >= POS_SAVE_INTERVAL:
+		_save_pos_acc = 0.0
+		_save_position()
 	# 相机缺失重试：默认 GdSceneRoot 延迟添加，找到后补一次跟随/边界绑定
 	if camera == null:
 		_apply_camera(map_mgr.get_current_map(), true)

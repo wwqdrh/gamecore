@@ -35,6 +35,10 @@ var _toast_tween: Tween
 func _ready() -> void:
 	layer = 10
 	_make_toast()
+	# 场景装配即接线（含存档时间基准恢复）——严禁留给 0.5s 轮询首跑：
+	# 期间任何对 WeatherManager 的 set_total_time（测试推时间/未来业务）都会
+	# 被本管理器的恢复动作覆盖，产生难以排查的时序竞态
+	_wire()
 
 
 func _process(delta: float) -> void:
@@ -62,6 +66,12 @@ func _wire() -> bool:
 	_config = XiuGameConfigState.ins()
 	_config.watch("day_length", func(_v = null, _m = null): _apply_time_speed.call_deferred())
 	_apply_time_speed()
+	# 存档恢复：时间基准对齐。game_secs 是绝对游戏秒历史值（含曾经的 start_time
+	# 偏移）——先清 start_time 再按绝对值恢复，时间轴跨局/跨场景切换单调连续。
+	# 不恢复的话 WeatherManager 每局从 start_time 重新累计：日历天数被静默重置、
+	# deco 采集冷却的时间戳基准循环错乱 → 重开后挖掉的矿被误判"早已到期"立即长回
+	_weather.set("start_time", 0.0)
+	_weather.set_total_time(maxf(float(_state.game_secs), 0.0))
 	# 存档恢复：天数直接对齐（老存档升到第 7 天后首次进本版本也补触发）
 	_check_day(int(_state.day))
 	return true
@@ -80,6 +90,8 @@ func _poll_day() -> void:
 	var dl_v: Variant = _weather.get("day_length")
 	var dl: float = 86400.0 if dl_v == null else float(dl_v)
 	_check_day(int(t / maxf(dl, 1.0)) + 1)
+	# 游戏时长随档落盘（deco 采集冷却的跨重启时钟基准；同值自动短路）
+	_state.set_game_secs(t)
 
 
 ## 天数变化处理：写 Bean + 到日解锁

@@ -9,7 +9,8 @@ use std::collections::HashMap;
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 
 use godot::prelude::*;
-use godot::classes::{Engine, IObject, Object, Node, SceneTree, Time};
+use godot::classes::{DirAccess, DisplayServer, Engine, FileAccess, IObject, Object, Node, SceneTree, Time};
+use godot::classes::file_access::ModeFlags;
 use godot::builtin::{StringName, VarDictionary};
 
 use super::coredata::GdCoreData;
@@ -106,6 +107,49 @@ impl GDCore {
         }
     }
 
+    /// 删除存档（游戏内删档的正规途径，勿手动删文件——运行中实例的 30s
+    /// 自动落盘会把内存态写回，手动删除会被"复活"覆盖新进度）。
+    /// 文件、缓存、当前档 Bean 全部重置；删除当前档时 Bean 切到空 core 回默认值。
+    /// 返回文件是否删除成功（文件本不存在也返回 true，幂等）。
+    #[func]
+    pub fn delete_save(&mut self, id: GString) -> bool {
+        let id_str = id.to_string();
+        let filename = if id_str.is_empty() {
+            GString::from("user://coredata.data")
+        } else {
+            GString::from(&format!("user://coredata_{}.data", id_str))
+        };
+        // 1) 删文件（file_exists 检查避免 remove 报错）
+        let ok = if FileAccess::file_exists(&filename) {
+            let err = DirAccess::remove_absolute(&filename);
+            if err != godot::global::Error::OK {
+                godot_warn!("GDCORE: delete_save 删除文件失败({:?}): {}", err, filename);
+                false
+            } else {
+                true
+            }
+        } else {
+            true
+        };
+        // 2) 重建缓存条目（新实例 existed_at_load=false → 后续正常写盘）
+        let new_data = GdCoreData::build(
+            filename.clone(),
+            GString::from("{}"),
+            false,
+            GString::from("init"),
+        );
+        let replaced_current = self.save_id.to_string() == id_str;
+        self.core_data_cache.insert(id_str.clone(), new_data);
+        // 3) 删的是当前档：会话时长清零重算 + Bean 切到重建后的空 core
+        if replaced_current {
+            self.session_start_ms = Time::singleton().get_ticks_msec() as i64;
+            if let Some(core) = self.core_data_cache.get(&id_str).cloned() {
+                Self::notify_beans_switch_core(&core);
+            }
+        }
+        ok
+    }
+
     /// 注册全局对象（支持 Node 和 RefCounted）
     #[func]
     fn add_global_node(&mut self, alias: GString, obj: Variant) {
@@ -145,8 +189,16 @@ impl GDCore {
 
     /// 把当前会话时长并入当前存档的累计值并立即写盘（重置会话起点）。
     /// 切换存档 / 进程退出 / 每 30 秒会自动调用，业务一般无需手动触发。
+    ///
+    /// 编辑器守卫（2026-10-12）：编辑器进程严禁写存档——GDExtension 帧钩子
+    /// 在编辑器主循环同样运行，编辑器内存态（可能来自编辑场景时加载的 Bean）
+    /// 每 30s 全量回写会覆盖磁盘真档（用户实机踩过：编辑器开着，游戏进度被
+    /// 定时打回）。编辑器内调用一律跳过。
     #[func]
     fn flush_play_time(&mut self) {
+        if Engine::singleton().is_editor_hint() {
+            return;
+        }
         let id = self.save_id.to_string();
         let Some(mut data) = self.core_data_cache.get(&id).cloned() else {
             return;
@@ -198,15 +250,60 @@ static LAST_AUTOFLUSH_MS: AtomicU64 = AtomicU64::new(0);
 
 /// 每隔 PLAYTIME_AUTOFLUSH_MS 把当前会话时长并入当前存档（崩退保护）。
 /// 由 lib.rs 首帧钩子每帧驱动，命中间隔才实际写盘。
+/// 编辑器进程直接跳过（帧钩子在编辑器主循环同样运行，见 flush_play_time 守卫注释）。
 pub fn playtime_autoflush_tick() {
+    if Engine::singleton().is_editor_hint() {
+        return;
+    }
     let now = Time::singleton().get_ticks_msec() as u64;
     let last = LAST_AUTOFLUSH_MS.load(Ordering::Relaxed);
     if now.saturating_sub(last) < PLAYTIME_AUTOFLUSH_MS {
         return;
     }
     LAST_AUTOFLUSH_MS.store(now, Ordering::Relaxed);
+    refresh_instance_lock();
     if let Some(mut core) = gdcore_singleton() {
         core.bind_mut().flush_play_time();
+    }
+}
+
+// ---- 多实例检测：两个实例同跑会互踩存档（各自 30s 全量回写，last-writer-wins，
+// 2026-10-12 实机事故：旧实例把用户删掉的存档"复活"覆盖了新档） ----
+
+/// 实例锁文件（记录最近活动时刻，非互斥锁——只提示不阻断）
+const INSTANCE_LOCK_PATH: &str = "user://.game_instance.lock";
+/// 锁文件多少秒内有更新视为"另一实例正在运行"
+const INSTANCE_LOCK_FRESH_SECS: f64 = 90.0;
+
+static INSTANCE_LOCK_WARNED: AtomicBool = AtomicBool::new(false);
+
+/// 启动时检查 + 每 30s 刷新锁文件；headless 测试与编辑器进程不参与
+/// （编辑器开着不应让真游戏启动时误告警"另一实例在运行"）。
+fn refresh_instance_lock() {
+    if DisplayServer::singleton().get_name().to_string() == "headless"
+        || Engine::singleton().is_editor_hint()
+    {
+        return;
+    }
+    let path = GString::from(INSTANCE_LOCK_PATH);
+    if !INSTANCE_LOCK_WARNED.load(Ordering::Relaxed) {
+        if FileAccess::file_exists(&path) {
+            let mtime = FileAccess::get_modified_time(&path) as f64;
+            let now = Time::singleton().get_unix_time_from_system();
+            if now - mtime < INSTANCE_LOCK_FRESH_SECS && mtime > 0.0 {
+                INSTANCE_LOCK_WARNED.store(true, Ordering::Relaxed);
+                godot_warn!(
+                    "GDCORE: 检测到另一个游戏实例可能正在运行（{} 秒内有活动）——多实例会互相覆盖存档，请关闭多余实例！",
+                    (now - mtime) as i64
+                );
+            }
+        }
+        INSTANCE_LOCK_WARNED.store(true, Ordering::Relaxed); // 只在启动时提示一次
+    }
+    // 刷新本实例活动时刻
+    if let Some(mut f) = FileAccess::open(&path, ModeFlags::WRITE) {
+        let now_str = Time::singleton().get_unix_time_from_system().to_string();
+        f.store_string(now_str.as_str());
     }
 }
 

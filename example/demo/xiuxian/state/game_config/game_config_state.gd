@@ -16,6 +16,11 @@ extends GdBean
 ## 一昼夜对应的现实秒数（默认 600 = 现实 10 分钟一个游戏日；原 144s 过快）
 var day_length: float = 600.0
 
+## 地图 deco 资源再生间隔（现实秒；0 = 禁用再生）。
+## 每到间隔地图 deco 层随机挑空格长出一批缺口资源（生长位置不固定）。
+## demo 默认 120 = 2 分钟长出下一批（用户配置）。
+var deco_regrow_secs: float = 120.0
+
 ## 游戏秒/昼夜（一昼夜的游戏内秒数，与 WeatherManager.day_length 默认一致；
 ## 日历与流速换算共同依赖的常量）
 const GAME_SECONDS_PER_DAY := 86400.0
@@ -36,7 +41,14 @@ func set_day_length(v: float) -> void:
 	update("day_length", clamped, {}, false)
 
 
+## 写入 deco 再生间隔（现实秒；0 = 禁用再生）
+func set_deco_regrow_secs(v: float) -> void:
+	update("deco_regrow_secs", maxf(v, 0.0), {}, false)
+
+
 ## 还原演示基线（跨运行确定性测试用）
 func reset_demo() -> void:
 	day_length = 600.0
 	update("day_length", day_length, {}, true)
+	deco_regrow_secs = 120.0
+	update("deco_regrow_secs", deco_regrow_secs, {}, true)

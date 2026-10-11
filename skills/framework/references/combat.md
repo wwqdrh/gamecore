@@ -143,6 +143,10 @@ melee.target_mask = 4               # 目标受击盒掩码（4 = 敌方 layer3�
 melee.hit_cooldown = 0.1            # 窗口期命中冷却（影响一次挥击命中数）
 host.add_child(melee)
 
+# 运行时切换目标层：target_mask 可随时改，每次挥击自动同步进内嵌 GdHitbox
+# （同一判定盒多用途——如挖矿/战斗共用 GdMelee，切装备时改掩码+伤害即可，
+# 范本 player.gd mine 模式 target_mask=16 打可采集物受击盒 layer5）
+
 # 手动挥击（auto_attack_mouse=false 时完全由外部驱动）
 melee.swing(Vector2(1, 0))          # 朝方向挥击 -> bool
 melee.swing_at_point(target_pos)    # 朝世界坐标

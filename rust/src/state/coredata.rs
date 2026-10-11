@@ -3,7 +3,7 @@
 // 支持加密、文件持久化、变更订阅、作用域管理
 
 use godot::prelude::*;
-use godot::classes::{DirAccess, FileAccess, IResource, Json, Resource};
+use godot::classes::{DirAccess, Engine, FileAccess, IResource, Json, Resource};
 use godot::classes::file_access::ModeFlags;
 
 use super::gjson::{FileStore, GJson};
@@ -119,6 +119,12 @@ impl GdCoreData {
         let scope_owned = self.initial_scope.to_string();
         let data_owned = self.initial_data.to_string();
 
+        // 外部删除保护：记录加载时文件是否存在。存在而会话中被外部删除（用户
+        // 手动删档）→ 回写会把内存里的旧档"复活"并覆盖用户新进度（last-writer-
+        // wins，2026-10-12 实机事故），故此后跳过写盘并告警一次。
+        // 新档（加载时不存在）不受影响，正常写盘创建。
+        let existed_at_load = FileAccess::file_exists(&filename_);
+
         let load_fn = Box::new(move || -> Vec<u8> {
             let file_gstr = GString::from(&filename_owned);
             let file_in = FileAccess::open(&file_gstr, ModeFlags::READ);
@@ -139,8 +145,27 @@ impl GdCoreData {
         });
 
         let filename_save = filename_.to_string();
+        let file_existed = existed_at_load;
+        let warn_once = std::rc::Rc::new(std::cell::Cell::new(false));
+        let warn_once_save = warn_once.clone();
         let save_fn = Box::new(move |data: Vec<u8>| {
+            // 编辑器守卫（2026-10-12）：编辑器进程严禁写存档——编辑器内存态
+            // 可能来自编辑场景时的 Bean 加载，回写会覆盖磁盘真档（与 30s
+            // flush 同源事故）。玩家按 F5 运行的是独立进程，不受影响。
+            if Engine::singleton().is_editor_hint() {
+                return;
+            }
             let file_gstr = GString::from(&filename_save);
+            if file_existed && !FileAccess::file_exists(&file_gstr) {
+                if !warn_once_save.get() {
+                    warn_once_save.set(true);
+                    godot_warn!(
+                        "GdCoreData: 存档文件在会话期间被外部删除，跳过回写以免复活旧档: {}（删除存档请退出游戏后操作，或调用 GDCORE.delete_save）",
+                        filename_save
+                    );
+                }
+                return;
+            }
             let file = FileAccess::open(&file_gstr, ModeFlags::WRITE);
             if let Some(mut f) = file {
                 f.store_buffer(&PackedByteArray::from(data.as_slice()));

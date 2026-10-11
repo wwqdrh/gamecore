@@ -51,7 +51,7 @@ corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
-[node name="GoodsPanel" type="Panel" unique_id=1219388060]
+[node name="GoodsPanel" type="Panel" unique_id=123633292]
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
@@ -59,12 +59,12 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_pv0wf")
 script = ExtResource("1_7tkt4")
 metadata/__anchor = "full"
 metadata/__script_vars = {
-"category": "pill"
+"category": ""
 }
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray()
 
-[node name="GoodsScroll" type="ScrollContainer" parent="." unique_id=2106305736]
+[node name="GoodsScroll" type="ScrollContainer" parent="." unique_id=323038097]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -74,35 +74,33 @@ offset_right = -8.0
 offset_bottom = -8.0
 metadata/__anchor = "full"
 metadata/__script_vars = {
-"category": "pill"
+"category": ""
 }
 
-[node name="GoodsGrid" type="GdUIGrid" parent="GoodsScroll" unique_id=2009103910]
+[node name="GoodsGrid" type="GdUIGrid" parent="GoodsScroll" unique_id=1832570020]
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_vertical = 3
 theme_override_constants/h_separation = 6
 theme_override_constants/v_separation = 6
 columns = 8
 metadata/__data_var = "bean:xiuxian_item:bag_views"
 metadata/__filter_key = "category"
 metadata/__signal_s_click_item = "_on_item_clicked"
-metadata/__filter_value = "pill"
+metadata/__filter_value = ""
 
-[node name="BagCell" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1397311799]
+[node name="BagCell" type="Panel" parent="GoodsScroll/GoodsGrid" unique_id=1494417184]
 visible = false
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_vertical = 3
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_ci3e7")
 script = ExtResource("2_u08ug")
 metadata/__script_vars = {}
 metadata/__gml_root = true
-metadata/__data_contract = PackedStringArray("icon", "count", "quality", "locked", "selected")
+metadata/__data_contract = PackedStringArray("icon", "icon_texture", "count", "quality", "locked", "selected")
 
-[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/BagCell" unique_id=1616042531]
+[node name="RareFrame" type="Panel" parent="GoodsScroll/GoodsGrid/BagCell" unique_id=871585966]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -112,7 +110,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_guhx0")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/BagCell" unique_id=2146918848]
+[node name="IconBox" type="CenterContainer" parent="GoodsScroll/GoodsGrid/BagCell" unique_id=1267601677]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -124,12 +122,19 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/BagCell/IconBox" unique_id=2088057717]
+[node name="CellIcon" type="Label" parent="GoodsScroll/GoodsGrid/BagCell/IconBox" unique_id=232043030]
 layout_mode = 2
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/BagCell" unique_id=201037374]
+[node name="CellTex" type="TextureRect" parent="GoodsScroll/GoodsGrid/BagCell/IconBox" unique_id=7346419]
+visible = false
+custom_minimum_size = Vector2(34, 34)
+layout_mode = 2
+mouse_filter = 2
+stretch_mode = 5
+
+[node name="LockIcon" type="Label" parent="GoodsScroll/GoodsGrid/BagCell" unique_id=817348608]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -140,7 +145,7 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/BagCell" unique_id=1292844160]
+[node name="CountLabel" type="Label" parent="GoodsScroll/GoodsGrid/BagCell" unique_id=1855491099]
 visible = false
 layout_mode = 0
 anchor_top = 1.0
@@ -156,7 +161,7 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/BagCell" unique_id=58659663]
+[node name="SelectedFrame" type="Panel" parent="GoodsScroll/GoodsGrid/BagCell" unique_id=1143762088]
 visible = false
 layout_mode = 0
 anchor_right = 1.0

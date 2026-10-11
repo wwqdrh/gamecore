@@ -22,8 +22,9 @@
 	}
   </style>
   <script>
-	// 当前分类（"pill" = 丹药页初始选中；运行时以 panel.category 状态为准）
-	var category = "pill"
+	// 当前分类（"" = 全部；与 bag_panel.gd INITIAL_CATEGORY 一致。
+	// 默认全部：打开背包即可见所有持有物品，避免新入包道具被初始页签过滤）
+	var category = ""
   </script>
   <Panel name="GoodsPanel" class="grid-bg" anchor="full">
 	<ScrollContainer name="GoodsScroll" anchor="full" margin="8">
@@ -32,7 +33,7 @@
 			 filter_key="category" filter_value_var="category"
 			 h_separation="6" v_separation="6"
 			 @s_click_item="_on_item_clicked"
-			 size_flags_horizontal="expand_fill" size_flags_vertical="expand_fill">
+			 size_flags_horizontal="expand_fill">
 		<!-- slot 模板：背包格子条目（构建期注入，duplicate 复制） -->
 		<Gml src="bag_item.gml" />
 	  </UIGrid>

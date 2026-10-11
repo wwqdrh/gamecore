@@ -79,9 +79,9 @@ func _initialize() -> void:
 		task.get_task_status("main_001"), task.get_progress("main_001").get("step")])
 
 	# 4. 道具总表：全量/分类/品阶/关键字（均含未解锁；定义源自 item.gjson）
-	check(item.get_all_items().size() == 24, "道具总表应有 24 条（含未解锁）")
+	check(item.get_all_items().size() == 26, "道具总表应有 26 条（含未解锁）")
 	check(item.get_items_by_type("消耗").size() == 13, "消耗类应 13 条")
-	check(item.get_items_by_type("材料").size() == 7, "材料类应 7 条")
+	check(item.get_items_by_type("材料").size() == 8, "材料类应 8 条")
 	check(item.get_items_by_rarity("仙品").size() == 7, "仙品应 7 条（含未解锁）")
 	check(item.get_items_by_rarity("帝品").size() == 1, "帝品应 1 条（帝品雏丹）")
 	check(item.search_items("丹").size() == 10, "搜「丹」应命中 10 条")

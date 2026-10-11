@@ -1,7 +1,7 @@
 {
 	"version": 1,
 	"pipeline": "gjson",
-	"desc": "道具静态定义总表（GJson 格式，供 XiuItemTable 加载查询）。type: 消耗/材料/装备/特殊；rarity: 凡品/灵品/仙品/帝品；use=breakthrough 的道具为等阶突破材料（to_rank=目标阶 id）；use=exp 的道具服用获得 exp 点修为。其余字段与背包 Bean 契约一致。",
+	"desc": "道具静态定义总表（GJson 格式，供 XiuItemTable 加载查询）。type: 消耗/材料/装备/特殊；rarity: 凡品/灵品/仙品/帝品；use=breakthrough 的道具为等阶突破材料（to_rank=目标阶 id）；use=exp 的道具服用获得 exp 点修为。其余字段与背包 Bean 契约一致。字段 icon=逻辑图片 id（在 state/item/icon_map.gd 登记为 emoji 或 res:// 贴图路径，可多物品共用同一 id）。",
 	"items": {
 		"pill_hp": {
 			"id": "pill_hp",
@@ -10,7 +10,8 @@
 			"rarity": "凡品",
 			"desc": "服用后恢复少量气血。",
 			"price": 10,
-			"stack": 99
+			"stack": 99,
+			"icon": "img_pill_hp"
 		},
 		"pill_mp": {
 			"id": "pill_mp",
@@ -19,7 +20,8 @@
 			"rarity": "凡品",
 			"desc": "服用后恢复少量灵力。",
 			"price": 12,
-			"stack": 99
+			"stack": 99,
+			"icon": "img_pill_mp"
 		},
 		"pill_break": {
 			"id": "pill_break",
@@ -28,7 +30,8 @@
 			"rarity": "仙品",
 			"desc": "冲击瓶颈时服用，可提升破境成功率。",
 			"price": 2000,
-			"stack": 9
+			"stack": 9,
+			"icon": "img_pill_break"
 		},
 		"herb_lingzhi": {
 			"id": "herb_lingzhi",
@@ -37,7 +40,8 @@
 			"rarity": "灵品",
 			"desc": "百年灵芝，炼丹常用辅材。",
 			"price": 40,
-			"stack": 999
+			"stack": 999,
+			"icon": "img_herb_lingzhi"
 		},
 		"herb_xueshen": {
 			"id": "herb_xueshen",
@@ -46,7 +50,8 @@
 			"rarity": "凡品",
 			"desc": "药性温和的补血药材。",
 			"price": 8,
-			"stack": 999
+			"stack": 999,
+			"icon": "img_herb_xueshen"
 		},
 		"ore_coldiron": {
 			"id": "ore_coldiron",
@@ -55,7 +60,28 @@
 			"rarity": "灵品",
 			"desc": "蕴含寒气的矿石，铸剑上品。",
 			"price": 60,
-			"stack": 999
+			"stack": 999,
+			"icon": "img_ore_coldiron"
+		},
+		"ore_amethyst": {
+			"id": "ore_amethyst",
+			"name": "紫晶矿",
+			"type": "材料",
+			"rarity": "灵品",
+			"desc": "泛着紫光的晶簇，炼器辅材，萧宅后山与青石镇附近均有分布。",
+			"price": 45,
+			"stack": 999,
+			"icon": "img_ore_amethyst"
+		},
+		"tool_pickaxe": {
+			"id": "tool_pickaxe",
+			"name": "玄铁镐",
+			"type": "装备",
+			"rarity": "灵品",
+			"desc": "寒铁打造的采镐，装备后点击矿石方向挥镐开采（矿石需敲击三次）。",
+			"price": 300,
+			"stack": 1,
+			"icon": "img_tool_pickaxe"
 		},
 		"sword_qingfeng": {
 			"id": "sword_qingfeng",
@@ -64,7 +90,8 @@
 			"rarity": "灵品",
 			"desc": "青云宗制式飞剑，锋锐轻灵。",
 			"price": 500,
-			"stack": 1
+			"stack": 1,
+			"icon": "img_sword_qingfeng"
 		},
 		"robe_yunwen": {
 			"id": "robe_yunwen",
@@ -73,7 +100,8 @@
 			"rarity": "灵品",
 			"desc": "绣有云纹法阵的护身法袍。",
 			"price": 450,
-			"stack": 1
+			"stack": 1,
+			"icon": "img_robe_yunwen"
 		},
 		"token_sect": {
 			"id": "token_sect",
@@ -82,7 +110,8 @@
 			"rarity": "灵品",
 			"desc": "出入青云宗各处的身份凭证。",
 			"price": 0,
-			"stack": 1
+			"stack": 1,
+			"icon": "img_token_sect"
 		},
 		"map_secret": {
 			"id": "map_secret",
@@ -91,7 +120,8 @@
 			"rarity": "仙品",
 			"desc": "落霞秘境的残缺地图，拼齐可指引传送。",
 			"price": 0,
-			"stack": 1
+			"stack": 1,
+			"icon": "img_map_secret"
 		},
 		"break_qizhe": {
 			"id": "break_qizhe",
@@ -102,7 +132,8 @@
 			"price": 50,
 			"stack": 99,
 			"use": "breakthrough",
-			"to_rank": "dou_zhe"
+			"to_rank": "dou_zhe",
+			"icon": "img_pill_break"
 		},
 		"break_doushi": {
 			"id": "break_doushi",
@@ -113,7 +144,8 @@
 			"price": 400,
 			"stack": 99,
 			"use": "breakthrough",
-			"to_rank": "dou_shi"
+			"to_rank": "dou_shi",
+			"icon": "img_pill_break"
 		},
 		"break_dadoushi": {
 			"id": "break_dadoushi",
@@ -124,7 +156,8 @@
 			"price": 1200,
 			"stack": 99,
 			"use": "breakthrough",
-			"to_rank": "da_dou_shi"
+			"to_rank": "da_dou_shi",
+			"icon": "img_break_dadoushi"
 		},
 		"break_douling": {
 			"id": "break_douling",
@@ -135,7 +168,8 @@
 			"price": 4000,
 			"stack": 999,
 			"use": "breakthrough",
-			"to_rank": "dou_ling"
+			"to_rank": "dou_ling",
+			"icon": "img_break_douling"
 		},
 		"herb_ninghun": {
 			"id": "herb_ninghun",
@@ -146,7 +180,8 @@
 			"price": 2500,
 			"stack": 999,
 			"use": "breakthrough",
-			"to_rank": "dou_ling"
+			"to_rank": "dou_ling",
+			"icon": "img_herb_ninghun"
 		},
 		"break_douwang": {
 			"id": "break_douwang",
@@ -157,7 +192,8 @@
 			"price": 12000,
 			"stack": 99,
 			"use": "breakthrough",
-			"to_rank": "dou_wang"
+			"to_rank": "dou_wang",
+			"icon": "img_break_douwang"
 		},
 		"break_douhuang": {
 			"id": "break_douhuang",
@@ -168,7 +204,8 @@
 			"price": 50000,
 			"stack": 9,
 			"use": "breakthrough",
-			"to_rank": "dou_huang"
+			"to_rank": "dou_huang",
+			"icon": "img_break_douhuang"
 		},
 		"break_douzong": {
 			"id": "break_douzong",
@@ -179,7 +216,8 @@
 			"price": 200000,
 			"stack": 9,
 			"use": "breakthrough",
-			"to_rank": "dou_zong"
+			"to_rank": "dou_zong",
+			"icon": "img_break_douzong"
 		},
 		"break_douzun": {
 			"id": "break_douzun",
@@ -190,7 +228,8 @@
 			"price": 800000,
 			"stack": 9,
 			"use": "breakthrough",
-			"to_rank": "dou_zun"
+			"to_rank": "dou_zun",
+			"icon": "img_break_douzun"
 		},
 		"break_dousheng": {
 			"id": "break_dousheng",
@@ -201,7 +240,8 @@
 			"price": 3000000,
 			"stack": 9,
 			"use": "breakthrough",
-			"to_rank": "dou_sheng"
+			"to_rank": "dou_sheng",
+			"icon": "img_break_dousheng"
 		},
 		"mat_longxue": {
 			"id": "mat_longxue",
@@ -212,7 +252,8 @@
 			"price": 5000000,
 			"stack": 9,
 			"use": "breakthrough",
-			"to_rank": "dou_sheng"
+			"to_rank": "dou_sheng",
+			"icon": "img_mat_longxue"
 		},
 		"break_doudi": {
 			"id": "break_doudi",
@@ -223,7 +264,8 @@
 			"price": 10000000,
 			"stack": 9,
 			"use": "breakthrough",
-			"to_rank": "dou_di"
+			"to_rank": "dou_di",
+			"icon": "img_break_doudi"
 		},
 		"pill_exp_s": {
 			"id": "pill_exp_s",
@@ -234,7 +276,8 @@
 			"price": 80,
 			"stack": 99,
 			"use": "exp",
-			"exp": 500
+			"exp": 500,
+			"icon": "img_pill_exp"
 		},
 		"pill_exp_m": {
 			"id": "pill_exp_m",
@@ -245,7 +288,8 @@
 			"price": 900,
 			"stack": 99,
 			"use": "exp",
-			"exp": 5000
+			"exp": 5000,
+			"icon": "img_pill_exp"
 		}
 	}
 }

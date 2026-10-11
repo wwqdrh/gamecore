@@ -2,14 +2,24 @@
 # 挂载到格子根节点（BagCell），条目被 UIGrid duplicate 时脚本随节点复制。
 #
 # 数据契约（@export = 条目接受的外部注入字段，声明了才注入，类型即文档）：
-#   icon     物品图标（emoji 占位，正式版为贴图）
+#   icon     物品字符图标（emoji；icon_texture 非空时隐藏）
+#   icon_texture 物品贴图路径（res://...；非空时 TextureRect 显示、icon 隐藏）
 #   count    数量角标文本（"x16"；空串隐藏）
 #   quality  品质（"稀有" 紫底；空串普通米绿底）
 #   locked   锁定格（格子未解锁：置灰 + 锁标）
 #   selected 选中态（金色边框）
 extends Panel
 
-@export var icon: String = ""
+@export var icon: String = "":
+	set(value):
+		icon = value
+		if is_node_ready():
+			_apply_icon()
+@export var icon_texture: String = "":
+	set(value):
+		icon_texture = value
+		if is_node_ready():
+			_apply_icon()
 @export var count: String = "":
 	set(value):
 		count = value
@@ -42,11 +52,27 @@ func _ready() -> void:
 	var count_label := find_child("CountLabel", true, false) as Label
 	if count_label:
 		count_label.visible = count != ""
+	_apply_icon()
 	_apply_quality()
 	_apply_locked()
 	var frame := find_child("SelectedFrame", true, false) as Control
 	if frame:
 		frame.visible = selected
+
+
+## 图标联动：icon_texture 非空显示贴图（TextureRect），否则显示字符图标（Label）
+func _apply_icon() -> void:
+	var label := find_child("CellIcon", true, false) as Label
+	var tex := find_child("CellTex", true, false) as TextureRect
+	if label == null or tex == null:
+		return
+	if icon_texture != "":
+		tex.texture = load(icon_texture)
+		tex.visible = true
+		label.visible = false
+	else:
+		tex.visible = false
+		label.visible = true
 
 
 func _apply_quality() -> void:

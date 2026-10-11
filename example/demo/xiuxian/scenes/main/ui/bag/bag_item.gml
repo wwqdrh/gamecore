@@ -27,14 +27,18 @@
 	.cell-icon { font_size: 30; }
 	.lock-icon { font_size: 26; }
   </style>
-  <!-- 根节点双向 expand_fill：格子拉伸填满 UIGrid 列宽/行高 -->
-  <Panel name="BagCell" class="cell-bg" custom_minimum_size="58,58"
-         size_flags_horizontal="expand_fill" size_flags_vertical="expand_fill">
+  <!-- 根节点：垂直不 expand（GridContainer 行高=格子 min 高度，防止单行
+       被撑满整个网格高度）；水平 expand_fill 让各列均分填满网格宽度 -->
+  <Panel name="BagCell" class="cell-bg" custom_minimum_size="58,80"
+         size_flags_horizontal="expand_fill">
 	<!-- 稀有品质紫底（quality 契约联动显示） -->
 	<Panel name="RareFrame" class="rare-bg" anchor="full" visible="false" />
-	<!-- 物品图标 -->
+	<!-- 物品图标：字符图标（Label，emoji）与贴图（TextureRect）二选一显隐，
+	     贴图形态由 icon_texture 契约驱动（见 bag_item.gd _apply_icon） -->
 	<CenterContainer name="IconBox" anchor="full" margin="5">
 	  <Label name="CellIcon" class="cell-icon" text="{{icon}}" />
+	  <TextureRect name="CellTex" visible="false" expand_mode="ignore_size"
+	               stretch_mode="keep_aspect_centered" custom_minimum_size="34,34" />
 	</CenterContainer>
 	<!-- 锁定图标（locked 契约联动显示，配合整格置灰） -->
 	<Label name="LockIcon" class="lock-icon" text="🔒" anchor="full"

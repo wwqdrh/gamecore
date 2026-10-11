@@ -84,30 +84,30 @@ func _run() -> void:
 	var detail: Control = panel.find_child("DetailPanel", true, false)
 	var cats: Control = panel.find_child("CategoryPanel", true, false)
 
-	# 分类点击联动过滤：初始分类 "pill"（面板初始态）应显示 3 种消耗类；
-	# 法器(2) -> 全部(10) -> 丹药(3)
+	# 分类点击联动过滤：初始分类 ""（全部，面板初始态）应显示 10 种持有道具；
+	# 丹药(3) -> 法器(2) -> 全部(10)
 	if cats == null:
 		push_error("[Check] CategoryPanel 不存在")
 		ok = false
 	else:
 		var n_initial: int = grid.get_child_count() - 1
-		print("[Check] initial filter pill=%d" % n_initial)
-		if n_initial != 3:
-			push_error("[Check] 初始 pill 过滤应 3 条（状态层 bag_views 未驱动网格？）")
+		print("[Check] initial filter all=%d" % n_initial)
+		if n_initial != 10:
+			push_error("[Check] 初始应为「全部」10 条（状态层 bag_views 未驱动网格？）")
 			ok = false
+		cats.call("_on_category", cats.find_child("CatPill", true, false))
+		var n_pill: int = grid.get_child_count() - 1
 		cats.call("_on_category", cats.find_child("CatTool", true, false))
 		var n_tool: int = grid.get_child_count() - 1
 		cats.call("_on_category", cats.find_child("CatAll", true, false))
 		var n_all: int = grid.get_child_count() - 1
-		cats.call("_on_category", cats.find_child("CatPill", true, false))
-		var n_pill: int = grid.get_child_count() - 1
-		print("[Check] filter tool=%d all=%d pill=%d" % [n_tool, n_all, n_pill])
-		if n_tool != 2 or n_all != 10 or n_pill != 3:
+		print("[Check] filter pill=%d tool=%d all=%d" % [n_pill, n_tool, n_all])
+		if n_pill != 3 or n_tool != 2 or n_all != 10:
 			push_error("[Check] 分类联动过滤失败")
 			ok = false
-		# 选中态互斥：最后点击的 CatPill 应为金色
-		var pill: Control = cats.find_child("CatPill", true, false)
-		if pill.modulate.r < 0.99 or pill.modulate.g < 0.8:
+		# 选中态互斥：最后点击的 CatAll 应为金色
+		var all_btn: Control = cats.find_child("CatAll", true, false)
+		if all_btn.modulate.r < 0.99 or all_btn.modulate.g < 0.8:
 			push_error("[Check] 分类选中态高亮失败")
 			ok = false
 		else:
@@ -147,21 +147,33 @@ func _run() -> void:
 			ok = false
 
 	# 条目 0（herb_lingzhi 灵芝）：点选后金边 + 数量角标 x6 + 灵品紫底
+	# 图标经 XiuIconMap 图片 id（img_herb_lingzhi → 🍄）解析，与血参 🌿 区分
 	var item0: Control = grid.get_at(0)
 	grid.emit_signal("s_click_item", item0)
 	var sel0: Control = item0.find_child("SelectedFrame", true, false)
 	var cnt0: Label = item0.find_child("CountLabel", true, false)
 	var rare0: Control = item0.find_child("RareFrame", true, false)
-	print("[Check] item0 selected=%s count=%s rare=%s" % [
-		sel0.visible, cnt0.text, rare0.visible])
+	var icon0: Label = item0.find_child("CellIcon", true, false)
+	var tex0: TextureRect = item0.find_child("CellTex", true, false)
+	print("[Check] item0 selected=%s count=%s rare=%s icon=%s" % [
+		sel0.visible, cnt0.text, rare0.visible, icon0.text])
 	if not sel0.visible or cnt0.text != "x6" or not rare0.visible:
 		push_error("[Check] 条目 0 选中态/数量角标/稀有底失败")
 		ok = false
+	if icon0.text != "🍄" or not icon0.visible or tex0.visible:
+		push_error("[Check] 灵芝应显示注册表字符图标 🍄（Label 显 / TextureRect 隐）")
+		ok = false
+	else:
+		print("[Check] item0 icon via XiuIconMap OK")
 
-	# 条目 1（herb_xueshen 血参，凡品）：无稀有底
+	# 条目 1（herb_xueshen 血参，凡品）：无稀有底，图标 🌿 与灵芝区分
 	var rare1: Control = grid.get_at(1).find_child("RareFrame", true, false)
+	var icon1: Label = grid.get_at(1).find_child("CellIcon", true, false)
 	if rare1 != null and rare1.visible:
 		push_error("[Check] 条目 1 不应有稀有紫底")
+		ok = false
+	if icon1.text != "🌿":
+		push_error("[Check] 血参图标应 🌿（实际 %s）" % icon1.text)
 		ok = false
 	else:
 		print("[Check] item1 normal OK")
@@ -202,7 +214,7 @@ func _run() -> void:
 		var d_name0: Label = detail.find_child("DetailName", true, false)
 		var d_icon0: Label = detail.find_child("DetailIcon", true, false)
 		print("[Check] detail after select item0: %s %s" % [d_icon0.text, d_name0.text])
-		if d_name0.text != "灵芝" or d_icon0.text != "🌿":
+		if d_name0.text != "灵芝" or d_icon0.text != "🍄":
 			push_error("[Check] 详情展示灵芝失败: %s" % d_name0.text)
 			ok = false
 
@@ -218,7 +230,7 @@ func _run() -> void:
 	if not sel2.visible or sel0_after.visible:
 		push_error("[Check] 点选金边互斥失败")
 		ok = false
-	if d_name2.text != "秘境残图" or d_icon2.text != "📜":
+	if d_name2.text != "秘境残图" or d_icon2.text != "🗺️":
 		push_error("[Check] 点选联动详情失败")
 		ok = false
 

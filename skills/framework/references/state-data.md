@@ -18,12 +18,28 @@ GDCORE.remove_global_node("player")
 # 每存档累计游玩时长（真实秒，跨开关应用累积）
 var secs = GDCORE.get_play_time()   # 当前存档：历史落盘值 + 本次会话已进行时长
 GDCORE.flush_play_time()            # 立即落盘（切存档/退出/每 30 秒自动触发，一般无需手动调）
+
+# 删除存档（游戏内删档正规途径；严禁运行中手动删文件——见下方外部删除保护）
+GDCORE.delete_save("2")   # 删文件 + 重置缓存；删当前档时 Bean 同步切到空 core 回默认值
 ```
 
 > 游玩时长持久化在各存档 GdCoreData 的 `playtime;total`（真实秒）。
 > 自动落盘时机：`set_save_id` 切档（并入旧档）、进程退出、每 30 秒兜底
 > （崩退最多丢 30 秒）。GdWeatherManager 的 `auto_start_from_ticks` 默认
 > 取此值作为初始时间基准。
+
+### 外部删除保护 / 多实例告警（2026-10-12 事故沉淀）
+
+- **30s 自动落盘 = 内存态全量写盘**：存档文件只是运行内存的周期性转储，
+  **游戏运行中手动删存档文件会被"复活"**（内存旧态每 30s 写回，覆盖新进度，
+  last-writer-wins）。删除存档必须：退出游戏后删文件，或调用
+  `GDCORE.delete_save(id)`。
+- **外部删除保护**：GdCoreData 加载时文件存在、之后被外部删除 → 该实例
+  跳过写盘并 godot_warn 一次（"存档文件在会话期间被外部删除，跳过回写"）。
+  新档（加载时文件不存在）不受影响。
+- **多实例告警**：非 headless 实例启动后若发现 `user://.game_instance.lock`
+  90 秒内有过更新 → godot_warn"另一个游戏实例可能正在运行"（锁文件每 30s
+  随自动落盘刷新；两个实例同跑会互踩存档）。
 
 ### 存档槽位 / 新游戏与继续游戏
 
@@ -181,6 +197,9 @@ func add_equip():
    `GdJsonCodec.decrypt_to_text` 回环与明文源逐字节一致。
 5. **Bean 数据源单一化**：Bean 的目录字段初始化/重置时从定义表派生
    （如 `XiuItemState.items = XiuItemTable.get_items()`），改源文件即改全游戏。
+   **旧档升级**：items 快照随存档持久化，定义表后加条目在旧档里缺失——
+   Bean `ins()` 时做缺失合并（`merge_new_items()`：确有补充才 update，
+   遵守同值短路红线），防止背包显示裸 id。
 6. 跨表引用在查询类里做校验（如 level 表的突破材料 id 必须存在于 item 表，
    缺失 push_error）。
 7. 新建 `class_name` 后 headless `-s` 测试前需刷全局类缓存：
@@ -211,3 +230,35 @@ func add_equip():
   运行时也可 `ResourceLoader.load("res://...gjson")` → `get_data()/query()`。
 - `GdDataLinkList`（linklist.rs）：基于字典的链表数据容器 `Dictionary<String, Array>`。
 - 存档路径规则：`user://coredata_{save_id}.data`，save_id 为空时 `user://coredata.data`。
+
+## demo 状态模式补充（仙途）
+
+- **存档级游戏配置**（`XiuGameConfigState`，id `xiuxian_gameconfig`）：玩法参数
+  随档走 Bean 勿放 game_config.json 静态表。字段：`day_length`（一昼夜现实秒，
+  时间流速 = 86400/day_length 统一日历/天气时间轴）、`deco_regrow_secs`
+  （deco 资源再生间隔秒，默认 120，DecoHarvest._ready 每图下发 + watch 重下发）。
+- **游戏时长轴**（`XiuCalendarState.game_secs`，秒）：CalendarManager 每 0.5s
+  按 WeatherManager.get_game_time() 轮询写入（天数 = game_secs/day_length+1）。
+  **_ready 即接线恢复**：CalendarManager._wire 时 `_weather.set("start_time", 0.0)`
+  + `set_total_time(Bean.game_secs)` 以存档绝对游戏秒恢复 WeatherManager 时间
+  基准——不恢复的话 WeatherManager 每局从 start_time 重新累计：日历天数被静默
+  重置、deco 冷却时间戳基准循环错乱（重开后挖掉的矿被误判到期立即长回）。
+  恢复动作必须在场景装配（_ready）同步完成，严禁留给轮询首跑（期间任何
+  set_total_time 都会被覆盖，产生时序竞态）。是 deco 采集冷却的**跨重启
+  时钟基准**——冷却记录存「采集时刻的游戏秒」，重开后按差值换算已冷却时长。
+- **地图采集状态**（`XiuMapState`，id `xiuxian_map`）：`harvested` 字典存已采集
+  待再生格子（key = `(x<<32)|y` 字符串，**值 = 采集时刻游戏秒**，0.0 = 已弹出；
+  旧格式 1.0 标记位会被视为早已到期 → 首次加载弹出，无害迁移）——deco_harvest
+  进场按到期判定：未到期注入 GdDecoLayer（spawn_deco 跳过）+ 预推进再生时钟，
+  到期弹出（矿自然长回）；采集 add_harvested、再生 remove_harvested。挖掉的矿
+  重开游戏不会全部长回。整字典 duplicate 替换写法（同 XiuItemState.bag）。
+- **玩家位置持久化**（`XiuPlayerState`，id `xiuxian_player`，独立玩家运行态
+  Bean，见 state/player/player_state.gd）：`pos_alias` + `pos_x/pos_y` 存
+  **精确世界坐标**（非格子坐标，保留格内亚像素）。player.gd _process 节流 2s
+  写 `save_pos(alias, world)`（update 同值自动短路，只在移动后落盘）。恢复分
+  两级：**主场景 map_restore.gd 先按 pos_alias 恢复「进哪张图」**（注册表命中
+  则开该图，副本 alias 不在主场景注册表 → 回退 initial_map）；进图后
+  player.gd `_resolve_spawn_position` 恢复图内位置——alias 匹配且落点格
+  is_walkable 才原样落位，否则默认出生点（world_to_cell 为纯除法全局语义，
+  地图在原点可直接用世界坐标校验）。位置属玩家运行态，独立成 Bean 不混入
+  养成状态（XiuCharacterState）。

@@ -8,17 +8,19 @@
 #   （状态下行，本控制器不感知）
 #
 # 槽位配置：1 号 = 枪支（demo 初始 selected_index=0，进场即持枪可射击），
-#           2 号 = 近战武器（青锋剑，item.json 装备类），3 号 = 丹药
+#           2 号 = 近战武器（青锋剑，item.json 装备类），3 号 = 挖矿工具
+#           （玄铁镐，可开采地图 deco 矿石——碰撞 layer5/16，见 gd_map_deco.rs），
+#           4 号 = 空槽
 extends HBoxContainer
 
 ## 与 player.gd 的 KEY_EQUIP 一致（demo 各自声明，避免 class_name 缓存依赖）
 const KEY_EQUIP := "mainhud.equip"
 
-## 槽位 → 物品 id（"" = 空槽 / 卸下）。1 号 = 枪支，2 号 = 近战武器
-const SLOT_ITEMS := ["gun", "sword_qingfeng", "pill_hp", ""]
+## 槽位 → 物品 id（"" = 空槽 / 卸下）。1 号 = 枪支，2 号 = 近战武器，3 号 = 采矿镐
+const SLOT_ITEMS := ["gun", "sword_qingfeng", "tool_pickaxe", ""]
 
 ## 槽位图标占位（emoji；正式素材就位后换 TextureRect）
-const SLOT_GLYPHS := ["🔫", "🗡️", "💊", ""]
+const SLOT_GLYPHS := ["🔫", "🗡️", "⛏️", ""]
 
 
 func _ready() -> void:

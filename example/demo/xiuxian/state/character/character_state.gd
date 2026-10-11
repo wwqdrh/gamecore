@@ -89,6 +89,12 @@ func get_attr_names() -> Array:
 	return attrs.keys()
 
 
+# ------------------------------------------------------------------ 位置
+
+## （位置已迁移到独立 Bean XiuPlayerState——玩家运行态与养成状态分离，
+## 见 state/player/player_state.gd）
+
+
 ## 战斗属性派生（数据侧计算，UI 直接展示）：攻击/防御由 体魄/根骨 加权
 func get_attack() -> int:
 	return int(attrs.get("体魄", 0)) * 12 + int(attrs.get("根骨", 0)) * 4

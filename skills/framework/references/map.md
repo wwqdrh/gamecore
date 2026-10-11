@@ -177,6 +177,73 @@ MapManager.try_teleport(角色全局坐标)  # 命中传送点格子即触发切
 - `contains_world_point(world_pos)` 命中判定 / `get_center()` 格心全局坐标 / `place_at(cell)` 重定位
 - 信号 `s_triggered`（管理器命中时发出）
 
+## GdDecoLayer — 地图装饰层/可采集物（Node2D）
+
+挂在 GdQuickMap 地图场景下，按配置在指定地形上随机分布装饰/可采集物品（范本：
+xiaozhai.tscn / xiaozhen.tscn 的 DecoLayer + deco_harvest.gd）。配置为**并行数组**
+（下标一一对应，以 deco_item_ids 为主长度，风格同 GdQuickMap 地形数组），tscn 手写零门槛：
+
+```ini
+# tscn 节点属性（GdDecoLayer）：
+deco_terrains = PackedStringArray("grass,forest", "forest")  # 目标地形（逗号分隔多个；空=所有可行走地形）
+deco_item_ids = PackedStringArray("ore_coldiron", "ore_amethyst")  # 物品 id（回调/背包联动标识）
+deco_textures = PackedStringArray("", "")       # 贴图路径（留空用 deco_colors 色块绘制）
+deco_colors = PackedColorArray(...)             # 回退颜色（菱形色块）
+deco_frequencies = PackedFloat64Array(0.02, 0.012)  # 单格生成概率 0..1
+deco_mineable = PackedInt32Array(1, 1)          # 1 = 可开采
+deco_hits = PackedInt32Array(3, 3)              # 采集所需碰撞次数（默认 3）
+deco_callbacks = PackedStringArray("on_ore_harvested", "...")  # 采集回调函数名
+callback_target_path = NodePath("../DecoHarvest")  # 回调宿主（空 = 父节点）
+deco_seed = 0                                   # 0 = 取父地图 get_seed()（与地形同源确定）
+deco_regrow_interval = 0.0                      # 资源再生间隔秒（0 = 禁用；demo 默认 120 随档下发）
+```
+
+- **可开采协议**（复用战斗组件，零新语义）：矿石 = Node2D 根 + GdHealth
+  （max_health = deco_hits，无敌帧 0）+ GdHurtbox（layer5=16 可采集层）。
+  采矿工具（GdHitbox/GdMelee，target_mask=16）每次命中 take_damage(1)，
+  血量归零即「碰撞满 N 次」→ 发 `s_harvested(item_id, node)` → 按名调用
+  `callback_target.<deco_callbacks 名>(item_id, node)` → 矿石移除
+- **碰撞层规划**：layer2(2)=玩家受击盒 / layer3(4)=敌受击盒 / **layer5(16)=可采集物受击盒**
+- 采集回调在 gd 侧实现（框架零业务感知）：`func on_ore_harvested(item_id: String, node: Node)`
+  ——demo 里 `XiuItemState.ins().add_item(item_id, 1)` 入包，背包 UI watch bag_views 自动刷新
+- 时序：子节点 ready 先于父地图生成噪声，ready 自动 call_deferred spawn_deco；
+  spawn_deco 幂等（先清旧再铺新，同种子同结果），可换种子/配置后手动重铺。
+  **清旧为立即 free，严禁在采集回调内调用 spawn_deco**（信号栈中释放节点不安全）
+- 随机性：每条目独立 RNG（base_seed + 条目下标 × 7919 混入），格内散布偏移由
+  格子哈希决定——同一地图 + 同一种子分布完全确定（可复现/可测试）
+- `get_spawned_count()` 最近一次铺设数量（测试断言用）
+
+### 资源再生（挖掉不复活 + 定时随机补种）
+
+```gdscript
+layer.deco_regrow_interval = 120.0            # 秒；0 = 禁用（宿主每图 _ready 下发存档级配置）
+layer.set_harvested_cells(PackedInt64Array)   # 进场注入冷却格子（key = (x<<32)|y），随档持久化
+layer.get_harvested_cells() -> PackedInt64Array
+layer.set_regrow_elapsed(secs: float)         # 预推进再生时钟（秒）——恢复存档时传入
+                                              # 已冷却时长，重启/换图不再重置再生节拍
+layer.s_regrowned(item_id: String, cell_key: int)  # 补种成功信号——cell_key = 被消费的冷却记录
+```
+
+- 采集后格子进 **harvested FIFO 队列**：spawn_deco（重开游戏进场重铺）跳过
+  这些格——矿不会"重开就全部长回"；`spawn_node` 在矿石上挂 `deco_cell` /
+  `deco_entry` meta（回调宿主读取入库）
+- 每 `deco_regrow_interval` 秒补种一批：缺额条目（当前存活 < 初始铺设数）各
+  随机挑一个可生长空格长一个（**生长位置不固定**，非确定性 RNG）；成功后消费
+  一条冷却记录——长回原格弹原记录、长到新格弹最早一条（缺口记录数守恒 =
+  初始数 − 存活数）；**冷却中的格子允许被补种选中**（freq 高的图可能没有其他
+  空位，排除会死锁）
+- **s_regrowned 发的是被消费的记录 key**（新格 key 从未持久化，发它宿主会对
+  不上）——宿主 `remove_harvested(cell_key)` 同步持久化集合
+- demo 侧（deco_harvest.gd 挂图内，每图 _ready 自动接线）：进场
+  `XiuMapState.get_harvested()`（值 = 采集时刻游戏秒）到期判定——到期的弹出
+  （矿本次铺设自然长回）、未到期的按采集时间升序 `set_harvested_cells` 注入 +
+  `set_regrow_elapsed(最早格已冷却秒)` 预推进；`XiuGameConfigState.deco_regrow_secs`
+  （默认 120s）下发 + watch 配置重下发；采集 `add_harvested(key, 游戏秒)`、
+  再生 `remove_harvested`。
+  **注意铺设语义**：spawn_deco 逐格消耗 RNG 且跳过冷却格不消耗 → 注入任一格
+  会使同条目后续铺设位置漂移（生长位置本就不固定，矿数守恒由 regrow 补足目标
+  = 本次实际铺设数保证）。
+
 ## 场景分类与随机副本（demo 范本：xiuxian 秘境）
 
 场景分两类：**固定场景**（手工 tscn，注册进 map_paths 即可，如萧宅/青石镇/青云坊）

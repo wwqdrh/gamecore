@@ -29,8 +29,9 @@ const KEY_CATEGORY := "bag.category"
 ## 状态键：当前选中物品（完整条目数据字典）
 const KEY_SELECTED_ITEM := "bag.selected_item"
 
-## 初始分类（与 bag_grid.gml <script> 的 category 变量一致，供构建期过滤）
-const INITIAL_CATEGORY := "pill"
+## 初始分类（"" = 全部，与 bag_grid.gml <script> 的 category 变量一致；
+## 默认展示全部持有物品——矿石等材料类新入包道具打开背包即可见，不被页签过滤）
+const INITIAL_CATEGORY := ""
 
 
 func _ready() -> void:

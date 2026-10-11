@@ -40,6 +40,14 @@ func wait_frames(count: int = 1) -> void:
 		await tree.process_frame
 
 
+## 等待 N 个物理帧（碰撞扫描/挥击判定等物理过程用；
+## 注意 RefCounted 基类上下文没有裸 physics_frame 信号，须走本辅助）
+func wait_physics_frames(count: int = 1) -> void:
+	var tree := Engine.get_main_loop() as SceneTree
+	for i in count:
+		await tree.physics_frame
+
+
 ## 等待指定信号触发或超时（帧数），返回是否在超时前触发。
 ## 实现方式: 挂接回调 + 每帧轮询标志位，避免竞态丢失。
 func wait_signal(sig: Signal, timeout_frames: int = 300) -> bool:

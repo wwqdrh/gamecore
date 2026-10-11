@@ -12,6 +12,11 @@ const TOURNAMENT_DAY := 7
 ## 当前游戏天数（1 起；跨存档持久化）
 var day: int = 1
 
+## 当前游戏时长（秒；WeatherManager 游戏时间轴，CalendarManager 轮询写入）。
+## 用途：deco 采集冷却的跨重启时钟基准——冷却记录存「采集时刻的游戏秒」，
+## 重开后按 此刻 - 采集时刻 换算已冷却时长，再生节拍不因重启清零
+var game_secs: float = 0.0
+
 
 ## 注册/获取单例 Bean（GdBean.bean 幂等：重复调用返回同一实例）
 static func ins() -> XiuCalendarState:
@@ -27,7 +32,16 @@ func set_day(v: int) -> void:
 	update("day", v, {}, false)
 
 
+## 写入游戏时长（秒；0.5s 轮询粒度，暂停/未推进时同值 update 短路不落盘）
+func set_game_secs(v: float) -> void:
+	if absf(float(game_secs) - v) < 0.001:
+		return
+	update("game_secs", v, {}, false)
+
+
 ## 还原演示基线（跨运行确定性测试用）
 func reset_demo() -> void:
 	day = 1
 	update("day", day, {}, true)
+	game_secs = 0.0
+	update("game_secs", game_secs, {}, true)

@@ -3,6 +3,7 @@
 
 mod dual_grid;
 mod gd_map_basic;
+mod gd_map_deco;
 mod gd_map_manager;
 mod gd_map_marker;
 mod quick_map;
@@ -14,6 +15,7 @@ pub use dual_grid::{
 };
 
 pub use gd_map_basic::GdMapBasic;
+pub use gd_map_deco::GdDecoLayer;
 pub use gd_map_manager::GdMapManager;
 pub use gd_map_marker::GdMapMarker;
 pub use quick_map::GdQuickMap;
