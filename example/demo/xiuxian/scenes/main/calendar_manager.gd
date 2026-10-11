@@ -5,6 +5,11 @@
 #   · 第 TOURNAMENT_DAY 天 → 解锁并自动接取「宗门大比」（sect_tournament），
 #     置对话 flag day7_arrived（演武教头台词按此门控）+ toast 提示
 #
+# 时间流速（存档级游戏配置 XiuGameConfigState.day_length = 现实秒/游戏日）：
+#   本管理器是「配置 → 天气」的下发者：_wire 时按配置换算并下发
+#   WeatherManager.set_time_scale（= 86400 游戏秒 / day_length 现实秒），
+#   并 watch 配置变化实时重下发（天气相位/降雨等全部基于游戏秒自动跟随）。
+#
 # 时间源：兄弟节点 WeatherManager（同为主场景根直挂，NodePath 引用，
 # 与 player.gd 引用 ../MapManager/MapLayer/xxx 同模式）；
 # 天数 = floor(get_game_time() / day_length) + 1（day_length 缺失回退 86400）。
@@ -19,6 +24,7 @@ const POLL_INTERVAL := 0.5
 var _weather: Node = null
 var _state: XiuCalendarState
 var _task_state: XiuTaskState
+var _config: XiuGameConfigState
 var _wired := false
 var _acc := 0.0
 
@@ -51,9 +57,22 @@ func _wire() -> bool:
 	_wired = true
 	_state = XiuCalendarState.ins()
 	_task_state = XiuTaskState.ins()
+	# 存档级时间流速：按配置下发天气流速（注册即回调当前值，无需手动首刷）；
+	# 红线：watch 回调内不得同步再调 GDSTATE/GdBean——这里只调 Weather 节点方法
+	_config = XiuGameConfigState.ins()
+	_config.watch("day_length", func(_v = null, _m = null): _apply_time_speed.call_deferred())
+	_apply_time_speed()
 	# 存档恢复：天数直接对齐（老存档升到第 7 天后首次进本版本也补触发）
 	_check_day(int(_state.day))
 	return true
+
+
+## 配置 → 天气：下发流速（游戏秒/现实秒 = 一昼夜游戏秒 / 一昼夜现实秒）
+func _apply_time_speed() -> void:
+	if _weather == null:
+		return
+	var dl: float = maxf(float(_config.day_length), XiuGameConfigState.MIN_DAY_LENGTH)
+	_weather.set_time_scale(XiuGameConfigState.GAME_SECONDS_PER_DAY / dl)
 
 
 func _poll_day() -> void:

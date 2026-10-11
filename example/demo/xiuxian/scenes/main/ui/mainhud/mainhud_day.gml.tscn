@@ -1,6 +1,8 @@
 [gd_scene format=3]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yc284"]
+[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/ui/mainhud/mainhud_day.gd" id="1_1er4r"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mo48l"]
 bg_color = Color(0.22745098, 0.20392157, 0.3137255, 0.8)
 border_width_left = 2
 border_width_top = 2
@@ -12,14 +14,16 @@ corner_radius_top_right = 22
 corner_radius_bottom_right = 22
 corner_radius_bottom_left = 22
 
-[node name="DayBadge" type="Panel" unique_id=1873932146]
+[node name="DayBadge" type="Panel" unique_id=1572046071]
 custom_minimum_size = Vector2(128, 44)
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_yc284")
+theme_override_styles/panel = SubResource("StyleBoxFlat_mo48l")
+script = ExtResource("1_1er4r")
 metadata/__script_vars = {}
 metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray()
 
-[node name="@HBoxContainer@57" type="HBoxContainer" parent="." unique_id=519121514]
+[node name="@HBoxContainer@93" type="HBoxContainer" parent="." unique_id=415585470]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -31,13 +35,13 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Label@56" type="Label" parent="@HBoxContainer@57" unique_id=1730696362]
+[node name="@Label@92" type="Label" parent="@HBoxContainer@93" unique_id=2094606090]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "📅"
 vertical_alignment = 1
 
-[node name="DayText" type="Label" parent="@HBoxContainer@57" unique_id=1845694840]
+[node name="DayText" type="Label" parent="@HBoxContainer@93" unique_id=2040528197]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9490196, 0.8509804, 0.54901963, 1)
 text = "第 1 天"

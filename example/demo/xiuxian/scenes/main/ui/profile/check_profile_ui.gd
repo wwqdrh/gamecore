@@ -117,6 +117,69 @@ func _run() -> void:
 			push_error("[Check] 三列比例偏离 3:4:3（中列独占宽度的回归）")
 			ok = false
 
+	# 3. Modal 点击语义：框内（含非控件位置）点击不关闭，框外点击关闭
+	#    （回归：内容窗口根曾因布局类默认 IGNORE，窗口内点击漏到遮罩被误关）
+	# gml 根元素即 ProfilePanel：实例化后根节点自身就叫 ProfilePanel，
+	# find_child 不搜自身，需先判根
+	var win: Control = panel if str(panel.name) == "ProfilePanel" else panel.find_child("ProfilePanel", true, false)
+	if win == null:
+		push_error("[Check] ProfilePanel 不存在")
+		ok = false
+	else:
+		print("[Check] profile window mouse_filter=%d" % win.mouse_filter)
+		if win.mouse_filter != Control.MOUSE_FILTER_STOP:
+			push_error("[Check] 窗口根应为 STOP（消费窗口内点击）")
+			ok = false
+	holder.queue_free()
+	await process_frame
+
+	var modal := GdUIModal.new()
+	modal.content_margin = 20
+	root.add_child(modal)
+	var content: Control = panel_scene.instantiate()
+	modal.add_content_child(content)
+	for i in 4:
+		await process_frame
+	modal.open()
+	await process_frame
+	if not modal.is_modal_open():
+		push_error("[Check] Modal open 失败")
+		ok = false
+	var overlay: ColorRect = modal.find_child("Overlay", true, false)
+	var area: Control = modal.find_child("ContentArea", true, false)
+	var win2: Control = content if str(content.name) == "ProfilePanel" else content.find_child("ProfilePanel", true, false)
+	if overlay == null or area == null or win2 == null:
+		push_error("[Check] Modal 内部节点缺失")
+		ok = false
+	else:
+		await process_frame
+		await process_frame
+		# 框内点击：窗口中心（窗口根 STOP 本就该拦；即便漏到遮罩也不得关闭）
+		var ev_in := InputEventMouseButton.new()
+		ev_in.button_index = MOUSE_BUTTON_LEFT
+		ev_in.pressed = true
+		var in_global: Vector2 = (win2.get_global_rect() as Rect2).get_center()
+		ev_in.position = overlay.get_global_transform().affine_inverse() * in_global
+		overlay.emit_signal("gui_input", ev_in)
+		await process_frame
+		print("[Check] click inside -> open=%s" % modal.is_modal_open())
+		if not modal.is_modal_open():
+			push_error("[Check] 框内点击不应关闭 Modal")
+			ok = false
+		# 框外点击：遮罩角落（内容区外）
+		var ev_out := InputEventMouseButton.new()
+		ev_out.button_index = MOUSE_BUTTON_LEFT
+		ev_out.pressed = true
+		ev_out.position = Vector2(2, 2)
+		overlay.emit_signal("gui_input", ev_out)
+		await process_frame
+		print("[Check] click outside -> open=%s" % modal.is_modal_open())
+		if modal.is_modal_open():
+			push_error("[Check] 框外点击应关闭 Modal")
+			ok = false
+	modal.queue_free()
+	await process_frame
+
 	print("[Check] %s" % ("ALL GREEN" if ok else "FAILED"))
 	load("res://example/demo/xiuxian/state/test_save_guard.gd").restore()
 	quit(0 if ok else 1)

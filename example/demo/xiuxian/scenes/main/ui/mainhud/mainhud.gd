@@ -8,6 +8,7 @@
 #   mainhud_resources.gml  顶中：灵石/丹药资源徽章 + 加号（回调回退本脚本）
 #   mainhud_quest.gml      左中：任务卷轴横幅
 #   mainhud_minimap.gml    右上：小地图
+#   mainhud_day.gml+gd     顶中：天数徽章（自包含 watch XiuCalendarState.day）
 #   mainhud_menus.gml+gd   右侧功能按钮列（高亮由状态驱动）
 #   mainhud_equipbar.gml+gd 底部道具栏（枪/剑/丹药，数字键选择）
 #   （技能栏已迁移至探索场景 scenes/explore/ui/explore_skillbar.gml）
@@ -35,7 +36,6 @@ const STONE_GAIN := 100
 var _char_bean: GdBean
 var _item_bean: GdBean
 var _task_bean: GdBean
-var _calendar_bean: XiuCalendarState
 
 
 func _ready() -> void:
@@ -73,9 +73,6 @@ func _bind_game_state() -> void:
 	_char_bean.watch("spirit_stones", _on_stones_changed)
 	_item_bean.watch("bag_views", _on_bag_changed)
 	_task_bean.watch("views", _on_task_views_changed)
-	# 游戏天数徽章（CalendarManager 按游戏时长推算写入）
-	_calendar_bean = XiuCalendarState.ins()
-	_calendar_bean.watch("day", _on_day_changed)
 
 
 ## 玩家徽章：境界标题 / 等级 / 经验条（注册即回调当前值）
@@ -139,13 +136,6 @@ func _on_task_views_changed(_value: Variant = null, _metas: Variant = null) -> v
 		text.text = "可领取：%s" % str(shown.get("title", ""))
 	else:
 		text.text = "%s %s" % [str(shown.get("title", "")), str(shown.get("progress", ""))]
-
-
-## 顶部中央天数徽章
-func _on_day_changed(value: Variant = null, _metas: Variant = null) -> void:
-	var lbl: Label = find_child("DayText", true, false)
-	if lbl:
-		lbl.text = "第 %d 天" % int(value)
 
 
 func _fmt_thousands(v: int) -> String:

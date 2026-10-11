@@ -156,7 +156,16 @@ popup.is_popup_visible()
 ```
 
 - `open()/close()/toggle()/is_modal_open()`；信号 `s_modal_opened` / `s_modal_closed`
-- `content_margin`：内容区四周像素留白；留白区点击穿透到遮罩 → 关闭
+- `close_on_overlay`（默认 true）：是否允许点击遮罩关闭（可配置）
+- **关闭语义 = 只认「框外」点击**：遮罩收到点击先做位置判定——落在内容区内
+  矩形（内容区矩形减去 content_margin 留白带）不关闭。原因：内容根/内部布局
+  节点在 GML 约定下默认 IGNORE（布局白名单），窗口内非控件位置的点击会漏到
+  遮罩，不做位置判定会被误判「框外」而关窗。
+- **弹窗内容窗口根应显式 `mouse_filter="stop"`**：窗口根 Panel 属布局白名单
+  默认 IGNORE，不拦截时窗口内点击全部漏到遮罩（有位置判定兜底不误关，但
+  语义上窗口应消费自己的点击）；范本 profile_panel/bag_panel/store_panel/
+  settings_panel 的 window-bg 根。
+- `content_margin`：内容区四周像素留白；留白带与框外点击 → 关闭
 - **内容关闭联动**：内容根声明 `signal s_close_requested` 并在自身关闭按钮里 emit
   （独立 F6 仍走自身 hide），Modal 自动连接并整体 close——现成面板无需改动即可弹窗化
 - 编辑器内静态预览展开布局（遮罩透明），运行期初始隐藏

@@ -40,7 +40,8 @@
 	}
 	.row-label { color: #4a3c26; font_size: 15; }
   </style>
-  <Panel name="SettingsPanel" class="window-bg" anchor="full" margin="2%">
+  <Panel name="SettingsPanel" class="window-bg" anchor="full" margin="2%"
+		 mouse_filter="stop">
 	<MarginContainer name="MainMargin" anchor="full" margin="14">
 	  <VBoxContainer name="MainColumn" separation="8">
 		<!-- 顶栏：标题 + ESC 提示 + 关闭 -->

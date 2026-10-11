@@ -37,6 +37,20 @@ GDCORE.flush_play_time()            # 立即落盘（切存档/退出/每 30 秒
 - 范本：`example/demo/xiuxian/scenes/title/ui/save_modal.gd`（3 槽位弹窗，
   空档「新游戏」/ 有档「境界·天数·时长 + 继续游戏」）+ `check_title_save.gd`。
 
+### 存档级游戏配置（玩法参数随档，勿放全局配置文件）
+
+玩法参数（时间流速等）随存档走 GdBean（每个存档独立一份、update 立即落盘、
+watch 响应变更），**不要**放 game_config.json 静态表（那是构建期全局定义）。
+
+- 范本 `xiuxian/state/game_config/game_config_state.gd`（XiuGameConfigState，
+  id `xiuxian_gameconfig`）：`day_length` = 一昼夜对应的现实秒数（默认 600）。
+- 时间流速统一时间轴：天气/日历都按「游戏秒」流转，配置换算由日历管理器下发——
+  `time_scale（游戏秒/现实秒）= 86400 / day_length`，调
+  `WeatherManager.set_time_scale()`（#[var] 自动生成 get/set）；相位/降雨/晨雾
+  基于游戏秒自动跟随。天数 = game_time / 86400 + 1，与流速无关。
+- 运行时改流速 = `set_day_length(v)` → watch → 重下发，UI 可直接做滑条。
+- 验收：`xiuxian/state/check_game_config.gd`（默认值/截断/落盘冷读/流速实测）。
+
 ### 测试存档隔离（铁律）
 
 demo 无头测试**严禁**跑在玩家真实默认档（save_id ""）上——reset_demo/场景流

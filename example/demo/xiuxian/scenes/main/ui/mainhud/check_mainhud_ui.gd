@@ -10,7 +10,7 @@ const DIR := "res://example/demo/xiuxian/scenes/main/ui/mainhud/"
 const GML_FILES := [
 	"mainhud.gml", "mainhud_player.gml", "mainhud_resources.gml",
 	"mainhud_quest.gml", "mainhud_minimap.gml", "mainhud_menus.gml",
-	"mainhud_equipbar.gml", "skill_item.gml",
+	"mainhud_equipbar.gml", "mainhud_day.gml", "skill_item.gml",
 ]
 
 const KEY_MENU := "mainhud.menu"
@@ -62,7 +62,7 @@ func _run() -> void:
 
 	# <Gml> 引用的子视图
 	for view_name in ["PlayerBadge", "ResourceBar", "QuestBanner", "MiniMap",
-			"MenuColumn", "EquipBar", "EquipSlots", "EquipTitle"]:
+			"DayBadge", "MenuColumn", "EquipBar", "EquipSlots", "EquipTitle"]:
 		if hud.find_child(view_name, true, false) == null:
 			push_error("[Check] 子视图 %s 不存在" % view_name)
 			ok = false
@@ -108,6 +108,28 @@ func _run() -> void:
 		ok = false
 	else:
 		print("[Check] layout passthrough OK (all IGNORE)")
+
+	# 天数徽章：自包含脚本直连 XiuCalendarState.day（注册即回调当前值）
+	var day_lbl: Label = hud.find_child("DayText", true, false)
+	if day_lbl == null:
+		push_error("[Check] DayText 不存在")
+		ok = false
+	else:
+		var cal := XiuCalendarState.ins()
+		cal.reset_demo()
+		print("[Check] day initial=%s" % day_lbl.text)
+		if day_lbl.text != "第 1 天":
+			push_error("[Check] 天数徽章初始值应为「第 1 天」")
+			ok = false
+		cal.set_day(6)
+		await process_frame
+		await process_frame
+		print("[Check] day after set_day(6)=%s" % day_lbl.text)
+		if day_lbl.text != "第 6 天":
+			push_error("[Check] 天数徽章未随 XiuCalendarState.day 更新")
+			ok = false
+		cal.reset_demo()
+		await process_frame
 
 	# 功能按钮：初始高亮 修炼（状态驱动：mainhud.gd _ready 写初始值）
 	var menus: Control = hud.find_child("MenuColumn", true, false)

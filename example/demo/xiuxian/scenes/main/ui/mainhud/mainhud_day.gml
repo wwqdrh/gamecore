@@ -1,6 +1,7 @@
-<ui>
-  <!-- 顶部中央天数徽章：显示当前游戏第几天（XiuCalendarState.day，
-	   CalendarManager 按 WeatherManager 游戏时长推算写入，mainhud.gd watch 驱动） -->
+<ui script="mainhud_day.gd">
+  <!-- 顶部中央天数徽章：显示当前游戏第几天（自包含区块：本脚本直连
+	   XiuCalendarState.day watch 驱动；CalendarManager 按 WeatherManager
+	   游戏时长推算写入该 Bean，徽章只读展示） -->
   <style>
 	.day-box {
 	  background: #3a3450cc;

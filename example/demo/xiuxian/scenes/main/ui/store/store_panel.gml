@@ -13,7 +13,8 @@
 	  border_radius: 16;
 	}
   </style>
-  <Panel name="StorePanel" class="window-bg" anchor="full" margin="2%">
+  <Panel name="StorePanel" class="window-bg" anchor="full" margin="2%"
+	     mouse_filter="stop">
 	<MarginContainer name="MainMargin" anchor="full" margin="16">
 	  <VBoxContainer name="MainColumn">
 		<Gml src="store_topbar.gml" />

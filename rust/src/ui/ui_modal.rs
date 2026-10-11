@@ -267,7 +267,12 @@ impl GdUIModal {
         self.connect_content_close(&child);
     }
 
-    /// 处理遮罩点击关闭
+    /// 处理遮罩点击关闭。语义：只有 modal 框之外的遮罩点击才关闭——
+    /// 点击位置落在内容区内矩形（内容区矩形减去 content_margin 留白带）时
+    /// 不关闭。原因：内容根/内部布局节点在 GML 约定下默认鼠标穿透
+    /// （builder 布局类白名单 IGNORE），窗口内非控件位置的点击会漏到遮罩，
+    /// 若不做位置判定会被误判为「框外点击」而关闭弹窗。
+    /// 是否允许点击遮罩关闭由 close_on_overlay 配置。
     #[func]
     fn _on_overlay_gui_input(&mut self, event: Gd<InputEvent>) {
         if !self.close_on_overlay {
@@ -275,9 +280,37 @@ impl GdUIModal {
         }
         if let Ok(mouse_btn) = event.try_cast::<InputEventMouseButton>() {
             if mouse_btn.get_button_index() == MouseButton::LEFT && mouse_btn.is_pressed() {
+                if self.click_inside_content(&mouse_btn) {
+                    return;
+                }
                 self.close();
             }
         }
+    }
+
+    /// 事件位置（遮罩局部坐标）是否落在内容区内矩形
+    /// （内容区全局矩形减去四周 content_margin 留白带——留白带仍视为框外可关）
+    fn click_inside_content(&self, mouse_btn: &Gd<InputEventMouseButton>) -> bool {
+        let (Some(ref overlay), Some(ref ca)) = (self.overlay.as_ref(), self.content_area.as_ref())
+        else {
+            return false;
+        };
+        let global_pos = {
+            let mut o = overlay.clone();
+            let local = mouse_btn.get_position();
+            let xf = o.get_global_transform();
+            xf * local
+        };
+        let mut ca = ca.clone();
+        let rect = ca.get_global_rect();
+        let m = self.content_margin as f32;
+        let inner_pos = rect.position + Vector2::new(m, m);
+        let dw = 2.0 * m;
+        let inner_size = Vector2::new(
+            (rect.size.x - dw).max(0.0),
+            (rect.size.y - dw).max(0.0),
+        );
+        Rect2::new(inner_pos, inner_size).contains_point(global_pos)
     }
 
     /// 确保内部 UI 已构建（供 builder 在添加子节点前调用）

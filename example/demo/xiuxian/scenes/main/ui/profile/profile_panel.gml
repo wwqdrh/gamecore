@@ -11,7 +11,8 @@
 	  border_radius: 16;
 	}
   </style>
-  <Panel name="ProfilePanel" class="window-bg" anchor="full" margin="2%">
+  <Panel name="ProfilePanel" class="window-bg" anchor="full" margin="2%"
+	     mouse_filter="stop">
 	<MarginContainer name="MainMargin" anchor="full" margin="16">
 	  <VBoxContainer name="MainColumn">
 		<Gml src="profile_topbar.gml" />
