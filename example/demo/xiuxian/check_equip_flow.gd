@@ -6,10 +6,10 @@
 # 覆盖：
 #   1. 装配：底部装备栏 4 格 + 数字键绑定 + 初始选中第 1 格（枪支），选中格 3px 高亮描边
 #   2. 数字键选择：按 2 → 选中格 2 → GdState mainhud.equip = "sword_qingfeng" →
-#      玩家近战模式（卸枪 + 开启挥击 + 剑图形装配）；按 3 → 丹药（徒手）；按 1 → 回到枪支
+#      玩家近战模式（卸枪 + 开启挥击 + 剑图形装配）；按 3 → 挖矿镐（挖矿模式 mask=16）；
+#      状态直写空串 → 徒手；按 4 → 锄头（锄地模式 mask=0）；按 1 → 回到枪支
 #   3. 射击能力：持枪时 shooter.fire_toward_mouse 发出子弹（s_fired 计数）
 #   3b. 近战能力：近战模式下 melee.swing_toward_mouse 挥击（s_swing 计数）
-#   4. 空槽：按 4（空槽）→ 状态写空串 → 玩家徒手
 #   5. 点击选择：向槽位 2 发左键 → 选中格 2
 #   6. 边界：越界数字键（4 格时按 6）不改变选中
 extends SceneTree
@@ -104,6 +104,8 @@ func _run() -> void:
 		check(glyph0 != null and glyph0.text == "🔫", "第 1 格应显示枪支图标占位")
 		var glyph1: Label = slots[1].find_child("Glyph", true, false)
 		check(glyph1 != null and glyph1.text == "🗡️", "第 2 格应显示近战武器图标占位")
+		var glyph3: Label = slots[3].find_child("Glyph", true, false)
+		check(glyph3 != null and glyph3.text == "🔨", "第 4 格应显示锄头图标占位")
 		var key3: Label = slots[2].find_child("KeyNum", true, false)
 		check(key3 != null and key3.text == "3", "第 3 格应显示键位角标 3")
 
@@ -199,25 +201,45 @@ func _run() -> void:
 		await physics_frame
 		check(swung[0] >= 1, "挥击后应发出 s_swing 信号")
 
-	# 按 3 → 丹药槽 → 徒手（无武器图形）
+	# 3. 按 3 → 挖矿镐槽 → 挖矿模式（判定盒指向 deco 受击盒 layer5/16）
 	await _press_digit(KEY_3)
-	check(str(_state().get_state("mainhud.equip")) == "pill_hp", "按 3 后状态应为 pill_hp")
-	check(str(player.attack_mode) == "", "丹药槽玩家应徒手，实际 %s" % str(player.attack_mode))
-	check(mount != null and mount.get_node_or_null("WeaponSword") == null,
-		"徒手时剑图形应卸下")
+	check(int(hotbar.call("get_selected")) == 2, "按 3 应选中第 3 格")
+	check(str(_state().get_state("mainhud.equip")) == "tool_pickaxe", "按 3 后状态应为 tool_pickaxe")
+	check(str(player.attack_mode) == "mine", "挖矿镐玩家应进入挖矿模式，实际 %s" % str(player.attack_mode))
+	var melee_mine: Node = player.get_node_or_null("Melee")
+	check(melee_mine != null and int(melee_mine.get("target_mask")) == 16,
+		"挖矿模式判定盒应指向 deco 受击盒（mask=16），实际 %s" % str(melee_mine.get("target_mask")))
+	check(mount != null and mount.get_node_or_null("WeaponPickaxe") != null,
+		"挖矿模式 WeaponMount 应装配镐图形（WeaponPickaxe）")
 
-	# 按 1 → 回到枪支
+	# 3a. 状态直写空串 → 徒手（卸装备路径；hotbar 选中格不变）
+	_state().set_state("mainhud.equip", "")
+	check(str(player.attack_mode) == "", "空装备玩家应徒手，实际 %s" % str(player.attack_mode))
+	await physics_frame  # 武器图形卸载走 queue_free，需等一帧
+	check(mount != null and mount.get_node_or_null("WeaponPickaxe") == null,
+		"徒手时镐图形应卸下")
+
+	# 4. 按 4 → 锄头槽 → 锄地模式（不走判定盒 mask=0，锄挖逻辑挂 s_swing 信号）
+	await _press_digit(KEY_4)
+	check(int(hotbar.call("get_selected")) == 3, "按 4 应选中第 4 格")
+	check(str(_state().get_state("mainhud.equip")) == "tool_hoe", "按 4 后状态应为 tool_hoe")
+	check(str(player.attack_mode) == "till", "锄头玩家应进入锄地模式，实际 %s" % str(player.attack_mode))
+	var melee_till: Node = player.get_node_or_null("Melee")
+	check(melee_till != null and int(melee_till.get("target_mask")) == 0,
+		"锄地模式不走判定盒（mask=0），实际 %s" % str(melee_till.get("target_mask")))
+	check(melee_till != null and bool(melee_till.get("auto_attack_mouse")),
+		"锄地模式挥击路由应开启")
+	check(mount != null and mount.get_node_or_null("WeaponHoe") != null,
+		"锄地模式 WeaponMount 应装配锄图形（WeaponHoe）")
+
+	# 4b. 按 1 → 回到枪支（重装备路径），再按 4 回到锄头（后续越界检查基准）
 	await _press_digit(KEY_1)
 	check(str(_state().get_state("mainhud.equip")) == "gun", "按 1 应回到枪支槽")
 	check(bool(player.gun_equipped), "回到枪支槽后玩家应持枪")
 	check(mount != null and mount.get_node_or_null("WeaponGun") != null,
 		"回到枪支槽后应重新装配枪图形")
-
-	# 5. 空槽（第 4 格）：状态写空串
 	await _press_digit(KEY_4)
-	check(str(_state().get_state("mainhud.equip")) == "", "按 4（空槽）状态应为空串")
-	check(not bool(player.gun_equipped), "空槽后玩家不应持枪")
-	check(str(player.attack_mode) == "", "空槽后玩家应徒手")
+	check(str(_state().get_state("mainhud.equip")) == "tool_hoe", "再按 4 应回到锄头槽")
 
 	# 6. 越界数字键：4 格时按 6 不改变选中
 	await _press_digit(KEY_6)

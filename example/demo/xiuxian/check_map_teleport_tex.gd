@@ -39,6 +39,7 @@ func _wait_frames(n: int) -> void:
 
 
 func _finish() -> void:
+	load("res://example/demo/xiuxian/state/test_save_guard.gd").restore()
 	print("[TeleTex] RESULT: ", "ALL GREEN" if ok else "HAS FAILURES")
 	quit(0 if ok else 1)
 
@@ -52,6 +53,10 @@ func _mat_tex(mat: Material, param: String) -> Texture2D:
 
 
 func _run() -> void:
+	# 存档隔离：home 的 DigSave 会随档写地形网格（挖地同步用例），严禁污染
+	# 玩家真实存档；清空存档地形保证从初始配置起步
+	load("res://example/demo/xiuxian/state/test_save_guard.gd").isolate()
+	XiuMapState.ins().clear_terrain_grids()
 	# ---- A. GdQuickMap shader 贴图（xiaozhai，grass = 下标 0）----
 	var xz: Node = load(XIAOZHAI).instantiate()
 	root.add_child(xz)
@@ -105,8 +110,8 @@ func _run() -> void:
 			# 不回读），经 get_shader_mask_at 读取
 			_check(home.call("get_shader_mask_at", Vector2i(3, 3)).r > 0.5,
 				"草地格 (3,3) 遮罩应命中（r 通道）")
-			_check(home.call("get_shader_mask_at", Vector2i(16, 1)).r < 0.5,
-				"沙地格 (16,1) 遮罩不应命中")
+			_check(home.call("get_shader_mask_at", Vector2i(16, 1)).r > 0.5,
+				"四周装饰草格 (16,1) 遮罩应命中（整图默认草地）")
 			# 挖地 → 遮罩同步
 			home.dig(Vector2i(9, 6))
 			_check(home.call("get_shader_mask_at", Vector2i(9, 6)).r < 0.5,

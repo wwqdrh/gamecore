@@ -26,7 +26,7 @@
 
 use godot::prelude::*;
 use godot::builtin::{Array, GString, PackedInt32Array, PackedStringArray, Rect2i, Vector2, Vector2i};
-use godot::classes::{ITileMapLayer, Image, ImageTexture, Material, ResourceLoader, Shader, ShaderMaterial, TileMapLayer, TileSet, TileSetAtlasSource, TileSetSource, Texture2D};
+use godot::classes::{ITileMapLayer, Image, ImageTexture, Material, ResourceLoader, Shader, ShaderMaterial, Sprite2D, TileMapLayer, TileSet, TileSetAtlasSource, TileSetSource, Texture2D};
 use godot::global::godot_warn;
 use godot::obj::WithBaseField;
 
@@ -79,6 +79,12 @@ pub struct GdDigLayer {
     /// 重复采样，只有遮罩命中的格子生效。编辑器改值后需调 rebuild() 生效
     #[export]
     terrain_shader_textures: PackedStringArray,
+    /// 挖地预览光标贴图（可选，编辑器设置；如 cursor.svg）：配置后 ready 时
+    /// 创建 DigCursor 精灵子节点，宿主（锄类工具）经 set_cursor_cell /
+    /// clear_cursor 驱动——指示「下一锄将处理的格子」，只在 is_diggable
+    /// 的格子显示（所见即所锄）
+    #[export]
+    cursor_texture: Option<Gd<Texture2D>>,
 
     /// 每格地形下标（行主序，width*height；ready 时按导出配置初始化）
     grid: Vec<i32>,
@@ -96,6 +102,8 @@ pub struct GdDigLayer {
     mask_img: Option<Gd<Image>>,
     /// 遮罩对应的 GPU 纹理（挂进 ShaderMaterial）
     mask_tex: Option<Gd<ImageTexture>>,
+    /// 挖地预览光标精灵（cursor_texture 配置后 ready 创建，初始隐藏）
+    cursor: Option<Gd<Sprite2D>>,
 
     base: Base<TileMapLayer>,
 }
@@ -116,6 +124,7 @@ impl ITileMapLayer for GdDigLayer {
             blocked_terrains: PackedStringArray::new(),
             fallback_overlay_color: Color::from_rgb(0.85, 0.65, 0.35),
             terrain_shader_textures: PackedStringArray::new(),
+            cursor_texture: None,
             grid: Vec::new(),
             names: Vec::new(),
             blocked: Vec::new(),
@@ -124,6 +133,7 @@ impl ITileMapLayer for GdDigLayer {
             fallback_base_color: Color::from_rgb(0.72, 0.55, 0.42),
             mask_img: None,
             mask_tex: None,
+            cursor: None,
             base,
         }
     }
@@ -139,6 +149,7 @@ impl ITileMapLayer for GdDigLayer {
             self.init_grid();
         }
         self.rebuild_visual();
+        self.setup_cursor();
     }
 }
 
@@ -331,7 +342,60 @@ impl GdDigLayer {
         img.get_pixel(cell.x, cell.y)
     }
 
+    /// 显示挖地预览光标于 cell（仅 is_diggable 的格子显示——rects 外/
+    /// 不可挖地形自动隐藏；宿主每帧同步「下一锄将处理的格子」）
+    #[func]
+    pub fn set_cursor_cell(&mut self, cell: Vector2i) {
+        if self.cursor.is_none() {
+            return;
+        }
+        let show = self.is_diggable(cell);
+        // 世界语义格心 → 根局部坐标：根带半格偏移 + 图集缩放（cs/ts_px），
+        // 格心直接当局部坐标用会随根缩放 2 倍飘移（双网格下光标飞远+压多格）
+        let world = self.cell_to_center(cell);
+        let local = self.base_mut().to_local(world);
+        let Some(spr) = self.cursor.as_mut() else {
+            return;
+        };
+        spr.set_visible(show);
+        if show {
+            spr.set_position(local);
+        }
+    }
+
+    /// 隐藏挖地预览光标（卸下工具/换图时调用；无光标配置时无害）
+    #[func]
+    pub fn clear_cursor(&mut self) {
+        if let Some(spr) = self.cursor.as_mut() {
+            spr.set_visible(false);
+        }
+    }
+
     // ---- 内部实现 ----
+
+    /// 装配挖地预览光标（cursor_texture 配置后创建，初始隐藏；
+    /// 纯本地子节点，无全局副作用）
+    fn setup_cursor(&mut self) {
+        let Some(tex) = self.cursor_texture.clone() else {
+            return;
+        };
+        let mut spr = Sprite2D::new_alloc();
+        spr.set_name("DigCursor");
+        spr.set_texture(&tex);
+        spr.set_visible(false);
+        // 缩放到单格大小（世界像素）：精灵在根局部空间，根带 cs/ts_px 缩放，
+        // 局部缩放 = (cell_size / 根缩放) / 贴图长边——任意尺寸素材 + 任意
+        // 图集分辨率都恰好铺满一个世界格
+        let tw = tex.get_width().max(1) as f32;
+        let th = tex.get_height().max(1) as f32;
+        let root_scale = self.base_mut().get_scale().x.max(0.01);
+        let s = self.cell_size.max(1) as f32 / root_scale / tw.max(th);
+        spr.set_scale(Vector2::new(s, s));
+        // 相对 z=1 → 绝对 0：盖住瓦片（本层根 z=-1），树序在玩家前（让位角色）
+        spr.set_z_index(1);
+        self.base_mut().add_child(&spr);
+        self.cursor = Some(spr);
+    }
 
     /// 解析导出并行数组 → 运行时缓存（names/blocked/dig_to/has_dig_area）
     fn sync_tables(&mut self) {

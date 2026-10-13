@@ -272,21 +272,42 @@ terrain_names = PackedStringArray("sand", "grass")  # 下标0=铺底(填满整�
 dig_targets = PackedStringArray("", "sand")    # 与 terrain_names 平行：挖后地形名（空=不可挖）
 init_rects = Array[Rect2i]([Rect2i(1,1,12,7)]) # 初始地形补丁（与 init_terrains 平行，后覆盖先）
 init_terrains = PackedStringArray("grass")
-dig_rects = Array[Rect2i]([Rect2i(8,5,4,3)])   # 可挖区域限制（空 = 全图按 dig_targets 允许）
+dig_rects = Array[Rect2i]([Rect2i(1,1,12,7), Rect2i(15,3,4,9), Rect2i(3,10,9,3)])  # 可挖区域限制（与草地补丁对齐；空 = 全图按 dig_targets 允许）
 blocked_terrains = PackedStringArray()         # 不可通行地形名
 ```
 
 - **API**：`dig(cell) -> bool`（成功发 `s_dug(cell, from, to)` +
   `s_terrain_changed`）/ `is_diggable(cell)` / `get_terrain_name_at(cell)` /
   `set_terrain_name_at(cell, name)` / `is_walkable(cell)`
+- **挖地预览光标**：导出 `cursor_texture`（Texture2D，如 cursor.svg）→ ready 时
+  创建 DigCursor 精灵子节点（相对 z=1 盖瓦片、初始隐藏）；宿主经
+  `set_cursor_cell(cell)` 驱动（**只在 is_diggable 的格子显示**——rects 外/
+  不可挖地形自动隐藏，所见即所锄）、`clear_cursor()` 隐藏。光标格换算与实际
+  dig 共用一套（挥击方向前方一格），锄具每帧同步（player.gd _update_dig_cursor）
+- **默认地形改法**：想整图默认某地形（如草地）不必换铺底下标/重做图集——
+  init_rects 加一条全图矩形即可（铺底被盖住；图集自带双向过渡片，沙洞在
+  草地上渲染正常）。可交互区域（dig_rects）与视觉区域须对齐，玩家按所见即所点
 - **地图根协议**（MapManager/player 鸭子类型）：`is_walkable` /
   `world_to_cell`（纯除法全局语义）/ `cell_to_center` / `get_map_width` /
   `get_map_height` / `get_cell_size_px`——已齐备，home.tscn 根节点直接是 GdDigLayer
 - **持久化**：宿主 `get_terrain_grid()` / `set_terrain_grid(arr)` 整网格
   dump/restore（行主序地形下标；小地图整存最简且覆盖任意变化路径）；
-  编辑器调参后 `rebuild()` 重出图（清运行期变化）
+  编辑器调参后 `rebuild()` 重出图（清运行期变化）。
+  demo 范式（dig_save.gd，范本 home.tscn 的 DigSave 节点）：图内宿主节点
+  `@export map_alias` → 进场 deferred 读 Bean（**子 ready 先于父地图 ready，
+  恢复必须 call_deferred 等网格初始化完**）`set_terrain_grid` 覆盖初始补丁；
+  `s_terrain_changed` → 整网格写回 Bean（update 现值比对天然去重）。
+  验收：check_hoe_till.gd E 节（新实例进场自动恢复锄过的地形）
 - 时序：ready 时按导出配置初始化网格 + 装配 tileset + 全量铺设（编辑器
   WYSIWYG）；世界格变化只重画受影响 4 个显示格（O(1) 局部刷新）
+- **工具联动范式（锄地，范本 demo/xiuxian 4 号槽玄铁锄）**：地形不是 Area2D，
+  不能走 GdMelee 判定盒——装备切 till 模式时 `melee.target_mask = 0`（判定盒
+  扫描不到任何目标），锄挖逻辑挂 `melee.s_swing(dir)` 信号：目标格 =
+  `map.world_to_cell(player.global_position + dir.normalized() * cell_size)`
+  （挥击方向前方一格），`map.has_method("dig")` 守卫后调 `dig(cell)`——
+  无 dig 协议的地图（GdQuickMap 等）静默跳过。对照：挖矿镐 mine 模式走
+  判定盒打 deco 受击盒（矿石是 Area2D），两种"挖"的目标结构不同，勿混用。
+  验收：check_hoe_till.gd（挥击→dig 全链 + rects 外拒绝 + 单格精度）。
 
 ## 场景分类与随机副本（demo 范本：xiuxian 秘境）
 

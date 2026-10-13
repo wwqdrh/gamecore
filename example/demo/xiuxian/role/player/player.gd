@@ -14,7 +14,8 @@
 #   - 装备联动（GdState 状态总线）：mainhud 装备栏 Hotbar 选中槽位 → 写
 #     mainhud.equip（物品 id）；本脚本 watch 同名键——
 #     枪支 → 射击模式（左键/右键按住朝鼠标连射）；近战武器 → 近战模式
-#     （点击朝鼠标挥击）；未装备武器 → 左键恢复点击寻路
+#     （点击朝鼠标挥击）；挖矿镐 → 挖矿模式（判定盒打 deco 受击盒）；
+#     锄头 → 锄地模式（挥击方向前方一格走地图 dig 协议）；未装备武器 → 左键恢复点击寻路
 #   - 武器装配（WeaponMount）：装备变化时把对应武器图形节点挂到人物身上
 #
 # 组件查找：一律经 GdSceneRoot 组件表（get_component），禁止 get_parent
@@ -39,7 +40,7 @@ var health: Node = null
 var shooter: Node = null
 var melee: Node = null
 var weapon_mount: Node2D = null
-## 当前攻击模式："gun" = 射击 / "melee" = 近战 / "" = 徒手（左键点击寻路）
+## 当前攻击模式："gun" = 射击 / "melee" = 近战 / "mine" = 挖矿 / "till" = 锄地 / "" = 徒手（左键点击寻路）
 var attack_mode := ""
 ## 兼容字段：持枪状态（射击模式下 true）
 var gun_equipped: bool:
@@ -132,12 +133,7 @@ func _make_combat() -> void:
 	melee.swing_window = 0.12
 	melee.target_mask = 4
 	add_child(melee)
-	melee.s_swing.connect(func(_dir: Vector2) -> void:
-		# 挥击反馈：武器挂点转向挥击方向并回弹（简单图形下的动感占位）
-		if weapon_mount != null:
-			var tw := create_tween()
-			weapon_mount.rotation = _dir.angle()
-			tw.tween_property(weapon_mount, "rotation", _dir.angle() * 0.5, 0.18))
+	melee.s_swing.connect(_on_melee_swing)
 
 	# 武器挂点：装备变化时把对应武器图形装配到这里
 	weapon_mount = Node2D.new()
@@ -157,28 +153,31 @@ func _on_damaged(_amount: float, _current: float) -> void:
 
 ## 装备栏选择联动（watch 注册即回调当前值；value=nil = 尚未初始化，跳过）
 ## 红线：watch 回调内禁止同步调用 GDSTATE 任何方法（重入 panic）
-## 攻击模式互斥：gun=射击 / melee=近战武器 / mine=挖矿 / 其他=徒手（左键留给点击寻路）
+## 攻击模式互斥：gun=射击 / melee=近战武器 / mine=挖矿 / till=锄地 / 其他=徒手（左键留给点击寻路）
 func _on_equip_changed(value: Variant = null, _key: Variant = null) -> void:
 	if value == null:
 		return
 	var item := str(value)
-	# 攻击模式归一化：gun=射击 / melee=近战武器 / mine=挖矿 / ""=徒手
+	# 攻击模式归一化：gun=射击 / melee=近战武器 / mine=挖矿 / till=锄地 / ""=徒手
 	if item == "gun":
 		attack_mode = "gun"
 	elif item == TOOL_PICKAXE:
 		attack_mode = "mine"
+	elif item == TOOL_HOE:
+		attack_mode = "till"
 	elif WEAPON_MELEE.has(item):
 		attack_mode = "melee"
 	else:
 		attack_mode = ""
-	# 射击模式 → 框架开火路由开启；近战/挖矿模式 → 挥击路由开启（同一
+	# 射击模式 → 框架开火路由开启；近战/挖矿/锄地模式 → 挥击路由开启（同一
 	# GdMelee 判定盒，挥击时同步目标掩码与伤害：战斗打敌受击盒 layer3(4)，
-	# 挖矿打可采集物受击盒 layer5(16)，矿石 GdHealth(3 点) 承载敲击计数）；
+	# 挖矿打可采集物受击盒 layer5(16)，矿石 GdHealth(3 点) 承载敲击计数；
+	# 锄地不走判定盒（地形不是 Area2D），掩码清零、锄挖逻辑挂 s_swing 信号）；
 	# 徒手 → 两者全关，左键留给点击寻路（本脚本 _unhandled_input）
 	if shooter != null:
 		shooter.auto_fire_mouse = attack_mode == "gun"
 	if melee != null:
-		melee.auto_attack_mouse = attack_mode == "melee" or attack_mode == "mine"
+		melee.auto_attack_mouse = attack_mode in ["melee", "mine", "till"]
 		match attack_mode:
 			"melee":
 				melee.target_mask = TARGET_ENEMY
@@ -188,6 +187,10 @@ func _on_equip_changed(value: Variant = null, _key: Variant = null) -> void:
 				melee.target_mask = TARGET_DECO
 				melee.attack_damage = 1.0
 				melee.attack_cooldown = 0.35
+			"till":
+				melee.target_mask = 0
+				melee.attack_damage = 0.0
+				melee.attack_cooldown = 0.4
 			_:
 				melee.stop()
 	_apply_weapon_visual(item)
@@ -196,11 +199,72 @@ func _on_equip_changed(value: Variant = null, _key: Variant = null) -> void:
 
 # ---- 武器装配： WeaponMount 挂简单基础图形（正式素材就位后替换） ----
 
+## 挥击统一入口：视觉反馈 + 模式特有逻辑（锄地等，不走判定盒的动作挂这里）
+func _on_melee_swing(dir: Vector2) -> void:
+	# 挥击反馈：武器挂点转向挥击方向并回弹（简单图形下的动感占位）
+	if weapon_mount != null:
+		var tw := create_tween()
+		weapon_mount.rotation = dir.angle()
+		tw.tween_property(weapon_mount, "rotation", dir.angle() * 0.5, 0.18)
+	# 锄地：锄头挥击 → 前方一格地形挖掘（走地图 dig 协议，非判定盒）
+	if attack_mode == "till":
+		_try_till(dir)
+
+
+## 锄地：挥击方向前方一格调用地图 dig 协议（仅支持挖地的地图生效，
+## 如 home 的 GdDigLayer：dig_rects 内 grass → sand；无 dig 方法的地图静默跳过）
+func _try_till(dir: Vector2) -> void:
+	if map_mgr == null:
+		return
+	var map: Node = map_mgr.get_current_map()
+	if map == null or not map.has_method("dig") or not map.has_method("world_to_cell"):
+		return
+	var target: Vector2i = _till_target_cell(map, dir)
+	if map.dig(target):
+		print("[Player] 锄地: %s → %s" % [target, map.get_terrain_name_at(target)])
+	else:
+		print("[Player] 此处不可锄: %s（%s，只有草地可锄）"
+			% [target, map.get_terrain_name_at(target)])
+
+
+## 锄地目标格：玩家所在格的四周 8 邻格之一——以玩家格心为原点、鼠标方向
+## 落在哪个 45° 扇区就选哪个邻格（预览光标与实际锄挖同一套换算——所见即所锄）
+func _till_target_cell(map: Node, dir: Vector2) -> Vector2i:
+	var my_cell: Vector2i = map.world_to_cell(global_position)
+	# 8 方向偏移表，下标 = angle / 45° 四舍五入（0=右，顺时针因 Godot y 向下）
+	var offsets: Array[Vector2i] = [
+		Vector2i(1, 0), Vector2i(1, 1), Vector2i(0, 1), Vector2i(-1, 1),
+		Vector2i(-1, 0), Vector2i(-1, -1), Vector2i(0, -1), Vector2i(1, -1),
+	]
+	var sector := int(round(dir.angle() / (PI / 4.0)))
+	return my_cell + offsets[wrapi(sector, 0, 8)]
+
+
+## 锄地预览光标：till 模式下每帧把「下一锄将处理的格子」同步给地图
+## （地图配置了 cursor_texture 才有光标，只在可锄格显示）；
+## 其他模式/无 dig 协议的地图 → 清除
+func _update_dig_cursor() -> void:
+	var map: Node = map_mgr.get_current_map()
+	if map == null:
+		return
+	if attack_mode != "till" or not map.has_method("set_cursor_cell"):
+		if map.has_method("clear_cursor"):
+			map.call("clear_cursor")
+		return
+	var dir: Vector2 = map.get_global_mouse_position() - global_position
+	if dir.length_squared() < 1.0:
+		map.call("clear_cursor")
+		return
+	map.call("set_cursor_cell", _till_target_cell(map, dir))
+
 ## 近战武器 id 集（与 item.json 装备类道具对应）
 const WEAPON_MELEE := ["sword_qingfeng"]
 
 ## 挖矿工具 id（item.json 装备类；与 mainhud_equipbar.gd 3 号槽一致）
 const TOOL_PICKAXE := "tool_pickaxe"
+
+## 锄地工具 id（item.json 装备类；与 mainhud_equipbar.gd 4 号槽一致）
+const TOOL_HOE := "tool_hoe"
 
 ## 目标碰撞层（位值）：敌受击盒 layer3 = 4；可采集物受击盒 layer5 = 16
 const TARGET_ENEMY := 4
@@ -218,6 +282,8 @@ func _apply_weapon_visual(item: String) -> void:
 			weapon_mount.add_child(_make_gun_visual())
 		"tool_pickaxe":
 			weapon_mount.add_child(_make_pickaxe_visual())
+		"tool_hoe":
+			weapon_mount.add_child(_make_hoe_visual())
 		_:
 			if WEAPON_MELEE.has(item):
 				weapon_mount.add_child(_make_sword_visual())
@@ -295,6 +361,29 @@ func _make_pickaxe_visual() -> Node2D:
 	])
 	pick.add_child(head)
 	return pick
+
+
+## 锄：斜握柄 + 下弯平刃（锄地工具，攻击模式 till；地形挖掘走地图 dig 协议）
+func _make_hoe_visual() -> Node2D:
+	var hoe := Node2D.new()
+	hoe.name = "WeaponHoe"
+	hoe.rotation = -0.5
+	var handle := ColorRect.new()
+	handle.name = "Handle"
+	handle.color = Color(0.5, 0.35, 0.18)
+	handle.size = Vector2(26, 4)
+	handle.position = Vector2(-8, -2)
+	handle.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hoe.add_child(handle)
+	var blade := ColorRect.new()
+	blade.name = "Blade"
+	blade.color = Color(0.62, 0.66, 0.72)
+	blade.size = Vector2(9, 11)
+	blade.position = Vector2(15, -12)
+	blade.rotation = 0.5
+	blade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hoe.add_child(blade)
+	return hoe
 
 
 # ---- 接线 ----
@@ -414,6 +503,8 @@ func _process(delta: float) -> void:
 		_apply_camera(map_mgr.get_current_map(), true)
 	if map_mgr.get_current_map() == null:
 		return
+	# 锄地预览光标（每帧同步，移动中也跟随鼠标方向刷新）
+	_update_dig_cursor()
 	if is_moving():
 		return
 	var map: Node = map_mgr.get_current_map()

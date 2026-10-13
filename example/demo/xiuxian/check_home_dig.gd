@@ -2,7 +2,8 @@
 # 运行：godot --headless --path . -s res://example/demo/xiuxian/check_home_dig.gd
 #
 # 覆盖：
-#   A. 初始地形：铺底 sand 填满 + init_rects 草地补丁；全显示格有图块（双网格渲染）
+#   A. 初始地形：init_rects 全图草补丁（铺底 sand 被盖住）+ dig_rects 三块田；
+#      全显示格有图块（双网格渲染）
 #   B. 挖地限制：dig_rects 外不可挖；rects 内 grass → sand，s_dug 信号触发
 #   C. 视觉刷新：挖掘后受影响显示格图块变化（过渡片重算）
 #   D. 持久化：get_terrain_grid dump → 新实例 set_terrain_grid restore 一致
@@ -36,21 +37,26 @@ func _wait_frames(n: int) -> void:
 
 
 func _finish() -> void:
+	load("res://example/demo/xiuxian/state/test_save_guard.gd").restore()
 	print("[HomeDig] RESULT: ", "ALL GREEN" if ok else "HAS FAILURES")
 	quit(0 if ok else 1)
 
 
 func _run() -> void:
+	# 存档隔离：DigSave 会随档写地形网格，严禁污染玩家真实存档；
+	# 并清空存档地形保证从初始配置起步（前次运行的锄地结果不残留）
+	load("res://example/demo/xiuxian/state/test_save_guard.gd").isolate()
+	XiuMapState.ins().clear_terrain_grids()
 	# ---- A. 初始地形 + 渲染 ----
 	var map: Node = load(MAP_SCENE).instantiate()
 	root.add_child(map)
 	await _wait_frames(4)
 
-	_check(map.get_terrain_name_at(Vector2i(0, 0)) == "sand", "铺底地形应为 sand（格 0,0）")
-	_check(map.get_terrain_name_at(Vector2i(3, 3)) == "grass", "草地补丁内应为 grass（格 3,3）")
-	_check(map.get_terrain_name_at(Vector2i(16, 1)) == "sand", "补丁外应为 sand（格 16,1）")
+	_check(map.get_terrain_name_at(Vector2i(0, 0)) == "grass", "整图默认草地（格 0,0 四周装饰草）")
+	_check(map.get_terrain_name_at(Vector2i(3, 3)) == "grass", "田地内应为 grass（格 3,3）")
+	_check(map.get_terrain_name_at(Vector2i(16, 1)) == "grass", "补丁覆盖全图（格 16,1 也为 grass）")
 	_check(map.is_walkable(Vector2i(3, 3)) and map.is_walkable(Vector2i(0, 0)),
-		"sand/grass 均可行走（blocked_terrains 空）")
+		"grass 全图可行走（blocked_terrains 空）")
 	# 双网格渲染：显示格 (0..=w, 0..=h) 全部有图块
 	var missing := 0
 	for dy in range(0, 15):
@@ -65,8 +71,9 @@ func _run() -> void:
 	var dug_cells: Array = []
 	map.connect("s_dug", func(cell, from_t, to_t) -> void:
 		dug_cells.append([cell, str(from_t), str(to_t)]))
-	_check(map.is_diggable(Vector2i(3, 3)) == false, "dig_rects 外草地不可挖（3,3）")
-	_check(map.dig(Vector2i(3, 3)) == false, "rects 外 dig 应失败且地形不变（%s）" % map.get_terrain_name_at(Vector2i(3, 3)))
+	_check(map.is_diggable(Vector2i(0, 0)) == false, "四周装饰草不可锄（0,0 在 dig_rects 外）")
+	_check(map.dig(Vector2i(0, 0)) == false, "rects 外 dig 应失败且地形不变（%s）" % map.get_terrain_name_at(Vector2i(0, 0)))
+	_check(map.is_diggable(Vector2i(3, 3)) == true, "田地内草地可挖（3,3，dig_rects 对齐草地补丁）")
 	_check(map.is_diggable(Vector2i(9, 6)) == true, "dig_rects 内草地可挖（9,6）")
 	_check(map.dig(Vector2i(9, 6)) == true, "rects 内 dig 应成功")
 	_check(map.get_terrain_name_at(Vector2i(9, 6)) == "sand", "挖后地形应变 sand")

@@ -1,5 +1,8 @@
 [gd_scene format=3]
 
+[ext_resource type="Texture2D" path="res://example/demo/xiuxian/map/assets/cursor.svg" id="1_cursor"]
+[ext_resource type="Script" path="res://example/demo/xiuxian/map/dig_save.gd" id="2DigSave"]
+
 [node name="Home" type="GdDigLayer"]
 width = 20
 height = 14
@@ -7,11 +10,16 @@ cell_size = 32
 atlas_path = "res://example/demo/xiuxian/map/assets/grass_sand.png"
 terrain_names = PackedStringArray("sand", "grass")
 dig_targets = PackedStringArray("", "sand")
-init_rects = Array[Rect2i]([Rect2i(1, 1, 12, 7), Rect2i(15, 3, 4, 9), Rect2i(3, 10, 9, 3)])
-init_terrains = PackedStringArray("grass", "grass", "grass")
-dig_rects = Array[Rect2i]([Rect2i(8, 5, 4, 3)])
+init_rects = Array[Rect2i]([Rect2i(0, 0, 20, 14)])
+init_terrains = PackedStringArray("grass")
+dig_rects = Array[Rect2i]([Rect2i(1, 1, 18, 12)])
 blocked_terrains = PackedStringArray()
 terrain_shader_textures = PackedStringArray("", "res://example/demo/xiuxian/map/assets/grass_texture.png")
+cursor_texture = ExtResource("1_cursor")
+
+[node name="DigSave" type="Node" parent="."]
+script = ExtResource("2DigSave")
+map_alias = "xiuxian_home"
 
 [node name="TeleportXiaozhai" type="GdMapMarker" parent="."]
 cell = Vector2i(2, 12)

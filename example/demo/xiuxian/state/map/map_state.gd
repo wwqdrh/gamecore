@@ -11,6 +11,10 @@
 #     已冷却时长——再生节拍跨重启延续，不会每次开游戏重新等满间隔；
 #     旧格式值 1.0（标记位）会被视为早已到期的时刻 → 首次加载弹出（矿回一次）。
 #
+#   · terrain_grids —— 各地图挖地地形网格（Dictionary：键 = 地图别名，
+#     值 = Array[float]（行主序地形下标，与 GdDigLayer.get_terrain_grid
+#     对齐；GJson 数值一律 float）。dig_save.gd 进场恢复 / 变化写回。
+#
 # 与框架 GdDecoLayer 的协作（框架零业务感知）：
 #   进场：deco_harvest.gd（图内宿主）读本 Bean → layer.set_harvested_cells 注入
 #         → spawn_deco 跳过这些格子（挖掉的矿不会重开游戏就全部长回）
@@ -24,6 +28,9 @@ extends GdBean
 
 ## 已采集待再生格子集合（键 "%d" % cell_key → 采集时刻游戏秒 / 0.0 已弹出）
 var harvested: Dictionary = {}
+
+## 各地图挖地地形网格（键 = 地图别名 → Array[float] 行主序地形下标）
+var terrain_grids: Dictionary = {}
 
 
 ## 注册/获取单例 Bean（GdBean.bean 幂等：重复调用返回同一实例）
@@ -66,3 +73,29 @@ func clear_harvested() -> void:
 	for k in d.keys():
 		d[k] = 0.0
 	update("harvested", d, {}, true)
+
+
+## 保存某地图的挖地地形整网格（值转 Array[float] 落盘，GJson 数值一律 float；
+## 整表 duplicate 替换，update 现值比对天然去重——地形未变化不落盘不通知）
+func save_terrain_grid(alias: String, grid: PackedInt32Array) -> void:
+	var arr: Array = []
+	for v in grid:
+		arr.append(float(v))
+	var d := terrain_grids.duplicate(true)
+	d[alias] = arr
+	update("terrain_grids", d, {}, false)
+
+
+## 读取某地图的存档地形网格（无存档返回空——进场用初始补丁地形）
+func load_terrain_grid(alias: String) -> PackedInt32Array:
+	if not terrain_grids.has(alias):
+		return PackedInt32Array()
+	var out := PackedInt32Array()
+	for v in terrain_grids[alias]:
+		out.append(int(v))
+	return out
+
+
+## 清空全部地形网格（测试用；force 绕过同值短路）
+func clear_terrain_grids() -> void:
+	update("terrain_grids", {}, {}, true)

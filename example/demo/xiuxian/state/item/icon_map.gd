@@ -33,6 +33,7 @@ const ICONS := {
 	"img_pill_exp": "✨",
 	# 装备
 	"img_tool_pickaxe": "⛏️",
+	"img_tool_hoe": "🔨",
 	"img_sword_qingfeng": "🗡️",
 	"img_robe_yunwen": "🥋",
 	# 特殊
