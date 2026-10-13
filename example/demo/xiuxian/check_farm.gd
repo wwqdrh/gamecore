@@ -86,10 +86,12 @@ func _run() -> void:
 
 	# ---- B. 装备联动 ----
 	var map: Node = load(MAP_SCENE).instantiate()
-	# 测试用生长参数：0.1s/阶段（4 阶段 → 播种后 ~0.4s 成熟），湿润 90s 不干燥
-	map.set("crop_grow_secs", 0.1)
+	# 测试用生长参数：改 def 属性（实时生效）青菜 0.1s/阶段（4 阶段 → 播种后
+	# ~0.4s 成熟）；湿润 90s 不干燥。def 为 tscn 内嵌共享资源，仅本进程生效
 	root.add_child(map)
 	await _wait_frames(4)
+	var defs0: Array = map.get("crops")
+	defs0[0].set("grow_secs", 0.1)
 
 	var player: Node = load(PLAYER_SCRIPT).new()
 	root.add_child(player)
@@ -273,6 +275,45 @@ func _run() -> void:
 	_check(int(map.call("get_crop_stage", C)) == -1, "点击采摘后作物应移除")
 	player.set("global_position", map.call("cell_to_center", Vector2i(8, 6)))
 
+	# ---- F. 多作物：crops 数组 def + 按种子播种 + 各自节奏 + 收获物分流 ----
+	var defs: Array = map.get("crops")
+	_check(defs.size() == 3, "home.tscn 应配置 3 种作物 def，实际 %d" % defs.size())
+	if defs.size() == 3:
+		_check(str(defs[0].get("seed_id")) == "seeds_veg"
+			and str(defs[1].get("seed_id")) == "seeds_radish"
+			and str(defs[2].get("seed_id")) == "seeds_melon",
+			"三种 def 的 seed_id 应分别为 veg/radish/melon")
+		_check(int(defs[1].get("stages")) == 3 and int(defs[2].get("stages")) == 5,
+			"萝卜 3 阶段 / 灵瓜 5 阶段（各自节奏）")
+	var C4 := Vector2i(15, 4)
+	map.call("dig", C4)
+	map.call("water", C4)
+	_check(not bool(map.call("plant_seed", C4, "seeds_不存在的")),
+		"未知种子 id 播种应失败")
+	_check(bool(map.call("plant_seed", C4, "seeds_radish")),
+		"萝卜种子播种应成功（按 seed_id 匹配 def）")
+	_check(str(map.call("get_crop_id", C4)) == "veg_radish",
+		"格上作物种类应为 veg_radish，实际 %s" % str(map.call("get_crop_id", C4)))
+	_check(not bool(map.call("is_mature", C4)), "萝卜未成熟")
+	# def 属性实时生效：改萝卜节奏（stages=2 / 0.05s）后立即快熟（测试提速）
+	defs[1].set("stages", 2)
+	defs[1].set("grow_secs", 0.05)
+	await create_timer(0.3).timeout
+	_check(bool(map.call("is_mature", C4)), "改 def 参数后萝卜应快速成熟")
+	# 持久化：轮询写回的作物条目带 id（1.0 = radish 下标）
+	await create_timer(1.3).timeout
+	var saved_f: Dictionary = XiuMapState.ins().load_farm_state("xiuxian_home")
+	var saved_cf: Dictionary = saved_f.get("crops", {}).get("15,4", {})
+	_check(int(saved_cf.get("id", -1.0)) == 1, "作物条目应带种类 id（radish=1），实际 %s" % str(saved_cf))
+	# 收获分流：萝卜 → veg_radish 入包（不是青菜）
+	player.set("_wired", true)
+	player.set("global_position", map.call("cell_to_center", Vector2i(14, 4)))
+	var rad0: int = int(it.bag.get("veg_radish", 0))
+	_check(bool(player.call("_harvest_at", map, C4)), "空手采摘成熟萝卜应成功")
+	_check(int(it.bag.get("veg_radish", 0)) == rad0 + 1, "萝卜应入包（veg_radish +1）")
+	defs[1].set("stages", 3)  # 还原 def（共享资源，别污染后续加载）
+	defs[1].set("grow_secs", 20.0)
+
 	# ---- E. 持久化：dig_save 1s 轮询 diff 写回 + 新实例进场恢复 ----
 	# 此刻 (9,6)：湿润 + 成熟作物（上面 D 节末补种后收掉 → 湿润空耕地）
 	# 再种一格 (9,7) 留成熟作物在存档里，验证双状态恢复
@@ -299,8 +340,10 @@ func _run() -> void:
 	_check(int(map2.call("get_crop_stage", C2)) >= 0,
 		"新实例进场应恢复作物（(9,7) 阶段 %s）" % str(map2.call("get_crop_stage", C2)))
 	_check(int(map2.call("get_crop_stage", C)) == -1, "无作物格恢复为空（(9,6)）")
-	# 恢复后生长引擎应继续运转（湿润 + 作物 → set_process(true)）
-	map2.set("crop_grow_secs", 0.05)
+	# 恢复后生长引擎应继续运转（湿润 + 作物 → set_process(true)）；
+	# 改 def 参数（共享资源实时生效）提速
+	var defs2: Array = map2.get("crops")
+	defs2[0].set("grow_secs", 0.05)
 	await create_timer(0.5).timeout
 	_check(int(map2.call("get_crop_stage", C2)) == 3,
 		"恢复后作物应继续生长至成熟（实际 %s）" % str(map2.call("get_crop_stage", C2)))

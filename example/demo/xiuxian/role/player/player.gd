@@ -44,6 +44,8 @@ var weapon_mount: Node2D = null
 ## "water" = 浇水 / "plant" = 播种收获 / "" = 空手（左键点击：相邻成熟作物
 ## 采摘入包，否则寻路）
 var attack_mode := ""
+## 当前装备道具 id（_on_equip_changed 记录；播种时作为种子 id 匹配作物 def）
+var _equip_item := ""
 ## 兼容字段：持枪状态（射击模式下 true）
 var gun_equipped: bool:
 	get:
@@ -161,6 +163,7 @@ func _on_equip_changed(value: Variant = null, _key: Variant = null) -> void:
 	if value == null:
 		return
 	var item := str(value)
+	_equip_item = item
 	# 攻击模式归一化：gun=射击 / melee=近战武器 / mine=挖矿 / till=锄地 /
 	# water=浇水 / plant=播种 / ""=空手
 	if item == "gun":
@@ -171,7 +174,7 @@ func _on_equip_changed(value: Variant = null, _key: Variant = null) -> void:
 		attack_mode = "till"
 	elif item == TOOL_KETTLE:
 		attack_mode = "water"
-	elif item == TOOL_SEED:
+	elif SEED_IDS.has(item):
 		attack_mode = "plant"
 	elif WEAPON_MELEE.has(item):
 		attack_mode = "melee"
@@ -265,8 +268,10 @@ func _try_water(dir: Vector2) -> void:
 			% [target, map.get_terrain_name_at(target)])
 
 
-## 播种/收获二合一：挥击方向前方一格——成熟作物 → 收获入包（harvest 协议，
-## 耕地保留湿润可立即补种）；湿润空耕地 → 播种（plant 协议，作物阶段 0）
+## 播种/收获二合一：挥击方向前方一格——成熟作物 → 收获入包（收获产物由
+## 格上作物 def 决定，多作物各回各家；耕地保留湿润可立即补种）；
+## 湿润空耕地 → 播种（plant_seed 协议：当前装备的种子 id 匹配 def——
+## 同一地块种不同种子长不同作物）
 func _try_plant(dir: Vector2) -> void:
 	if map_mgr == null:
 		return
@@ -274,14 +279,24 @@ func _try_plant(dir: Vector2) -> void:
 	if map == null or not map.has_method("plant") or not map.has_method("world_to_cell"):
 		return
 	var target: Vector2i = _till_target_cell(map, dir)
-	# 先判收获：格上有成熟作物 → 摘走入包（一次挥击只做一件事）
+	# 先判收获：格上有成熟作物 → 摘走入包（一次挥击只做一件事）。
+	# **产物 id 必须在 harvest 之前查询**——harvest 后作物已移除（stage=-1），
+	# get_harvest_item 会因 is_mature=false 返回空串（踩过：入包全是 ""）
+	var item: String = map.get_harvest_item(target) if map.has_method("get_harvest_item") \
+		else HARVEST_ITEM
 	if map.has_method("is_mature") and map.is_mature(target) \
 			and map.has_method("harvest") and map.harvest(target):
-		XiuItemState.ins().add_item(HARVEST_ITEM, 1)
-		print("[Player] 收获作物: %s → %s x1（入包）" % [target, HARVEST_ITEM])
+		XiuItemState.ins().add_item(item, 1)
+		print("[Player] 收获作物: %s → %s x1（入包）" % [target, item])
 		return
-	if map.plant(target):
-		print("[Player] 播种: %s" % target)
+	# 播种：带种子 id 走 plant_seed（多作物），旧地图只认 plant 兜底
+	var planted := false
+	if map.has_method("plant_seed"):
+		planted = map.plant_seed(target, _equip_item)
+	else:
+		planted = map.plant(target)
+	if planted:
+		print("[Player] 播种: %s（%s）" % [target, _equip_item])
 	else:
 		print("[Player] 此处不可播种: %s（%s，需湿润的空耕地）"
 			% [target, map.get_terrain_name_at(target)])
@@ -356,10 +371,11 @@ const TOOL_HOE := "tool_hoe"
 ## 浇水工具 id（item.json 装备类；与 mainhud_equipbar.gd 5 号槽一致）
 const TOOL_KETTLE := "tool_watering_can"
 
-## 播种道具 id（item.json 消耗类；与 mainhud_equipbar.gd 7 号槽一致）
-const TOOL_SEED := "seeds_veg"
+## 种子道具 id 集（item.json 消耗类；与 mainhud_equipbar.gd 7 号槽一致——
+## 槽内按再按数字键/再点击轮换，全部归入 plant 攻击模式）
+const SEED_IDS := ["seeds_veg", "seeds_radish", "seeds_melon"]
 
-## 作物收获产物 id（item.json 材料类；空手采摘 / 种子模式收获统一入包）
+## 收获产物兜底 id（地图无 get_harvest_item 协议时退化用；正常走作物 def）
 const HARVEST_ITEM := "veg_green"
 
 ## 目标碰撞层（位值）：敌受击盒 layer3 = 4；可采集物受击盒 layer5 = 16
@@ -382,7 +398,7 @@ func _apply_weapon_visual(item: String) -> void:
 			weapon_mount.add_child(_make_hoe_visual())
 		"tool_watering_can":
 			weapon_mount.add_child(_make_kettle_visual())
-		"seeds_veg":
+		"seeds_veg", "seeds_radish", "seeds_melon":
 			weapon_mount.add_child(_make_seed_visual())
 		_:
 			if WEAPON_MELEE.has(item):
@@ -743,10 +759,14 @@ func _harvest_at(map: Node, target: Vector2i) -> bool:
 	if absi(d.x) > 1 or absi(d.y) > 1:
 		print("[Player] 作物在 %s，走近后再点击采摘" % target)
 		return false  # 不消费 → 寻路走过去
+	# 收获产物由格上作物 def 决定（多作物各回各家）；旧地图无协议 → 兜底。
+	# **查询必须在 harvest 之前**（harvest 后 is_mature=false → 返回空串）
+	var item: String = map.get_harvest_item(target) if map.has_method("get_harvest_item") \
+		else HARVEST_ITEM
 	if not map.has_method("harvest") or not map.harvest(target):
 		return false
-	XiuItemState.ins().add_item(HARVEST_ITEM, 1)
-	print("[Player] 采摘: %s → %s x1（入包）" % [target, HARVEST_ITEM])
+	XiuItemState.ins().add_item(item, 1)
+	print("[Player] 采摘: %s → %s x1（入包）" % [target, item])
 	return true
 
 

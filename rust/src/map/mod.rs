@@ -1,6 +1,7 @@
 // 地图模块入口
 // 提供双网格地图系统，包含方形网格和等距网格两种实现
 
+mod crop_def;
 mod dual_grid;
 mod gd_dig_layer;
 mod gd_map_basic;
@@ -16,6 +17,7 @@ pub use dual_grid::{
     DualGrid, place_props,
 };
 
+pub use crop_def::GdCropDef;
 pub use gd_dig_layer::GdDigLayer;
 pub use gd_map_basic::GdMapBasic;
 pub use gd_map_deco::GdDecoLayer;

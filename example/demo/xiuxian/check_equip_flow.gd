@@ -282,6 +282,20 @@ func _run() -> void:
 	check(mount != null and mount.get_node_or_null("WeaponSeedBag") != null,
 		"播种模式 WeaponMount 应装配种子袋图形（WeaponSeedBag）")
 
+	# 5b. 种子轮换：选中种子槽再按 7 → 轮换下一种种子（图标/状态同步）
+	await _press_digit(KEY_7)
+	check(str(_state().get_state("mainhud.equip")) == "seeds_radish",
+		"再按 7 应轮换到 seeds_radish，实际 %s" % str(_state().get_state("mainhud.equip")))
+	check(str(player.attack_mode) == "plant", "轮换后仍应处于播种模式")
+	check(str(slots[6].find_child("Glyph", true, false).text) == "🥕",
+		"轮换后种子槽图标应更新为 🥕")
+	await _press_digit(KEY_7)
+	check(str(_state().get_state("mainhud.equip")) == "seeds_melon",
+		"再按 7 应轮换到 seeds_melon")
+	await _press_digit(KEY_7)
+	check(str(_state().get_state("mainhud.equip")) == "seeds_veg",
+		"轮换到末尾应回到 seeds_veg（循环）")
+
 	# 6. 越界数字键：7 格时按 8 不改变选中
 	await _press_digit(KEY_8)
 	check(int(hotbar.call("get_selected")) == 6, "按 8（越界）不应改变选中（仍为第 7 格）")

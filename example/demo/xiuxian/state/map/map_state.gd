@@ -127,6 +127,7 @@ func save_farm_state(alias: String, state: Dictionary) -> void:
 		crops_d[str(k)] = {
 			"stage": float(cd.get("stage", 0.0)),
 			"t": float(cd.get("t", 0.0)),
+			"id": float(cd.get("id", 0.0)),
 		}
 	norm["crops"] = crops_d
 	var d := farm_states.duplicate(true)

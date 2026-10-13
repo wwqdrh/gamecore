@@ -90,17 +90,11 @@ pub struct GdDigLayer {
     /// 可浇灌地形名（已开垦耕地）；空 = 自动取 dig_targets 的非空目标集合
     #[export]
     waterable_terrains: PackedStringArray,
-    /// 作物横向序列帧贴图（透明背景；帧宽 = 贴图高，宽 = 阶段数 × 帧宽，
-    /// 左→右 = 阶段 0 → 成熟，如 4 阶段 = 128×32）。空 = 程序化占位图
-    /// （绿色幼苗逐阶段长大，零素材调试用）
+    /// 作物定义数组（多作物：每个 GdCropDef = 一种作物的贴图/阶段/时长/
+    /// 种子/产物，见 crop_def.rs）。播种按 seed_id 匹配 def，各作物独立
+    /// 生长节奏与贴图；空数组 = 单一默认作物（程序化占位幼苗）
     #[export]
-    crop_texture: Option<Gd<Texture2D>>,
-    /// 作物生长阶段数（= 序列帧帧数；成熟 = 阶段 crop_stages-1）
-    #[export]
-    crop_stages: i32,
-    /// 每阶段生长秒数（仅湿润时累计——干涸即暂停生长，需再浇；0 = 瞬间成熟）
-    #[export]
-    crop_grow_secs: f64,
+    crops: Array<Gd<crate::map::crop_def::GdCropDef>>,
     /// 湿润持续秒数（超时自然干燥、作物暂停生长）；0 = 永不干燥
     #[export]
     wet_secs: f64,
@@ -111,6 +105,8 @@ pub struct GdDigLayer {
     wet_timer: Vec<f32>,
     /// 每格作物阶段（-1 = 无作物）
     crop_stage: Vec<i32>,
+    /// 每格作物种类（crops 数组下标；-1 = 无作物）
+    crop_kind: Vec<i32>,
     /// 每格当前阶段已生长秒
     crop_timer: Vec<f32>,
     /// 可浇灌地形下标缓存（sync_tables 填充）
@@ -121,8 +117,8 @@ pub struct GdDigLayer {
     wet_tex: Option<Gd<ImageTexture>>,
     /// 作物精灵（键 = (cx, cy)）
     crop_sprites: std::collections::HashMap<(i32, i32), Gd<Sprite2D>>,
-    /// 作物序列帧纹理缓存（crop_texture 或程序化占位）
-    crop_sheet: Option<Gd<Texture2D>>,
+    /// 各作物序列帧纹理缓存（下标 = crops 数组下标；def.texture 或程序化占位）
+    crop_sheets: Vec<Option<Gd<Texture2D>>>,
 
     /// 每格地形下标（行主序，width*height；ready 时按导出配置初始化）
     grid: Vec<i32>,
@@ -164,9 +160,7 @@ impl ITileMapLayer for GdDigLayer {
             terrain_shader_textures: PackedStringArray::new(),
             cursor_texture: None,
             waterable_terrains: PackedStringArray::new(),
-            crop_texture: None,
-            crop_stages: 4,
-            crop_grow_secs: 20.0,
+            crops: Array::new(),
             wet_secs: 60.0,
             grid: Vec::new(),
             names: Vec::new(),
@@ -180,12 +174,13 @@ impl ITileMapLayer for GdDigLayer {
             wet: Vec::new(),
             wet_timer: Vec::new(),
             crop_stage: Vec::new(),
+            crop_kind: Vec::new(),
             crop_timer: Vec::new(),
             waterable: Vec::new(),
             wet_img: None,
             wet_tex: None,
             crop_sprites: std::collections::HashMap::new(),
-            crop_sheet: None,
+            crop_sheets: Vec::new(),
             base,
         }
     }
@@ -506,22 +501,77 @@ impl GdDigLayer {
         }
     }
 
-    /// 播种：湿润耕地 → 作物阶段 0（无作物且湿润才成功）。发 s_planted
+    /// 播种：湿润耕地 → 作物阶段 0（无作物且湿润才成功）。发 s_planted。
+    /// 单参版 = crops[0]（默认作物；测试/简单用法）
     #[func]
     pub fn plant(&mut self, cell: Vector2i) -> bool {
+        self.plant_kind(cell, 0)
+    }
+
+    /// 按种子道具 id 播种：crops 里找 seed_id 匹配的 def（找不到 = false）。
+    /// 玩家持不同种子播不同作物走这里
+    #[func]
+    pub fn plant_seed(&mut self, cell: Vector2i, seed_id: GString) -> bool {
+        let kind = self.crop_kind_by_seed(&seed_id);
+        if kind < 0 {
+            return false;
+        }
+        self.plant_kind(cell, kind)
+    }
+
+    /// seed_id → crops 数组下标（空定义 = 单一默认作物 0；未匹配 = -1）
+    fn crop_kind_by_seed(&self, seed_id: &GString) -> i32 {
+        if self.crops.is_empty() {
+            return 0;
+        }
+        for (k, def) in self.crops.iter_shared().enumerate() {
+            if def.bind().seed_id == *seed_id {
+                return k as i32;
+            }
+        }
+        -1
+    }
+
+    /// 作物 def 参数（kind 越界/空定义 → 默认值；def 属性实时读取——
+    /// 测试/调参改 def 即时生效，无需刷新缓存）
+    fn crop_stages_of(&self, kind: i32) -> i32 {
+        self.crops
+            .get(kind.max(0) as usize)
+            .map(|d| d.bind().stages)
+            .unwrap_or(4)
+            .max(1)
+    }
+
+    fn crop_grow_secs_of(&self, kind: i32) -> f64 {
+        self.crops
+            .get(kind.max(0) as usize)
+            .map(|d| d.bind().grow_secs)
+            .unwrap_or(15.0)
+    }
+
+    /// kind 下 def 的 id（越界/空定义 → ""）
+    fn crop_id_of(&self, kind: i32) -> GString {
+        self.crops
+            .get(kind.max(0) as usize)
+            .map(|d| d.bind().id.clone())
+            .unwrap_or_default()
+    }
+
+    fn plant_kind(&mut self, cell: Vector2i, kind: i32) -> bool {
         if !self.is_plantable(cell) {
             return false;
         }
         let i = self.cell_index(cell.x, cell.y);
         self.crop_stage[i] = 0;
+        self.crop_kind[i] = kind;
         self.crop_timer[i] = 0.0;
-        self.ensure_crop_sprite(cell, 0);
+        self.ensure_crop_sprite(cell, 0, kind);
         self.base_mut().set_process(true);
         self.base_mut().emit_signal("s_planted", &[cell.to_variant()]);
         true
     }
 
-    /// 格子作物阶段（-1 = 无作物；成熟 = crop_stages - 1）
+    /// 格子作物阶段（-1 = 无作物；成熟 = 所属作物 stages - 1）
     #[func]
     pub fn get_crop_stage(&self, cell: Vector2i) -> i32 {
         match self.farm_index(cell) {
@@ -530,10 +580,49 @@ impl GdDigLayer {
         }
     }
 
-    /// 格子作物是否成熟
+    /// 格子作物种类 id（所属 def 的 id 字段；无作物/越界 = ""）
+    #[func]
+    pub fn get_crop_id(&self, cell: Vector2i) -> GString {
+        let kind = match self.farm_index(cell) {
+            Some(i) => self.crop_kind.get(i).copied().unwrap_or(-1),
+            None => -1,
+        };
+        if kind < 0 {
+            return GString::new();
+        }
+        self.crop_id_of(kind)
+    }
+
+    /// 格子成熟后收获产物道具 id（无作物/未成熟/空定义 = ""；玩家采摘前查询）
+    #[func]
+    pub fn get_harvest_item(&self, cell: Vector2i) -> GString {
+        if !self.is_mature(cell) {
+            return GString::new();
+        }
+        let kind = match self.farm_index(cell) {
+            Some(i) => self.crop_kind.get(i).copied().unwrap_or(-1),
+            None => -1,
+        };
+        if kind < 0 {
+            return GString::new();
+        }
+        self.crops
+            .get(kind as usize)
+            .map(|d| d.bind().harvest_item.clone())
+            .unwrap_or_default()
+    }
+
+    /// 格子作物是否成熟（按所属作物各自的 stages 判定）
     #[func]
     pub fn is_mature(&self, cell: Vector2i) -> bool {
-        self.get_crop_stage(cell) >= self.crop_stages.max(1) - 1
+        let (kind, stage) = match self.farm_index(cell) {
+            Some(i) => (
+                self.crop_kind.get(i).copied().unwrap_or(-1),
+                self.crop_stage.get(i).copied().unwrap_or(-1),
+            ),
+            None => (-1, -1),
+        };
+        stage >= 0 && stage >= self.crop_stages_of(kind) - 1
     }
 
     /// 收获：成熟作物移除（耕地保留湿润状态），发 s_harvested。
@@ -545,6 +634,7 @@ impl GdDigLayer {
         }
         let i = self.cell_index(cell.x, cell.y);
         self.crop_stage[i] = -1;
+        self.crop_kind[i] = -1;
         self.crop_timer[i] = 0.0;
         self.remove_crop_sprite(cell);
         self.base_mut().emit_signal("s_harvested", &[cell.to_variant()]);
@@ -552,8 +642,9 @@ impl GdDigLayer {
     }
 
     /// 农田状态 dump（宿主持久化用）：
-    /// {"wet": {"x,y": true}, "crops": {"x,y": {"stage": float, "t": float}}}
-    /// （数值一律 float，对齐 GJson 落盘约束）
+    /// {"wet": {"x,y": true}, "crops": {"x,y": {"stage": float, "t": float,
+    /// "id": float}}}
+    /// （数值一律 float，对齐 GJson 落盘约束；id = crops 数组下标）
     #[func]
     pub fn get_farm_state(&self) -> VarDictionary {
         let mut wet_d = VarDictionary::new();
@@ -571,6 +662,10 @@ impl GdDigLayer {
                     let mut cd = VarDictionary::new();
                     cd.set("stage", st as f32);
                     cd.set("t", self.crop_timer.get(i).copied().unwrap_or(0.0));
+                    cd.set(
+                        "id",
+                        self.crop_kind.get(i).copied().unwrap_or(0) as f32,
+                    );
                     let kv = key.to_variant();
                     let cv = cd.to_variant();
                     crops.set(&kv, &cv);
@@ -618,21 +713,31 @@ impl GdDigLayer {
                 let Ok(cd) = val.try_to::<VarDictionary>() else {
                     continue;
                 };
-                // 数值防御：GDScript 侧可能给 int/float，统一走 f64 再收窄
+                // 作物种类：旧档无 id 字段 → 0（历史单作物档无损迁移）；
+                // 越界（定义表已缩水）→ 0 兜底
+                let kind = cd
+                    .get("id")
+                    .and_then(|v| v.try_to::<f64>().ok())
+                    .map(|v| v as i32)
+                    .unwrap_or(0)
+                    .clamp(0, self.def_count() as i32 - 1);
+                // 数值防御：GDScript 侧可能给 int/float，统一走 f64 再收窄；
+                // 阶段夹到该作物自己的阶段域内
                 let stage = cd
                     .get("stage")
                     .and_then(|v| v.try_to::<f64>().ok())
                     .map(|v| v as i32)
                     .unwrap_or(0)
-                    .clamp(0, self.crop_stages.max(1) - 1);
+                    .clamp(0, self.crop_stages_of(kind) - 1);
                 let t = cd
                     .get("t")
                     .and_then(|v| v.try_to::<f64>().ok())
                     .unwrap_or(0.0) as f32;
                 let i = self.cell_index(cx, cy);
                 self.crop_stage[i] = stage;
+                self.crop_kind[i] = kind;
                 self.crop_timer[i] = t;
-                self.ensure_crop_sprite(Vector2i::new(cx, cy), stage);
+                self.ensure_crop_sprite(Vector2i::new(cx, cy), stage, kind);
             }
         }
         self.refresh_wet_mask();
@@ -695,6 +800,7 @@ impl GdDigLayer {
         self.wet.resize(n, false);
         self.wet_timer.resize(n, 0.0);
         self.crop_stage.resize(n, -1);
+        self.crop_kind.resize(n, -1);
         self.crop_timer.resize(n, 0.0);
     }
 
@@ -743,7 +849,8 @@ impl GdDigLayer {
     }
 
     /// 农田状态机 tick（process 驱动；仅在有湿润/作物时开帧循环）：
-    /// 湿润超时干燥 → 生长暂停；作物仅湿润时累计生长 → 阶段推进 → 成熟
+    /// 湿润超时干燥 → 生长暂停；作物仅湿润时累计生长 → 阶段推进 → 成熟。
+    /// 生长节奏逐格读所属 def（多作物各自 stages/grow_secs 独立）
     fn tick_farm(&mut self, delta: f32) {
         let w = self.width.max(0);
         let h = self.height.max(0);
@@ -751,8 +858,6 @@ impl GdDigLayer {
             return;
         }
         let wet_secs = self.wet_secs;
-        let grow_secs = self.crop_grow_secs;
-        let max_stage = self.crop_stages.max(1) - 1;
         let mut dried: Vec<Vector2i> = Vec::new();
         let mut grew: Vec<(Vector2i, i32, bool)> = Vec::new();
         for cy in 0..h {
@@ -766,7 +871,13 @@ impl GdDigLayer {
                         dried.push(Vector2i::new(cx, cy));
                     }
                 }
-                if self.crop_stage[i] >= 0 && self.crop_stage[i] < max_stage && self.wet[i] {
+                if self.crop_stage[i] < 0 || !self.wet[i] {
+                    continue;
+                }
+                let kind = self.crop_kind[i];
+                let grow_secs = self.crop_grow_secs_of(kind);
+                let max_stage = self.crop_stages_of(kind) - 1;
+                if self.crop_stage[i] < max_stage {
                     self.crop_timer[i] += delta;
                     if grow_secs > 0.0 && self.crop_timer[i] as f64 >= grow_secs {
                         self.crop_timer[i] = 0.0;
@@ -784,7 +895,12 @@ impl GdDigLayer {
             }
         }
         for (cell, stage, mature) in &grew {
-            self.update_crop_sprite(*cell, *stage);
+            let kind = self
+                .crop_kind
+                .get(self.cell_index(cell.x, cell.y))
+                .copied()
+                .unwrap_or(0);
+            self.update_crop_sprite(*cell, *stage, kind);
             self.base_mut().emit_signal(
                 "s_grew",
                 &[cell.to_variant(), (*stage as i32).to_variant()],
@@ -814,20 +930,28 @@ impl GdDigLayer {
         for v in self.crop_stage.iter_mut() {
             *v = -1;
         }
+        for v in self.crop_kind.iter_mut() {
+            *v = -1;
+        }
         for v in self.crop_timer.iter_mut() {
             *v = 0.0;
         }
     }
 
-    /// 作物精灵装配（首次创建；z=1 盖瓦片，坐标经 to_local——根带偏移+缩放）
-    fn ensure_crop_sprite(&mut self, cell: Vector2i, stage: i32) {
+    /// 作物精灵装配（首次创建；z=1 盖瓦片，坐标经 to_local——根带偏移+缩放）。
+    /// 贴图/阶段数/tint 均取所属 def（多作物各长各的）
+    fn ensure_crop_sprite(&mut self, cell: Vector2i, stage: i32, kind: i32) {
         let key = (cell.x, cell.y);
         if !self.crop_sprites.contains_key(&key) {
-            let tex = self.crop_sheet_tex();
+            let tex = self.crop_sheet_tex(kind);
             let mut spr = Sprite2D::new_alloc();
             spr.set_name("CropSprite");
             spr.set_texture(&tex);
-            spr.set_hframes(self.crop_stages.max(1));
+            spr.set_hframes(self.crop_stages_of(kind).max(1));
+            // 贴图模式 tint = 变体色（占位图已按 tint 烘进像素，无需再调）
+            if self.crops.get(kind.max(0) as usize).is_some() {
+                spr.set_modulate(self.def_tint(kind));
+            }
             // 帧宽 = 贴图高（横向序列帧）；局部缩放 = (cell_size / 根缩放) / 帧宽
             let frame_px = tex.get_height().max(1) as f32;
             let root_scale = self.base_mut().get_scale().x.max(0.01);
@@ -840,17 +964,32 @@ impl GdDigLayer {
             self.base_mut().add_child(&spr);
             self.crop_sprites.insert(key, spr);
         }
+        let max_stage = self.crop_stages_of(kind) - 1;
         if let Some(spr) = self.crop_sprites.get_mut(&key) {
             spr.set_visible(true);
-            spr.set_frame(stage.clamp(0, self.crop_stages.max(1) - 1));
+            spr.set_frame(stage.clamp(0, max_stage));
         }
     }
 
+    /// kind 下 def 的 tint（越界/空定义 → 默认绿）
+    fn def_tint(&self, kind: i32) -> Color {
+        self.crops
+            .get(kind.max(0) as usize)
+            .map(|d| d.bind().tint)
+            .unwrap_or_else(|| Color::from_rgba(0.35, 0.8, 0.35, 1.0))
+    }
+
+    /// crops 数组长度（空定义 = 0；restore 阶段夹取用）
+    fn def_count(&self) -> usize {
+        self.crops.len()
+    }
+
     /// 作物阶段推进后刷新帧
-    fn update_crop_sprite(&mut self, cell: Vector2i, stage: i32) {
+    fn update_crop_sprite(&mut self, cell: Vector2i, stage: i32, kind: i32) {
         let key = (cell.x, cell.y);
+        let max_stage = self.crop_stages_of(kind) - 1;
         if let Some(spr) = self.crop_sprites.get_mut(&key) {
-            spr.set_frame(stage.clamp(0, self.crop_stages.max(1) - 1));
+            spr.set_frame(stage.clamp(0, max_stage));
         }
     }
 
@@ -862,29 +1001,45 @@ impl GdDigLayer {
         }
     }
 
-    /// 作物序列帧纹理：crop_texture 优先；未配置 → 程序化占位
-    /// （绿色幼苗逐阶段长大，16px/帧，stages 帧）
-    fn crop_sheet_tex(&mut self) -> Gd<Texture2D> {
-        if let Some(tex) = self.crop_sheet.clone() {
+    /// 作物序列帧纹理（按 kind 缓存）：def.texture 优先；未配置 → 程序化
+    /// 占位（幼苗逐阶段长大，主色 = def.tint，零素材调试用）
+    fn crop_sheet_tex(&mut self, kind: i32) -> Gd<Texture2D> {
+        let k = kind.max(0) as usize;
+        // 缓存向量按需扩容（def 数量就绪后 kind < len 恒成立）
+        while self.crop_sheets.len() <= k {
+            self.crop_sheets.push(None);
+        }
+        if let Some(tex) = self.crop_sheets[k].clone() {
             return tex;
         }
-        let tex = match &self.crop_texture {
-            Some(t) => t.clone(),
-            None => Self::build_placeholder_crop_sheet(self.crop_stages.max(1)),
+        let stages = self.crop_stages_of(kind);
+        let tint = self.def_tint(kind);
+        let tex = match self.crops.get(k) {
+            Some(d) => match d.bind().texture.clone() {
+                Some(t) => t,
+                None => Self::build_placeholder_crop_sheet(stages, tint),
+            },
+            None => Self::build_placeholder_crop_sheet(stages, tint),
         };
-        self.crop_sheet = Some(tex.clone());
+        self.crop_sheets[k] = Some(tex.clone());
         tex
     }
 
-    /// 程序化占位序列帧：每帧 16px，茎高随阶段增长 + 叶片展开 + 成熟结果
-    fn build_placeholder_crop_sheet(stages: i32) -> Gd<Texture2D> {
+    /// 程序化占位序列帧：每帧 16px，茎高随阶段增长 + 叶片展开 + 成熟结果；
+    /// 主色由 tint 派生（茎 = tint×0.75、叶 = tint、果 = tint 提亮偏暖）
+    fn build_placeholder_crop_sheet(stages: i32, tint: Color) -> Gd<Texture2D> {
         use godot::classes::image::Format;
         const FPX: i32 = 16;
         let mut img = Image::create_empty(FPX * stages, FPX, false, Format::RGBA8)
             .expect("create placeholder crop sheet");
-        let green = Color::from_rgba(0.25, 0.65, 0.25, 1.0);
-        let leaf = Color::from_rgba(0.35, 0.8, 0.3, 1.0);
-        let fruit = Color::from_rgba(0.85, 0.3, 0.2, 1.0);
+        let green = Color::from_rgba(tint.r * 0.75, tint.g * 0.75, tint.b * 0.75, 1.0);
+        let leaf = tint;
+        let fruit = Color::from_rgba(
+            (tint.r * 1.15).min(1.0),
+            tint.g * 0.9,
+            tint.b * 0.6,
+            1.0,
+        );
         let soil = Color::from_rgba(0.45, 0.33, 0.22, 0.9);
         for s in 0..stages {
             let t = (s + 1) as f32 / stages as f32;

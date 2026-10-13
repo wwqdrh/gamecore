@@ -37,6 +37,10 @@ const ICONS := {
 	"img_tool_watering_can": "🪣",
 	"img_seeds": "🌱",
 	"img_veg_green": "🥬",
+	"img_seeds_radish": "🥕",
+	"img_veg_radish": "🥕",
+	"img_seeds_melon": "🍉",
+	"img_veg_melon": "🍉",
 	"img_sword_qingfeng": "🗡️",
 	"img_robe_yunwen": "🥋",
 	# 特殊

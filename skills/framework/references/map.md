@@ -312,26 +312,41 @@ blocked_terrains = PackedStringArray()         # 不可通行地形名
   无 dig 协议的地图（GdQuickMap 等）静默跳过。对照：挖矿镐 mine 模式走
   判定盒打 deco 受击盒（矿石是 Area2D），两种"挖"的目标结构不同，勿混用。
   验收：check_hoe_till.gd（挥击→dig 全链 + rects 外拒绝 + 单格精度）。
-- **农田状态流转（状态机全在框架层，范本 home.tscn 5/6 号槽水壶/种子）**：
+- **农田状态流转（状态机全在框架层，范本 home.tscn 5/6/7 号槽锄/水壶/种子）**：
   草地 --锄→ 耕地 --浇→ 湿润 --种→ 作物 --生长(仅湿润累计)→ 成熟 --收→ 湿润耕地。
+  **多作物（GdCropDef 资源，rust/src/map/crop_def.rs）**：`crops` 导出为
+  `Array[GdCropDef]`——每个 def 一种作物的 id/seed_id（按种子匹配）/harvest_item
+  （收获产物道具 id）/stages/grow_secs/texture（横向序列帧：帧宽=贴图高，
+  宽=stages×帧宽）/tint（占位图主色 + 贴图 modulate 变体色）。tscn 内嵌
+  `[sub_resource type="GdCropDef"]` 或独立 .tres；空数组 = 单一默认占位作物。
+  def 参数实时读取（改属性即时生效，无需刷新缓存——测试提速直接改 def）。
+  格级种类：crop_kind 平行数组（-1=无），持久化随 farm_state 走
+  （crops 条目多一个 `"id"` float = crops 下标；旧档无 id 默认 0 无损迁移）。
   导出：`waterable_terrains`（空 = 自动取 dig_targets 非空目标）、
-  `crop_texture`（横向序列帧：帧宽=贴图高，宽=阶段数×帧宽，左→右=阶段 0→成熟；
-  空 = 程序化绿色幼苗占位）、`crop_stages`(默认 4)、`crop_grow_secs`(每阶段秒，
-  仅湿润累计——干涸暂停)、`wet_secs`(湿润持续，0=永不干燥)。
+  `crops`（多作物定义数组，见上）、`wet_secs`(湿润持续，0=永不干燥)。
   API：`water(cell)`（耕地→湿润，发 `s_watered`；重复浇 false）/
-  `plant(cell)`（湿润空耕地→阶段 0，发 `s_planted`）/ `harvest(cell)`（成熟→移除
-  保留湿润，发 `s_harvested`）/ `is_waterable` / `is_wet` / `is_plantable` /
-  `is_mature` / `get_crop_stage(cell)`（-1=无作物）。
+  `plant(cell)`（湿润空耕地→crops[0] 阶段 0，发 `s_planted`）/
+  `plant_seed(cell, seed_id)`（按种子 id 匹配 def 播种——多作物主入口）/
+  `harvest(cell)`（成熟→移除保留湿润，发 `s_harvested`）/ `is_waterable` /
+  `is_wet` / `is_plantable` / `is_mature`（按所属 def 各自 stages）/
+  `get_crop_stage(cell)`（-1=无作物）/ `get_crop_id(cell)`（所属 def id）/
+  `get_harvest_item(cell)`（成熟产物道具 id；**必须在 harvest 之前查询——
+  收获后 is_mature=false 返回空串，踩过：入包全是 ""**）。
   渲染：湿润经 shader `wet_mask` r 通道把基色调暗（材质恒挂，无贴图槽位也生效）；
-  作物为独立 Sprite2D 子节点（hframes=阶段数）。
+  作物为独立 Sprite2D 子节点（hframes=所属 def 阶段数，贴图/tint 各自独立）。
   持久化：`get_farm_state()` / `set_farm_state(dict)` dump/restore
-  （`{"wet":{"x,y":bool}, "crops":{"x,y":{"stage":f,"t":f}}}`，数值一律 float）。
+  （`{"wet":{"x,y":bool}, "crops":{"x,y":{"stage":f,"t":f,"id":f}}}`，数值一律
+  float；id = crops 下标，旧档无 id 默认 0）。
   demo 范式（dig_save.gd 扩展）：湿润/生长/干燥都是框架内部 tick 无逐事件信号
   → **1s 轮询 diff 写回**（dict 比对，无变化 update 现值短路零 IO）；wet 的
   bool 写 Bean 前统一转 1.0（规避 GJson bool 落盘不确定性，恢复侧只看键）；
   进场恢复与地形恢复同走 call_deferred。玩家侧：水壶 → water 模式、种子 →
   plant 模式（同锄地范式 mask=0 挂 s_swing，目标格 8 邻格 45° 扇区共用）；
-  plant 模式挥击成熟格 = 收获（一次挥击只做一件事，先判 is_mature）。
+  plant 模式挥击成熟格 = 收获（一次挥击只做一件事，产物 id 先查后收）。
+  **种子槽轮换（equipbar）**：一个槽装多种种子——选中后再按数字键/再点击该格
+  = 轮换 SEED_IDS 下一种（图标同步 + 直写状态总线）；Hotbar 同格 select_slot
+  no-op 不发信号、且子节点先于父处理输入（首按即见 selected 已变）——
+  **用「上一帧选中槽位」快照判定再按**，否则首次选中被误判轮换一次（踩过）。
   空手采摘（✋ 槽 equip=""）：不占装备槽、不走判定盒——徒手 unhandled 点击
   分流 `_on_map_clicked` → `_on_map_clicked_at(map, cell)` 先判 `_harvest_at`：
   目标格 is_mature 且在玩家格 8 邻内（含脚下格）→ harvest + 收获物 add_item
