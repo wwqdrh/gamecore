@@ -2,11 +2,13 @@
 // 提供双网格地图系统，包含方形网格和等距网格两种实现
 
 mod dual_grid;
+mod gd_dig_layer;
 mod gd_map_basic;
 mod gd_map_deco;
 mod gd_map_manager;
 mod gd_map_marker;
 mod quick_map;
+mod terrain_tex;
 
 pub use dual_grid::{
     TerrainType, TerrainRegistry, TerrainThresholds, TerrainThresholdEntry,
@@ -14,6 +16,7 @@ pub use dual_grid::{
     DualGrid, place_props,
 };
 
+pub use gd_dig_layer::GdDigLayer;
 pub use gd_map_basic::GdMapBasic;
 pub use gd_map_deco::GdDecoLayer;
 pub use gd_map_manager::GdMapManager;

@@ -1,0 +1,21 @@
+[gd_scene format=3]
+
+[node name="Home" type="GdDigLayer"]
+width = 20
+height = 14
+cell_size = 32
+atlas_path = "res://example/demo/xiuxian/map/assets/grass_sand.png"
+terrain_names = PackedStringArray("sand", "grass")
+dig_targets = PackedStringArray("", "sand")
+init_rects = Array[Rect2i]([Rect2i(1, 1, 12, 7), Rect2i(15, 3, 4, 9), Rect2i(3, 10, 9, 3)])
+init_terrains = PackedStringArray("grass", "grass", "grass")
+dig_rects = Array[Rect2i]([Rect2i(8, 5, 4, 3)])
+blocked_terrains = PackedStringArray()
+terrain_shader_textures = PackedStringArray("", "res://example/demo/xiuxian/map/assets/grass_texture.png")
+
+[node name="TeleportXiaozhai" type="GdMapMarker" parent="."]
+cell = Vector2i(2, 12)
+cell_size = 32
+target_alias = "xiuxian_xiaozhai"
+target_cell = Vector2i(14, 12)
+label = "回萧宅"

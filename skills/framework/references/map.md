@@ -25,11 +25,22 @@ map.terrain_dualgrid_textures = PackedStringArray([
     "res://assets/tiles/tileset_water.png",
 ])
 map.terrain_shaders = PackedStringArray(["", "", "", "", "water_flow"])  # 内置水体 shader
+map.terrain_shader_textures = PackedStringArray(["", "res://assets/tex/grass_detail.png", "", "", ""])  # 地形贴图
 add_child(map)
 map.generate(MAP_SEED)
 ```
 
 内置 shader 名直接写进 `terrain_shaders`（如 `water_flow`），编译在 Rust 二进制内，无需 .gdshader 文件。
+
+**地形 shader 贴图（`terrain_shader_textures`，按下标对应 terrain_names）**：
+给该地形的 shader 提供 `tex0` uniform（世界坐标 1:1 重复采样，相邻格/过渡片
+纹丝对接）。同时自动构建逐格遮罩 `mask_tex`（每世界格 1 像素）——双网格图层的
+累积垫底/过渡片混有其他地形像素，必须按格遮罩，只有本地形格子生效。
+`terrain_shaders` 对应项为空时自动挂内置 `terrain_tex`；自定义 shader 按内置
+uniform 契约（`mask_tex/map_cells/cell_px/tex0..2/tex_size0..2`）声明同名参数即可。
+GdDigLayer 同样支持该字段（单层结构，材质挂根图层，最多 3 个贴图地形按
+mask r/g/b 通道区分；挖地/恢复后遮罩自动同步，调试读口 `get_shader_mask_at`）。
+编辑器改值后需重开场景或调 `regenerate()`/`rebuild()` 生效。
 
 ## 连通性保证（connected_terrain）
 
@@ -243,6 +254,39 @@ layer.s_regrowned(item_id: String, cell_key: int)  # 补种成功信号——cel
   **注意铺设语义**：spawn_deco 逐格消耗 RNG 且跳过冷却格不消耗 → 注入任一格
   会使同条目后续铺设位置漂移（生长位置本就不固定，矿数守恒由 regrow 补足目标
   = 本次实际铺设数保证）。
+
+## GdDigLayer — 挖地地形层（TileMapLayer，tool，可作地图根）
+
+继承 TileMapLayer 的单层双网格地形系统（参考 example/map/Jess.tscn 的 TileMapDual
+语义，范本：demo/xiuxian/map/home.tscn）：显示网格偏移半格，每个显示格按其覆盖的
+4 个世界格角点地形组合查 4x4 过渡图集（16 组合，图集把铺底地形背景烘进贴图，
+如 grass_sand.png = 沙底 + 草形状）——与 GdQuickMap 多层堆叠不同，单层即可渲染。
+定位**手工布置的小地图**（home/室内/农田），核心能力 `dig()`：把某格地形挖成
+目标地形，局部刷新受影响显示格并通知宿主。
+
+```ini
+# tscn 节点属性（GdDigLayer，可直接作为地图场景根节点）：
+width = 20; height = 14; cell_size = 32        # 世界格数 / 格尺寸
+atlas_path = "res://.../grass_sand.png"        # 4x4 过渡图集（空 = 程序化双色图集调试）
+terrain_names = PackedStringArray("sand", "grass")  # 下标0=铺底(填满整图) 下标1=形状(图集圆角)
+dig_targets = PackedStringArray("", "sand")    # 与 terrain_names 平行：挖后地形名（空=不可挖）
+init_rects = Array[Rect2i]([Rect2i(1,1,12,7)]) # 初始地形补丁（与 init_terrains 平行，后覆盖先）
+init_terrains = PackedStringArray("grass")
+dig_rects = Array[Rect2i]([Rect2i(8,5,4,3)])   # 可挖区域限制（空 = 全图按 dig_targets 允许）
+blocked_terrains = PackedStringArray()         # 不可通行地形名
+```
+
+- **API**：`dig(cell) -> bool`（成功发 `s_dug(cell, from, to)` +
+  `s_terrain_changed`）/ `is_diggable(cell)` / `get_terrain_name_at(cell)` /
+  `set_terrain_name_at(cell, name)` / `is_walkable(cell)`
+- **地图根协议**（MapManager/player 鸭子类型）：`is_walkable` /
+  `world_to_cell`（纯除法全局语义）/ `cell_to_center` / `get_map_width` /
+  `get_map_height` / `get_cell_size_px`——已齐备，home.tscn 根节点直接是 GdDigLayer
+- **持久化**：宿主 `get_terrain_grid()` / `set_terrain_grid(arr)` 整网格
+  dump/restore（行主序地形下标；小地图整存最简且覆盖任意变化路径）；
+  编辑器调参后 `rebuild()` 重出图（清运行期变化）
+- 时序：ready 时按导出配置初始化网格 + 装配 tileset + 全量铺设（编辑器
+  WYSIWYG）；世界格变化只重画受影响 4 个显示格（O(1) 局部刷新）
 
 ## 场景分类与随机副本（demo 范本：xiuxian 秘境）
 

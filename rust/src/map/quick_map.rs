@@ -27,6 +27,7 @@ use godot::classes::{INode2D, Image, ImageTexture, Node2D, ResourceLoader, Shade
 use godot::classes::image::Format as ImageFormat;
 
 use super::dual_grid::dual_grid_atlas_coord;
+use super::terrain_tex;
 
 /// 地形数量上限（防御并行数组异常输入）
 const MAX_TERRAINS: usize = 32;
@@ -87,6 +88,10 @@ struct TerrainLayerInfo {
     node: Gd<TileMapLayer>,
     /// 是否为双网格渲染模式
     dual: bool,
+    /// 逐格遮罩图（terrain_shader_textures 用）：r 通道 = 本地形
+    mask_img: Option<Gd<Image>>,
+    /// 遮罩图对应的 GPU 纹理（挂进 ShaderMaterial 的 uniform）
+    mask_tex: Option<Gd<ImageTexture>>,
 }
 
 #[derive(GodotClass)]
@@ -136,6 +141,15 @@ pub struct GdQuickMap {
     /// 或 res://...gdshader 资源路径；留空不挂载
     #[export]
     terrain_shaders: PackedStringArray,
+    /// 地形 shader 贴图路径（可选，按下标对应 terrain_names，如草地草纹）：
+    /// 给该地形图层的 shader 提供 uniform tex0（世界坐标 1:1 重复采样），
+    /// 并自动构建逐格遮罩 uniform mask_tex（只有本地形格子生效——双网格
+    /// 图层的累积垫底/过渡片混有其他地形像素，必须按格遮罩）。
+    /// terrain_shaders 对应项为空时自动挂内置 "terrain_tex"；
+    /// 自定义 shader 按内置 uniform 契约声明同名参数即可吃到贴图。
+    /// 编辑器改值后需重开场景或调 regenerate() 生效
+    #[export]
+    terrain_shader_textures: PackedStringArray,
     /// 地形噪声上界（升序，前 n-1 个生效）
     #[export]
     terrain_thresholds: PackedFloat64Array,
@@ -199,6 +213,7 @@ impl INode2D for GdQuickMap {
             terrain_textures: PackedStringArray::new(),
             terrain_dualgrid_textures: PackedStringArray::new(),
             terrain_shaders: PackedStringArray::new(),
+            terrain_shader_textures: PackedStringArray::new(),
             terrain_thresholds: PackedFloat64Array::new(),
             blocked_terrains: PackedStringArray::new(),
             terrain_heights: PackedInt32Array::new(),
@@ -396,6 +411,9 @@ impl GdQuickMap {
         self.grid[i] = terrain_index;
         // 局部刷新：新旧地形之间的所有受影响图层（含被铺底的下层）
         self.refresh_cell(cell, old_ti, terrain_index);
+        // shader 贴图遮罩同步（两格归属互换）
+        self.refresh_layer_mask(old_ti);
+        self.refresh_layer_mask(terrain_index);
         self.base_mut().queue_redraw();
     }
 
@@ -793,7 +811,7 @@ impl GdQuickMap {
                         layer.set_position(Vector2::new(-cs / 2.0, -cs / 2.0));
                         layer.set_scale(Vector2::new(cs / ts_px as f32, cs / ts_px as f32));
                         self.fill_dual_layer(&mut layer, ti);
-                        TerrainLayerInfo { node: layer, dual: true }
+                        TerrainLayerInfo { node: layer, dual: true, mask_img: None, mask_tex: None }
                     }
                     _ => {
                         godot_error!(
@@ -802,31 +820,43 @@ impl GdQuickMap {
                             ti
                         );
                         self.build_plain_layer(&mut layer, ti, cs);
-                        TerrainLayerInfo { node: layer, dual: false }
+                        TerrainLayerInfo { node: layer, dual: false, mask_img: None, mask_tex: None }
                     }
                 }
             } else {
                 self.build_plain_layer(&mut layer, ti, cs);
-                TerrainLayerInfo { node: layer, dual: false }
+                TerrainLayerInfo { node: layer, dual: false, mask_img: None, mask_tex: None }
             };
 
-            // 可选 shader：为该地形层挂 ShaderMaterial（如水体流动）
+            // 地形 shader / shader 贴图：为该地形层挂 ShaderMaterial。
+            // terrain_shaders[ti] 非空用指定 shader；否则若配了贴图路径，
+            // 自动挂内置 "terrain_tex"（逐格遮罩 + 世界坐标平铺贴图）
             let shader_name = self
                 .terrain_shaders
                 .get(ti)
                 .map(|s| s.to_string())
                 .unwrap_or_default();
-            if !shader_name.is_empty() {
-                match Self::resolve_shader(&shader_name) {
+            let tex_path = self
+                .terrain_shader_textures
+                .get(ti)
+                .map(|s| s.to_string())
+                .unwrap_or_default();
+            if !shader_name.is_empty() || !tex_path.is_empty() {
+                let resolve_name =
+                    if shader_name.is_empty() { terrain_tex::BUILTIN_NAME.to_string() } else { shader_name.clone() };
+                match Self::resolve_shader(&resolve_name) {
                     Some(shader) => {
                         let mut mat = ShaderMaterial::new_gd();
                         mat.set_shader(&shader);
+                        if !tex_path.is_empty() {
+                            self.apply_shader_texture(&mut mat, ti as i32, &tex_path);
+                        }
                         info.node.set_material(&mat);
                     }
                     None => {
                         godot_error!(
                             "GdQuickMap: shader 无法创建: {}（地形 {}）",
-                            shader_name,
+                            resolve_name,
                             ti
                         );
                     }
@@ -1249,6 +1279,7 @@ impl GdQuickMap {
     fn builtin_shader_source(name: &str) -> Option<&'static str> {
         match name {
             "water_flow" => Some(WATER_FLOW_SHADER_SRC),
+            terrain_tex::BUILTIN_NAME => Some(terrain_tex::TERRAIN_TEX_SHADER_SRC),
             _ => None,
         }
     }
@@ -1260,6 +1291,88 @@ impl GdQuickMap {
         }
         let res = ResourceLoader::singleton().load_ex(path).done()?;
         res.try_cast::<Shader>().ok()
+    }
+
+    // ---- 地形 shader 贴图（terrain_shader_textures）----
+
+    /// 为地形 ti 的图层材质下发贴图 uniform：构建逐格遮罩（r = 本地形）
+    /// 并加载贴图（世界坐标 1:1 平铺，uniform 名按 terrain_tex 契约）
+    fn apply_shader_texture(&mut self, mat: &mut ShaderMaterial, ti: i32, tex_path: &str) {
+        let (img, mask_tex) = self.build_terrain_mask(ti);
+        let mask_v = mask_tex.clone().upcast::<Texture2D>().to_variant();
+        mat.set_shader_parameter("mask_tex", &mask_v);
+        let cells_v = Vector2::new(self.width as f32, self.height as f32).to_variant();
+        mat.set_shader_parameter("map_cells", &cells_v);
+        let cs = self.cell_size.max(1) as f32;
+        let cell_v = Vector2::new(cs, cs).to_variant();
+        mat.set_shader_parameter("cell_px", &cell_v);
+        match Self::load_texture(tex_path) {
+            Some(tex) => {
+                let tex_v = tex.clone().to_variant();
+                mat.set_shader_parameter("tex0", &tex_v);
+                let size_v =
+                    Vector2::new(tex.get_width() as f32, tex.get_height() as f32).to_variant();
+                mat.set_shader_parameter("tex_size0", &size_v);
+            }
+            None => {
+                godot_error!("GdQuickMap: shader 贴图加载失败: {}（地形 {}）", tex_path, ti);
+            }
+        }
+        // 未使用的 tex1/tex2 槽位占位为全透明纹理（防 unset sampler 默认白）
+        for slot in 1..3 {
+            let v = terrain_tex::transparent_tex().to_variant();
+            mat.set_shader_parameter(format!("tex{}", slot).as_str(), &v);
+        }
+        // 缓存进图层信息，供 set_terrain_at 局部刷新遮罩
+        if let Some(info) = self.layers.get_mut(ti as usize) {
+            info.mask_img = Some(img);
+            info.mask_tex = Some(mask_tex);
+        }
+    }
+
+    /// 构建地形逐格遮罩：每世界格 1 像素，r 通道 = 该格是否为地形 ti。
+    /// 严禁用 Color::WHITE（g/b=1 会误触发 shader 的 tex1/tex2 分支——
+    /// 未设置的 sampler 在 gl_compatibility 下绑定默认白色纹理，整层刷白）
+    fn build_terrain_mask(&self, ti: i32) -> (Gd<Image>, Gd<ImageTexture>) {
+        let w = self.width.max(1);
+        let h = self.height.max(1);
+        let mut img = Image::create_empty(w, h, false, ImageFormat::RGBA8)
+            .expect("create mask image");
+        for cy in 0..h {
+            for cx in 0..w {
+                if self.grid.get((cy * w + cx) as usize).copied() == Some(ti) {
+                    img.set_pixel(cx, cy, Self::mask_channel_color());
+                }
+            }
+        }
+        let tex = ImageTexture::create_from_image(&img).expect("create mask texture");
+        (img, tex)
+    }
+
+    /// 遮罩通道色（r 通道 = 本地形命中；g/b 恒 0）
+    fn mask_channel_color() -> Color {
+        Color::from_rgba(1.0, 0.0, 0.0, 1.0)
+    }
+
+    /// 地形 ti 的格子归属变化后刷新其遮罩（内存图重填 + GPU 纹理更新）
+    fn refresh_layer_mask(&mut self, ti: i32) {
+        let Some(info) = self.layers.get_mut(ti as usize) else {
+            return;
+        };
+        let (Some(img), Some(tex)) = (&mut info.mask_img, &mut info.mask_tex) else {
+            return;
+        };
+        let w = self.width.max(1);
+        let h = self.height.max(1);
+        img.fill(Color::from_rgba(0.0, 0.0, 0.0, 0.0));
+        for cy in 0..h {
+            for cx in 0..w {
+                if self.grid.get((cy * w + cx) as usize).copied() == Some(ti) {
+                    img.set_pixel(cx, cy, Self::mask_channel_color());
+                }
+            }
+        }
+        tex.update(&*img);
     }
 }
 
