@@ -71,8 +71,8 @@ func _run() -> void:
 
 	# ---- A. 静态配置 ----
 	var slots: Array = load(EQUIP_SCRIPT).SLOT_ITEMS
-	_check(slots.size() == 4 and str(slots[3]) == "tool_hoe",
-		"4 号槽应配置 tool_hoe（%s）" % str(slots))
+	_check(slots.size() >= 7 and str(slots[0]) == "" and str(slots[4]) == "tool_hoe",
+		"1 号空手槽 + 5 号槽 tool_hoe（%s）" % str(slots))
 	var info: Dictionary = it.get_item("tool_hoe")
 	_check(str(info.get("name", "")) == "玄铁锄" and str(info.get("type", "")) == "装备",
 		"定义表应有玄铁锄（装备类），实际 %s" % str(info))

@@ -40,7 +40,9 @@ var health: Node = null
 var shooter: Node = null
 var melee: Node = null
 var weapon_mount: Node2D = null
-## 当前攻击模式："gun" = 射击 / "melee" = 近战 / "mine" = 挖矿 / "till" = 锄地 / "" = 徒手（左键点击寻路）
+## 当前攻击模式："gun" = 射击 / "melee" = 近战 / "mine" = 挖矿 / "till" = 锄地 /
+## "water" = 浇水 / "plant" = 播种收获 / "" = 空手（左键点击：相邻成熟作物
+## 采摘入包，否则寻路）
 var attack_mode := ""
 ## 兼容字段：持枪状态（射击模式下 true）
 var gun_equipped: bool:
@@ -153,31 +155,37 @@ func _on_damaged(_amount: float, _current: float) -> void:
 
 ## 装备栏选择联动（watch 注册即回调当前值；value=nil = 尚未初始化，跳过）
 ## 红线：watch 回调内禁止同步调用 GDSTATE 任何方法（重入 panic）
-## 攻击模式互斥：gun=射击 / melee=近战武器 / mine=挖矿 / till=锄地 / 其他=徒手（左键留给点击寻路）
+## 攻击模式互斥：gun=射击 / melee=近战武器 / mine=挖矿 / till=锄地 /
+## water=浇水 / plant=播种收获 / ""=空手（左键点击：相邻成熟作物采摘，否则寻路）
 func _on_equip_changed(value: Variant = null, _key: Variant = null) -> void:
 	if value == null:
 		return
 	var item := str(value)
-	# 攻击模式归一化：gun=射击 / melee=近战武器 / mine=挖矿 / till=锄地 / ""=徒手
+	# 攻击模式归一化：gun=射击 / melee=近战武器 / mine=挖矿 / till=锄地 /
+	# water=浇水 / plant=播种 / ""=空手
 	if item == "gun":
 		attack_mode = "gun"
 	elif item == TOOL_PICKAXE:
 		attack_mode = "mine"
 	elif item == TOOL_HOE:
 		attack_mode = "till"
+	elif item == TOOL_KETTLE:
+		attack_mode = "water"
+	elif item == TOOL_SEED:
+		attack_mode = "plant"
 	elif WEAPON_MELEE.has(item):
 		attack_mode = "melee"
 	else:
 		attack_mode = ""
-	# 射击模式 → 框架开火路由开启；近战/挖矿/锄地模式 → 挥击路由开启（同一
-	# GdMelee 判定盒，挥击时同步目标掩码与伤害：战斗打敌受击盒 layer3(4)，
-	# 挖矿打可采集物受击盒 layer5(16)，矿石 GdHealth(3 点) 承载敲击计数；
-	# 锄地不走判定盒（地形不是 Area2D），掩码清零、锄挖逻辑挂 s_swing 信号）；
-	# 徒手 → 两者全关，左键留给点击寻路（本脚本 _unhandled_input）
+	# 射击模式 → 框架开火路由开启；近战/挖矿/锄地/浇水/播种模式 → 挥击路由
+	# 开启（同一 GdMelee 判定盒，挥击时同步目标掩码与伤害：战斗打敌受击盒
+	# layer3(4)，挖矿打可采集物受击盒 layer5(16)，矿石 GdHealth(3 点) 承载
+	# 敲击计数；锄地/浇水/播种不走判定盒（地形不是 Area2D），掩码清零、动作
+	# 逻辑挂 s_swing 信号）；徒手 → 两者全关，左键留给点击寻路（本脚本 _unhandled_input）
 	if shooter != null:
 		shooter.auto_fire_mouse = attack_mode == "gun"
 	if melee != null:
-		melee.auto_attack_mouse = attack_mode in ["melee", "mine", "till"]
+		melee.auto_attack_mouse = attack_mode in ["melee", "mine", "till", "water", "plant"]
 		match attack_mode:
 			"melee":
 				melee.target_mask = TARGET_ENEMY
@@ -191,6 +199,14 @@ func _on_equip_changed(value: Variant = null, _key: Variant = null) -> void:
 				melee.target_mask = 0
 				melee.attack_damage = 0.0
 				melee.attack_cooldown = 0.4
+			"water":
+				melee.target_mask = 0
+				melee.attack_damage = 0.0
+				melee.attack_cooldown = 0.5
+			"plant":
+				melee.target_mask = 0
+				melee.attack_damage = 0.0
+				melee.attack_cooldown = 0.5
 			_:
 				melee.stop()
 	_apply_weapon_visual(item)
@@ -209,6 +225,12 @@ func _on_melee_swing(dir: Vector2) -> void:
 	# 锄地：锄头挥击 → 前方一格地形挖掘（走地图 dig 协议，非判定盒）
 	if attack_mode == "till":
 		_try_till(dir)
+	# 浇水：水壶挥向 → 前方一格耕地湿润（农田层 water 协议）
+	elif attack_mode == "water":
+		_try_water(dir)
+	# 播种/收获：种子挥向 → 成熟作物收获，否则前方一格播种（plant 协议）
+	elif attack_mode == "plant":
+		_try_plant(dir)
 
 
 ## 锄地：挥击方向前方一格调用地图 dig 协议（仅支持挖地的地图生效，
@@ -227,6 +249,44 @@ func _try_till(dir: Vector2) -> void:
 			% [target, map.get_terrain_name_at(target)])
 
 
+## 浇水：挥击方向前方一格调用地图 water 协议（GdDigLayer 农田层：耕地 →
+## 湿润，基色调暗；湿润超时自动干燥、干燥期作物暂停生长）
+func _try_water(dir: Vector2) -> void:
+	if map_mgr == null:
+		return
+	var map: Node = map_mgr.get_current_map()
+	if map == null or not map.has_method("water") or not map.has_method("world_to_cell"):
+		return
+	var target: Vector2i = _till_target_cell(map, dir)
+	if map.water(target):
+		print("[Player] 浇水: %s" % target)
+	else:
+		print("[Player] 此处不可浇: %s（%s，只有已开垦的耕地能浇水）"
+			% [target, map.get_terrain_name_at(target)])
+
+
+## 播种/收获二合一：挥击方向前方一格——成熟作物 → 收获入包（harvest 协议，
+## 耕地保留湿润可立即补种）；湿润空耕地 → 播种（plant 协议，作物阶段 0）
+func _try_plant(dir: Vector2) -> void:
+	if map_mgr == null:
+		return
+	var map: Node = map_mgr.get_current_map()
+	if map == null or not map.has_method("plant") or not map.has_method("world_to_cell"):
+		return
+	var target: Vector2i = _till_target_cell(map, dir)
+	# 先判收获：格上有成熟作物 → 摘走入包（一次挥击只做一件事）
+	if map.has_method("is_mature") and map.is_mature(target) \
+			and map.has_method("harvest") and map.harvest(target):
+		XiuItemState.ins().add_item(HARVEST_ITEM, 1)
+		print("[Player] 收获作物: %s → %s x1（入包）" % [target, HARVEST_ITEM])
+		return
+	if map.plant(target):
+		print("[Player] 播种: %s" % target)
+	else:
+		print("[Player] 此处不可播种: %s（%s，需湿润的空耕地）"
+			% [target, map.get_terrain_name_at(target)])
+
+
 ## 锄地目标格：玩家所在格的四周 8 邻格之一——以玩家格心为原点、鼠标方向
 ## 落在哪个 45° 扇区就选哪个邻格（预览光标与实际锄挖同一套换算——所见即所锄）
 func _till_target_cell(map: Node, dir: Vector2) -> Vector2i:
@@ -240,22 +300,49 @@ func _till_target_cell(map: Node, dir: Vector2) -> Vector2i:
 	return my_cell + offsets[wrapi(sector, 0, 8)]
 
 
-## 锄地预览光标：till 模式下每帧把「下一锄将处理的格子」同步给地图
-## （地图配置了 cursor_texture 才有光标，只在可锄格显示）；
-## 其他模式/无 dig 协议的地图 → 清除
+## 动作预览光标：till/water/plant 模式下每帧把「下一击将处理的格子」同步给
+## 地图（地图配置了 cursor_texture 才有光标；set_cursor_for 按动作过滤——
+## 可锄格才亮 / 未湿润格才亮 / 可播格才亮，负反馈所见即所得）；
+## 空手模式光标跟随鼠标所在格（"harvest" 过滤 = 悬停成熟作物才亮，
+## 不限 8 邻——远格也提示可摘，点击后会寻路走近）；其他模式/无光标协议
+## 的地图 → 清除
 func _update_dig_cursor() -> void:
 	var map: Node = map_mgr.get_current_map()
 	if map == null:
 		return
-	if attack_mode != "till" or not map.has_method("set_cursor_cell"):
+	var cur_action := ""
+	match attack_mode:
+		"till":
+			cur_action = "dig"
+		"water":
+			cur_action = "water"
+		"plant":
+			cur_action = "plant"
+		"":
+			cur_action = "harvest"
+	var has_cursor: bool = map.has_method("set_cursor_for") or map.has_method("set_cursor_cell")
+	if cur_action == "" or not has_cursor:
 		if map.has_method("clear_cursor"):
 			map.call("clear_cursor")
+		return
+	# 空手采摘：光标 = 鼠标悬停格（成熟才亮）；工具模式：光标 = 挥击扇区格
+	if cur_action == "harvest":
+		if not map.has_method("set_cursor_for"):
+			if map.has_method("clear_cursor"):
+				map.call("clear_cursor")
+			return
+		map.call("set_cursor_for",
+			map.world_to_cell(map.get_global_mouse_position()), "harvest")
 		return
 	var dir: Vector2 = map.get_global_mouse_position() - global_position
 	if dir.length_squared() < 1.0:
 		map.call("clear_cursor")
 		return
-	map.call("set_cursor_cell", _till_target_cell(map, dir))
+	var target: Vector2i = _till_target_cell(map, dir)
+	if map.has_method("set_cursor_for"):
+		map.call("set_cursor_for", target, cur_action)
+	else:
+		map.call("set_cursor_cell", target)
 
 ## 近战武器 id 集（与 item.json 装备类道具对应）
 const WEAPON_MELEE := ["sword_qingfeng"]
@@ -265,6 +352,15 @@ const TOOL_PICKAXE := "tool_pickaxe"
 
 ## 锄地工具 id（item.json 装备类；与 mainhud_equipbar.gd 4 号槽一致）
 const TOOL_HOE := "tool_hoe"
+
+## 浇水工具 id（item.json 装备类；与 mainhud_equipbar.gd 5 号槽一致）
+const TOOL_KETTLE := "tool_watering_can"
+
+## 播种道具 id（item.json 消耗类；与 mainhud_equipbar.gd 7 号槽一致）
+const TOOL_SEED := "seeds_veg"
+
+## 作物收获产物 id（item.json 材料类；空手采摘 / 种子模式收获统一入包）
+const HARVEST_ITEM := "veg_green"
 
 ## 目标碰撞层（位值）：敌受击盒 layer3 = 4；可采集物受击盒 layer5 = 16
 const TARGET_ENEMY := 4
@@ -284,6 +380,10 @@ func _apply_weapon_visual(item: String) -> void:
 			weapon_mount.add_child(_make_pickaxe_visual())
 		"tool_hoe":
 			weapon_mount.add_child(_make_hoe_visual())
+		"tool_watering_can":
+			weapon_mount.add_child(_make_kettle_visual())
+		"seeds_veg":
+			weapon_mount.add_child(_make_seed_visual())
 		_:
 			if WEAPON_MELEE.has(item):
 				weapon_mount.add_child(_make_sword_visual())
@@ -384,6 +484,65 @@ func _make_hoe_visual() -> Node2D:
 	blade.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	hoe.add_child(blade)
 	return hoe
+
+
+## 水壶：壶身 + 提梁 + 壶嘴（浇水工具，攻击模式 water；走地图 water 协议）
+func _make_kettle_visual() -> Node2D:
+	var kettle := Node2D.new()
+	kettle.name = "WeaponKettle"
+	var body := Polygon2D.new()
+	body.name = "KettleBody"
+	body.color = Color(0.35, 0.55, 0.75)
+	body.polygon = PackedVector2Array([
+		Vector2(0, -8), Vector2(10, -8), Vector2(13, -2),
+		Vector2(13, 6), Vector2(0, 6),
+	])
+	kettle.add_child(body)
+	var spout := Polygon2D.new()
+	spout.name = "Spout"
+	spout.color = Color(0.28, 0.44, 0.62)
+	spout.polygon = PackedVector2Array([
+		Vector2(10, -6), Vector2(22, -12), Vector2(24, -9), Vector2(12, -2),
+	])
+	kettle.add_child(spout)
+	var handle := ColorRect.new()
+	handle.name = "Handle"
+	handle.color = Color(0.22, 0.3, 0.4)
+	handle.size = Vector2(8, 3)
+	handle.position = Vector2(1, -11)
+	handle.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	kettle.add_child(handle)
+	return kettle
+
+
+## 种子袋：小布袋 + 扎口（播种工具，攻击模式 plant；走地图 plant/harvest 协议）
+func _make_seed_visual() -> Node2D:
+	var bag := Node2D.new()
+	bag.name = "WeaponSeedBag"
+	bag.rotation = -0.4
+	var pouch := Polygon2D.new()
+	pouch.name = "Pouch"
+	pouch.color = Color(0.62, 0.45, 0.25)
+	pouch.polygon = PackedVector2Array([
+		Vector2(-5, -6), Vector2(5, -6), Vector2(8, 2),
+		Vector2(5, 9), Vector2(-5, 9), Vector2(-8, 2),
+	])
+	bag.add_child(pouch)
+	var tie := ColorRect.new()
+	tie.name = "Tie"
+	tie.color = Color(0.35, 0.22, 0.1)
+	tie.size = Vector2(10, 3)
+	tie.position = Vector2(-5, -8)
+	tie.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	bag.add_child(tie)
+	var seed_dot := ColorRect.new()
+	seed_dot.name = "SeedDot"
+	seed_dot.color = Color(0.85, 0.75, 0.35)
+	seed_dot.size = Vector2(4, 4)
+	seed_dot.position = Vector2(-2, -13)
+	seed_dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	bag.add_child(seed_dot)
+	return bag
 
 
 # ---- 接线 ----
@@ -521,8 +680,8 @@ func _process(delta: float) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	# 本回调只在「点击未被 UI 消费」时收到（事件路由，引擎保证）。
-	# 未装备武器：左键点击地面 → BFS 寻路；射击/近战模式时左键已被
-	# GdShooter / GdMelee 的 unhandled 路由消费（set_input_as_handled），
+	# 空手：左键点击 → 成熟作物采摘（相邻）或 BFS 寻路；射击/近战模式时
+	# 左键已被 GdShooter / GdMelee 的 unhandled 路由消费（set_input_as_handled），
 	# 此处按 attack_mode 分流双保险。
 	if event is InputEventMouseButton and event.pressed \
 			and event.button_index == MOUSE_BUTTON_LEFT:
@@ -536,9 +695,26 @@ func _on_map_clicked() -> void:
 	if not _wired or map_mgr == null:
 		return
 	var map: Node = map_mgr.get_current_map()
-	if map == null or not map.has_method("find_path"):
+	if map == null or not map.has_method("world_to_cell"):
 		return
-	var target: Vector2i = map.world_to_cell(map.get_global_mouse_position())
+	_on_map_clicked_at(map, map.world_to_cell(map.get_global_mouse_position()))
+
+
+## 点击世界一格的全部分流逻辑（target 由调用方给定：生产路径 = 鼠标所在格，
+## headless 测试可直调任意格绕开无鼠标限制）。
+## 顺序铁律：**空手采摘判定必须在 find_path 守卫之前**——GdDigLayer 小地图
+## （home）没有 find_path（BFS 寻路是 GdQuickMap 的能力），采摘读的是农田
+## 协议，与寻路无关；守卫前置会把 home 的徒手采摘整个吞掉（踩过：实机
+## 点击无反应）。
+func _on_map_clicked_at(map: Node, target: Vector2i) -> void:
+	# 空手点击：目标格有成熟作物（含脚下格）→ 摘取入包，点击被消费；
+	# 无作物/不相邻 → 落到下面的寻路（远处成熟作物也会走过去）
+	if attack_mode == "" and _harvest_at(map, target):
+		return
+	# 寻路需地图支持 find_path（GdQuickMap 探索图）；GdDigLayer 小地图
+	# 不支持则跳过（home 内移动走键盘）
+	if not map.has_method("find_path"):
+		return
 	if not map.is_walkable(target):
 		return
 	var from: Vector2i = map.world_to_cell(global_position)
@@ -552,6 +728,26 @@ func _on_map_clicked() -> void:
 	var pts := PackedVector2Array([global_position])
 	pts.append_array(path)
 	path_line.points = pts
+
+
+## 空手采摘：目标格有成熟作物且在玩家格 8 邻范围内（含脚下格——走进田里
+## 站在作物上点一下就摘）→ 收获并把产物入包（add_item）。返回 true =
+## 点击已被采摘消费（不再寻路）；无作物/不满足条件返回 false 放行寻路。
+## 摘取不走挥击判定盒（作物长在地形格上不是 Area2D），读 GdDigLayer 农田
+## 协议（is_mature/harvest）；无农田协议的地图静默放行。
+func _harvest_at(map: Node, target: Vector2i) -> bool:
+	if not map.has_method("is_mature") or not map.is_mature(target):
+		return false
+	var my_cell: Vector2i = map.world_to_cell(global_position)
+	var d := target - my_cell
+	if absi(d.x) > 1 or absi(d.y) > 1:
+		print("[Player] 作物在 %s，走近后再点击采摘" % target)
+		return false  # 不消费 → 寻路走过去
+	if not map.has_method("harvest") or not map.harvest(target):
+		return false
+	XiuItemState.ins().add_item(HARVEST_ITEM, 1)
+	print("[Player] 采摘: %s → %s x1（入包）" % [target, HARVEST_ITEM])
+	return true
 
 
 # ---- 视觉：身体 + 朝向指示（正式素材就位后替换） ----

@@ -86,6 +86,44 @@ pub struct GdDigLayer {
     #[export]
     cursor_texture: Option<Gd<Texture2D>>,
 
+    // ---- 农田状态层（状态流转：耕地 --浇→ 湿润 --种→ 作物 --生长→ 成熟）----
+    /// 可浇灌地形名（已开垦耕地）；空 = 自动取 dig_targets 的非空目标集合
+    #[export]
+    waterable_terrains: PackedStringArray,
+    /// 作物横向序列帧贴图（透明背景；帧宽 = 贴图高，宽 = 阶段数 × 帧宽，
+    /// 左→右 = 阶段 0 → 成熟，如 4 阶段 = 128×32）。空 = 程序化占位图
+    /// （绿色幼苗逐阶段长大，零素材调试用）
+    #[export]
+    crop_texture: Option<Gd<Texture2D>>,
+    /// 作物生长阶段数（= 序列帧帧数；成熟 = 阶段 crop_stages-1）
+    #[export]
+    crop_stages: i32,
+    /// 每阶段生长秒数（仅湿润时累计——干涸即暂停生长，需再浇；0 = 瞬间成熟）
+    #[export]
+    crop_grow_secs: f64,
+    /// 湿润持续秒数（超时自然干燥、作物暂停生长）；0 = 永不干燥
+    #[export]
+    wet_secs: f64,
+
+    /// 每格湿润标记（与 grid 平行；农场层运行时状态）
+    wet: Vec<bool>,
+    /// 每格湿润已持续秒（干燥判定累计）
+    wet_timer: Vec<f32>,
+    /// 每格作物阶段（-1 = 无作物）
+    crop_stage: Vec<i32>,
+    /// 每格当前阶段已生长秒
+    crop_timer: Vec<f32>,
+    /// 可浇灌地形下标缓存（sync_tables 填充）
+    waterable: Vec<i32>,
+    /// 湿润逐格遮罩（shader wet_mask r 通道，命中格基色调暗）
+    wet_img: Option<Gd<Image>>,
+    /// 湿润遮罩 GPU 纹理
+    wet_tex: Option<Gd<ImageTexture>>,
+    /// 作物精灵（键 = (cx, cy)）
+    crop_sprites: std::collections::HashMap<(i32, i32), Gd<Sprite2D>>,
+    /// 作物序列帧纹理缓存（crop_texture 或程序化占位）
+    crop_sheet: Option<Gd<Texture2D>>,
+
     /// 每格地形下标（行主序，width*height；ready 时按导出配置初始化）
     grid: Vec<i32>,
     /// 地形名缓存（与 terrain_names 同步）
@@ -125,6 +163,11 @@ impl ITileMapLayer for GdDigLayer {
             fallback_overlay_color: Color::from_rgb(0.85, 0.65, 0.35),
             terrain_shader_textures: PackedStringArray::new(),
             cursor_texture: None,
+            waterable_terrains: PackedStringArray::new(),
+            crop_texture: None,
+            crop_stages: 4,
+            crop_grow_secs: 20.0,
+            wet_secs: 60.0,
             grid: Vec::new(),
             names: Vec::new(),
             blocked: Vec::new(),
@@ -134,6 +177,15 @@ impl ITileMapLayer for GdDigLayer {
             mask_img: None,
             mask_tex: None,
             cursor: None,
+            wet: Vec::new(),
+            wet_timer: Vec::new(),
+            crop_stage: Vec::new(),
+            crop_timer: Vec::new(),
+            waterable: Vec::new(),
+            wet_img: None,
+            wet_tex: None,
+            crop_sprites: std::collections::HashMap::new(),
+            crop_sheet: None,
             base,
         }
     }
@@ -150,6 +202,14 @@ impl ITileMapLayer for GdDigLayer {
         }
         self.rebuild_visual();
         self.setup_cursor();
+        // 农田层：网格对齐 + 湿润遮罩装配；无湿润/作物时关帧循环（空闲零开销）
+        self.resize_farm();
+        self.setup_wet_mask();
+        self.base_mut().set_process(false);
+    }
+
+    fn process(&mut self, delta: f64) {
+        self.tick_farm(delta as f32);
     }
 }
 
@@ -162,6 +222,26 @@ impl GdDigLayer {
     /// 地形变化信号（dig 与 set_terrain_name_at 统一发出）
     #[signal]
     fn s_terrain_changed(cell: Vector2i, from_terrain: GString, to_terrain: GString);
+
+    // ---- 农田状态流转信号（宿主据此联动存档/演出）----
+    /// 浇水成功（耕地 → 湿润）
+    #[signal]
+    fn s_watered(cell: Vector2i);
+    /// 湿润超时自然干燥（wet_secs > 0 时）
+    #[signal]
+    fn s_dried(cell: Vector2i);
+    /// 播种成功（湿润耕地 → 作物阶段 0）
+    #[signal]
+    fn s_planted(cell: Vector2i);
+    /// 作物进入下一生长阶段（stage = 新阶段下标）
+    #[signal]
+    fn s_grew(cell: Vector2i, stage: i32);
+    /// 作物成熟（到达最终阶段，生长停止，可收获）
+    #[signal]
+    fn s_matured(cell: Vector2i);
+    /// 收获成功（作物移除，耕地保留湿润状态）
+    #[signal]
+    fn s_harvested(cell: Vector2i);
 
     /// 挖地：把 cell 的地形变成 dig_targets 配置的目标地形。
     /// 返回是否成功（越界 / 不可挖地形 / 不在可挖区域内均失败）。
@@ -319,13 +399,17 @@ impl GdDigLayer {
         true
     }
 
-    /// 按当前导出配置重建（编辑器调参后手动刷新；会清空运行期地形变化）
+    /// 按当前导出配置重建（编辑器调参后手动刷新；会清空运行期地形/农田变化）
     #[func]
     pub fn rebuild(&mut self) {
         self.sync_tables();
         self.grid.clear();
         self.init_grid();
         self.rebuild_visual();
+        self.clear_farm_runtime();
+        self.resize_farm();
+        self.setup_wet_mask();
+        self.base_mut().set_process(false);
     }
 
     /// 调试/测试：读 shader 贴图遮罩某格的通道颜色
@@ -371,7 +455,475 @@ impl GdDigLayer {
         }
     }
 
+    // ---- 农田状态流转：耕地 --浇→ 湿润 --种→ 作物 --生长→ 成熟 --收→ 耕地 ----
+
+    /// 格子是否可浇灌（地形为已开垦耕地，且（无限制或在 dig_rects 内））
+    #[func]
+    pub fn is_waterable(&self, cell: Vector2i) -> bool {
+        let Some(ti) = self.terrain_index_at(cell.x, cell.y) else {
+            return false;
+        };
+        if !self.waterable.contains(&ti) {
+            return false;
+        }
+        !self.has_dig_area || self.in_dig_rects(cell)
+    }
+
+    /// 浇水：耕地 → 湿润（已湿润返回 false）。湿润计时清零重新累计；
+    /// 成功发 s_watered，湿润期间该格基色经 wet_mask 调暗
+    #[func]
+    pub fn water(&mut self, cell: Vector2i) -> bool {
+        if !self.is_waterable(cell) {
+            return false;
+        }
+        let i = self.cell_index(cell.x, cell.y);
+        if self.wet.get(i).copied().unwrap_or(false) {
+            return false;
+        }
+        self.wet[i] = true;
+        self.wet_timer[i] = 0.0;
+        self.refresh_wet_mask();
+        self.base_mut().set_process(true);
+        self.base_mut().emit_signal("s_watered", &[cell.to_variant()]);
+        true
+    }
+
+    /// 格子当前是否湿润
+    #[func]
+    pub fn is_wet(&self, cell: Vector2i) -> bool {
+        match self.farm_index(cell) {
+            Some(i) => self.wet.get(i).copied().unwrap_or(false),
+            None => false,
+        }
+    }
+
+    /// 格子是否可播种（湿润耕地且无作物）
+    #[func]
+    pub fn is_plantable(&self, cell: Vector2i) -> bool {
+        match self.farm_index(cell) {
+            Some(i) => self.wet.get(i).copied().unwrap_or(false) && self.crop_stage[i] < 0,
+            None => false,
+        }
+    }
+
+    /// 播种：湿润耕地 → 作物阶段 0（无作物且湿润才成功）。发 s_planted
+    #[func]
+    pub fn plant(&mut self, cell: Vector2i) -> bool {
+        if !self.is_plantable(cell) {
+            return false;
+        }
+        let i = self.cell_index(cell.x, cell.y);
+        self.crop_stage[i] = 0;
+        self.crop_timer[i] = 0.0;
+        self.ensure_crop_sprite(cell, 0);
+        self.base_mut().set_process(true);
+        self.base_mut().emit_signal("s_planted", &[cell.to_variant()]);
+        true
+    }
+
+    /// 格子作物阶段（-1 = 无作物；成熟 = crop_stages - 1）
+    #[func]
+    pub fn get_crop_stage(&self, cell: Vector2i) -> i32 {
+        match self.farm_index(cell) {
+            Some(i) => self.crop_stage.get(i).copied().unwrap_or(-1),
+            None => -1,
+        }
+    }
+
+    /// 格子作物是否成熟
+    #[func]
+    pub fn is_mature(&self, cell: Vector2i) -> bool {
+        self.get_crop_stage(cell) >= self.crop_stages.max(1) - 1
+    }
+
+    /// 收获：成熟作物移除（耕地保留湿润状态），发 s_harvested。
+    /// 未成熟/无作物返回 false
+    #[func]
+    pub fn harvest(&mut self, cell: Vector2i) -> bool {
+        if !self.is_mature(cell) {
+            return false;
+        }
+        let i = self.cell_index(cell.x, cell.y);
+        self.crop_stage[i] = -1;
+        self.crop_timer[i] = 0.0;
+        self.remove_crop_sprite(cell);
+        self.base_mut().emit_signal("s_harvested", &[cell.to_variant()]);
+        true
+    }
+
+    /// 农田状态 dump（宿主持久化用）：
+    /// {"wet": {"x,y": true}, "crops": {"x,y": {"stage": float, "t": float}}}
+    /// （数值一律 float，对齐 GJson 落盘约束）
+    #[func]
+    pub fn get_farm_state(&self) -> VarDictionary {
+        let mut wet_d = VarDictionary::new();
+        let mut crops = VarDictionary::new();
+        for cy in 0..self.height.max(0) {
+            for cx in 0..self.width.max(0) {
+                let i = self.cell_index(cx, cy);
+                let key = GString::from(format!("{},{}", cx, cy).as_str());
+                if self.wet.get(i).copied().unwrap_or(false) {
+                    let kv = key.to_variant();
+                    wet_d.set(&kv, true);
+                }
+                let st = self.crop_stage.get(i).copied().unwrap_or(-1);
+                if st >= 0 {
+                    let mut cd = VarDictionary::new();
+                    cd.set("stage", st as f32);
+                    cd.set("t", self.crop_timer.get(i).copied().unwrap_or(0.0));
+                    let kv = key.to_variant();
+                    let cv = cd.to_variant();
+                    crops.set(&kv, &cv);
+                }
+            }
+        }
+        let mut d = VarDictionary::new();
+        let wv = wet_d.to_variant();
+        let cv = crops.to_variant();
+        d.set("wet", &wv);
+        d.set("crops", &cv);
+        d
+    }
+
+    /// 农田状态 restore（进场恢复；先清运行期状态再整体应用。
+    /// 越界/非法键忽略；成功后刷新湿润遮罩与作物精灵）
+    #[func]
+    pub fn set_farm_state(&mut self, state: VarDictionary) {
+        self.clear_farm_runtime();
+        let w = self.width.max(0);
+        let h = self.height.max(0);
+        if let Some(wet_d) = state.get("wet").and_then(|v| v.try_to::<VarDictionary>().ok()) {
+            for (key, _val) in wet_d.iter_shared() {
+                if let Ok(k) = key.try_to::<GString>() {
+                    if let Some((cx, cy)) = Self::parse_cell_key(&k.to_string()) {
+                        if cx >= 0 && cy >= 0 && cx < w && cy < h {
+                            let i = self.cell_index(cx, cy);
+                            self.wet[i] = true;
+                        }
+                    }
+                }
+            }
+        }
+        if let Some(crops) = state.get("crops").and_then(|v| v.try_to::<VarDictionary>().ok()) {
+            for (key, val) in crops.iter_shared() {
+                let Ok(k) = key.try_to::<GString>() else {
+                    continue;
+                };
+                let Some((cx, cy)) = Self::parse_cell_key(&k.to_string()) else {
+                    continue;
+                };
+                if cx < 0 || cy < 0 || cx >= w || cy >= h {
+                    continue;
+                }
+                let Ok(cd) = val.try_to::<VarDictionary>() else {
+                    continue;
+                };
+                // 数值防御：GDScript 侧可能给 int/float，统一走 f64 再收窄
+                let stage = cd
+                    .get("stage")
+                    .and_then(|v| v.try_to::<f64>().ok())
+                    .map(|v| v as i32)
+                    .unwrap_or(0)
+                    .clamp(0, self.crop_stages.max(1) - 1);
+                let t = cd
+                    .get("t")
+                    .and_then(|v| v.try_to::<f64>().ok())
+                    .unwrap_or(0.0) as f32;
+                let i = self.cell_index(cx, cy);
+                self.crop_stage[i] = stage;
+                self.crop_timer[i] = t;
+                self.ensure_crop_sprite(Vector2i::new(cx, cy), stage);
+            }
+        }
+        self.refresh_wet_mask();
+        let active = self.farm_active();
+        self.base_mut().set_process(active);
+    }
+
+    /// 光标按动作显示（"dig"=可锄 / "water"=可浇 / "plant"=可播 /
+    /// "harvest"=成熟作物可采摘；其他 = dig）。不可操作的目标格自动隐藏
+    /// （负反馈：不可锄/已湿润/无耕地/未成熟各有语义）
+    #[func]
+    pub fn set_cursor_for(&mut self, cell: Vector2i, action: GString) {
+        if self.cursor.is_none() {
+            return;
+        }
+        let show = match action.to_string().as_str() {
+            "water" => self.is_waterable(cell) && !self.is_wet(cell),
+            "plant" => self.is_plantable(cell),
+            "harvest" => self.is_mature(cell),
+            _ => self.is_diggable(cell),
+        };
+        let world = self.cell_to_center(cell);
+        let local = self.base_mut().to_local(world);
+        let Some(spr) = self.cursor.as_mut() else {
+            return;
+        };
+        spr.set_visible(show);
+        if show {
+            spr.set_position(local);
+        }
+    }
+
     // ---- 内部实现 ----
+
+    // ---- 农田层内部 ----
+
+    /// 农层下标（越界 None；网格未初始化 None）
+    fn farm_index(&self, cell: Vector2i) -> Option<usize> {
+        let n = (self.width.max(0) * self.height.max(0)) as usize;
+        if self.width <= 0 || self.height <= 0 || self.wet.len() != n {
+            return None;
+        }
+        if cell.x < 0 || cell.y < 0 || cell.x >= self.width || cell.y >= self.height {
+            return None;
+        }
+        Some(self.cell_index(cell.x, cell.y))
+    }
+
+    /// "x,y" 键 → (cx, cy)
+    fn parse_cell_key(key: &str) -> Option<(i32, i32)> {
+        let (x, y) = key.split_once(',')?;
+        let cx = x.trim().parse::<i32>().ok()?;
+        let cy = y.trim().parse::<i32>().ok()?;
+        Some((cx, cy))
+    }
+
+    /// 农层数组对齐网格（ready/rebuild 调；已有内容按原值保留，扩缩部分归零）
+    fn resize_farm(&mut self) {
+        let n = (self.width.max(0) * self.height.max(0)) as usize;
+        self.wet.resize(n, false);
+        self.wet_timer.resize(n, 0.0);
+        self.crop_stage.resize(n, -1);
+        self.crop_timer.resize(n, 0.0);
+    }
+
+    /// 是否有活跃农田状态（湿润或存在作物；决定帧循环开关）
+    fn farm_active(&self) -> bool {
+        self.wet.iter().any(|&b| b) || self.crop_stage.iter().any(|&s| s >= 0)
+    }
+
+    /// 湿润遮罩装配（w×h 全透明起步；重复调用按需重建尺寸）
+    fn setup_wet_mask(&mut self) {
+        let w = self.width.max(1);
+        let h = self.height.max(1);
+        let rebuild = match &self.wet_img {
+            Some(img) => img.get_width() != w || img.get_height() != h,
+            None => true,
+        };
+        if rebuild {
+            let img = Image::create_empty(w, h, false, godot::classes::image::Format::RGBA8)
+                .expect("create wet mask image");
+            let tex = ImageTexture::create_from_image(&img).expect("create wet mask texture");
+            self.wet_img = Some(img);
+            self.wet_tex = Some(tex);
+        }
+        self.refresh_wet_mask();
+    }
+
+    /// 湿润遮罩重填（内存 Image 权威 + GPU update；小地图全量重填最简）
+    fn refresh_wet_mask(&mut self) {
+        let (Some(img), Some(tex)) = (&mut self.wet_img, &mut self.wet_tex) else {
+            return;
+        };
+        let w = self.width.max(0);
+        let h = self.height.max(0);
+        img.fill(Color::from_rgba(0.0, 0.0, 0.0, 0.0));
+        for cy in 0..h {
+            for cx in 0..w {
+                // 直接算术取下标（self 已被 img/tex 可变借用，避 cell_index）
+                let i = (cy * w + cx) as usize;
+                if self.wet.get(i).copied().unwrap_or(false) {
+                    // 单通道置位（多通道 bitmask 严禁 WHITE——误触发其他分支）
+                    img.set_pixel(cx, cy, Color::from_rgba(1.0, 0.0, 0.0, 1.0));
+                }
+            }
+        }
+        tex.update(&*img);
+    }
+
+    /// 农田状态机 tick（process 驱动；仅在有湿润/作物时开帧循环）：
+    /// 湿润超时干燥 → 生长暂停；作物仅湿润时累计生长 → 阶段推进 → 成熟
+    fn tick_farm(&mut self, delta: f32) {
+        let w = self.width.max(0);
+        let h = self.height.max(0);
+        if w == 0 || h == 0 || self.wet.len() != (w * h) as usize {
+            return;
+        }
+        let wet_secs = self.wet_secs;
+        let grow_secs = self.crop_grow_secs;
+        let max_stage = self.crop_stages.max(1) - 1;
+        let mut dried: Vec<Vector2i> = Vec::new();
+        let mut grew: Vec<(Vector2i, i32, bool)> = Vec::new();
+        for cy in 0..h {
+            for cx in 0..w {
+                let i = self.cell_index(cx, cy);
+                if self.wet[i] && wet_secs > 0.0 {
+                    self.wet_timer[i] += delta;
+                    if self.wet_timer[i] as f64 >= wet_secs {
+                        self.wet[i] = false;
+                        self.wet_timer[i] = 0.0;
+                        dried.push(Vector2i::new(cx, cy));
+                    }
+                }
+                if self.crop_stage[i] >= 0 && self.crop_stage[i] < max_stage && self.wet[i] {
+                    self.crop_timer[i] += delta;
+                    if grow_secs > 0.0 && self.crop_timer[i] as f64 >= grow_secs {
+                        self.crop_timer[i] = 0.0;
+                        self.crop_stage[i] += 1;
+                        let mature = self.crop_stage[i] >= max_stage;
+                        grew.push((Vector2i::new(cx, cy), self.crop_stage[i], mature));
+                    }
+                }
+            }
+        }
+        if !dried.is_empty() {
+            self.refresh_wet_mask();
+            for cell in &dried {
+                self.base_mut().emit_signal("s_dried", &[cell.to_variant()]);
+            }
+        }
+        for (cell, stage, mature) in &grew {
+            self.update_crop_sprite(*cell, *stage);
+            self.base_mut().emit_signal(
+                "s_grew",
+                &[cell.to_variant(), (*stage as i32).to_variant()],
+            );
+            if *mature {
+                self.base_mut().emit_signal("s_matured", &[cell.to_variant()]);
+            }
+        }
+        let active = self.farm_active();
+        self.base_mut().set_process(active);
+    }
+
+    /// 清空运行期农田状态（移除作物精灵、湿润归零；持久化 restore 前置）
+    fn clear_farm_runtime(&mut self) {
+        let cells: Vec<(i32, i32)> = self.crop_sprites.keys().copied().collect();
+        for key in cells {
+            if let Some(mut spr) = self.crop_sprites.remove(&key) {
+                spr.queue_free();
+            }
+        }
+        for v in self.wet.iter_mut() {
+            *v = false;
+        }
+        for v in self.wet_timer.iter_mut() {
+            *v = 0.0;
+        }
+        for v in self.crop_stage.iter_mut() {
+            *v = -1;
+        }
+        for v in self.crop_timer.iter_mut() {
+            *v = 0.0;
+        }
+    }
+
+    /// 作物精灵装配（首次创建；z=1 盖瓦片，坐标经 to_local——根带偏移+缩放）
+    fn ensure_crop_sprite(&mut self, cell: Vector2i, stage: i32) {
+        let key = (cell.x, cell.y);
+        if !self.crop_sprites.contains_key(&key) {
+            let tex = self.crop_sheet_tex();
+            let mut spr = Sprite2D::new_alloc();
+            spr.set_name("CropSprite");
+            spr.set_texture(&tex);
+            spr.set_hframes(self.crop_stages.max(1));
+            // 帧宽 = 贴图高（横向序列帧）；局部缩放 = (cell_size / 根缩放) / 帧宽
+            let frame_px = tex.get_height().max(1) as f32;
+            let root_scale = self.base_mut().get_scale().x.max(0.01);
+            let s = self.cell_size.max(1) as f32 / root_scale / frame_px;
+            spr.set_scale(Vector2::new(s, s));
+            spr.set_z_index(1);
+            let world = self.cell_to_center(cell);
+            let local = self.base_mut().to_local(world);
+            spr.set_position(local);
+            self.base_mut().add_child(&spr);
+            self.crop_sprites.insert(key, spr);
+        }
+        if let Some(spr) = self.crop_sprites.get_mut(&key) {
+            spr.set_visible(true);
+            spr.set_frame(stage.clamp(0, self.crop_stages.max(1) - 1));
+        }
+    }
+
+    /// 作物阶段推进后刷新帧
+    fn update_crop_sprite(&mut self, cell: Vector2i, stage: i32) {
+        let key = (cell.x, cell.y);
+        if let Some(spr) = self.crop_sprites.get_mut(&key) {
+            spr.set_frame(stage.clamp(0, self.crop_stages.max(1) - 1));
+        }
+    }
+
+    /// 移除作物精灵（收获/清场；queue_free 即可——键已弹出，同帧重名无碍）
+    fn remove_crop_sprite(&mut self, cell: Vector2i) {
+        let key = (cell.x, cell.y);
+        if let Some(mut spr) = self.crop_sprites.remove(&key) {
+            spr.queue_free();
+        }
+    }
+
+    /// 作物序列帧纹理：crop_texture 优先；未配置 → 程序化占位
+    /// （绿色幼苗逐阶段长大，16px/帧，stages 帧）
+    fn crop_sheet_tex(&mut self) -> Gd<Texture2D> {
+        if let Some(tex) = self.crop_sheet.clone() {
+            return tex;
+        }
+        let tex = match &self.crop_texture {
+            Some(t) => t.clone(),
+            None => Self::build_placeholder_crop_sheet(self.crop_stages.max(1)),
+        };
+        self.crop_sheet = Some(tex.clone());
+        tex
+    }
+
+    /// 程序化占位序列帧：每帧 16px，茎高随阶段增长 + 叶片展开 + 成熟结果
+    fn build_placeholder_crop_sheet(stages: i32) -> Gd<Texture2D> {
+        use godot::classes::image::Format;
+        const FPX: i32 = 16;
+        let mut img = Image::create_empty(FPX * stages, FPX, false, Format::RGBA8)
+            .expect("create placeholder crop sheet");
+        let green = Color::from_rgba(0.25, 0.65, 0.25, 1.0);
+        let leaf = Color::from_rgba(0.35, 0.8, 0.3, 1.0);
+        let fruit = Color::from_rgba(0.85, 0.3, 0.2, 1.0);
+        let soil = Color::from_rgba(0.45, 0.33, 0.22, 0.9);
+        for s in 0..stages {
+            let t = (s + 1) as f32 / stages as f32;
+            let ox = s * FPX;
+            // 土壤点
+            img.fill_rect(
+                Rect2i::new(Vector2i::new(ox + 5, FPX - 4), Vector2i::new(6, 3)),
+                soil,
+            );
+            // 茎：高随阶段
+            let stem_h = (2.0 + t * 9.0).round() as i32;
+            img.fill_rect(
+                Rect2i::new(Vector2i::new(ox + 7, FPX - 5 - stem_h), Vector2i::new(2, stem_h)),
+                green,
+            );
+            // 叶：后半阶段展开
+            if t >= 0.4 {
+                let lw = (3.0 + t * 4.0).round() as i32;
+                img.fill_rect(
+                    Rect2i::new(Vector2i::new(ox + 7 - lw, FPX - 8 - (stem_h / 2)), Vector2i::new(lw, 2)),
+                    leaf,
+                );
+                img.fill_rect(
+                    Rect2i::new(Vector2i::new(ox + 9, FPX - 8 - (stem_h / 2)), Vector2i::new(lw, 2)),
+                    leaf,
+                );
+            }
+            // 成熟结果
+            if s == stages - 1 {
+                img.fill_rect(
+                    Rect2i::new(Vector2i::new(ox + 6, FPX - 12), Vector2i::new(4, 3)),
+                    fruit,
+                );
+            }
+        }
+        let tex = godot::classes::ImageTexture::create_from_image(&img)
+            .expect("create placeholder crop texture");
+        tex.upcast::<Texture2D>()
+    }
 
     /// 装配挖地预览光标（cursor_texture 配置后创建，初始隐藏；
     /// 纯本地子节点，无全局副作用）
@@ -426,6 +978,18 @@ impl GdDigLayer {
             .collect();
         self.dig_to.resize(self.names.len(), -1);
         self.has_dig_area = self.dig_rects.len() > 0;
+        // 可浇灌地形：显式配置优先；空 = 自动取 dig_targets 的非空目标集合
+        // （dig 的目标地形 = 已开垦耕地，天然是可浇灌面）
+        if self.waterable_terrains.len() > 0 {
+            self.waterable = self
+                .waterable_terrains
+                .to_vec()
+                .iter()
+                .filter_map(|s| self.name_index(s.to_string()))
+                .collect();
+        } else {
+            self.waterable = self.dig_to.iter().copied().filter(|&t| t >= 0).collect();
+        }
     }
 
     /// 初始网格：铺底填满 + init_rects 按序叠加
@@ -663,14 +1227,9 @@ impl GdDigLayer {
     /// 贴图地形）+ 各贴图世界坐标平铺。无配置时清掉材质
     fn apply_terrain_shader_material(&mut self) {
         let slots = self.shader_slots();
-        if slots.is_empty() {
-            self.mask_img = None;
-            self.mask_tex = None;
-            self.base_mut().set_material(Gd::<Material>::null_arg());
-            return;
-        }
         let w = self.width.max(1);
         let h = self.height.max(1);
+        // 地形贴图遮罩（无贴图槽位时全零占位——wet 调暗仍需材质挂载）
         let mut img = Image::create_empty(w, h, false, godot::classes::image::Format::RGBA8)
             .expect("create mask image");
         for cy in 0..h {
@@ -687,6 +1246,10 @@ impl GdDigLayer {
             }
         }
         let tex = ImageTexture::create_from_image(&img).expect("create mask texture");
+        // 湿润遮罩（农田层；可能先于本函数存在——保留已有实例）
+        if self.wet_img.is_none() || self.wet_tex.is_none() {
+            self.setup_wet_mask();
+        }
         let mut mat = ShaderMaterial::new_gd();
         let mut shader = Shader::new_gd();
         shader.set_code(terrain_tex::TERRAIN_TEX_SHADER_SRC);
@@ -716,6 +1279,12 @@ impl GdDigLayer {
         for slot in slots.len()..3 {
             let v = terrain_tex::transparent_tex().to_variant();
             mat.set_shader_parameter(format!("tex{}", slot).as_str(), &v);
+        }
+        // 湿润遮罩（农田层；refresh_wet_mask 局部更新 GPU 纹理）
+        if let Some(wt) = &self.wet_tex {
+            mat.set_shader_parameter("wet_mask", &wt.clone().upcast::<Texture2D>().to_variant());
+        } else {
+            mat.set_shader_parameter("wet_mask", &terrain_tex::transparent_tex().to_variant());
         }
         self.mask_img = Some(img);
         self.mask_tex = Some(tex);

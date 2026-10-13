@@ -15,6 +15,12 @@
 #     值 = Array[float]（行主序地形下标，与 GdDigLayer.get_terrain_grid
 #     对齐；GJson 数值一律 float）。dig_save.gd 进场恢复 / 变化写回。
 #
+#   · farm_states —— 各地图农田状态（Dictionary：键 = 地图别名，
+#     值 = GdDigLayer.get_farm_state dump：{"wet": {"x,y": 1.0},
+#     "crops": {"x,y": {"stage": float, "t": float}}}。wet 值落盘前统一
+#     转 1.0（规避 bool 落盘不确定性；恢复侧只看键存在性不看值）。
+#     dig_save.gd 轮询 diff 写回 / 进场恢复。
+#
 # 与框架 GdDecoLayer 的协作（框架零业务感知）：
 #   进场：deco_harvest.gd（图内宿主）读本 Bean → layer.set_harvested_cells 注入
 #         → spawn_deco 跳过这些格子（挖掉的矿不会重开游戏就全部长回）
@@ -31,6 +37,9 @@ var harvested: Dictionary = {}
 
 ## 各地图挖地地形网格（键 = 地图别名 → Array[float] 行主序地形下标）
 var terrain_grids: Dictionary = {}
+
+## 各地图农田状态（键 = 地图别名 → GdDigLayer.get_farm_state dump）
+var farm_states: Dictionary = {}
 
 
 ## 注册/获取单例 Bean（GdBean.bean 幂等：重复调用返回同一实例）
@@ -99,3 +108,37 @@ func load_terrain_grid(alias: String) -> PackedInt32Array:
 ## 清空全部地形网格（测试用；force 绕过同值短路）
 func clear_terrain_grids() -> void:
 	update("terrain_grids", {}, {}, true)
+
+
+## 保存某地图农田状态（wet 的 true 统一转 1.0 float，规避 bool 落盘
+## 不确定性——恢复侧只看键存在性不看值；整表 duplicate 替换，update
+## 现值比对天然去重，状态未变化不落盘不通知）
+func save_farm_state(alias: String, state: Dictionary) -> void:
+	var norm: Dictionary = {}
+	var wet_src: Dictionary = state.get("wet", {})
+	var wet_d: Dictionary = {}
+	for k in wet_src.keys():
+		wet_d[str(k)] = 1.0
+	norm["wet"] = wet_d
+	var crops_src: Dictionary = state.get("crops", {})
+	var crops_d: Dictionary = {}
+	for k in crops_src.keys():
+		var cd: Dictionary = crops_src[k]
+		crops_d[str(k)] = {
+			"stage": float(cd.get("stage", 0.0)),
+			"t": float(cd.get("t", 0.0)),
+		}
+	norm["crops"] = crops_d
+	var d := farm_states.duplicate(true)
+	d[alias] = norm
+	update("farm_states", d, {}, false)
+
+
+## 读取某地图存档农田状态（无存档返回空——进场用初始空农田）
+func load_farm_state(alias: String) -> Dictionary:
+	return farm_states.get(alias, {})
+
+
+## 清空全部农田状态（测试用；force 绕过同值短路）
+func clear_farm_states() -> void:
+	update("farm_states", {}, {}, true)

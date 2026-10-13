@@ -281,9 +281,13 @@ blocked_terrains = PackedStringArray()         # 不可通行地形名
   `set_terrain_name_at(cell, name)` / `is_walkable(cell)`
 - **挖地预览光标**：导出 `cursor_texture`（Texture2D，如 cursor.svg）→ ready 时
   创建 DigCursor 精灵子节点（相对 z=1 盖瓦片、初始隐藏）；宿主经
-  `set_cursor_cell(cell)` 驱动（**只在 is_diggable 的格子显示**——rects 外/
-  不可挖地形自动隐藏，所见即所锄）、`clear_cursor()` 隐藏。光标格换算与实际
-  dig 共用一套（挥击方向前方一格），锄具每帧同步（player.gd _update_dig_cursor）
+  `set_cursor_cell(cell)`（只在 is_diggable 格显示）或
+  `set_cursor_for(cell, action)`（action = "dig"/"water"/"plant"，按动作过滤：
+  可锄格/未湿润耕地/湿润空耕地才亮，负反馈所见即所得）、`clear_cursor()` 隐藏。
+  光标格换算与实际动作共用一套（挥击方向前方一格），工具每帧同步
+  （player.gd _update_dig_cursor）。**坐标系红线**：双网格根带
+  position(-cs/2)+scale(cs/ts_px)，光标是根子节点处于局部缩放空间——世界坐标
+  必须经 `to_local` 落位、缩放除根缩放，直接当局部坐标会 2 倍飘移
 - **默认地形改法**：想整图默认某地形（如草地）不必换铺底下标/重做图集——
   init_rects 加一条全图矩形即可（铺底被盖住；图集自带双向过渡片，沙洞在
   草地上渲染正常）。可交互区域（dig_rects）与视觉区域须对齐，玩家按所见即所点
@@ -308,6 +312,37 @@ blocked_terrains = PackedStringArray()         # 不可通行地形名
   无 dig 协议的地图（GdQuickMap 等）静默跳过。对照：挖矿镐 mine 模式走
   判定盒打 deco 受击盒（矿石是 Area2D），两种"挖"的目标结构不同，勿混用。
   验收：check_hoe_till.gd（挥击→dig 全链 + rects 外拒绝 + 单格精度）。
+- **农田状态流转（状态机全在框架层，范本 home.tscn 5/6 号槽水壶/种子）**：
+  草地 --锄→ 耕地 --浇→ 湿润 --种→ 作物 --生长(仅湿润累计)→ 成熟 --收→ 湿润耕地。
+  导出：`waterable_terrains`（空 = 自动取 dig_targets 非空目标）、
+  `crop_texture`（横向序列帧：帧宽=贴图高，宽=阶段数×帧宽，左→右=阶段 0→成熟；
+  空 = 程序化绿色幼苗占位）、`crop_stages`(默认 4)、`crop_grow_secs`(每阶段秒，
+  仅湿润累计——干涸暂停)、`wet_secs`(湿润持续，0=永不干燥)。
+  API：`water(cell)`（耕地→湿润，发 `s_watered`；重复浇 false）/
+  `plant(cell)`（湿润空耕地→阶段 0，发 `s_planted`）/ `harvest(cell)`（成熟→移除
+  保留湿润，发 `s_harvested`）/ `is_waterable` / `is_wet` / `is_plantable` /
+  `is_mature` / `get_crop_stage(cell)`（-1=无作物）。
+  渲染：湿润经 shader `wet_mask` r 通道把基色调暗（材质恒挂，无贴图槽位也生效）；
+  作物为独立 Sprite2D 子节点（hframes=阶段数）。
+  持久化：`get_farm_state()` / `set_farm_state(dict)` dump/restore
+  （`{"wet":{"x,y":bool}, "crops":{"x,y":{"stage":f,"t":f}}}`，数值一律 float）。
+  demo 范式（dig_save.gd 扩展）：湿润/生长/干燥都是框架内部 tick 无逐事件信号
+  → **1s 轮询 diff 写回**（dict 比对，无变化 update 现值短路零 IO）；wet 的
+  bool 写 Bean 前统一转 1.0（规避 GJson bool 落盘不确定性，恢复侧只看键）；
+  进场恢复与地形恢复同走 call_deferred。玩家侧：水壶 → water 模式、种子 →
+  plant 模式（同锄地范式 mask=0 挂 s_swing，目标格 8 邻格 45° 扇区共用）；
+  plant 模式挥击成熟格 = 收获（一次挥击只做一件事，先判 is_mature）。
+  空手采摘（✋ 槽 equip=""）：不占装备槽、不走判定盒——徒手 unhandled 点击
+  分流 `_on_map_clicked` → `_on_map_clicked_at(map, cell)` 先判 `_harvest_at`：
+  目标格 is_mature 且在玩家格 8 邻内（含脚下格）→ harvest + 收获物 add_item
+  入包（返回 true 消费点击）；远格返回 false 放行 BFS 寻路（走近再摘）。
+  **守卫次序铁律：采摘判定必须在 `map.has_method("find_path")` 守卫之前——
+  GdDigLayer 小地图没有 find_path（BFS 是 GdQuickMap 的能力），守卫前置会把
+  小地图的徒手采摘整个吞掉（踩过：实机点击无反应，headless 直调 _harvest_at
+  绕过守卫测不出来，回归必须走 _on_map_clicked_at 全守卫链）**。空手光标 =
+  `set_cursor_for(cell, "harvest")`（悬停成熟作物才亮，格随鼠标不限 8 邻）。
+  验收：check_farm.gd（状态机全流程 + 三信号计数 + set_cursor_for 过滤 +
+  空手采摘入包 + 轮询写回 + 新实例恢复后继续生长）。
 
 ## 场景分类与随机副本（demo 范本：xiuxian 秘境）
 

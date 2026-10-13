@@ -12,6 +12,9 @@
 //!
 //! uniform 契约（自定义 .gdshader 想吃贴图也按这个约定写）：
 //!   mask_tex / map_cells / cell_px / tex0..2 / tex_size0..2
+//!   wet_mask / wet_darken（GdDigLayer 农田湿润层：r 通道逐格调暗——
+//!   浇水不需要新贴图，命中格基色乘 wet_darken 变深；GdQuickMap 无农田，
+//!   绑定全透明 wet_mask 占位）
 
 /// 内置 shader 注册名（GdQuickMap.terrain_shaders 可填此名）
 pub const BUILTIN_NAME: &str = "terrain_tex";
@@ -41,6 +44,10 @@ uniform vec2 tex_size2 = vec2(32.0, 32.0);
 // 地图格数 / 格尺寸（世界像素）
 uniform vec2 map_cells = vec2(1.0, 1.0);
 uniform vec2 cell_px = vec2(32.0, 32.0);
+// 农田湿润遮罩（GdDigLayer）：r 通道命中格基色调暗（浇水态）；未用的地图
+// 必须绑定全透明占位——gl_compatibility 下未设置 sampler 会绑引擎默认白纹理
+uniform sampler2D wet_mask : filter_nearest, source_color;
+uniform float wet_darken : hint_range(0.0, 1.0) = 0.65;
 
 varying vec2 world_pos;
 
@@ -64,6 +71,11 @@ void fragment() {
 	if (m.b > 0.5) {
 		vec4 t = texture(tex2, world_pos / tex_size2);
 		rgb = mix(rgb, t.rgb, t.a);
+	}
+	// 湿润耕地调暗（浇水态；干涸恢复原色）
+	vec4 wm = texture(wet_mask, (cell + 0.5) / map_cells);
+	if (wm.r > 0.5) {
+		rgb *= wet_darken;
 	}
 	// 保留瓦片自身 alpha（双网格过渡片的圆角透明缺口不受影响）
 	COLOR = vec4(rgb, base.a);

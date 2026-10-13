@@ -34,6 +34,9 @@ const ICONS := {
 	# 装备
 	"img_tool_pickaxe": "⛏️",
 	"img_tool_hoe": "🔨",
+	"img_tool_watering_can": "🪣",
+	"img_seeds": "🌱",
+	"img_veg_green": "🥬",
 	"img_sword_qingfeng": "🗡️",
 	"img_robe_yunwen": "🥋",
 	# 特殊

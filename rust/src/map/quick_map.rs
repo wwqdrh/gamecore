@@ -1323,6 +1323,9 @@ impl GdQuickMap {
             let v = terrain_tex::transparent_tex().to_variant();
             mat.set_shader_parameter(format!("tex{}", slot).as_str(), &v);
         }
+        // wet_mask 全透明占位（GdQuickMap 无农田湿润层；不绑会撞引擎默认白
+        // 纹理，r=1 使全图层被 wet_darken 调暗）
+        mat.set_shader_parameter("wet_mask", &terrain_tex::transparent_tex().to_variant());
         // 缓存进图层信息，供 set_terrain_at 局部刷新遮罩
         if let Some(info) = self.layers.get_mut(ti as usize) {
             info.mask_img = Some(img);

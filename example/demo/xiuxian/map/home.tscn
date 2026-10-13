@@ -1,6 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Texture2D" path="res://example/demo/xiuxian/map/assets/cursor.svg" id="1_cursor"]
+[ext_resource type="Texture2D" path="res://example/demo/xiuxian/map/assets/crop_sheet.png" id="3_crop"]
 [ext_resource type="Script" path="res://example/demo/xiuxian/map/dig_save.gd" id="2DigSave"]
 
 [node name="Home" type="GdDigLayer"]
@@ -16,6 +17,10 @@ dig_rects = Array[Rect2i]([Rect2i(1, 1, 18, 12)])
 blocked_terrains = PackedStringArray()
 terrain_shader_textures = PackedStringArray("", "res://example/demo/xiuxian/map/assets/grass_texture.png")
 cursor_texture = ExtResource("1_cursor")
+crop_texture = ExtResource("3_crop")
+crop_stages = 4
+crop_grow_secs = 15.0
+wet_secs = 90.0
 
 [node name="DigSave" type="Node" parent="."]
 script = ExtResource("2DigSave")
