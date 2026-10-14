@@ -76,7 +76,7 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[node name="GoodsCard" type="Panel" unique_id=1977567210]
+[node name="GoodsCard" type="Panel" unique_id=1799920297]
 custom_minimum_size = Vector2(205, 190)
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -87,7 +87,7 @@ metadata/__script_vars = {}
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray("quality", "icon", "title", "price", "price_old", "countdown", "sold_out")
 
-[node name="QualityTag" type="Panel" parent="." unique_id=1525209473]
+[node name="QualityTag" type="Panel" parent="." unique_id=1872019958]
 custom_minimum_size = Vector2(26, 54)
 layout_mode = 0
 offset_left = 8.0
@@ -97,7 +97,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_mv4wh")
 metadata/__anchor = "top_left"
 metadata/__script_vars = {}
 
-[node name="QualityText" type="Label" parent="QualityTag" unique_id=40655747]
+[node name="QualityText" type="Label" parent="QualityTag" unique_id=2082293019]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -106,7 +106,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 metadata/__anchor = "full"
 
-[node name="CountdownLabel" type="Label" parent="." unique_id=407837639]
+[node name="CountdownLabel" type="Label" parent="." unique_id=1757264555]
 visible = false
 layout_mode = 0
 anchor_left = 1.0
@@ -119,7 +119,7 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "top_right"
 metadata/__script_vars = {}
 
-[node name="CardColumn" type="VBoxContainer" parent="." unique_id=389232251]
+[node name="CardColumn" type="VBoxContainer" parent="." unique_id=1892728252]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -131,62 +131,62 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconRow" type="CenterContainer" parent="CardColumn" unique_id=1895512884]
+[node name="IconRow" type="CenterContainer" parent="CardColumn" unique_id=200507539]
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
 
-[node name="GoodsIcon" type="Label" parent="CardColumn/IconRow" unique_id=1313757432]
+[node name="GoodsIcon" type="Label" parent="CardColumn/IconRow" unique_id=1179042043]
 layout_mode = 2
 theme_override_font_sizes/font_size = 54
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="GoodsTitle" type="Label" parent="CardColumn" unique_id=726782283]
+[node name="GoodsTitle" type="Label" parent="CardColumn" unique_id=160073142]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 horizontal_alignment = 1
 metadata/__tpl_text = "title"
 metadata/__tpl_keys = "text"
 
-[node name="@Control@832" type="Control" parent="CardColumn" unique_id=1580743411]
+[node name="@Control@863" type="Control" parent="CardColumn" unique_id=947898248]
 custom_minimum_size = Vector2(0, 4)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="PriceRow" type="CenterContainer" parent="CardColumn" unique_id=1801308818]
+[node name="PriceRow" type="CenterContainer" parent="CardColumn" unique_id=562721346]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="@HBoxContainer@837" type="HBoxContainer" parent="CardColumn/PriceRow" unique_id=1758603916]
+[node name="@HBoxContainer@868" type="HBoxContainer" parent="CardColumn/PriceRow" unique_id=1086193524]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="@Label@833" type="Label" parent="CardColumn/PriceRow/@HBoxContainer@837" unique_id=207360450]
+[node name="@Label@864" type="Label" parent="CardColumn/PriceRow/@HBoxContainer@868" unique_id=2017355396]
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "💎"
 vertical_alignment = 1
 
-[node name="@Control@834" type="Control" parent="CardColumn/PriceRow/@HBoxContainer@837" unique_id=945710576]
+[node name="@Control@865" type="Control" parent="CardColumn/PriceRow/@HBoxContainer@868" unique_id=973459623]
 custom_minimum_size = Vector2(4, 0)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="@Label@835" type="Label" parent="CardColumn/PriceRow/@HBoxContainer@837" unique_id=1427540484]
+[node name="@Label@866" type="Label" parent="CardColumn/PriceRow/@HBoxContainer@868" unique_id=765127561]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
 vertical_alignment = 1
 metadata/__tpl_text = "price"
 metadata/__tpl_keys = "text"
 
-[node name="@Label@836" type="Label" parent="CardColumn/PriceRow/@HBoxContainer@837" unique_id=1526049216]
+[node name="@Label@867" type="Label" parent="CardColumn/PriceRow/@HBoxContainer@868" unique_id=441357330]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
 text = " 灵石"
 vertical_alignment = 1
 
-[node name="PriceOld" type="Label" parent="CardColumn/PriceRow/@HBoxContainer@837" unique_id=1983563902]
+[node name="PriceOld" type="Label" parent="CardColumn/PriceRow/@HBoxContainer@868" unique_id=1225512933]
 visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(0.65882355, 0.59607846, 0.5019608, 1)
@@ -194,16 +194,16 @@ vertical_alignment = 1
 metadata/__tpl_text = "price_old"
 metadata/__tpl_keys = "text"
 
-[node name="@Control@838" type="Control" parent="CardColumn" unique_id=1349942137]
+[node name="@Control@869" type="Control" parent="CardColumn" unique_id=942026871]
 custom_minimum_size = Vector2(0, 6)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="BuyRow" type="CenterContainer" parent="CardColumn" unique_id=512531889]
+[node name="BuyRow" type="CenterContainer" parent="CardColumn" unique_id=211818257]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="BuyBtn" type="Button" parent="CardColumn/BuyRow" unique_id=485095818]
+[node name="BuyBtn" type="Button" parent="CardColumn/BuyRow" unique_id=1931647971]
 custom_minimum_size = Vector2(110, 36)
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_ww8xv")
@@ -213,7 +213,7 @@ theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
 text = "购  买"
 metadata/__signal_pressed = "_on_buy_pressed"
 
-[node name="SoldOutStamp" type="Panel" parent="." unique_id=1356457344]
+[node name="SoldOutStamp" type="Panel" parent="." unique_id=962535513]
 visible = false
 custom_minimum_size = Vector2(110, 52)
 layout_mode = 0
@@ -226,7 +226,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_opuhr")
 metadata/__anchor = "center"
 metadata/__script_vars = {}
 
-[node name="StampText" type="Label" parent="SoldOutStamp" unique_id=461120463]
+[node name="StampText" type="Label" parent="SoldOutStamp" unique_id=325406187]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0

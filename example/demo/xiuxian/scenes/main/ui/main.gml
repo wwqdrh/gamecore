@@ -32,6 +32,12 @@
 		   content_margin="56" close_on_overlay="true">
 	  <Gml src="level/level_panel.gml" />
 	</Modal>
+	<!-- 修仙手册（ui/docsbook/）：左树形菜单目录 + 右富文本正文
+		 （GML TreeMenu + RichText 组件，文档源 docs/*.gdoc） -->
+	<Modal name="DocsModal" ui_id="DocsModal" anchor="full"
+		   content_margin="56" close_on_overlay="true">
+	  <Gml src="docsbook/docsbook.gml" />
+	</Modal>
 	<Modal name="StoreModal" ui_id="StoreModal" anchor="full"
 		   content_margin="56" close_on_overlay="true">
 	  <Gml src="store/store_panel.gml" />

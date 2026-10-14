@@ -754,3 +754,80 @@ bean.watch("attrs", func(v = null, m = null): _on_char_changed())
 做段解析），不是多 key 分组——不能用它一次注册多个平级 key。
 范本：explore/ui/explore.gd（floor/total_floors/status）、
 mainhud/mainhud.gd（level/exp/attrs）。
+
+
+## RichText 富文本组件（rust/src/ui/ui_richtext.rs）
+
+游戏内手册/教程用途：`<RichText>` 包装 RichTextLabel（use_bbcode 自动开启），
+解析自定义 **.gdoc 文档格式**（Markdown 子集 + BBCode 直通）渲染图文混排——
+textarea 类组件无法承载图片与长文滚动。
+
+```html
+<RichText name="DocView" src="res://.../xxx.gdoc"
+          font_size="15" text_color="#3a2f1e" heading_color="#7a4a1e" />
+```
+
+**.gdoc 格式**（UTF-8 文本，src 只记录路径，ready() 才读文件）：
+- `#`/`##`/`###` 标题 → 字号递减加粗标题（heading_color）
+- `**粗**` `*斜*` `` `码` `` 行内样式；`- ` 列表 → bullet+indent
+- `| a | b |` markdown 表格 → `[table=N]`（首行加粗表头，`| --- |` 分隔行跳过）
+- `> ` 引用、`---` 分隔线（[hr]）
+- `[img width=560]res://...[/img]` 单行直通（图片混排）
+- <code>```bbcode ... ```</code> 围栏内 BBCode **原样透传**（[table]/[cell] 等高级用法）
+
+**运行期 API**：`load_doc(src) -> bool`、`set_doc_text(text)`（含转换）、
+`set_bbcode(text)`（跳过转换）、`get_bbcode()`。
+
+**红线**：
+- Godot RichTextLabel **没有 [ul]/[li] 标签**——列表必须转 `• + [indent]`，否则字面量显示。
+- **新增 PNG 必须先跑一次 `godot --headless --editor --quit-after 100` 导入**，
+  否则 [img] 静默不渲染（.import 缺失）。
+- `init()` 阶段对象未构造完，**禁调 base_mut()**（panic）——bbcode/滚动开关放 ready()。
+
+范本：example/demo/xiuxian/scenes/main/ui/docsbook/（修仙手册，左 TreeMenu 右 RichText）。
+
+## TreeMenu 树形菜单组件（rust/src/ui/ui_treemenu.rs）
+
+多层级折叠菜单栏：`<TreeMenu>` + `<MenuNode id text parent>`（占位 meta 契约同 Tree），
+点击行展开/收起子树，逐级缩进（level×indent_px），箭头 ▸/▾，
+选中高亮（select_color），叶子保留箭头空槽对齐文字。
+
+```html
+<TreeMenu name="DocMenu" row_height="34" indent_px="18" font_size="14"
+          select_color="#d4af37">
+  <MenuNode id="basics" text="基础知识" />
+  <MenuNode id="ability" text="能力体系" parent="basics" />
+</TreeMenu>
+```
+
+**信号**：`s_menu_selected(id)`（选中即发，含程序化 select_item）。
+**运行期 API**：`select_item(id, emit)`、`get_selected_id()`、`get_item_count()`、
+`set_node_text(id, text)`、`expand_all()/collapse_all()`、`clear_rows()`。
+行随 tscn 序列化（`__menu_row` meta），ready 从行 meta rebuild（同 Tree 契约）。
+
+## 按 name 直取节点 —— GdUIManager.get_gml_node（免写长路径）
+
+GML 面板脚本取子节点不再拼长路径（`$MainMargin/MainColumn/.../DocMenu`），
+name→节点映射由 rust 解析维护（ui_manager.rs），GDScript 静态直调：
+
+```gdscript
+# 旧写法（长路径，嵌套层级一改就断）
+@onready var _menu: Control = $MainMargin/MainColumn/BodyRow/SideBar/SideMargin/MenuScroll/DocMenu
+
+# 新写法（按 name 直取）
+@onready var _menu: Control = GdUIManager.get_gml_node(self, "DocMenu")
+```
+
+**机制**：
+- 锚点 = GML 树根的 `__gml_root` meta（builder 构建期无条件打、随 tscn 序列化），
+  从 `from` 沿父链向上**就近**定位所属树根——tscn 直开与 `<Gml>` live 装配两路通用。
+- **作用域按 gml 文件隔离**：嵌套 `<Gml src>` 子文件根也带 `__gml_root`，
+  外层树查不到内层文件的节点（同名互不串扰）；从内层任意节点查则命中自己的树。
+- 注册表只存 InstanceId（`OnceLock<Mutex<HashMap<根id, HashMap<name, id>>>>`），
+  首次查找全树 DFS 建表（`@Class@id` 自动名跳过、嵌套子树不入表、首见优先同
+  find_child 语义），此后 O(1) 命中；条目悬垂/未命中自动重建，树根释放自动清理。
+- 查找不要求已挂树（@onready 时机即可用）；未找到返回 null。
+
+**适用**：面板脚本 `@onready` 取节点、测试探针按 name 断言。
+跨**文件**的组件调用仍走 `GdUIManager.find_ui("TaskDrawer")`（ui_id 注册表）。
+范本：example/demo/xiuxian/scenes/main/ui/docsbook/docsbook.gd。

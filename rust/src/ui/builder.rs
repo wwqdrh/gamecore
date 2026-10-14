@@ -37,6 +37,8 @@ use super::ui_form::{
 use super::ui_nav_menu::GdUINavMenu;
 use super::ui_hotbar::GdUIHotbar;
 use super::ui_tree::GdUITree;
+use super::ui_treemenu::GdUITreeMenu;
+use super::ui_richtext::GdUIRichText;
 use super::ui_theme::{ThemeVars, get_theme_color, resolve_theme_vars};
 
 /// UI 构建器：将 AST 转换为 Godot Control 节点树
@@ -364,6 +366,26 @@ impl UiBuilder {
                 }
             }
 
+            // MenuNode：树形菜单占位标记 + 属性存 meta（GdUITreeMenu.initial() 解析）
+            if child_node.tag == "MenuNode" {
+                child_control.set_meta(&StringName::from("__menu_node"), &true.to_variant());
+                for (k, v) in &child_node.attributes {
+                    let meta_key = match k.as_str() {
+                        "text" => "__menu_text",
+                        "id" => "__menu_id",
+                        "expanded" => "__menu_expanded",
+                        _ => continue,
+                    };
+                    let variant = match k.as_str() {
+                        "expanded" => {
+                            (v.as_str() == "true" || v.as_str() == "1").to_variant()
+                        }
+                        _ => GString::from(v.as_str()).to_variant(),
+                    };
+                    child_control.set_meta(&StringName::from(meta_key), &variant);
+                }
+            }
+
             // PopupPanel 的子节点添加到内容区域
             if node.tag == "PopupPanel" || node.tag == "Drawer" || node.tag == "Modal" || node.tag == "Tooltip" {
                 control.call(
@@ -420,6 +442,10 @@ impl UiBuilder {
             }
             // 树形组件：子节点（TreeNode 占位）构建完成后解析建行
             "Tree" => {
+                control.call(&StringName::from("initial"), &[]);
+            }
+            // 树形菜单：子节点（MenuNode 占位）构建完成后解析建行
+            "TreeMenu" => {
                 control.call(&StringName::from("initial"), &[]);
             }
             _ => {}
@@ -745,6 +771,10 @@ impl UiBuilder {
             "NavMenu" => GdUINavMenu::new_alloc().upcast(),
             // 树形结构（地图路径 / 技能树 / 分支图，四向布局 + 连线）
             "Tree" => GdUITree::new_alloc().upcast(),
+            // 树形菜单（手册目录/任务分类，多级折叠 + 自动缩进）
+            "TreeMenu" => GdUITreeMenu::new_alloc().upcast(),
+            // 富文本（游戏手册/教程，.gdoc 文档解析 + BBCode + 图片）
+            "RichText" => GdUIRichText::new_alloc().upcast(),
             // 快捷装备栏（数字键绑定 + 选中高亮框）
             "Hotbar" => GdUIHotbar::new_alloc().upcast(),
             // 导航菜单项（递归嵌套，使用 Control 占位）
@@ -1461,6 +1491,8 @@ fn is_transparent_tag(tag: &str) -> bool {
             | "AspectRatioContainer"
             // 树形组件根不拦鼠标（节点行按钮各自接收）
             | "Tree"
+            // 树形菜单同理（菜单行各自接收）
+            | "TreeMenu"
     )
 }
 
@@ -1543,6 +1575,67 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
                     let prop = if key == "node_text" { "text_color" } else { key };
                     control.set(&StringName::from(prop), &c.to_variant());
                 }
+                return control;
+            }
+            _ => {}
+        }
+    }
+
+    // TreeMenu：树形菜单属性（缩进/行尺寸/字号 + 三态配色）
+    if tag == "TreeMenu" {
+        match key {
+            "indent_width" | "row_height" | "row_gap" => {
+                if let Ok(v) = value.parse::<f32>() {
+                    control.set(&StringName::from(key), &v.to_variant());
+                }
+                return control;
+            }
+            "font_size" => {
+                if let Ok(v) = value.parse::<i32>() {
+                    control.set(&StringName::from(key), &v.to_variant());
+                }
+                return control;
+            }
+            "item_bg" | "item_text" | "item_hover" | "selected_bg" | "selected_text" => {
+                if let Some(c) = parse_color(value) {
+                    // item_hover 是 item_hover_bg 的 gml 简写
+                    let prop = if key == "item_hover" { "item_hover_bg" } else { key };
+                    control.set(&StringName::from(prop), &c.to_variant());
+                }
+                return control;
+            }
+            _ => {}
+        }
+    }
+
+    // RichText：富文本属性（文档源/字号/配色/引擎直通开关）
+    if tag == "RichText" {
+        match key {
+            "src" => {
+                control.set(&StringName::from("doc_src"), &GString::from(value).to_variant());
+                return control;
+            }
+            "font_size" => {
+                if let Ok(v) = value.parse::<i32>() {
+                    control.set(&StringName::from("base_font_size"), &v.to_variant());
+                }
+                return control;
+            }
+            "text_color" | "default_color" => {
+                if let Some(c) = parse_color(value) {
+                    control.set(&StringName::from("text_color"), &c.to_variant());
+                }
+                return control;
+            }
+            "heading_color" => {
+                if let Some(c) = parse_color(value) {
+                    control.set(&StringName::from("heading_color"), &c.to_variant());
+                }
+                return control;
+            }
+            "fit_content" | "scroll_active" => {
+                let v = value == "true" || value == "1";
+                control.set(&StringName::from(key), &v.to_variant());
                 return control;
             }
             _ => {}

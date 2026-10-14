@@ -84,5 +84,15 @@
 	  </VBoxContainer>
 	  <Label class="red-dot" text="●" anchor="top_wide" margin="0 6 10 0" align="right" />
 	</Panel>
+	<!-- 教程（ui/docsbook/）：修仙手册（左 TreeMenu 目录 + 右 RichText 富文本），
+		 同储物袋，跨组件触发 DocsModal.open() -->
+	<Panel name="MenuDocs" class="menu-btn" custom_minimum_size="84,84"
+	      mouse_default_cursor_shape="pointing_hand" @pressed="show:DocsModal">
+	  <VBoxContainer anchor="full" margin="8 10 8 8" separation="2">
+		<Label class="menu-btn-icon" text="📚" size_flags_vertical="expand_fill"
+		       align="center" valign="center" />
+		<Label class="menu-btn-text" text="教程" align="center" />
+	  </VBoxContainer>
+	</Panel>
   </VBoxContainer>
 </ui>

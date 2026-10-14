@@ -68,6 +68,90 @@ pub fn has_ui(id: &str) -> bool {
 }
 
 // ---------------------------------------------------------------------------
+// GML name → 节点 注册表（面板脚本免写长路径，按 name 直取）
+// ---------------------------------------------------------------------------
+
+/// 全局 name 映射表：gml 树根 InstanceId -> (节点 name -> InstanceId)
+/// （键按树根分作用域：子 <Gml> 文件各自成表，同名互不串扰；
+/// 只存 InstanceId 不持有 Gd 引用，随树释放不泄漏，命中时校验有效性）
+static GML_NAME_REGISTRY: OnceLock<Mutex<HashMap<i64, HashMap<String, InstanceId>>>> =
+	OnceLock::new();
+
+fn lock_name_map()
+-> std::sync::MutexGuard<'static, HashMap<i64, HashMap<String, InstanceId>>> {
+	GML_NAME_REGISTRY
+		.get_or_init(|| Mutex::new(HashMap::new()))
+		.lock()
+		.expect("[UIManager] name 注册表锁中毒")
+}
+
+/// 就近定位 from 所属的 gml 树根（子 <Gml> 文件根也带 __gml_root，
+/// 就近命中保证各文件独立作用域）
+fn nearest_gml_root(from: &Gd<Node>) -> Option<Gd<Node>> {
+	let mut cur = Some(from.clone());
+	while let Some(n) = cur {
+		if n.has_meta(&StringName::from("__gml_root")) {
+			return Some(n);
+		}
+		cur = n.get_parent();
+	}
+	None
+}
+
+/// 全树 DFS 收集 name -> InstanceId（首见优先，同 find_child 语义；
+/// 嵌套子 gml 树不入外层表；@Class@id 自动名跳过）
+fn collect_name_ids(node: &Gd<Node>, is_root: bool, out: &mut HashMap<String, InstanceId>) {
+	if !is_root && node.has_meta(&StringName::from("__gml_root")) {
+		return;
+	}
+	let node_name = node.get_name().to_string();
+	if !node_name.is_empty() && !node_name.contains('@') && !out.contains_key(&node_name) {
+		out.insert(node_name, node.instance_id());
+	}
+	for i in 0..node.get_child_count() {
+		if let Some(child) = node.get_child(i) {
+			collect_name_ids(&child, false, out);
+		}
+	}
+}
+
+/// 在 from 所属 gml 树内按 name 查找节点（内部实现）。
+/// 映射由 rust 解析维护：首查全树建表，此后 O(1) 命中；
+/// 悬垂/未命中/树根已释放时自动重建或清理。
+pub fn get_gml_node(from: &Gd<Node>, name: &str) -> Option<Gd<Node>> {
+	let root = nearest_gml_root(from)?;
+	let root_id = root.instance_id().to_i64();
+
+	// 缓存命中（存活校验）
+	{
+		let reg = lock_name_map();
+		if let Some(inner) = reg.get(&root_id) {
+			if let Some(&sid) = inner.get(name) {
+				if let Ok(node) = Gd::<Node>::try_from_instance_id(sid) {
+					return Some(node);
+				}
+			}
+			// 未命中或条目悬垂 → 落到重建
+		}
+	}
+
+	// 重建：树根已释放 → 清理注册项；否则全树重扫
+	match Gd::<Node>::try_from_instance_id(root.instance_id()) {
+		Ok(_) => {}
+		Err(_) => {
+			lock_name_map().remove(&root_id);
+			return None;
+		}
+	}
+	let mut inner: HashMap<String, InstanceId> = HashMap::new();
+	collect_name_ids(&root, true, &mut inner);
+	let hit = inner.get(name).copied();
+	lock_name_map().insert(root_id, inner);
+	let sid = hit?;
+	Gd::<Node>::try_from_instance_id(sid).ok()
+}
+
+// ---------------------------------------------------------------------------
 // GD 侧 API（静态方法，GDScript 直接 GdUIManager.find_ui("TaskDrawer")）
 // ---------------------------------------------------------------------------
 
@@ -116,5 +200,17 @@ impl GdUIManager {
 		map.keys()
 			.map(|k| GString::from(k.as_str()))
 			.collect::<PackedStringArray>()
+	}
+
+	/// 在 GML 树内按 name 查找节点（面板脚本免写长路径）。
+	/// from：目标树内任意节点（通常传 self）；name→节点映射由 rust 解析维护，
+	/// 首次查找建表，之后 O(1) 命中；子 <Gml> 文件各自成作用域，同名互不串扰。
+	/// 未找到返回 null。用法：`var menu = GdUIManager.get_gml_node(self, "DocMenu")`
+	#[func]
+	pub fn get_gml_node(from: Gd<Object>, name: GString) -> Option<Gd<Object>> {
+		let Ok(node) = from.try_cast::<Node>() else {
+			return None;
+		};
+		get_gml_node(&node, &name.to_string()).map(|n| n.upcast())
 	}
 }
