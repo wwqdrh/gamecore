@@ -16,7 +16,7 @@
 	}
   </style>
   <Panel name="BagPanel" class="window-bg" anchor="full" margin="2%"
-	     mouse_filter="stop">
+		 mouse_filter="stop">
 	<MarginContainer name="MainMargin" anchor="full" margin="14">
 	  <VBoxContainer name="MainColumn">
 		<Gml src="bag_topbar.gml" />

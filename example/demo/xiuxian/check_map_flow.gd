@@ -96,13 +96,19 @@ func _run() -> void:
 		"南墙大门 (9..10,10) 应可通行")
 	check(cur_map.is_walkable(Vector2i(10, 8)), "庭院 (10,8) 应可通行")
 
-	# 3. 传送点：萧宅 1 个（南门→青石镇），格子已吸附可行走
+	# 3. 传送点：南门→青石镇 + TeleportHome→农田（2 个），格子已吸附可行走
 	var markers: Array = mgr.get_markers()
-	check(markers.size() == 1, "萧宅应有 1 个传送点（南门→青石镇），实际 %d" % markers.size())
-	if markers.is_empty():
+	check(markers.size() == 2, "萧宅应有 2 个传送点（南门→青石镇/农田），实际 %d" % markers.size())
+	# 按目标查找校验南门传送点（不依赖节点顺序）
+	var marker: Node2D = null
+	for m in markers:
+		if str(m.target_alias) == "xiuxian_xiaozhen":
+			marker = m
+			break
+	check(marker != null, "应有指向 xiuxian_xiaozhen 的南门传送点")
+	if marker == null:
 		_finish()
 		return
-	var marker: Node2D = markers[0]
 	check(marker.get_class() == "GdMapMarker", "传送点应为 GdMapMarker")
 	check(str(marker.target_alias) == "xiuxian_xiaozhen", "萧宅传送点应指向 xiuxian_xiaozhen")
 	var m_cell: Vector2i = marker.get_cell()

@@ -616,6 +616,50 @@ func _ready() -> void:
    - bottom_wide 贴底文字 → 负 top margin（如 `margin="14 -24 14 2"`，
      注意 Label 行高比 font_size 大，留余量）
 
+## Tree 树形组件（rust/src/ui/ui_tree.rs）
+
+通用树形结构：四向生长（`down`/`up`/`left`/`right`）、父子肘形连线、展开收起、
+选中高亮、锁定置灰、任意节点状态。适用：技能点升级树、地图路径、剧情分支图。
+
+```xml
+<Tree name="GongfaTree" direction="up" node_width="150" node_height="46"
+      level_gap="42" sibling_gap="20" font_size="14"
+      node_bg="#f6f0de" node_border="#b7a477" node_text="#4a3f2a"
+      bg_done="#d9ecd2" border_done="#4f7d5c" text_done="#2e5638"
+      bg_locked="#e6e0d0" border_locked="#b0a88f" text_locked="#9a927c">
+  <TreeNode id="root" text="道基" desc="根节点（desc 自动接悬停 tips）">
+    <TreeNode id="a" text="分支甲">
+      <TreeNode id="a1" text="叶子" locked="true" tone="normal" />
+    </TreeNode>
+  </TreeNode>
+</Tree>
+```
+
+- `TreeNode` 占位符契约同 NavItem：构建期由 builder 存 meta，`GdUITree.initial()`
+  解析建行（行按钮随 tscn 序列化，运行期从行 meta 重建模型）
+- 属性：`id`（缺省自动 `n0/n1...`，重复自动加后缀）、`text`、`desc`（悬停提示）、
+  `locked`、`expanded`（缺省展开）、`tone`（`normal`/`active`/`done`/`locked` 视觉基调）
+
+### 运行期 API（GDScript）
+
+```gdscript
+tree.dump_state()                      # -> JSON 文本（direction/selected/nodes{id:{expanded,locked,tone,state}}）
+tree.restore_state(json)               # 按 id 恢复状态到现有结构；可选携带 direction 切换布局
+tree.build_from_json(json)             # 动态建树（替换结构），{"direction","nodes":[{id,text,children:[...]}]}
+tree.select_node(id, emit)             # 选中；emit=true 发 s_node_selected
+tree.toggle_expand(id) / expand_all() / collapse_all()
+tree.set_node_locked(id, b) / is_node_locked(id)
+tree.set_node_state(id, dict)          # 任意脚本状态；dict 含 "tone" 键同步视觉
+tree.get_node_children(id) / get_node_parent(id) / get_node_text(id) / set_node_text(id, t)
+tree.get_node_ids() / get_selected_id() / relayout()
+```
+
+信号：`s_node_clicked(id)`（锁定节点照常发，由脚本层校验）、
+`s_node_selected(id)`、`s_node_expanded(id, expanded)`。
+
+实战范本：`example/demo/xiuxian/scenes/main/ui/level/level_panel.gml/.gd`
+（修仙功法树——点击领悟、扣技能点、解锁子层、dump/restore 持久化到 Bean）。
+
 ## 表单组件（ui_form.rs）：设置面板即插即用
 
 `rust/src/ui/ui_form.rs` 提供 9 个表单 tag，分两类。统一信号：`s_toggled(checked: bool)`

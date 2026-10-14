@@ -1,0 +1,25 @@
+{
+  "jitter_minutes": 6,
+  "teleport_far": true,
+  "teleport_cells": 12,
+  "ambient_interval": [8.0, 18.0],
+  "greet": {
+	"lines": ["这位客人，抓药还是问诊？", "当季的灵草刚到，成色正好。", "药铺规矩，先诊后药。"],
+	"radius": 140.0,
+	"cooldown": 25.0,
+	"line_secs": 3.0
+  },
+  "entries": [
+    { "from": 0.0,  "to": 7.5,  "cell": [6, 10],  "behavior": "idle",
+      "label": "住处歇息",
+      "lines": ["呼……呼……"] },
+    { "from": 7.5,  "to": 18.0, "cell": [5, 8],   "behavior": "idle",
+      "label": "药铺坐堂",
+      "lines": ["晾药要趁日头好。", "这当归成色不错。", "抓药要细，人命关天。"] },
+    { "from": 18.0, "to": 20.0, "cell": [5, 8],   "behavior": "wander", "radius": 48,
+      "label": "铺前乘凉" },
+    { "from": 20.0, "to": 24.0, "cell": [6, 10],  "behavior": "idle",
+      "label": "住处歇息",
+      "lines": ["呼……呼……"] }
+  ]
+}

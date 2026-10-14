@@ -586,6 +586,11 @@ impl GdRoleMover {
     /// 网格模式驱动：每次输入走一格（主导轴，禁止斜向），格心对齐
     /// 坐标约定与 GdQuickMap 一致：格 (cx, cy) 中心在 ((cx+0.5)*cell, (cy+0.5)*cell)
     fn tick_grid(&mut self, delta: f64) {
+        // 剧情锁（对话等）：grid 分支不走速度管线，必须显式冻结，
+        // 否则 NPC 对话中仍沿 grid_path 走位
+        if self.paused {
+            return;
+        }
         let cs = self.grid_cell_size;
         if cs <= 0.0 {
             return;

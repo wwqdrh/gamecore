@@ -58,3 +58,36 @@ func _on_damage_toggled(checked: bool) -> void:
 func _on_drop_toggled(checked: bool) -> void:
 	print("[SettingsPanel] 掉落提示 -> ", checked)
 	_state().set_state(KEY_SHOW_DROP, checked)
+
+
+# ---------- 底部动作回调（settings_panel.gml 的 @pressed） ----------
+## 返回标题：GDCORE.get_scene_root() 取常驻场景根 GdSceneRoot，5 参调用
+## change_scene(alias, data, init_state, with_anim, force)。
+## **不要沿父链找**——组合根（main.gml.tscn）是 Control 直挂 SceneLayer，
+## 沿链会命中 GdSceneRoot 的 5 参原生版，2 参调用 = error 1337（转场中断假死）。
+## 先发关闭请求（Modal 整体关），再切场景；别名 xiuxian_title 注册于 game_config.json。
+func _on_back_title_pressed() -> void:
+	print("[SettingsPanel] 返回标题")
+	s_close_requested.emit()
+	var scene: Node = _scene_root()
+	if scene == null:
+		push_warning("SettingsPanel: GDCORE.get_scene_root() 为空，场景根未挂载")
+		return
+	var ok: bool = scene.call("change_scene", "xiuxian_title", {}, "", true, false)
+	if not ok:
+		push_warning("SettingsPanel: change_scene(xiuxian_title) 失败（场景未注册或转场中？）")
+
+
+## 退出游戏：直接结束主循环（存档由 GDCORE 退出钩子自动落盘）
+func _on_quit_pressed() -> void:
+	print("[SettingsPanel] 退出游戏")
+	get_tree().quit()
+
+
+## 场景根：GDCORE 全局单例的 get_scene_root()（GdSceneRoot 注册名 "default"，
+## manager_id 改名时 rust 侧自动扫全表兜底）
+func _scene_root() -> Node:
+	if not Engine.has_singleton("GDCORE"):
+		return null
+	var root: Variant = Engine.get_singleton("GDCORE").call("get_scene_root")
+	return root if root is Node else null

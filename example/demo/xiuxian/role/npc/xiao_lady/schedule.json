@@ -1,0 +1,33 @@
+{
+  "jitter_minutes": 8,
+  "teleport_far": true,
+  "teleport_cells": 12,
+  "ambient_interval": [8.0, 18.0],
+  "greet": {
+	"lines": ["贵客光临，有失远迎。", "后院清净，还请勿要喧哗。"],
+	"radius": 140.0,
+	"cooldown": 25.0,
+	"line_secs": 3.0
+  },
+  "entries": [
+    { "from": 0.0,  "to": 7.0,  "cell": [12, 9],  "behavior": "idle",
+      "label": "闺房歇息",
+      "lines": ["呼……呼……"] },
+    { "from": 7.0,  "to": 11.0, "cell": [11, 8],  "behavior": "idle",
+      "label": "后院礼佛",
+      "lines": ["(捻珠)……", "愿亡者安息。"] },
+    { "from": 11.0, "to": 14.0, "cell": [12, 7],  "behavior": "idle",
+      "label": "午膳" },
+    { "from": 14.0, "to": 17.0, "cell": [12, 7],  "behavior": "idle",
+      "label": "女红",
+      "lines": ["这针脚再密些。", "(剪线头)……"] },
+    { "from": 17.0, "to": 18.5, "cell": [11, 8],  "behavior": "wander", "radius": 48,
+      "label": "后院散步" },
+    { "from": 18.5, "to": 21.0, "cell": [12, 7],  "behavior": "idle",
+      "label": "灯下闲坐",
+      "lines": ["小翠，添盏茶来。"] },
+    { "from": 21.0, "to": 24.0, "cell": [12, 9],  "behavior": "idle",
+      "label": "闺房歇息",
+      "lines": ["呼……呼……"] }
+  ]
+}

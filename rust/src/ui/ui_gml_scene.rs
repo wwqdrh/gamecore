@@ -19,7 +19,7 @@ use godot::obj::WithBaseField;
 
 use super::parser::UiParser;
 use super::builder::{UiBuilder, parse_size_value};
-use super::gdui_builder::connect_signals_recursive;
+use super::gdui_builder::{connect_signals_recursive, wire_gml_tips};
 use super::ui_theme::ThemeVars;
 use crate::state::bean::{get_bean_by_id, get_all_bean_instances};
 
@@ -116,6 +116,8 @@ impl GdGmlScene {
     fn connect_signals(&mut self, target: Gd<Object>) {
         if let Some(ref mut root) = self.content_root {
             connect_signals_recursive(root, &target);
+            // 悬停 tips：带 __tips meta 的节点接线到自动创建的 Tooltip 宿主
+            wire_gml_tips(root);
         }
     }
 

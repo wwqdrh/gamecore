@@ -168,13 +168,42 @@ impl GDCore {
         self.global_nodes.get_or_nil(&key)
     }
 
+    /// 获取场景根管理器节点（GdSceneRoot——场景切换/转场/相机挂载的统一入口，
+    /// ready 时经 register_to_gdcore 注册进全局节点表）。
+    /// 先按默认 manager_id "default" 快取（类名校验防占位），未命中再扫全表
+    /// 取第一个 GdSceneRoot；均未找到返回 nil（场景根未挂载/尚未 ready）。
+    ///
+    /// GDScript 用法（GdSceneRoot 原生 change_scene 为 5 参无默认值）：
+    ///   GDCORE.get_scene_root().change_scene(alias, data, "", true, false)
+    /// 各场景 GdScene 根的 2 参包装仅适合场景内部沿父链查找，组合根
+    /// （Control 直挂 SceneLayer）下没有 GdScene，沿链会误中 5 参原生版。
+    #[func]
+    fn get_scene_root(&self) -> Variant {
+        // 快路径：默认 manager_id
+        let default_key = GString::from("default").to_variant();
+        if let Some(obj) = self.global_nodes.get(&default_key) {
+            if is_scene_root(&obj) {
+                return obj;
+            }
+        }
+        // 兜底：扫全表（manager_id 被改为非默认值时）
+        let values = self.global_nodes.values_array();
+        for i in 0..values.len() {
+            let v = values.at(i);
+            if is_scene_root(&v) {
+                return v;
+            }
+        }
+        godot_warn!("GDCORE: 场景根 GdSceneRoot 未注册（未挂载或尚未 ready）");
+        Variant::nil()
+    }
+
     /// 移除全局节点
     #[func]
     fn remove_global_node(&mut self, alias: GString) {
         let key = alias.to_variant();
         self.global_nodes.erase(&key);
     }
-
     /// 当前存档的累计游玩时长（真实秒）= 历史落盘值 + 本次会话已进行时长。
     /// 跨开关应用累积：每次落盘（flush/切档/退出/每 30 秒自动）都会把会话
     /// 时长并入存档文件的 playtime;total，重新打开接着累计。
@@ -311,6 +340,14 @@ fn refresh_instance_lock() {
 fn gdcore_singleton() -> Option<Gd<GDCore>> {
     let singleton = Engine::singleton().get_singleton(&StringName::from("GDCORE"))?;
     singleton.try_cast::<GDCore>().ok()
+}
+
+/// Variant 是否为 GdSceneRoot 节点（get_scene_root 的类名校验）
+fn is_scene_root(v: &Variant) -> bool {
+    match v.try_to::<Gd<Object>>() {
+        Ok(obj) => obj.is_class("GdSceneRoot"),
+        Err(_) => false,
+    }
 }
 
 pub fn register_gdcore_singleton() {

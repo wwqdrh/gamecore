@@ -34,16 +34,18 @@
 		<Label class="title-text" text="储 物 袋" anchor="full" align="center" valign="center" />
 	  </Panel>
 	  <Control size_flags_horizontal="expand_fill" />
-	  <!-- 灵石货币徽章 -->
-	  <Panel class="currency-box" custom_minimum_size="150,36">
+	  <!-- 灵石货币徽章（悬停显示 tips 说明） -->
+	  <Panel class="currency-box" custom_minimum_size="150,36"
+			 tips_title="灵石" tips="修真界通用的硬通货（💎），可在坊市购买丹药、法器与炼器材料。">
 		<HBoxContainer anchor="full" margin="10 4 10 4" separation="8">
 		  <Label text="💎" valign="center" font_size="15" />
 		  <Label class="currency-num" text="12,800" valign="center" />
 		</HBoxContainer>
 	  </Panel>
 	  <Control custom_minimum_size="8,0" />
-	  <!-- 背包容量徽章 -->
-	  <Panel class="currency-box" custom_minimum_size="120,36">
+	  <!-- 背包容量徽章（悬停显示 tips 说明） -->
+	  <Panel class="currency-box" custom_minimum_size="120,36"
+			 tips_title="储物袋容量" tips="当前已用格数 / 储物袋总格数。装满后将无法拾取或购买新物品，可先出售或使用材料腾出空间。">
 		<HBoxContainer anchor="full" margin="10 4 10 4" separation="8">
 		  <Label text="👝" valign="center" font_size="15" />
 		  <Label name="CapacityText" class="currency-num" text="86/120" valign="center" />
@@ -51,7 +53,7 @@
 	  </Panel>
 	  <Control custom_minimum_size="8,0" />
 	  <Button name="CloseBtn" class="close-btn" text="✕" custom_minimum_size="40,40"
-	          @pressed="_on_close_pressed" />
+			  @pressed="_on_close_pressed" />
 	</HBoxContainer>
   </Panel>
 </ui>

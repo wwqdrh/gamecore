@@ -1,0 +1,40 @@
+{
+  "jitter_minutes": 10,
+  "teleport_far": true,
+  "teleport_cells": 12,
+  "ambient_interval": [5.0, 12.0],
+  "greet": {
+	"lines": ["客人安好，老爷在书房呢。", "小心脚下，奴家刚扫过地。"],
+	"radius": 140.0,
+	"cooldown": 25.0,
+	"line_secs": 3.0
+  },
+  "entries": [
+    { "from": 0.0,  "to": 6.5,  "cell": [6, 9],   "behavior": "idle",
+      "label": "下房歇息",
+      "lines": ["呼……呼……"] },
+    { "from": 6.5,  "to": 12.0, "cell": [6, 7],   "behavior": "wander", "radius": 64,
+      "label": "洒扫后院",
+      "lines": ["扫地啦——", "这落叶扫也扫不完。"] },
+    { "from": 12.0, "to": 14.0, "cell": [12, 7],  "behavior": "idle",
+      "label": "伺候午膳",
+      "lines": ["夫人，膳好了。"] },
+    { "from": 14.0, "to": 18.0, "cell": [6, 7],   "behavior": "wander", "radius": 64,
+      "label": "浆洗缝补",
+      "lines": ["哼个小曲儿……", "这衣裳该浆了。"] },
+    { "from": 18.0, "to": 21.0, "cell": [12, 7],  "behavior": "idle",
+      "label": "晚间伺候",
+      "lines": ["夫人，灯我点好了。"] },
+    { "from": 21.0, "to": 24.0, "cell": [6, 9],   "behavior": "idle",
+      "label": "下房歇息",
+      "lines": ["呼……呼……"] }
+  ],
+  "chat": {
+    "partner": "萧夫人",
+    "my_lines": ["夫人，午膳备好了。", "今晚想吃点什么？"],
+    "partner_lines": ["先放着吧。", "随便弄些清淡的。"],
+    "chance": 0.5,
+    "cooldown": 100.0,
+    "line_secs": 2.5
+  }
+}

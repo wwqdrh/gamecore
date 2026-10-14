@@ -137,24 +137,29 @@ func _run() -> void:
 		check(str(trigger.timeline_path).ends_with(expect_timeline[str(npc.role_name)]),
 			"NPC %s 的 timeline 应为 %s，实际 %s"
 				% [npc.display_name, expect_timeline[str(npc.role_name)], trigger.timeline_path])
-		# 3c. AI 行为：Brain 已装配且行为类型正确
-		check(npc.brain != null, "NPC %s 应挂 GdNpcBrain" % npc.display_name)
-		if npc.brain != null:
+		# 3c. AI 行为：日程系统启用（schedule != null，Brain 由 GdNpcSchedule 托管）
+		# 或静态 Brain 装配（旧契约 ai_behavior）
+		check(npc.brain != null or npc.schedule != null,
+			"NPC %s 应挂 GdNpcBrain 或启用日程系统" % npc.display_name)
+		if npc.brain != null and npc.schedule == null:
 			check(int(npc.brain.behavior) == int(expect_behavior[str(npc.role_name)]),
 				"NPC %s 的 AI 行为应为 %d，实际 %d"
 					% [npc.display_name, expect_behavior[str(npc.role_name)], npc.brain.behavior])
+		if npc.schedule != null:
+			check(str(npc.schedule.npc_id) == str(npc.role_name),
+				"NPC %s 的日程 npc_id 应为角色名" % npc.display_name)
 		var speaker: Node = npc.get_node_or_null("Speaker")
 		check(speaker != null and str(speaker.role_name) == str(npc.role_name),
 			"NPC %s 的 Speaker 角色名应一致" % npc.display_name)
 	print("[Npc] setup: npcs=%d wired" % npcs.size())
 
-	# 2b. AI 网格游走合法性：跑一段时间，游走/巡逻中的 NPC 始终站在可行走格
-	# （GdNpcBrain 网格适配：经 find_path BFS 逐格走，不穿水域/山地）
+	# 2b. AI 网格游走合法性：跑一段时间，日程/游走中的 NPC 始终站在可行走格
+	# （日程接管后全部 3 个 NPC 都经 GdNpcSchedule→Brain 网格移动，不穿水域/山地）
 	var mover_npcs: Array = []
 	for npc in npcs:
-		if npc.brain != null and int(npc.brain.behavior) > 0:
+		if npc.schedule != null or (npc.brain != null and int(npc.brain.behavior) > 0):
 			mover_npcs.append(npc)
-	check(mover_npcs.size() == 1, "游走 NPC 应共 1 个（小翠），实际 %d" % mover_npcs.size())
+	check(mover_npcs.size() == 3, "日程驱动 NPC 应共 3 个，实际 %d" % mover_npcs.size())
 	var bad_cell := false
 	for i in 120:
 		await process_frame
@@ -164,7 +169,17 @@ func _run() -> void:
 				bad_cell = true
 	check(not bad_cell, "游走/巡逻期间 NPC 不应踏入不可行走格（网格寻路适配）")
 	for npc in mover_npcs:
-		print("[Npc] ai: %s state=%s" % [npc.display_name, npc.brain.get_ai_state()])
+		if npc.brain != null:
+			print("[Npc] ai: %s state=%s" % [npc.display_name, npc.brain.get_ai_state()])
+
+	# 2c. 冻结日程：后续对话/触发段需要 NPC 静止在位（日程覆盖见 check_npc_life.gd）
+	for npc in mover_npcs:
+		if npc.schedule != null:
+			npc.schedule.enable = false
+		if npc.brain != null:
+			npc.brain.enable = false
+	for i in 5:
+		await process_frame
 
 	# 4. 玩家分组 + Speaker
 	var player: Node = index.get_node_or_null("Player")

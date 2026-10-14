@@ -31,6 +31,10 @@ var spirit_stones: int = 20
 ## 金币（市井货币：镇上消费/任务奖励；与修真界灵石区分）
 var coins: int = 0
 var attrs: Dictionary = DEFAULT_ATTRS.duplicate(true)
+## 可用技能点（每升 1 级 +1、突破 +2；功法树节点领悟消耗）
+var skill_points: int = 0
+## 功法树状态快照（GdUITree.dump_state 的 JSON 文本；空串=尚未分配过）
+var skill_tree: String = ""
 
 
 ## 注册/获取单例 Bean（GdBean.bean 幂等：重复调用返回同一实例）
@@ -155,6 +159,8 @@ func try_breakthrough() -> bool:
 	update("hp", nhp, {}, false)
 	update("max_mp", nmp, {}, false)
 	update("mp", nmp, {}, false)
+	# 破壁成功奖励 2 技能点
+	update("skill_points", skill_points + 2, {}, false)
 	return true
 
 
@@ -188,6 +194,8 @@ func add_exp(v: int) -> int:
 		update("hp", nhp, {}, false)
 		update("max_mp", nmp, {}, false)
 		update("mp", nmp, {}, false)
+		# 每升 1 级 +1 技能点（功法树领悟消耗）
+		update("skill_points", skill_points + gained, {}, false)
 	update("exp", e, {}, false)
 	return gained
 
@@ -216,6 +224,19 @@ func set_attr(key: String, v: int) -> void:
 	update("attrs", a, {}, false)
 
 
+## 消耗技能点；不足时失败返回 false（不产生负数）
+func spend_skill_point(v: int = 1) -> bool:
+	if skill_points < v:
+		return false
+	update("skill_points", skill_points - v, {}, false)
+	return true
+
+
+## 保存功法树状态快照（GdUITree.dump_state 的 JSON 文本）
+func save_skill_tree(json: String) -> void:
+	update("skill_tree", json, {}, false)
+
+
 ## 还原演示基线（养成数值还原默认值；跨运行确定性测试用）
 func reset_demo() -> void:
 	update("level", 1, {}, true)
@@ -227,3 +248,5 @@ func reset_demo() -> void:
 	update("spirit_stones", 20, {}, true)
 	update("coins", 0, {}, true)
 	update("attrs", DEFAULT_ATTRS.duplicate(true), {}, true)
+	update("skill_points", 0, {}, true)
+	update("skill_tree", "", {}, true)

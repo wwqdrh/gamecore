@@ -48,30 +48,30 @@
 		<CenterContainer anchor="full" margin="0 40 0 10">
 		  <Panel class="icon-box" custom_minimum_size="120,120">
 			<Label name="DetailIcon" text="🏺" anchor="full" align="center"
-			       valign="center" font_size="64" />
+				   valign="center" font_size="64" />
 		  </Panel>
 		</CenterContainer>
 		<!-- 装饰印章：右下 -->
 		<Label name="SealText" class="seal-text" text="闲"
-		       anchor="bottom_right" margin="0 0 16 10" />
+			   anchor="bottom_right" margin="0 0 16 10" />
 	  </Control>
 	  <Label name="DetailName" class="detail-name" text="聚气丹" align="center" />
 	  <CenterContainer>
 		<Panel class="quality-badge" custom_minimum_size="64,26">
 		  <Label name="QualityText" class="quality-text" text="上品"
-		         anchor="full" align="center" valign="center" />
+				 anchor="full" align="center" valign="center" />
 		</Panel>
 	  </CenterContainer>
 	  <Label name="DetailDesc" class="detail-desc"
-	         text="服用后可快速聚集天地灵气，提升修为。是修仙者常用的助修丹药。"
-	         align="center" autowrap_mode="3" size_flags_vertical="expand_fill" />
+			 text="服用后可快速聚集天地灵气，提升修为。是修仙者常用的助修丹药。"
+			 align="center" autowrap_mode="3" size_flags_vertical="expand_fill" />
 	  <HBoxContainer separation="10">
 		<Button name="UseBtn" class="use-btn" text="使  用" custom_minimum_size="120,44"
-		        size_flags_horizontal="expand_fill" @pressed="_on_use_pressed" />
+				size_flags_horizontal="expand_fill" @pressed="_on_use_pressed" />
 		<Button name="SellBtn" class="sub-btn" text="出售" custom_minimum_size="72,44"
-		        @pressed="_on_sell_pressed" />
+				@pressed="_on_sell_pressed" />
 		<Button name="ComposeBtn" class="sub-btn" text="合成" custom_minimum_size="72,44"
-		        @pressed="_on_compose_pressed" />
+				@pressed="_on_compose_pressed" />
 	  </HBoxContainer>
 	</VBoxContainer>
   </Panel>

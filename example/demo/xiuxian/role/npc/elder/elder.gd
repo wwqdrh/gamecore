@@ -8,5 +8,8 @@ func _init() -> void:
 	timeline_path = "res://example/demo/xiuxian/role/npc/elder/elder_timeline.txt"
 	entry_stage = "elder_talk"
 	npc_cell = Vector2i(10, 9)
-	ai_behavior = 0  # AI_IDLE 站桩
+	ai_behavior = 0  # AI_IDLE 站桩（配置 schedule.json 后由日程系统接管）
 	body_color = Color(0.85, 0.68, 0.25)
+	# 重逢问候：首次对话后（timeline 置 met_elder flag）玩家再靠近主动打招呼
+	remeet_flag = "met_elder"
+	remeet_greeting = "来了？今日修行可有长进？"

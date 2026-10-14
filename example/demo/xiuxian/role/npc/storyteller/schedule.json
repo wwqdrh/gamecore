@@ -1,0 +1,34 @@
+{
+  "jitter_minutes": 5,
+  "teleport_far": true,
+  "teleport_cells": 12,
+  "ambient_interval": [9.0, 20.0],
+  "greet": {
+	"lines": ["客官，今日开讲《魔尊围城》！", "前排听书，茶水自取。", "这段因果，且听我慢慢道来。"],
+	"radius": 140.0,
+	"cooldown": 25.0,
+	"line_secs": 3.0
+  },
+  "entries": [
+	{ "from": 0.0,  "to": 9.0,  "cell": [19, 10], "behavior": "idle",
+	  "label": "住处歇息",
+	  "lines": ["呼……呼……"] },
+	{ "from": 9.0,  "to": 10.0, "cell": [18, 8],  "behavior": "idle",
+	  "label": "茶馆备稿",
+	  "lines": ["(翻书)昨说到哪了……", "这段得再润一润。"] },
+	{ "from": 10.0, "to": 12.0, "cell": [18, 8],  "behavior": "idle",
+	  "label": "上午开讲",
+	  "lines": ["话说那魔尊兵临城下——", "满城百姓，危在旦夕！"] },
+	{ "from": 12.0, "to": 13.0, "cell": [16, 10], "behavior": "idle",
+	  "label": "午饭" },
+	{ "from": 13.0, "to": 18.0, "cell": [18, 8],  "behavior": "idle",
+	  "label": "午后开讲",
+	  "lines": ["那少年侠客纵身一跃——", "欲知后事如何，且听下回分解！"] },
+	{ "from": 18.0, "to": 21.0, "cell": [17, 10], "behavior": "idle",
+	  "label": "酒馆小酌",
+	  "lines": ["好酒！故事换酒，天公地道。"] },
+	{ "from": 21.0, "to": 24.0, "cell": [19, 10], "behavior": "idle",
+	  "label": "住处歇息",
+	  "lines": ["呼……呼……"] }
+  ]
+}

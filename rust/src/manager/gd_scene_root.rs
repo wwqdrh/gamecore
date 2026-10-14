@@ -589,6 +589,21 @@ impl GdSceneRoot {
 
     /// 执行场景替换
     fn do_swap_scene(&mut self) {
+        // 场景替换前清理相机（方法名拼写沿用历史 clean_before_change_scnene）：
+        // follow_node 指向旧场景内节点（如玩家），旧场景随后 remove_child +
+        // queue_free → 相机（挂常驻 GdSceneRoot，跨场景存活）持有悬垂引用，
+        // 每帧 process 访问死实例 panic 刷屏；旧地图 update_limit 残留的边界
+        // 还会把新场景（如标题）视野卡死 → 什么都不显示。unfollow + reset_limit
+        // 双清。
+        if let Some(mut camera) = self
+            .base()
+            .get_node_or_null(&NodePath::from("ViewCamera"))
+        {
+            if camera.has_method("clean_before_change_scnene") {
+                camera.call("clean_before_change_scnene", &[]);
+            }
+        }
+
         // 对旧场景调用 on_exit 并移除
         if let Some(ref old_scene) = self.old_scene {
             let mut old = old_scene.clone();

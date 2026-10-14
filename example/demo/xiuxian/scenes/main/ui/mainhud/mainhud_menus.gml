@@ -32,8 +32,10 @@
 	  </VBoxContainer>
 	  <Label class="red-dot" text="●" anchor="top_wide" margin="0 6 10 0" align="right" />
 	</Panel>
+	<!-- 功法（ui/level/）：修炼/功法面板（GML Tree 功法树），同储物袋
+		 经统一 UI 管理层触发 LevelModal.open() -->
 	<Panel name="MenuGongfa" class="menu-btn" custom_minimum_size="84,84"
-	      mouse_default_cursor_shape="pointing_hand" @pressed="_on_menu_pressed">
+	      mouse_default_cursor_shape="pointing_hand" @pressed="show:LevelModal">
 	  <VBoxContainer anchor="full" margin="8 10 8 8" separation="2">
 		<Label class="menu-btn-icon" text="📖" size_flags_vertical="expand_fill"
 		       align="center" valign="center" />

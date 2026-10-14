@@ -39,6 +39,18 @@
 	  border_radius: 10;
 	}
 	.row-label { color: #4a3c26; font_size: 15; }
+	.action-btn {
+	  background: #3a7a5a;
+	  color: #f2ead2;
+	  border_radius: 10;
+	  font_size: 16;
+	}
+	.quit-btn {
+	  background: #8a4a3a;
+	  color: #f2ead2;
+	  border_radius: 10;
+	  font_size: 16;
+	}
   </style>
   <Panel name="SettingsPanel" class="window-bg" anchor="full" margin="2%"
 		 mouse_filter="stop">
@@ -143,6 +155,16 @@
 			</Panel>
 		  </VBoxContainer>
 		</ScrollContainer>
+
+		<!-- 底部动作条：返回标题 / 退出游戏（水平 shrink_center = 整条底部居中，
+			 GML 的 size_flags 只认 shrink_center/fill/expand 系列，"center" 回退 FILL） -->
+		<HBoxContainer name="FooterActions" separation="16"
+					   size_flags_horizontal="shrink_center" size_flags_vertical="shrink_end">
+		  <Button name="BackTitleBtn" class="action-btn" text="返回标题"
+				  custom_minimum_size="140,42" @pressed="_on_back_title_pressed" />
+		  <Button name="QuitBtn" class="quit-btn" text="退出游戏"
+				  custom_minimum_size="140,42" @pressed="_on_quit_pressed" />
+		</HBoxContainer>
 	  </VBoxContainer>
 	</MarginContainer>
   </Panel>

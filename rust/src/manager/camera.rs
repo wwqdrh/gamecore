@@ -303,19 +303,29 @@ impl ICamera2D for GdViewCamera {
                 self.base_mut().emit_signal("s_pan_ed", &[]);
             }
         } else {
-            // 跟踪目标
-            let follow_node = self.follow_node.clone();
-            if let Some(follow_node) = follow_node {
-                if follow_node.is_instance_valid() {
-                    self.follow_position = follow_node.get_global_position();
-                    let current_pos = self.base().get_global_position();
-                    let rotation = self.base().get_rotation();
-                    let target = self.follow_position + self.turn_offset.rotated(rotation);
-                    let new_pos = current_pos.lerp(target, (self.move_speed * delta) as f32);
-                    self.base_mut().set_global_position(new_pos);
-                } else {
-                    self.follow_node = None;
-                }
+            // 跟踪目标。悬垂防护：follow_node 可能指向已被释放的节点（场景
+            // 切换遗留等）——先 is_instance_valid 判活（安全 API，只查 ID 存活
+            // 性不触碰实例），严禁直接 clone 探活（strict 模式 clone 悬垂
+            // 实例直接 panic：ensure_object_alive）。
+            let follow_valid = self
+                .follow_node
+                .as_ref()
+                .is_some_and(|node| node.is_instance_valid());
+            if !follow_valid {
+                // 死引用清除（跨场景切换未清理时，每帧访问悬垂 = panic 刷屏）
+                self.follow_node = None;
+            } else {
+                let follow_position = self
+                    .follow_node
+                    .as_ref()
+                    .expect("follow_valid checked")
+                    .get_global_position();
+                self.follow_position = follow_position;
+                let current_pos = self.base().get_global_position();
+                let rotation = self.base().get_rotation();
+                let target = follow_position + self.turn_offset.rotated(rotation);
+                let new_pos = current_pos.lerp(target, (self.move_speed * delta) as f32);
+                self.base_mut().set_global_position(new_pos);
             }
         }
 
@@ -407,7 +417,16 @@ impl GdViewCamera {
 
     #[func]
     fn get_follow_node(&self) -> Option<Gd<Node2D>> {
-        self.follow_node.clone()
+        // 悬垂防护：死引用返回 None（clone 悬垂实例在 strict 模式 panic）
+        let valid = self
+            .follow_node
+            .as_ref()
+            .is_some_and(|node| node.is_instance_valid());
+        if valid {
+            self.follow_node.clone()
+        } else {
+            None
+        }
     }
 
     #[func]
@@ -560,14 +579,19 @@ impl GdViewCamera {
     /// 瞬间移动到跟随节点
     #[func]
     fn snap_follow(&mut self) {
-        let follow_node = self.follow_node.clone();
-        if let Some(follow_node) = follow_node {
-            if follow_node.is_instance_valid() {
-                let pos = follow_node.get_global_position();
-                let rotation = follow_node.get_rotation();
-                self.snap_to(pos, rotation);
-            }
+        // 悬垂防护：同 process——先 is_instance_valid 判活，死引用清除（勿 clone）
+        let follow_valid = self
+            .follow_node
+            .as_ref()
+            .is_some_and(|node| node.is_instance_valid());
+        if !follow_valid {
+            self.follow_node = None;
+            return;
         }
+        let node = self.follow_node.as_ref().expect("follow_valid checked");
+        let pos = node.get_global_position();
+        let rotation = node.get_rotation();
+        self.snap_to(pos, rotation);
     }
 
     /// 设置径向模糊
@@ -753,13 +777,23 @@ impl GdViewCamera {
         tween.set_ease(EaseType::IN_OUT);
     }
 
-    /// 场景切换前清理
+    /// 场景切换前清理（do_swap_scene 调用）：解跟随 + 复位限位 + 回归
+    /// 设计中心/设计缩放并立即贴附。相机挂常驻 GdSceneRoot 跨场景存活，
+    /// 不复位则残留旧场景的跟随位置/手动缩放/地图 fit_map 限位——标题等
+    /// 无跟随场景的世界内容按设计坐标铺排，相机残留 = 内容整体偏出视野
+    /// （露出清屏色，用户实机踩过：回标题后 UI 右移 + 左侧灰条）
     #[func]
     fn clean_before_change_scnene(&mut self) {
         if self.follow_node.is_some() {
             self.unfollow(false);
         }
+        // 复位限位（±默认值 → map_rect 清空，fit_to_map 不再命中旧地图）
         self.reset_limit();
+        // 回归设计中心与设计尺寸缩放（adjust_zoom 兜底分支）
+        self.view_center();
+        self.adjust_zoom();
+        // 位置平滑立即贴附，避免转场淡入时从旧位置滑过来
+        self.base_mut().reset_smoothing();
     }
 
     /// 向左移动相机（由输入回调调用）

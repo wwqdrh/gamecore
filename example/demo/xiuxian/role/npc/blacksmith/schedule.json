@@ -1,0 +1,44 @@
+{
+  "jitter_minutes": 8,
+  "teleport_far": true,
+  "teleport_cells": 12,
+  "ambient_interval": [7.0, 18.0],
+  "greet": {
+	"lines": ["哟，来买兵器？", "小心火星子。", "等我把这炉铁打完。"],
+	"radius": 140.0,
+	"cooldown": 25.0,
+	"line_secs": 3.0
+  },
+  "entries": [
+	{ "from": 0.0,  "to": 6.5,  "cell": [12, 10], "behavior": "idle",
+	  "label": "后院歇息",
+	  "lines": ["呼……呼……", "(梦话)这炉火……再旺点……"] },
+	{ "from": 6.5,  "to": 7.5,  "cell": [12, 10], "behavior": "wander", "radius": 48,
+	  "label": "后院晨间" },
+	{ "from": 7.5,  "to": 12.0, "cell": [12, 8],  "behavior": "idle",
+	  "label": "铁匠铺打铁",
+	  "lines": ["叮……叮……", "这批剑胚得再淬一遍。", "炉火再旺些。"] },
+	{ "from": 12.0, "to": 13.0, "cell": [16, 12], "behavior": "idle",
+	  "label": "坊市午饭",
+	  "lines": ["掌柜的，老规矩。"] },
+	{ "from": 13.0, "to": 17.5, "cell": [12, 8],  "behavior": "idle",
+	  "label": "铁匠铺打铁",
+	  "lines": ["叮……叮……", "这锤柄也该换了。"] },
+	{ "from": 17.5, "to": 19.0, "cell": [20, 12], "behavior": "wander", "radius": 64,
+	  "label": "河边散步" },
+	{ "from": 19.0, "to": 21.0, "cell": [16, 12], "behavior": "idle",
+	  "label": "坊市喝酒",
+	  "lines": ["好酒！再来一碗。"] },
+	{ "from": 21.0, "to": 24.0, "cell": [12, 10], "behavior": "idle",
+	  "label": "回铺歇息",
+	  "lines": ["门要闩好。"] }
+  ],
+  "chat": {
+	"partner": "坊市商人",
+	"my_lines": ["今天炉火旺，你那货不愁卖。", "改日给你打把好刀。"],
+	"partner_lines": ["承你吉言，坊市最近热闹。", "一言为定！"],
+	"chance": 0.6,
+	"cooldown": 90.0,
+	"line_secs": 2.5
+  }
+}

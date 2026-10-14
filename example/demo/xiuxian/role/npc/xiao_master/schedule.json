@@ -1,0 +1,33 @@
+{
+  "jitter_minutes": 6,
+  "teleport_far": true,
+  "teleport_cells": 12,
+  "ambient_interval": [9.0, 20.0],
+  "greet": {
+	"lines": ["贵客临门，请前厅奉茶。", "有事便直说吧。"],
+	"radius": 140.0,
+	"cooldown": 25.0,
+	"line_secs": 3.0
+  },
+  "entries": [
+    { "from": 0.0,  "to": 7.0,  "cell": [10, 6],  "behavior": "idle",
+      "label": "卧房歇息",
+      "lines": ["呼……呼……"] },
+    { "from": 7.0,  "to": 12.0, "cell": [9, 6],   "behavior": "idle",
+      "label": "书房理账",
+      "lines": ["今年的田租……", "这账目对不上，得查。"] },
+    { "from": 12.0, "to": 14.0, "cell": [9, 6],   "behavior": "idle",
+      "label": "午膳小憩" },
+    { "from": 14.0, "to": 17.0, "cell": [8, 8],   "behavior": "idle",
+      "label": "前厅会客",
+      "lines": ["请坐，看茶。"] },
+    { "from": 17.0, "to": 19.0, "cell": [8, 8],   "behavior": "wander", "radius": 48,
+      "label": "院中踱步" },
+    { "from": 19.0, "to": 21.0, "cell": [9, 6],   "behavior": "idle",
+      "label": "灯下饮茶",
+      "lines": ["月色不错。"] },
+    { "from": 21.0, "to": 24.0, "cell": [10, 6],  "behavior": "idle",
+      "label": "卧房歇息",
+      "lines": ["呼……呼……"] }
+  ]
+}

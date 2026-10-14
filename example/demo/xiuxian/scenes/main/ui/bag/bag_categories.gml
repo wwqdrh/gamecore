@@ -25,35 +25,35 @@
   <Panel name="CategoryPanel" class="cat-panel" anchor="full">
 	<VBoxContainer name="CatColumn" anchor="full" margin="10 12 10 12" separation="10">
 	  <Panel name="CatAll" class="cat-btn" custom_minimum_size="0,50" mouse_default_cursor_shape="pointing_hand"
-	       @pressed="_on_category">
+		   @pressed="_on_category">
 		<HBoxContainer anchor="full" margin="12 0 8 0" separation="10">
 		  <Label text="🔳" valign="center" font_size="18" />
 		  <Label class="cat-text" text="全部" valign="center" />
 		</HBoxContainer>
 	  </Panel>
 	  <Panel name="CatTool" class="cat-btn" custom_minimum_size="0,50" mouse_default_cursor_shape="pointing_hand"
-	       @pressed="_on_category">
+		   @pressed="_on_category">
 		<HBoxContainer anchor="full" margin="12 0 8 0" separation="10">
 		  <Label text="🗡️" valign="center" font_size="18" />
 		  <Label class="cat-text" text="法器" valign="center" />
 		</HBoxContainer>
 	  </Panel>
 	  <Panel name="CatPill" class="cat-btn" custom_minimum_size="0,50" mouse_default_cursor_shape="pointing_hand"
-	       @pressed="_on_category">
+		   @pressed="_on_category">
 		<HBoxContainer anchor="full" margin="12 0 8 0" separation="10">
 		  <Label text="⚗️" valign="center" font_size="18" />
 		  <Label class="cat-text" text="丹药" valign="center" />
 		</HBoxContainer>
 	  </Panel>
 	  <Panel name="CatMaterial" class="cat-btn" custom_minimum_size="0,50" mouse_default_cursor_shape="pointing_hand"
-	       @pressed="_on_category">
+		   @pressed="_on_category">
 		<HBoxContainer anchor="full" margin="12 0 8 0" separation="10">
 		  <Label text="🌿" valign="center" font_size="18" />
 		  <Label class="cat-text" text="材料" valign="center" />
 		</HBoxContainer>
 	  </Panel>
 	  <Panel name="CatTalisman" class="cat-btn" custom_minimum_size="0,50" mouse_default_cursor_shape="pointing_hand"
-	       @pressed="_on_category">
+		   @pressed="_on_category">
 		<HBoxContainer anchor="full" margin="12 0 8 0" separation="10">
 		  <Label text="📜" valign="center" font_size="18" />
 		  <Label class="cat-text" text="符篆" valign="center" />

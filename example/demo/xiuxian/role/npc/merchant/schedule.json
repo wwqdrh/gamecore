@@ -1,0 +1,35 @@
+{
+  "jitter_minutes": 10,
+  "teleport_far": true,
+  "teleport_cells": 12,
+  "ambient_interval": [6.0, 15.0],
+  "greet": {
+	"lines": ["客官看看货？童叟无欺！", "上好的符纸嘞，便宜的卖喽。", "灵草刚到货，要不要瞧瞧？"],
+	"radius": 140.0,
+	"cooldown": 25.0,
+	"line_secs": 3.0
+  },
+  "entries": [
+    { "from": 0.0,  "to": 7.0,  "cell": [17, 15], "behavior": "idle",
+      "label": "货栈歇息",
+      "lines": ["呼……呼……"] },
+    { "from": 7.0,  "to": 8.0,  "cell": [17, 15], "behavior": "wander", "radius": 48,
+      "label": "开店准备",
+      "lines": ["码好货，今天开张。"] },
+    { "from": 8.0,  "to": 12.0, "cell": [17, 13], "behavior": "idle",
+      "label": "坊市守摊",
+      "lines": ["新鲜的灵草嘞——", "看看货？童叟无欺。"] },
+    { "from": 12.0, "to": 13.0, "cell": [16, 12], "behavior": "idle",
+      "label": "午饭",
+      "lines": ["吃饱了才有力气吆喝。"] },
+    { "from": 13.0, "to": 18.0, "cell": [17, 13], "behavior": "idle",
+      "label": "坊市守摊",
+      "lines": ["走过路过别错过——", "上好的符纸嘞。"] },
+    { "from": 18.0, "to": 19.5, "cell": [17, 13], "behavior": "wander", "radius": 64,
+      "label": "收摊盘账",
+      "lines": ["今日流水……嗯，不亏。"] },
+    { "from": 19.5, "to": 24.0, "cell": [17, 15], "behavior": "idle",
+      "label": "货栈歇息",
+      "lines": ["呼……呼……"] }
+  ]
+}

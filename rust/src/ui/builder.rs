@@ -36,6 +36,7 @@ use super::ui_form::{
 };
 use super::ui_nav_menu::GdUINavMenu;
 use super::ui_hotbar::GdUIHotbar;
+use super::ui_tree::GdUITree;
 use super::ui_theme::{ThemeVars, get_theme_color, resolve_theme_vars};
 
 /// UI 构建器：将 AST 转换为 Godot Control 节点树
@@ -213,6 +214,16 @@ impl UiBuilder {
                         .borrow_mut()
                         .push((control.clone(), value.clone()));
                 }
+                "tips" => {
+                    // 悬停提示内容：meta 随 tscn 序列化，运行期由 wire_gml_tips
+                    // （connect_gml_tree_root / GdGmlScene.connect_signals）接线到
+                    // 自动创建的 Tooltip 宿主（__GmlTipsHost）
+                    control.set_meta(&StringName::from("__tips"), &value.to_variant());
+                }
+                "tips_title" => {
+                    // 悬停提示标题（可省略，省略时只显示内容）
+                    control.set_meta(&StringName::from("__tips_title"), &value.to_variant());
+                }
                 _ => {
                     // 信号绑定声明：on_pressed / @pressed（@ 为简写）→ 存 meta，
                     // 由 connect_signals（静态节点）/ 列表 bind_events（条目内）统一连接
@@ -251,6 +262,16 @@ impl UiBuilder {
         let declared_filter = node.attributes.iter().any(|(k, _)| k == "mouse_filter");
         if !has_binding && !declared_filter && is_transparent_tag(&node.tag) {
             control.set_mouse_filter(godot::classes::control::MouseFilter::IGNORE);
+        }
+
+        // 带 tips 的元素必须能接收鼠标（悬停触发提示）——布局类标签默认 IGNORE
+        // 会吞掉 mouse_entered/exited，未显式声明 mouse_filter 时强制 STOP
+        let has_tips = node
+            .attributes
+            .iter()
+            .any(|(k, _)| k == "tips" || k == "tips_title");
+        if has_tips && !declared_filter {
+            control.set_mouse_filter(godot::classes::control::MouseFilter::STOP);
         }
 
         // PopupPanel/Drawer/Modal/Tooltip：属性设置完成后立即构建内部 UI
@@ -320,6 +341,29 @@ impl UiBuilder {
                 child_control.set_meta(&StringName::from("__nav_item"), &true.to_variant());
             }
 
+            // TreeNode：树形节点占位标记 + 属性存 meta（GdUITree.initial() 解析）
+            if child_node.tag == "TreeNode" {
+                child_control.set_meta(&StringName::from("__tree_node"), &true.to_variant());
+                for (k, v) in &child_node.attributes {
+                    let meta_key = match k.as_str() {
+                        "text" => "__tree_text",
+                        "id" => "__tree_id",
+                        "desc" => "__tree_desc",
+                        "locked" => "__tree_locked",
+                        "expanded" => "__tree_expanded",
+                        "tone" => "__tree_tone",
+                        _ => continue,
+                    };
+                    let variant = match k.as_str() {
+                        "locked" | "expanded" => {
+                            (v.as_str() == "true" || v.as_str() == "1").to_variant()
+                        }
+                        _ => GString::from(v.as_str()).to_variant(),
+                    };
+                    child_control.set_meta(&StringName::from(meta_key), &variant);
+                }
+            }
+
             // PopupPanel 的子节点添加到内容区域
             if node.tag == "PopupPanel" || node.tag == "Drawer" || node.tag == "Modal" || node.tag == "Tooltip" {
                 control.call(
@@ -372,6 +416,10 @@ impl UiBuilder {
         // 列表扩展节点：子节点构建完成后调用 initial()
         match node.tag.as_str() {
             "UIHList" | "UIVList" | "UIGrid" => {
+                control.call(&StringName::from("initial"), &[]);
+            }
+            // 树形组件：子节点（TreeNode 占位）构建完成后解析建行
+            "Tree" => {
                 control.call(&StringName::from("initial"), &[]);
             }
             _ => {}
@@ -695,6 +743,8 @@ impl UiBuilder {
             "SettingSelect" => GdUISettingSelect::new_alloc().upcast(),
             // 导航菜单
             "NavMenu" => GdUINavMenu::new_alloc().upcast(),
+            // 树形结构（地图路径 / 技能树 / 分支图，四向布局 + 连线）
+            "Tree" => GdUITree::new_alloc().upcast(),
             // 快捷装备栏（数字键绑定 + 选中高亮框）
             "Hotbar" => GdUIHotbar::new_alloc().upcast(),
             // 导航菜单项（递归嵌套，使用 Control 占位）
@@ -1409,6 +1459,8 @@ fn is_transparent_tag(tag: &str) -> bool {
             | "HFlowContainer"
             | "VFlowContainer"
             | "AspectRatioContainer"
+            // 树形组件根不拦鼠标（节点行按钮各自接收）
+            | "Tree"
     )
 }
 
@@ -1463,7 +1515,42 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
         return control;
     }
 
+    // Tree：树形组件属性（四向布局 + 节点尺寸/间距 + 全套配色）
+    if tag == "Tree" {
+        match key {
+            "direction" => {
+                control.set(&StringName::from("direction"), &GString::from(value).to_variant());
+                return control;
+            }
+            "node_width" | "node_height" | "level_gap" | "sibling_gap" | "line_width" => {
+                if let Ok(v) = value.parse::<f32>() {
+                    control.set(&StringName::from(key), &v.to_variant());
+                }
+                return control;
+            }
+            "font_size" => {
+                if let Ok(v) = value.parse::<i32>() {
+                    control.set(&StringName::from(key), &v.to_variant());
+                }
+                return control;
+            }
+            "line_color" | "node_bg" | "node_border" | "node_text" | "text_color"
+            | "bg_done" | "border_done" | "text_done"
+            | "bg_locked" | "border_locked" | "text_locked"
+            | "accent_color" | "select_color" => {
+                if let Some(c) = parse_color(value) {
+                    // node_text 是 text_color 的 gml 别名（字段名已统一为 text_color）
+                    let prop = if key == "node_text" { "text_color" } else { key };
+                    control.set(&StringName::from(prop), &c.to_variant());
+                }
+                return control;
+            }
+            _ => {}
+        }
+    }
+
     match key {
+        // NavItem：菜单项文本存 meta
         "text" => {
             match tag {
                 "NavItem" => {

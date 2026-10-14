@@ -13,8 +13,9 @@
 class_name XiuGameConfigState
 extends GdBean
 
-## 一昼夜对应的现实秒数（默认 600 = 现实 10 分钟一个游戏日；原 144s 过快）
-var day_length: float = 600.0
+## 一昼夜对应的现实秒数（默认 1200 = 现实 20 分钟一个游戏日，配合 NPC 日程
+## 观感；时间流速 = 86400/1200 = 72 游戏秒/现实秒）
+var day_length: float = 1200.0
 
 ## 地图 deco 资源再生间隔（现实秒；0 = 禁用再生）。
 ## 每到间隔地图 deco 层随机挑空格长出一批缺口资源（生长位置不固定）。

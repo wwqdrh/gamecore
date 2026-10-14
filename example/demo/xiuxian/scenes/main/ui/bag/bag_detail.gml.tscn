@@ -147,7 +147,7 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[node name="DetailPanel" type="Panel" unique_id=503816482]
+[node name="DetailPanel" type="Panel" unique_id=1911760418]
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
@@ -158,7 +158,7 @@ metadata/__script_vars = {}
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray()
 
-[node name="DetailColumn" type="VBoxContainer" parent="." unique_id=544013022]
+[node name="DetailColumn" type="VBoxContainer" parent="." unique_id=311759304]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -170,12 +170,12 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Control@697" type="Control" parent="DetailColumn" unique_id=256727547]
+[node name="@Control@757" type="Control" parent="DetailColumn" unique_id=85969337]
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
 
-[node name="@CenterContainer@696" type="CenterContainer" parent="DetailColumn/@Control@697" unique_id=348498269]
+[node name="@CenterContainer@756" type="CenterContainer" parent="DetailColumn/@Control@757" unique_id=913400925]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -184,13 +184,13 @@ offset_bottom = -10.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Panel@695" type="Panel" parent="DetailColumn/@Control@697/@CenterContainer@696" unique_id=1682134335]
+[node name="@Panel@755" type="Panel" parent="DetailColumn/@Control@757/@CenterContainer@756" unique_id=543913653]
 custom_minimum_size = Vector2(120, 120)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_b0dqe")
 
-[node name="DetailIcon" type="Label" parent="DetailColumn/@Control@697/@CenterContainer@696/@Panel@695" unique_id=1460698517]
+[node name="DetailIcon" type="Label" parent="DetailColumn/@Control@757/@CenterContainer@756/@Panel@755" unique_id=1551354544]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -200,7 +200,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 metadata/__anchor = "full"
 
-[node name="SealText" type="Label" parent="DetailColumn/@Control@697" unique_id=2104087139]
+[node name="SealText" type="Label" parent="DetailColumn/@Control@757" unique_id=1983408208]
 layout_mode = 0
 anchor_left = 1.0
 anchor_top = 1.0
@@ -212,23 +212,23 @@ theme_override_colors/font_color = Color(0.6901961, 0.22745098, 0.18039216, 1)
 text = "闲"
 metadata/__anchor = "bottom_right"
 
-[node name="DetailName" type="Label" parent="DetailColumn" unique_id=493382202]
+[node name="DetailName" type="Label" parent="DetailColumn" unique_id=691213041]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
 text = "聚气丹"
 horizontal_alignment = 1
 
-[node name="@CenterContainer@699" type="CenterContainer" parent="DetailColumn" unique_id=641925060]
+[node name="@CenterContainer@759" type="CenterContainer" parent="DetailColumn" unique_id=267527519]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="@Panel@698" type="Panel" parent="DetailColumn/@CenterContainer@699" unique_id=2146763410]
+[node name="@Panel@758" type="Panel" parent="DetailColumn/@CenterContainer@759" unique_id=1621184655]
 custom_minimum_size = Vector2(64, 26)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_c2lbv")
 
-[node name="QualityText" type="Label" parent="DetailColumn/@CenterContainer@699/@Panel@698" unique_id=1368402849]
+[node name="QualityText" type="Label" parent="DetailColumn/@CenterContainer@759/@Panel@758" unique_id=1681132119]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -238,18 +238,18 @@ horizontal_alignment = 1
 vertical_alignment = 1
 metadata/__anchor = "full"
 
-[node name="DetailDesc" type="Label" parent="DetailColumn" unique_id=1800400114]
+[node name="DetailDesc" type="Label" parent="DetailColumn" unique_id=2110606086]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_colors/font_color = Color(0.41960785, 0.3529412, 0.24313726, 1)
 text = "服用后可快速聚集天地灵气，提升修为。是修仙者常用的助修丹药。"
 horizontal_alignment = 1
 
-[node name="@HBoxContainer@700" type="HBoxContainer" parent="DetailColumn" unique_id=20395914]
+[node name="@HBoxContainer@760" type="HBoxContainer" parent="DetailColumn" unique_id=1078819404]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="UseBtn" type="Button" parent="DetailColumn/@HBoxContainer@700" unique_id=362964114]
+[node name="UseBtn" type="Button" parent="DetailColumn/@HBoxContainer@760" unique_id=616895989]
 custom_minimum_size = Vector2(120, 44)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -260,7 +260,7 @@ theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
 text = "使  用"
 metadata/__signal_pressed = "_on_use_pressed"
 
-[node name="SellBtn" type="Button" parent="DetailColumn/@HBoxContainer@700" unique_id=520991180]
+[node name="SellBtn" type="Button" parent="DetailColumn/@HBoxContainer@760" unique_id=1825253237]
 custom_minimum_size = Vector2(72, 44)
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_a66bk")
@@ -270,7 +270,7 @@ theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "出售"
 metadata/__signal_pressed = "_on_sell_pressed"
 
-[node name="ComposeBtn" type="Button" parent="DetailColumn/@HBoxContainer@700" unique_id=1349168291]
+[node name="ComposeBtn" type="Button" parent="DetailColumn/@HBoxContainer@760" unique_id=834578133]
 custom_minimum_size = Vector2(72, 44)
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_mgynu")

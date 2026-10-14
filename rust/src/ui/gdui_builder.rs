@@ -15,6 +15,7 @@ use godot::global::Error;
 use super::parser::UiParser;
 use super::builder::UiBuilder;
 use super::ui_theme::ThemeVars;
+use super::ui_tooltip::GdUITooltip;
 
 use std::sync::Mutex;
 
@@ -352,6 +353,81 @@ fn connect_gml_tree_root(root: &mut Gd<Node>) {
     register_ui_ids(root);
     let target = root.clone().upcast::<Object>();
     connect_signals_recursive(&mut ctrl, &target);
+    // 悬停 tips：带 __tips meta 的节点接线到自动创建的 Tooltip 宿主
+    wire_gml_tips(&mut ctrl);
+}
+
+/// 悬停 tips 接线：扫描树中带 __tips / __tips_title meta 的节点（GML 元素
+/// `tips="内容"` `tips_title="标题"` 属性，builder 构建期存 meta 随 tscn 序列化），
+/// 绑定到本树自动创建的 Tooltip 宿主（root 直接子节点 __GmlTipsHost，最后添加
+/// 绘制在最上层）。宿主 follow_mouse=false：显示时在鼠标位置定位一次后固定，
+/// 鼠标离开目标且离开提示面板后才关闭（GdUITooltip hover 模式）。
+/// 幂等：宿主按名复用，setup_hover 以 __tips_bound meta 防重复连接。
+pub fn wire_gml_tips(root: &mut Gd<Control>) {
+    let mut targets: Vec<(Gd<Control>, GString, GString)> = Vec::new();
+    collect_tips_targets(root, &mut targets);
+    if targets.is_empty() {
+        return;
+    }
+
+    // 查找/创建宿主（root 直接子节点，按名复用）
+    let host_name = StringName::from("__GmlTipsHost");
+    let mut host: Option<Gd<Control>> = None;
+    for i in 0..root.get_child_count() {
+        if let Some(child) = root.get_child(i) {
+            if child.get_name() == host_name {
+                host = child.try_cast::<Control>().ok();
+                break;
+            }
+        }
+    }
+    let mut host = match host {
+        Some(h) => h,
+        None => {
+            let mut tip = GdUITooltip::new_alloc().upcast::<Control>();
+            tip.set_name(&host_name);
+            // 悬停 tips 模式：显示后固定在鼠标位置，不持续跟随
+            tip.set(&StringName::from("follow_mouse"), &false.to_variant());
+            root.add_child(&tip);
+            tip
+        }
+    };
+
+    for (node, title, content) in targets {
+        host.call(
+            &StringName::from("setup_hover"),
+            &[
+                node.upcast::<Object>().to_variant(),
+                title.to_variant(),
+                content.to_variant(),
+            ],
+        );
+    }
+}
+
+/// 递归收集树中带 __tips meta 的节点（title 可省略）
+fn collect_tips_targets(node: &Gd<Control>, out: &mut Vec<(Gd<Control>, GString, GString)>) {
+    if node.has_meta(&StringName::from("__tips")) {
+        let content = node.get_meta(&StringName::from("__tips")).to_string();
+        let title = if node.has_meta(&StringName::from("__tips_title")) {
+            node.get_meta(&StringName::from("__tips_title")).to_string()
+        } else {
+            String::new()
+        };
+        out.push((
+            node.clone(),
+            GString::from(title.as_str()),
+            GString::from(content.as_str()),
+        ));
+    }
+    let children = node.get_children();
+    for i in 0..children.len() {
+        if let Some(child) = children.get(i) {
+            if let Ok(child_ctrl) = child.clone().try_cast::<Control>() {
+                collect_tips_targets(&child_ctrl, out);
+            }
+        }
+    }
 }
 
 /// 递归注册树上全部带 __ui_id meta 的节点到统一 UI 管理层

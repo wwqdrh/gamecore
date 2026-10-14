@@ -53,19 +53,39 @@ const AI_NO_BRAIN := -1
 ## 身体颜色（占位视觉，正式素材就位后替换）
 @export var body_color := Color(0.9, 0.75, 0.35)
 
+## 角色标识（闲聊配对 / 日程扰动种子用；空 = 取 role_name）
+@export var npc_id := ""
+## 日程脚本路径（空 = 自动探测本角色目录 schedule.json；放置即启用日程系统，
+## 优先级高于 ai_behavior 静态行为，格式见同目录 NPC_LIFE.md）
+@export var schedule_path := ""
+## 重逢问候：非空且 remeet_flag 已置时，玩家靠近主动头顶气泡打招呼
+@export var remeet_greeting := ""
+## 重逢判定 flag（由对话 timeline @set_flag 落 XiuDialogState；空 = 不启用）
+@export var remeet_flag := ""
+
 var trigger: Node = null
 var brain: Node = null
+var schedule: Node = null
+var chat: Node = null
+var greet: Node = null
 
 var _snapped := false
 var _wired := false
 var _ai_applied := false
 var _hint: Label
+var _bubble: Label
+var _bubble_timer: Timer
 
 
 func _ready() -> void:
 	control_mode = 0  # CONTROL_NONE：网格移动走 grid_path 队列，AI Brain 直接驱动
+	# move_mode 必须显式设为 MODE_GRID（默认 FOUR_WAY 不进 tick_grid——
+	# set_grid_path 下发的路径队列无人消费，日程导航永卡 navigating=true 站桩）
+	move_mode = 2  # MODE_GRID
 	_make_visual()
+	_make_bubble()
 	_make_dialog_parts()
+	_make_schedule_and_chat()
 	_make_ai()
 	# 接线由 _process 驱动（父地图地形数据与共享对话节点可能晚于本 ready）
 
@@ -122,6 +142,10 @@ func _nearest_walkable(map: Node, cell: Vector2i) -> Vector2i:
 # ---- AI 行为：Brain 装配 + 巡逻点吸附 ----
 
 func _make_ai() -> void:
+	# 日程系统启用时接管行为（GdNpcSchedule 自建/复用 Brain）
+	if schedule != null:
+		_ai_applied = true
+		return
 	if ai_behavior < 0:
 		_ai_applied = true
 		return
@@ -145,6 +169,162 @@ func _apply_ai_points(map: Node, cs: int) -> void:
 		brain.set_patrol_points(points)
 	brain.restart()  # 以吸附后位置为新家，巡逻从头开始
 	_ai_applied = true
+
+
+# ---- 生活化：日程系统 + 相遇闲聊（角色目录 schedule.json，格式见 NPC_LIFE.md） ----
+
+func _make_schedule_and_chat() -> void:
+	var path := schedule_path
+	if path.is_empty():
+		# 约定探测：角色目录下 schedule.json（与立绘探测同范式）
+		var auto := String(get_script().resource_path.get_base_dir()).path_join("schedule.json")
+		if FileAccess.file_exists(auto):
+			path = auto
+	if path.is_empty():
+		return
+	var f := FileAccess.open(path, FileAccess.READ)
+	if f == null:
+		push_warning("[Npc] 日程脚本打开失败: %s" % path)
+		return
+	var data: Variant = JSON.parse_string(f.get_as_text())
+	if data is not Dictionary or (data as Dictionary).is_empty():
+		push_warning("[Npc] 日程脚本格式异常(需 JSON 对象): %s" % path)
+		return
+	var cfg: Dictionary = data
+
+	schedule = GdNpcSchedule.new()
+	schedule.name = "Schedule"
+	schedule.npc_id = _resolve_npc_id()
+	schedule.jitter_minutes = float(cfg.get("jitter_minutes", 10.0))
+	schedule.teleport_far = bool(cfg.get("teleport_far", true))
+	schedule.teleport_cells = int(cfg.get("teleport_cells", 10))
+	var interval: Array = cfg.get("ambient_interval", [6.0, 16.0])
+	if interval.size() >= 2:
+		schedule.ambient_interval_min = float(interval[0])
+		schedule.ambient_interval_max = float(interval[1])
+	# cell 数组 → Vector2i（rust 侧嵌套容器跨绑定解析不稳，边界转换在 GDScript 做）
+	var entries: Array = []
+	for e in cfg.get("entries", []):
+		if e is Dictionary:
+			var d: Dictionary = e.duplicate()
+			if d.has("cell") and d["cell"] is Array and (d["cell"] as Array).size() >= 2:
+				var c: Array = d["cell"]
+				d["cell"] = Vector2i(int(c[0]), int(c[1]))
+			entries.append(d)
+	schedule.set_entries(entries)
+	# 时间源接线必须推迟：_ready 可能发生在 GdSceneRoot 场景切换的 rust 调用栈内
+	#（map_restore→open_map 级联），此时同步调 get_component 会单借用重入 panic；
+	# 组件侧 current_hour 有 time_source_path 懒解析兜底，帧末接线不影响首日选段
+	call_deferred("_wire_time_source", schedule)
+	add_child(schedule)
+
+	var chat_cfg: Dictionary = cfg.get("chat", {})
+	if not chat_cfg.is_empty():
+		chat = GdNpcChat.new()
+		chat.name = "Chat"
+		chat.partner_id = String(chat_cfg.get("partner", ""))
+		chat.my_lines = PackedStringArray(chat_cfg.get("my_lines", []))
+		chat.partner_lines = PackedStringArray(chat_cfg.get("partner_lines", []))
+		chat.chance = float(chat_cfg.get("chance", 0.5))
+		chat.cooldown = float(chat_cfg.get("cooldown", 120.0))
+		chat.line_secs = float(chat_cfg.get("line_secs", 2.5))
+		add_child(chat)
+
+	# 玩家靠近主动问候（浮动对话）：schedule.json "greet" 段可选，
+	# 台词解析顺序 = resolve_greeting()（重逢问候优先）> lines 随机
+	var greet_cfg_v: Variant = cfg.get("greet", {})
+	if greet_cfg_v is Dictionary and not (greet_cfg_v as Dictionary).is_empty():
+		var g: Dictionary = greet_cfg_v
+		greet = GdNpcGreet.new()
+		greet.name = "Greet"
+		greet.lines = PackedStringArray(g.get("lines", []))
+		greet.radius = float(g.get("radius", 140.0))
+		greet.cooldown = float(g.get("cooldown", 20.0))
+		greet.line_secs = float(g.get("line_secs", 3.0))
+		greet.initial_cooldown = float(g.get("initial_cooldown", 2.0))
+		add_child(greet)
+
+
+func _wire_time_source(schedule: Node) -> void:
+	# 时间源 = 主场景根直挂的 WeatherManager（鸭子调用 get_hour/get_game_time）。
+	# 注意：它**不在** GdSceneRoot 组件注册表里（calendar_manager 同款定位方式），
+	# 走 get_component 会扑空——且 _ready 处于场景切换借用期内时调 rust 单例还会
+	# 单借用重入 panic。纯树操作向上逐级找，零 rust 调用；配合 call_deferred
+	#（装配期 WeatherManager 可能尚未入树）双保险。
+	var anc: Node = self
+	while anc != null:
+		var wm: Node = anc.get_node_or_null(^"WeatherManager")
+		if wm != null:
+			schedule.time_source_path = schedule.get_path_to(wm)
+			return
+		anc = anc.get_parent()
+
+
+func _resolve_npc_id() -> String:
+	return npc_id if not npc_id.is_empty() else role_name
+
+
+# ---- 头顶气泡：自言自语 / 闲聊 / 重逢问候（GdNpcSchedule/GdNpcChat 鸭子调用） ----
+
+func _make_bubble() -> void:
+	_bubble = Label.new()
+	_bubble.add_theme_font_size_override("font_size", 11)
+	_bubble.add_theme_color_override("font_color", Color(1.0, 0.97, 0.9))
+	_bubble.add_theme_color_override("font_outline_color", Color(0.12, 0.1, 0.06))
+	_bubble.add_theme_constant_override("outline_size", 4)
+	_bubble.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_bubble.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_bubble.position = Vector2(-70, -66)
+	_bubble.size = Vector2(140, 30)
+	_bubble.visible = false
+	_bubble.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_bubble)
+
+	_bubble_timer = Timer.new()
+	_bubble_timer.one_shot = true
+	_bubble_timer.timeout.connect(func() -> void: _bubble.visible = false)
+	add_child(_bubble_timer)
+
+
+func show_bubble(text: String, secs := 3.0) -> void:
+	if _bubble == null:
+		return
+	_bubble.text = text
+	_bubble.visible = true
+	_bubble_timer.start(secs)
+
+
+func hide_bubble() -> void:
+	if _bubble != null:
+		_bubble.visible = false
+
+
+# ---- 玩家靠近主动寒暄：重逢问候（打破"每次见面都是初次认识"） ----
+#
+# 问候统一由 GdNpcGreet 驱动（文案经 resolve_greeting 解析，重逢问候优先）；
+# 本方法仅在其缺位（无 schedule.json/greet 段）时兜底。
+
+## GdNpcGreet 鸭子回调：remeet_flag 已置时返回重逢问候，否则返回空串
+##（空串 = 交还给 greet 组件的 lines 随机）
+func resolve_greeting() -> String:
+	if remeet_greeting.is_empty() or remeet_flag.is_empty():
+		return ""
+	if not XiuDialogState.ins().has_flag(remeet_flag):
+		return ""
+	return remeet_greeting
+
+
+func _on_player_near() -> void:
+	if greet != null:
+		return  # 问候统一由 GdNpcGreet 驱动，避免双气泡
+	if remeet_greeting.is_empty() or remeet_flag.is_empty():
+		return
+	# 闲聊中不打扰
+	if chat != null and chat.is_chatting():
+		return
+	if not XiuDialogState.ins().has_flag(remeet_flag):
+		return
+	show_bubble(remeet_greeting)
 
 
 # ---- 对话节点接线：分组查找共享 GdDialogue ----
@@ -184,7 +364,10 @@ func _make_dialog_parts() -> void:
 	if not timeline_path.is_empty():
 		trigger.timeline_path = timeline_path
 	add_child(trigger)
-	trigger.s_trigger_enter.connect(func() -> void: _set_hint_visible(true))
+	trigger.s_trigger_enter.connect(func() -> void:
+		_set_hint_visible(true)
+		_on_player_near()
+	)
 	trigger.s_trigger_exit.connect(func() -> void: _set_hint_visible(false))
 
 

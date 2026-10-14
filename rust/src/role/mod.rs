@@ -14,6 +14,9 @@
 pub mod movement;
 pub mod animator;
 pub mod npc_ai;
+pub mod npc_schedule;
+pub mod npc_chat;
+pub mod npc_greet;
 
 pub use movement::{
     GdRoleMover,
@@ -25,3 +28,6 @@ pub use npc_ai::{
     GdNpcBrain,
     AI_IDLE, AI_WANDER, AI_PATROL, AI_FOLLOW, AI_FLEE,
 };
+pub use npc_schedule::{GdNpcSchedule, NPC_SCHEDULE_GROUP};
+pub use npc_chat::GdNpcChat;
+pub use npc_greet::GdNpcGreet;

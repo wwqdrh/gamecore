@@ -26,6 +26,12 @@
 		   content_margin="56" close_on_overlay="true">
 	  <Gml src="bag/bag_panel.gml" />
 	</Modal>
+	<!-- 修炼/功法面板（ui/level/）：功法树（GML Tree 组件，纵向往上），
+		 学习/解锁/存档由面板脚本对接 XiuCharacterState.skill_tree -->
+	<Modal name="LevelModal" ui_id="LevelModal" anchor="full"
+		   content_margin="56" close_on_overlay="true">
+	  <Gml src="level/level_panel.gml" />
+	</Modal>
 	<Modal name="StoreModal" ui_id="StoreModal" anchor="full"
 		   content_margin="56" close_on_overlay="true">
 	  <Gml src="store/store_panel.gml" />

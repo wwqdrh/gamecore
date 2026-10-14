@@ -49,18 +49,27 @@ pub struct GdUITooltip {
     corner_radius: i32,
     #[export]
     fade_duration: f64,
+    /// 是否持续跟随鼠标（默认 true，列表项点击提示的旧行为）。
+    /// 悬停 tips 模式由 wire_gml_tips 置 false：显示时定位一次后固定不移动
+    #[export]
+    follow_mouse: bool,
 
     // 内部节点引用
     panel: Option<Gd<PanelContainer>>,
     vbox: Option<Gd<VBoxContainer>>,
     title_label: Option<Gd<Label>>,
     content_label: Option<Gd<Label>>,
+    sep_node: Option<Gd<HSeparator>>,
     is_showing: bool,
     delay_timer: f64,
     ui_built: bool,
     has_custom_content: bool,
     // 动画状态
     anim_tween: Option<Gd<Tween>>,
+    // 悬停 tips 模式状态：当前显示提示的目标节点 / 退出待判定标记
+    // （鼠标离开目标后不立即关闭——若移入提示面板则保持，两者都离开才关）
+    hover_target: Option<Gd<Object>>,
+    hover_exit_pending: bool,
 }
 
 #[godot_api]
@@ -81,15 +90,19 @@ impl IControl for GdUITooltip {
             content_color: Color::from_rgb(0.85, 0.85, 0.9),
             corner_radius: 6,
             fade_duration: 0.15,
+            follow_mouse: true,
             panel: None,
             vbox: None,
             title_label: None,
             content_label: None,
+            sep_node: None,
             is_showing: false,
             delay_timer: 0.0,
             ui_built: false,
             has_custom_content: false,
             anim_tween: None,
+            hover_target: None,
+            hover_exit_pending: false,
         }
     }
 
@@ -103,6 +116,31 @@ impl IControl for GdUITooltip {
     }
 
     fn process(&mut self, delta: f64) {
+        // 悬停 tips 退出判定：目标与提示面板都离开才关闭。
+        // pending 期间若鼠标仍在目标上（is_hovered）或在提示面板矩形内则保持
+        if self.hover_exit_pending {
+            let mut close = true;
+            if let Some(ref target) = self.hover_target {
+                if target.is_instance_valid() {
+                    if let Ok(mut ctrl) = target.clone().try_cast::<Control>() {
+                        // 几何判定悬停（tooltip 面板覆盖目标时同样视为未离开）
+                        let rect = ctrl.get_global_rect();
+                        if rect.contains_point(ctrl.get_global_mouse_position()) {
+                            close = false;
+                        }
+                    }
+                }
+            }
+            if close && self.is_mouse_over_panel() {
+                close = false;
+            }
+            if close {
+                self.hover_exit_pending = false;
+                self.hover_target = None;
+                self.hide_tooltip();
+            }
+        }
+
         if !self.is_showing {
             return;
         }
@@ -118,8 +156,10 @@ impl IControl for GdUITooltip {
             return;
         }
 
-        // 已显示，持续跟随鼠标
-        self.update_position();
+        // 已显示：follow_mouse 时持续跟随；悬停 tips 模式固定在显示时的位置
+        if self.follow_mouse {
+            self.update_position();
+        }
     }
 }
 
@@ -151,23 +191,92 @@ impl GdUITooltip {
         self.play_fade_out();
     }
 
-    /// 设置提示框标题
+    /// 悬停 tips 绑定：目标节点 mouse_entered 显示提示（显示时定位一次，不跟随），
+    /// mouse_exited 进入待判定——鼠标离开目标且离开提示面板后才关闭。
+    /// 幂等：target 已带 __tips_bound meta 时跳过（connect_signals 可能多路径触发）。
     #[func]
-    fn set_tooltip_title(&mut self, text: GString) {
-        self.tooltip_title_text = text.clone();
-        if let Some(ref label) = self.title_label {
-            let mut l = label.clone();
-            l.set_text(&text);
+    fn setup_hover(&mut self, target: Gd<Object>, title: GString, content: GString) {
+        let mut ctrl = match target.clone().try_cast::<Control>() {
+            Ok(c) => c,
+            Err(_) => {
+                godot_warn!("[UITooltip] setup_hover: target is not a Control");
+                return;
+            }
+        };
+        if ctrl.has_meta(&StringName::from("__tips_bound")) {
+            return;
+        }
+        ctrl.set_meta(&StringName::from("__tips_bound"), &true.to_variant());
+
+        let host: Gd<Object> = self.base().clone().upcast();
+        let enter_cb = host
+            .callable("_on_tips_entered")
+            .bind(&[target.to_variant(), title.to_variant(), content.to_variant()]);
+        ctrl.connect(&StringName::from("mouse_entered"), &enter_cb);
+        let exit_cb = host.callable("_on_tips_exited").bind(&[target.to_variant()]);
+        ctrl.connect(&StringName::from("mouse_exited"), &exit_cb);
+    }
+
+    /// 悬停进入：记录目标、填充标题/内容并显示（延迟后定位一次，固定不跟随）
+    #[func]
+    fn _on_tips_entered(&mut self, target: Gd<Object>, title: GString, content: GString) {
+        self.hover_target = Some(target);
+        self.hover_exit_pending = false;
+        self.set_tooltip_title(title);
+        self.set_tooltip_content(content);
+        self.show_tooltip();
+    }
+
+    /// 悬停退出：不立即关闭，交由 process 的 pending 判定
+    /// （目标 is_hovered 或鼠标在提示面板上则保持）
+    #[func]
+    fn _on_tips_exited(&mut self, target: Gd<Object>) {
+        if let Some(ref cur) = self.hover_target {
+            if cur.instance_id() == target.instance_id() {
+                self.hover_exit_pending = true;
+            }
         }
     }
 
-    /// 设置提示框内容
+    /// 鼠标当前是否位于提示面板矩形内（面板可见时才有效）
+    #[func]
+    fn is_mouse_over_panel(&self) -> bool {
+        if !self.base().is_visible() {
+            return false;
+        }
+        if let Some(ref panel) = self.panel {
+            let mut p = panel.clone();
+            let rect = p.get_global_rect();
+            let mouse = self.base().get_global_mouse_position();
+            return rect.contains_point(mouse);
+        }
+        false
+    }
+
+    /// 设置提示框标题（空文本=隐藏标题与分隔线，供悬停 tips 动态切换）
+    #[func]
+    fn set_tooltip_title(&mut self, text: GString) {
+        self.tooltip_title_text = text.clone();
+        let has_title = !text.is_empty();
+        if let Some(ref label) = self.title_label {
+            let mut l = label.clone();
+            l.set_text(&text);
+            l.set_visible(has_title);
+        }
+        if let Some(ref sep) = self.sep_node {
+            let mut s = sep.clone();
+            s.set_visible(has_title);
+        }
+    }
+
+    /// 设置提示框内容（空文本=隐藏正文）
     #[func]
     fn set_tooltip_content(&mut self, text: GString) {
         self.tooltip_content_text = text.clone();
         if let Some(ref label) = self.content_label {
             let mut l = label.clone();
             l.set_text(&text);
+            l.set_visible(!text.is_empty());
         }
     }
 
@@ -270,6 +379,7 @@ impl GdUITooltip {
         let mut vbox_node: Option<Gd<VBoxContainer>> = None;
         let mut title_node: Option<Gd<Label>> = None;
         let mut content_node: Option<Gd<Label>> = None;
+        let mut sep_node: Option<Gd<HSeparator>> = None;
 
         {
             let mut base = self.base_mut();
@@ -297,38 +407,47 @@ impl GdUITooltip {
             vbox.add_theme_constant_override(&StringName::from("separation"), 4);
             vbox.set_mouse_filter(MouseFilter::IGNORE);
 
-            // 标题
+            // 标题/分隔线/正文始终创建——悬停 tips 模式宿主是空文本懒创建的，
+            // 若此刻不建节点，set_tooltip_title/content 时拿不到引用，面板永远空白；
+            // 空文本用 visible=false 折叠，运行期动态切换
             let has_title = !tooltip_title.is_empty();
-            if has_title {
-                let mut title_label = Label::new_alloc();
-                title_label.set_name("TooltipTitle");
-                title_label.set_text(&tooltip_title);
-                title_label.add_theme_font_size_override(&StringName::from("font_size"), 16);
-                title_label.add_theme_color_override(&StringName::from("font_color"), title_color);
-                title_label.set_mouse_filter(MouseFilter::IGNORE);
-                vbox.add_child(&title_label);
-                title_node = Some(title_label);
+            let mut title_label = Label::new_alloc();
+            title_label.set_name("TooltipTitle");
+            title_label.set_text(&tooltip_title);
+            title_label.add_theme_font_size_override(&StringName::from("font_size"), 16);
+            title_label.add_theme_color_override(&StringName::from("font_color"), title_color);
+            title_label.set_mouse_filter(MouseFilter::IGNORE);
+            title_label.set_visible(has_title);
+            vbox.add_child(&title_label);
+            title_node = Some(title_label);
 
-                // 分隔线
-                let mut sep = HSeparator::new_alloc();
-                sep.set_name("TooltipSeparator");
-                sep.set_mouse_filter(MouseFilter::IGNORE);
-                vbox.add_child(&sep);
-            }
+            let mut sep = HSeparator::new_alloc();
+            sep.set_name("TooltipSeparator");
+            sep.set_mouse_filter(MouseFilter::IGNORE);
+            // 无标题时分隔线也无意义，一并隐藏（VBox 中隐藏节点不占布局空间）
+            sep.set_visible(has_title);
+            vbox.add_child(&sep);
+            sep_node = Some(sep);
 
-            // 内容文本
             let has_content = !tooltip_content.is_empty();
-            if has_content {
-                let mut content_label = Label::new_alloc();
-                content_label.set_name("TooltipContent");
-                content_label.set_text(&tooltip_content);
-                content_label.add_theme_font_size_override(&StringName::from("font_size"), 14);
-                content_label.add_theme_color_override(&StringName::from("font_color"), content_color);
-                content_label.set_autowrap_mode(AutowrapMode::WORD_SMART);
-                content_label.set_mouse_filter(MouseFilter::IGNORE);
-                vbox.add_child(&content_label);
-                content_node = Some(content_label);
+            let mut content_label = Label::new_alloc();
+            content_label.set_name("TooltipContent");
+            content_label.set_text(&tooltip_content);
+            content_label.add_theme_font_size_override(&StringName::from("font_size"), 14);
+            content_label.add_theme_color_override(&StringName::from("font_color"), content_color);
+            content_label.set_autowrap_mode(AutowrapMode::WORD_SMART);
+            // 关键：钉住正文最小宽度。autowrap Label 的 min 高度按「当前宽度」换行
+            // 计算，且宽度定型后 min 不会自动重算——面板进树初期宽度≈0 时，
+            // 文本按 0 宽换行 min 高度暴涨（38 字≈38 行≈1045px），panel 尺寸被钳到
+            // 膨胀值后不再回落，面板变成超长空条、定位翻转全错。钉住宽度后
+            // min 高度从构建起就按真实宽度计算，不再膨胀。
+            if max_width > 16 {
+                content_label.set_custom_minimum_size(Vector2::new((max_width - 16) as f32, 0.0));
             }
+            content_label.set_mouse_filter(MouseFilter::IGNORE);
+            content_label.set_visible(has_content);
+            vbox.add_child(&content_label);
+            content_node = Some(content_label);
 
             panel.add_child(&vbox);
             base.add_child(&panel);
@@ -340,6 +459,7 @@ impl GdUITooltip {
         self.vbox = vbox_node;
         self.title_label = title_node;
         self.content_label = content_node;
+        self.sep_node = sep_node;
     }
 
     /// 移除内置的 title/content label 和 separator
@@ -362,6 +482,7 @@ impl GdUITooltip {
         }
         self.title_label = None;
         self.content_label = None;
+        self.sep_node = None;
     }
 
     /// 递归解析模板绑定：遍历节点及其子节点，查找 __tpl_keys 和 __tpl_attr 元数据，
@@ -415,11 +536,19 @@ impl GdUITooltip {
     }
 
     fn update_position(&mut self) {
+        // 先把面板缩回 min 尺寸：autowrap 正文在面板宽度未定型时（进树初期
+        // 宽度≈0）会按极窄宽度换行，min 高度瞬间膨胀（38 字→38 行≈1045px），
+        // panel 尺寸被钳到膨胀值后 Godot 不会自动缩回——后续定位/翻转全部失真。
+        // reset_size 后 min 已按真实宽度回落，尺寸恢复为内容实际高度。
+        if let Some(ref panel) = self.panel {
+            let mut p = panel.clone();
+            p.reset_size();
+        }
         let mouse_pos = self.base().get_global_mouse_position();
         let offset_x = self.offset_x;
         let offset_y = self.offset_y;
 
-        // 获取面板大小
+        // 获取面板大小（reset_size 之后读取，翻转判定才准确）
         let panel_size = if let Some(ref panel) = self.panel {
             panel.get_size()
         } else {
@@ -433,19 +562,21 @@ impl GdUITooltip {
             Vector2::new(1920.0, 1080.0)
         };
 
-        // 计算位置，避免超出屏幕
-        let mut x = mouse_pos.x + offset_x;
-        let mut y = mouse_pos.y + offset_y;
-
-        if x + panel_size.x > viewport_size.x {
-            x = mouse_pos.x - panel_size.x - offset_x;
+        // 偏移量（视口坐标）：右下放不下时翻转到鼠标左上
+        let mut dx = offset_x;
+        let mut dy = offset_y;
+        if mouse_pos.x + offset_x + panel_size.x > viewport_size.x {
+            dx = -panel_size.x - offset_x;
         }
-        if y + panel_size.y > viewport_size.y {
-            y = mouse_pos.y - panel_size.y - offset_y;
+        if mouse_pos.y + offset_y + panel_size.y > viewport_size.y {
+            dy = -panel_size.y - offset_y;
         }
 
+        // set_position 是宿主局部坐标——宿主不在画布原点/带缩放时直接赋
+        // 全局坐标会飘移，用 get_local_mouse_position（局部系鼠标位）加偏移
+        let local_mouse = self.base().get_local_mouse_position();
         if let Some(ref mut panel) = self.panel {
-            panel.set_position(Vector2::new(x, y));
+            panel.set_position(local_mouse + Vector2::new(dx, dy));
         }
     }
 

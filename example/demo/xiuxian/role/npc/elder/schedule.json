@@ -1,0 +1,35 @@
+{
+  "jitter_minutes": 5,
+  "teleport_far": true,
+  "teleport_cells": 12,
+  "ambient_interval": [8.0, 20.0],
+  "greet": {
+	"lines": ["少侠有礼。", "有事但说无妨。", "演武场那边，还请安静些。"],
+	"radius": 140.0,
+	"cooldown": 25.0,
+	"line_secs": 3.0
+  },
+  "entries": [
+    { "from": 0.0,  "to": 6.0,  "cell": [10, 11], "behavior": "idle",
+      "label": "居所打坐",
+      "lines": ["(吐纳)……", "(运功中)……"] },
+    { "from": 6.0,  "to": 7.5,  "cell": [10, 9],  "behavior": "wander", "radius": 48,
+      "label": "院中晨课" },
+    { "from": 7.5,  "to": 11.0, "cell": [20, 10], "behavior": "idle",
+      "label": "演武场督课",
+      "lines": ["下盘再稳些。", "剑走轻灵，不可使蛮力。"] },
+    { "from": 11.0, "to": 12.0, "cell": [17, 13], "behavior": "wander", "radius": 64,
+      "label": "坊市巡查" },
+    { "from": 12.0, "to": 14.0, "cell": [10, 9],  "behavior": "idle",
+      "label": "回院小憩",
+      "lines": ["午后静养……"] },
+    { "from": 14.0, "to": 18.0, "cell": [10, 9],  "behavior": "idle",
+      "label": "处理教务",
+      "lines": ["名册该誊抄了。", "库房的灵石账要对一遍。"] },
+    { "from": 18.0, "to": 20.0, "cell": [20, 12], "behavior": "wander", "radius": 64,
+      "label": "河边暮行" },
+    { "from": 20.0, "to": 24.0, "cell": [10, 11], "behavior": "idle",
+      "label": "居所打坐",
+      "lines": ["(吐纳)……"] }
+  ]
+}
