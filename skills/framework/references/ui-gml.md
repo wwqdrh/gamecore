@@ -831,3 +831,79 @@ name→节点映射由 rust 解析维护（ui_manager.rs），GDScript 静态直
 **适用**：面板脚本 `@onready` 取节点、测试探针按 name 断言。
 跨**文件**的组件调用仍走 `GdUIManager.find_ui("TaskDrawer")`（ui_id 注册表）。
 范本：example/demo/xiuxian/scenes/main/ui/docsbook/docsbook.gd。
+
+## 响应式条件显隐：show_if / hide_if（ui_reactive.rs）
+
+任意 GML 元素声明 `show_if="变量"` / `hide_if="变量"`（支持 `!` 前缀取反），
+变量真值驱动 visible，数据变更即时重算——组件"自己响应数据变化"：
+
+```xml
+<Button name="Slot1DelBtn" show_if="slot1_has_save" @pressed="_on_del" />
+```
+
+```gdscript
+# 变量变更即重算本 gml 树全部条件（GDScript 静态调用，同 GdUIManager 范式）
+GdUIReactive.set_var(self, "slot1_has_save", has_save)
+```
+
+**机制**：
+- 属性存节点 meta `__show_if`/`__hide_if`，**随 tscn 序列化保留**
+- 构建期：builder `apply_data_bindings` 末尾按 `<script>` 变量初始求值
+  （变量缺失 = false → show_if 隐藏 / hide_if 显示）
+- 运行期：`GdUIReactive.set_var(from, name, value)` 更新就近 `__gml_root`
+  的 `__script_vars` 字典（根 + 顶层子节点副本），全树重算（跳过嵌套
+  `<Gml>` 子作用域）；另有 `get_var` / `apply_conditions` 辅助
+- 真值规则：null/缺失=false、bool 原值、数字≠0、字符串非空且非
+  "false"/"0"、数组/字典非空、对象非空
+
+**适用**：数据驱动的显隐/切换（存档槽删除按钮、条件提示、权限位控件）。
+**勿手写 visible 翻转**——一律走此范式。
+
+## 演出组件：Toast / Banner（ui_toast.rs / ui_banner.rs）
+
+| 组件 | 标签 | 要点 |
+|---|---|---|
+| `<Toast>` 提示条 | `ui_toast.rs` | 队列 + 相位机（0空闲/1入/2停/3出）；`show_toast(text)` / `show_toast_secs(text, secs)`；信号 `s_toast_shown` / `s_toast_done`；`is_busy` / `clear_toasts` |
+| `<Banner>` 字幅 | `ui_banner.rs` | `play_banner(title, sub)` 队列上限 4 无缝接播；淡入（1.25→1.0 缩放）→停留→淡出；`dim_bg` 暗幕；播放期鼠标 STOP、结束回 IGNORE；信号 `s_banner_finished` |
+
+```gdscript
+@onready var _toast: Control = GdUIManager.get_gml_node(self, "HintToast")
+_toast.call("show_toast", "此地尚未开放——先突破至斗者境界，再来探索")
+```
+
+gdext 0.5 坑：无 `set_grow_horizontal` 方法（走 `base.set` 属性）；
+StyleBoxFlat 等纯 Resource 用 `new_gd()`（NewGd trait）非 `new_alloc`。
+范本：`example/demo/xiuxian/scenes/main/ui/mainhud/mainhud_guide.gd`
+（教学连发/突破演出/通关字幅/门控提示四合一）。
+
+## 按文本自适应宽度：FitLabel（ui_fit_label.rs）
+
+固定宽度面板里长文本溢出的解法：`<FitLabel>`（Label 子类）+
+`<PanelContainer>`（min 尺寸随内容撑开）组合。
+
+```xml
+<PanelContainer class="quest-scroll" custom_minimum_size="0,48">
+  <HBoxContainer separation="8">
+    <Label class="quest-icon" text="📜" valign="center" />
+    <FitLabel name="QuestText" text="暂无任务" fit_width="true" fit_padding="6" valign="center" />
+  </HBoxContainer>
+</PanelContainer>
+```
+
+```gdscript
+# 运行期任意改 text（GDScript set / 模板绑定），宽度自动跟随
+label.text = "可接取：主线·初入仙途 · 找「执事长老」接取"
+```
+
+**机制**：
+- `fit_width="true"`：custom_minimum_size.x = 文本像素宽 + fit_padding
+  （按当前 font/font_size 主题测量，构建期的 font_size 覆盖同样生效）
+- 文本变化即重测量：`_process` 脏检查（文本未变零开销），另有 `refit()`
+  手动触发；双向自适应（变长撑开、变短收缩）
+- `fit_width="false"`（默认）行为等同普通 Label
+- **单行语义**：按不换行文本测量；多行需求用普通 Label + autowrap
+- 鼠标穿透：纯展示，构建期 is_transparent_tag 白名单兜底
+
+范本：`example/demo/xiuxian/scenes/main/ui/mainhud/mainhud_quest.gml`
+（HUD 任务横幅）；测试 `test/test_ui_fit_label.gd`（文本涨缩 + 容器撑开 +
+默认关断言）。

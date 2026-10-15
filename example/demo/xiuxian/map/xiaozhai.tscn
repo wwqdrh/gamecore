@@ -20,6 +20,8 @@ blocked_terrains = PackedStringArray("mountain")
 connected_terrain = "grass"
 paint_terrain = "mountain"
 paint_rects = Array[Rect2i]([Rect2i(7, 2, 6, 3), Rect2i(14, 5, 2, 4), Rect2i(4, 5, 2, 4), Rect2i(3, 10, 6, 1), Rect2i(11, 10, 6, 1)])
+gate_terrain = "grass"
+gate_rects = Array[Rect2i]([Rect2i(0, 11, 4, 3), Rect2i(16, 11, 4, 3)])
 terrain_shader_textures = PackedStringArray("res://example/demo/xiuxian/map/assets/grass_texture.png", "", "")
 
 [node name="DecoHarvest" type="Node" parent="."]
@@ -35,18 +37,18 @@ deco_hits = PackedInt32Array(3, 3)
 deco_callbacks = PackedStringArray("on_ore_harvested", "on_ore_harvested")
 callback_target_path = NodePath("../DecoHarvest")
 
-[node name="TeleportSouth" type="GdMapMarker" parent="."]
-cell = Vector2i(9, 11)
+[node name="TeleportXiaozhen" type="GdMapMarker" parent="."]
+cell = Vector2i(19, 12)
 cell_size = 32
 target_alias = "xiuxian_xiaozhen"
-target_cell = Vector2i(13, 9)
+target_cell = Vector2i(1, 13)
 label = "前往青石镇"
 
 [node name="TeleportHome" type="GdMapMarker" parent="."]
-cell = Vector2i(14, 12)
+cell = Vector2i(0, 12)
 cell_size = 32
 target_alias = "xiuxian_home"
-target_cell = Vector2i(10, 8)
+target_cell = Vector2i(18, 12)
 label = "回家"
 
 [node name="NpcXiaoMaster" parent="." instance=ExtResource("1_master")]

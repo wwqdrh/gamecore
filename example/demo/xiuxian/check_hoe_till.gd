@@ -106,23 +106,17 @@ func _run() -> void:
 
 	_check(map.call("get_terrain_name_at", Vector2i(9, 6)) == "grass", "挥击前 (9,6) 应为 grass")
 
-	# 光标：配置 cursor_texture 后应创建 DigCursor 精灵，可锄格显示/不可锄格隐藏
-	var cursor: Node2D = map.get_node_or_null("DigCursor")
-	_check(cursor != null, "配置 cursor_texture 后应创建 DigCursor 精灵")
+	# 光标：GdActionCursor 组件（配置 cursor_texture 则贴图样式），
+	# 可锄格显示/不可锄格隐藏
+	var cursor: Node2D = map.get_node_or_null("ActionCursor")
+	_check(cursor != null, "应创建 ActionCursor 光标组件")
 	if cursor != null:
 		map.call("set_cursor_cell", Vector2i(9, 6))
 		_check(cursor.visible, "可锄格 set_cursor_cell 应显示光标")
-		# 双网格根带半格偏移+缩放：世界语义格心必须经 to_local 落位，
-		# 全局坐标应精确等于格心（局部坐标直接赋值会 2 倍飘移）
+		# 世界语义格心定位（根恒单位变换）：全局坐标应精确等于格心
 		_check(cursor.global_position == map.call("cell_to_center", Vector2i(9, 6)),
 			"光标世界坐标应等于目标格中心（%s vs %s）"
 				% [cursor.global_position, map.call("cell_to_center", Vector2i(9, 6))])
-		var sprite := cursor as Sprite2D
-		var xform: Transform2D = sprite.get_global_transform()
-		var fitted_w: float = sprite.texture.get_width() * xform.get_scale().x
-		var fitted_h: float = sprite.texture.get_height() * xform.get_scale().y
-		_check(absf(maxf(fitted_w, fitted_h) - 32.0) < 1.0,
-			"光标世界尺寸应缩放到单格 32px（长边 %.1f px）" % maxf(fitted_w, fitted_h))
 		map.call("set_cursor_cell", Vector2i(0, 0))
 		_check(not cursor.visible, "dig_rects 外装饰草应隐藏光标")
 		map.call("clear_cursor")

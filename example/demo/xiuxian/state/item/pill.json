@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "pipeline": "gjson",
+  "desc": "丹药表（恢复/修为/辅助类服用丹药；use=exp 的丹药服用获得 exp 点修为） 字段：id/name/type/rarity/desc/source(获得方式)/price/stack/icon；type: 消耗/材料/装备/特殊；rarity: 凡品/灵品/仙品/帝品。icon=逻辑图片 id（state/item/icon_map.gd 登记）。",
+  "items": {
+    "pill_hp": {
+      "id": "pill_hp",
+      "name": "回春丹",
+      "type": "消耗",
+      "rarity": "凡品",
+      "desc": "服用后恢复少量气血。",
+      "source": "坊市购得；以血参炼制。",
+      "price": 10,
+      "stack": 99,
+      "icon": "img_pill_hp"
+    },
+    "pill_mp": {
+      "id": "pill_mp",
+      "name": "凝神丹",
+      "type": "消耗",
+      "rarity": "凡品",
+      "desc": "服用后恢复少量灵力。",
+      "source": "坊市购得；以灵芝炼制。",
+      "price": 12,
+      "stack": 99,
+      "icon": "img_pill_mp"
+    },
+    "pill_break": {
+      "id": "pill_break",
+      "name": "破境丹",
+      "type": "消耗",
+      "rarity": "仙品",
+      "desc": "冲击瓶颈时服用，可提升破境成功率。",
+      "source": "坊市购得；宗门任务奖励。",
+      "price": 2000,
+      "stack": 9,
+      "icon": "img_pill_break"
+    },
+    "pill_exp_s": {
+      "id": "pill_exp_s",
+      "name": "聚灵散",
+      "type": "消耗",
+      "rarity": "凡品",
+      "desc": "服用后获得 500 点修为。",
+      "source": "坊市购得。",
+      "price": 80,
+      "stack": 99,
+      "use": "exp",
+      "exp": 500,
+      "icon": "img_pill_exp"
+    },
+    "pill_exp_m": {
+      "id": "pill_exp_m",
+      "name": "凝碧丹",
+      "type": "消耗",
+      "rarity": "灵品",
+      "desc": "服用后获得 5000 点修为。",
+      "source": "坊市购得；炼丹台炼制。",
+      "price": 900,
+      "stack": 99,
+      "use": "exp",
+      "exp": 5000,
+      "icon": "img_pill_exp"
+    }
+  }
+}

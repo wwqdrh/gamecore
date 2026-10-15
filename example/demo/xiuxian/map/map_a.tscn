@@ -19,20 +19,22 @@ terrain_shaders = PackedStringArray("", "", "", "", "water_flow")
 blocked_terrains = PackedStringArray("water", "mountain")
 terrain_heights = PackedInt32Array(0, 0, 0, 3, 0)
 connected_terrain = "grass"
+gate_terrain = "grass"
+gate_rects = Array[Rect2i]([Rect2i(0, 12, 4, 3), Rect2i(9, 0, 3, 4)])
 
-[node name="TeleportEast" type="GdMapMarker" parent="."]
-cell = Vector2i(26, 9)
+[node name="TeleportNorth" type="GdMapMarker" parent="."]
+cell = Vector2i(10, 0)
 cell_size = 32
 target_alias = "xiuxian_map_b"
-target_cell = Vector2i(3, 9)
+target_cell = Vector2i(10, 14)
 label = "前往幽竹林"
 
 [node name="TeleportTown" type="GdMapMarker" parent="."]
-cell = Vector2i(3, 13)
+cell = Vector2i(0, 13)
 cell_size = 32
 color = Color(0.55, 0.85, 1, 1)
 target_alias = "xiuxian_town"
-target_cell = Vector2i(26, 10)
+target_cell = Vector2i(30, 13)
 label = "返回青云坊"
 
 [node name="EnemySlime" parent="." instance=ExtResource("2_slime")]

@@ -68,7 +68,23 @@ func _run() -> void:
 	var dlg: XiuDialogState = XiuDialogState.ins()
 	tasks.reset_demo()
 	ch.reset_demo()
-	check(XiuTaskTable.count() == 10, "任务定义表应有 10 条（8 迁移 + side_003 + sect_tournament），实际 %d" % XiuTaskTable.count())
+	check(XiuTaskTable.count() == 11, "任务定义表应有 11 条（8 迁移 + side_003 + sect_tournament + main_004），实际 %d" % XiuTaskTable.count())
+
+	# 0b. 任务目录视图（2026-10-15 引导改造）：available/locked 均入"可接取"
+	# 组并带接取指引（找 giver 对话），玩家不用盲找 NPC
+	var v_main1 := {}
+	for v in tasks.views:
+		if str(v.get("id", "")) == "main_001":
+			v_main1 = v
+	check(str(v_main1.get("status_group", "")) == "avail", "可接取任务应入 avail 状态组（任务目录页签）")
+	check(str(v_main1.get("hint", "")) == "找「执事长老」接取", "可接取任务应带 giver 接取指引，实际 %s" % str(v_main1.get("hint", "")))
+	check(str(v_main1.get("btn_state", "")) == "find", "可接取任务按钮应为 find（去接取）")
+	var v_main3 := {}
+	for v in tasks.views:
+		if str(v.get("id", "")) == "main_003":
+			v_main3 = v
+	check(str(v_main3.get("status_group", "")) == "avail", "未解锁任务应入 avail 组作链路预览")
+	check(str(v_main3.get("btn_state", "")) == "locked", "未解锁任务按钮应为 locked（未解锁）")
 
 	# 1. 装配
 	var main_scene: PackedScene = load("res://example/demo/xiuxian/scenes/main/index.tscn")
@@ -89,7 +105,11 @@ func _run() -> void:
 	if mgr == null or dialogue == null or dialog_box == null:
 		_finish()
 		return
-	check(str(mgr.get_current_alias()) == "xiuxian_xiaozhai", "应默认加载萧宅")
+	# 本测试的对话 NPC 都在萧宅：出生点已改为 home 农田（beat 0），显式切图
+	mgr.open_map("xiuxian_xiaozhai", Vector2i(10, 8))
+	for i in 6:
+		await process_frame
+	check(str(mgr.get_current_alias()) == "xiuxian_xiaozhai", "切图后应加载萧宅")
 	var map: Node = mgr.get_current_map()
 	var player: Node = index.get_node_or_null("Player")
 
@@ -107,15 +127,25 @@ func _run() -> void:
 	if master == null or lady == null or maid == null or player == null:
 		_finish()
 		return
+	# 日程/闲聊冻结：schedule 会按当前小时走位/teleport，写死站位假设必失效
+	# （对话流测试冻结规约，见 NPC_LIFE.md ④）
+	for n in get_nodes_in_group("npc_schedule"):
+		n.set("enable", false)
+	for n in get_nodes_in_group("npc_chat"):
+		n.set("enable", false)
+	for i in 3:
+		await process_frame
 	var master_trigger: Node = master.get_node("Trigger")
 	var lady_trigger: Node = lady.get_node("Trigger")
 	var maid_trigger: Node = maid.get_node("Trigger")
 
-	# ---- 2. 最近触发 ----
+	# ---- 2. 最近触发（站位由 NPC 实际位置推导，日程冻结后位置稳定）----
 	var cs: int = map.get_cell_size_px()
+	var mpos: Vector2 = master.global_position
+	var lpos: Vector2 = lady.global_position
 	check(master_trigger.is_in_group("dialog_trigger"), "触发器应加入 dialog_trigger 分组")
-	# 玩家放两者之间、离夫人更近：老爷(9,6) 夫人(12,7)，玩家 (11,6)
-	player.global_position = Vector2(11.5, 6.5) * cs
+	# 玩家放两者连线靠夫人一侧：夫人更近 → 老爷让位
+	player.global_position = lpos + (mpos - lpos) * 0.25
 	for i in 6:
 		await physics_frame
 	var started_far: bool = master_trigger.start_dialog()
@@ -133,15 +163,16 @@ func _run() -> void:
 	tasks.reset_demo()
 	ch.reset_demo()
 	check(not dlg.has_flag("met_xiao_master"), "重置后 met_xiao_master 应为 false")
-	player.global_position = Vector2(11.5, 10.5) * cs
+	# 玩家贴到老爷身边（老爷必然是最近触发器）
+	player.global_position = mpos + Vector2(cs * 0.5, 0)
 	for i in 3:
 		await physics_frame
 	check(master_trigger.start_dialog(), "萧老爷对话应可触发")
-	check(dlg.has_flag("met_xiao_master"), "初见段应置 met_xiao_master（持久化 flag）")
 	var intro_text := str(dialog_box.text_label.text)
 	check(intro_text.contains("稳当"), "首次对话应进入初见段，实际：%s" % intro_text)
-	# 选项：有什么能帮忙的吗 → 任务交代段
+	# 选项：有什么能帮忙的吗 → 任务交代段（met_xiao_master 经选项动作置位）
 	await advance_once(dialogue, dialog_box, "帮忙")
+	check(dlg.has_flag("met_xiao_master"), "初见选项应置 met_xiao_master（持久化 flag）")
 	var offer_text := str(dialog_box.text_label.text)
 	check(offer_text.contains("小翠"), "应进入任务交代段（提及小翠），实际：%s" % offer_text)
 	await advance_once(dialogue, dialog_box)  # 交代段第 2 行（选项挂这行）
@@ -156,22 +187,32 @@ func _run() -> void:
 	print("[Task] accepted: status=%s" % tasks.get_task_status("side_003"))
 
 	# ---- 4. 任务完成（与小翠对话）----
+	# 玩家挪到小翠身边（否则小翠触发器让位给更近的老爷）
+	player.global_position = maid.global_position + Vector2(cs * 0.5, 0)
+	for i in 3:
+		await physics_frame
 	check(maid_trigger.start_dialog(), "小翠对话应可触发（直接调用）")
 	var maid_text := str(dialog_box.text_label.text)
 	check(maid_text.contains("陪我聊天"), "应进入任务对话段，实际：%s" % maid_text)
 	await advance_once(dialogue, dialog_box)  # 第 2 行（八卦）
 	await advance_once(dialogue, dialog_box)  # 第 3 行（大比伏笔）
-	await advance_once(dialogue, dialog_box)  # 第 4 行挂 @task_complete:side_003
+	await advance_once(dialogue, dialog_box)  # 第 4 行（选项挂这行）
+	check(dialog_box.responding, "任务段末行应出现「知道啦」选项")
+	# 选项动作 @task_complete:side_003;goto:maid_end（完成位在选项动作里）
+	await advance_once(dialogue, dialog_box, "知道啦")
 	check(tasks.get_task_status("side_003") == "submitted", "任务应完成并提交（submitted）")
 	check(int(ch.coins) == 50, "奖励应为 50 金币，实际 %d" % int(ch.coins))
 	check(dlg.has_flag("task_side_003_done"), "应同步任务完成 flag")
 	check(not tasks.complete_task("side_003"), "已提交任务重复完成应返回 false")
-	await advance_once(dialogue, dialog_box, "知道啦")
 	await advance_to_end(dialogue, dialog_box)
 	check(not dialogue.is_playing(), "小翠对话应播完")
 	print("[Task] completed: coins=%s" % str(ch.coins))
 
 	# ---- 5. 任务关闭：萧老爷再访不再出现任务段 ----
+	# 玩家挪回老爷身边（step4 站在小翠处，若夫人日程落位凑近会让位拒启）
+	player.global_position = mpos + Vector2(cs * 0.5, 0)
+	for i in 3:
+		await physics_frame
 	check(master_trigger.start_dialog(), "萧老爷对话应可再次触发")
 	var catchup_text := str(dialog_box.text_label.text)
 	check(catchup_text.contains("投缘"), "应进入任务完成后的日常段，实际：%s" % catchup_text)

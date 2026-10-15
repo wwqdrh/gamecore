@@ -161,7 +161,27 @@ func try_breakthrough() -> bool:
 	update("mp", nmp, {}, false)
 	# 破壁成功奖励 2 技能点
 	update("skill_points", skill_points + 2, {}, false)
+	_on_rank_entered(nlv)
 	return true
+
+
+## 进入新大阶的跨系统联动（阶段目标链，M4）：
+##   置 rank_<阶id> flag（对话收束段门控）+ 解锁对应野外图 +
+##   推进引用该等阶的主线任务（main_004 rank_up 步）。
+## 只在突破落进的阶上触发；阶内升级不走此处。
+func _on_rank_entered(nlv: int) -> void:
+	var rank: Dictionary = XiuLevelTable.get_rank_at(XiuLevelTable.rank_order_of(nlv))
+	var rid := str(rank.get("id", ""))
+	if rid.is_empty():
+		return
+	var dlg := XiuDialogState.ins()
+	dlg.set_flag("rank_%s" % rid)
+	match rid:
+		"dou_zhe":
+			XiuMapState.ins().unlock_map("xiuxian_map_a")
+			var ts := XiuTaskState.ins()
+			if ts.get_task_status("main_004") == ts.STATUS_ACCEPTED:
+				ts.advance_task("main_004")
 
 
 # ------------------------------------------------------------------ 变更

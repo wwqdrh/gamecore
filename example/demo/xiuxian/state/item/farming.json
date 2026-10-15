@@ -1,0 +1,73 @@
+{
+  "version": 1,
+  "pipeline": "gjson",
+  "desc": "灵田种植表（种子与收获物；种子播种在湿润耕地上，成熟收获） 字段：id/name/type/rarity/desc/source(获得方式)/price/stack/icon；type: 消耗/材料/装备/特殊；rarity: 凡品/灵品/仙品/帝品。icon=逻辑图片 id（state/item/icon_map.gd 登记）。",
+  "items": {
+    "seeds_veg": {
+      "id": "seeds_veg",
+      "name": "青菜种子",
+      "type": "消耗",
+      "rarity": "凡品",
+      "desc": "家宅田地的常用菜种，播种在湿润的耕地上，历经发芽、幼苗、成长直至成熟收获。",
+      "source": "坊市种子铺购得；成熟作物留种。",
+      "price": 5,
+      "stack": 99,
+      "icon": "img_seeds"
+    },
+    "veg_green": {
+      "id": "veg_green",
+      "name": "青菜",
+      "type": "材料",
+      "rarity": "凡品",
+      "desc": "田里亲手摘下的新鲜青菜，水灵灵的还带着露珠。",
+      "source": "灵田种植收获；坊市购得。",
+      "price": 8,
+      "stack": 99,
+      "icon": "img_veg_green"
+    },
+    "seeds_radish": {
+      "id": "seeds_radish",
+      "name": "萝卜种子",
+      "type": "消耗",
+      "rarity": "凡品",
+      "desc": "耐旱好养的白玉萝卜种，种下去三个阶段就能拔。收获的萝卜清甜多汁。",
+      "source": "坊市种子铺购得；成熟作物留种。",
+      "price": 10,
+      "stack": 99,
+      "icon": "img_seeds_radish"
+    },
+    "veg_radish": {
+      "id": "veg_radish",
+      "name": "萝卜",
+      "type": "材料",
+      "rarity": "凡品",
+      "desc": "刚从地里拔出来的白玉萝卜，带着湿润的泥土气息。",
+      "source": "灵田种植收获；坊市购得。",
+      "price": 15,
+      "stack": 99,
+      "icon": "img_veg_radish"
+    },
+    "seeds_melon": {
+      "id": "seeds_melon",
+      "name": "灵瓜种子",
+      "type": "消耗",
+      "rarity": "凡品",
+      "desc": "蕴含一丝灵气的瓜种，生长缓慢却格外需要水分。成熟的灵瓜甘甜沁脾。",
+      "source": "坊市种子铺购得；成熟作物留种。",
+      "price": 20,
+      "stack": 99,
+      "icon": "img_seeds_melon"
+    },
+    "veg_melon": {
+      "id": "veg_melon",
+      "name": "灵瓜",
+      "type": "材料",
+      "rarity": "凡品",
+      "desc": "吸饱了灵气的甜瓜，一刀切开香气四溢，是修行之余的难得美味。",
+      "source": "灵田种植收获；坊市购得。",
+      "price": 35,
+      "stack": 99,
+      "icon": "img_veg_melon"
+    }
+  }
+}

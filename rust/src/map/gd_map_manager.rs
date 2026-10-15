@@ -251,6 +251,18 @@ impl GdMapManager {
         true
     }
 
+    /// 查询世界坐标命中的传送点目标地图别名（只读，无副作用）。
+    /// 未命中传送点或为纯标记点返回空串——宿主（玩家）传送前置门控用：
+    /// 先查目标是否解锁再调 try_teleport，避免在 try_teleport 信号回调里
+    /// 反向调管理器方法（单借用重入 panic）。
+    #[func]
+    pub fn get_portal_target_at(&self, world_pos: Vector2) -> GString {
+        let Some(mut marker) = self.find_marker_at(world_pos) else {
+            return GString::new();
+        };
+        marker.call("get_target_alias", &[]).to::<GString>()
+    }
+
     /// 世界坐标传送：命中当前地图某传送点格子时切换到其目标地图。
     /// 返回是否触发传送（人物网格走动每步调用即可）。
     #[func]

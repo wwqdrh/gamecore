@@ -274,6 +274,31 @@ impl GdDecoLayer {
     }
 
     /// 最近一次 spawn_deco 生成数量
+    /// 格子当前是否有可开采矿石（未采集的 mineable deco 实例仍在场上）。
+    /// 供地图根的动作光标 "mine" 过滤查询（GdQuickMap.is_mineable_cell
+    /// 鸭子协议调用）；mineable 实例必挂 Health 子节点（碰撞计数承载），
+    /// 以此区分装饰物/已采集矿石
+    #[func]
+    pub fn is_mineable_at(&self, cell: Vector2i) -> bool {
+        for child in self.base().get_children().iter_shared() {
+            let mut child = child;
+            if !child.has_meta("deco_cell") {
+                continue;
+            }
+            let c: Vector2i = child.get_meta("deco_cell").to();
+            if c != cell {
+                continue;
+            }
+            if child
+                .get_node_or_null(&NodePath::from("Health"))
+                .is_some()
+            {
+                return true;
+            }
+        }
+        false
+    }
+
     #[func]
     pub fn get_spawned_count(&self) -> i64 {
         self.spawned_count

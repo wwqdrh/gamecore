@@ -1,0 +1,38 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/ui/mainhud/mainhud_guide.gd" id="1_4872h"]
+
+[node name="GuideLayer" type="Control" unique_id=1840704674]
+layout_mode = 3
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource("1_4872h")
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray()
+
+[node name="PerfBanner" type="GdUIBanner" parent="." unique_id=739533718]
+hold_secs = 1.8
+anim_secs = 0.55
+title_font = 46
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="HintToast" type="GdUIToast" parent="." unique_id=2075374669]
+duration = 2.8
+fade_secs = 0.3
+layout_mode = 0
+anchor_left = 0.5
+anchor_right = 0.5
+offset_top = 64.0
+offset_bottom = -64.0
+mouse_filter = 2
+metadata/__anchor = "top_center"
+metadata/__script_vars = {}

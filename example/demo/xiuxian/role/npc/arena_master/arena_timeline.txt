@@ -12,12 +12,12 @@
 # 门控段排在无条件段之前（start_from 从头扫描取第一个满足条件的 stage）。
 
 # 首次见面（引出大比设定 + 指引秘境历练）
+# （met_arena_master 参与本段 gate 取反，必须经选项动作置位，同 master_intro）
 [arena_intro@!met_arena_master]
 (秦重,云舟)
 生面孔。演武堂重地，闲人免进——哦？萧宅的客卿，失敬失敬。
-@set_flag:met_arena_master
-- 宗门大比是什么阵仗？@goto:arena_ask
-- 打扰了，路过看看。@goto:arena_end
+- 宗门大比是什么阵仗？@set_flag:met_arena_master;goto:arena_ask
+- 打扰了，路过看看。@set_flag:met_arena_master;goto:arena_end
 
 [arena_ask]
 (秦重)
@@ -60,13 +60,13 @@
 武痴还在台上候着呢，别磨蹭，上擂台！
 :goto:arena_end
 
-# 夺魁后：领奖（@task_complete 发放任务奖励并关闭任务）
+# 夺魁后：领奖（task_complete 置的 done 参与本段 gate 取反，
+# 必须经选项动作执行——行上写会让「多谢教头」选项永远不显示）
 [arena_win@tournament_won;!task_sect_tournament_done]
 (秦重)
 好小子，招式里有点自己的东西了。魁首是你的——
 青云剑归你，这是大比的彩头，收好。
-@task_complete:sect_tournament
-- 多谢教头成全。@goto:arena_end
+- 多谢教头成全。@task_complete:sect_tournament;goto:arena_end
 
 # 领奖后的日常
 [arena_after@task_sect_tournament_done]

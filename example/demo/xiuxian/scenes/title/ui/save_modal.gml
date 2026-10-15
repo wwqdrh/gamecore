@@ -1,6 +1,8 @@
 <ui script="save_modal.gd">
 <!-- 存档选择弹窗内容（被 title_menu.gml 的 <Modal ui_id="SaveModal"> 包裹）：
-	 三个存档槽位：空档显示「暂无存档 + 新游戏」，有档显示 境界/天数/时长 + 「继续游戏」；
+	 三个存档槽位：空档显示「暂无存档 + 新游戏」，有档显示 境界/天数/时长 +
+	 「继续游戏 + 删除存档」（show_if="slotN_has_save" 响应式条件显隐，
+	 GdUIReactive.set_var 驱动；删除走两步确认，见 save_modal.gd）；
 	 返回按钮发 s_close_requested → Modal 整体关闭 -->
   <style>
 	.save-panel {
@@ -29,6 +31,12 @@
 	.save-btn-back {
 	  background: #3a3040;
 	}
+	.save-btn-del {
+	  background: #4a2a2a;
+	  color: #f0c8b8;
+	  border_color: #8a3a2e;
+	  font_size: 14;
+	}
   </style>
   <Panel name="SaveRoot" class="save-panel" custom_minimum_size="560,0" mouse_filter="stop">
 	<VBoxContainer anchor="full" margin="24" separation="12">
@@ -43,6 +51,9 @@
 		  <Button name="Slot1Btn" class="save-btn" text="新游戏"
 				  custom_minimum_size="120,44" mouse_default_cursor_shape="pointing_hand"
 				  @pressed="_on_slot1_pressed" />
+		  <Button name="Slot1DelBtn" class="save-btn-del" text="删除存档"
+				  custom_minimum_size="88,44" mouse_default_cursor_shape="pointing_hand"
+				  show_if="slot1_has_save" @pressed="_on_slot1_del_pressed" />
 		</HBoxContainer>
 	  </Panel>
 	  <Panel name="Slot2" class="save-slot" custom_minimum_size="0,84">
@@ -55,6 +66,9 @@
 		  <Button name="Slot2Btn" class="save-btn" text="新游戏"
 				  custom_minimum_size="120,44" mouse_default_cursor_shape="pointing_hand"
 				  @pressed="_on_slot2_pressed" />
+		  <Button name="Slot2DelBtn" class="save-btn-del" text="删除存档"
+				  custom_minimum_size="88,44" mouse_default_cursor_shape="pointing_hand"
+				  show_if="slot2_has_save" @pressed="_on_slot2_del_pressed" />
 		</HBoxContainer>
 	  </Panel>
 	  <Panel name="Slot3" class="save-slot" custom_minimum_size="0,84">
@@ -67,6 +81,9 @@
 		  <Button name="Slot3Btn" class="save-btn" text="新游戏"
 				  custom_minimum_size="120,44" mouse_default_cursor_shape="pointing_hand"
 				  @pressed="_on_slot3_pressed" />
+		  <Button name="Slot3DelBtn" class="save-btn-del" text="删除存档"
+				  custom_minimum_size="88,44" mouse_default_cursor_shape="pointing_hand"
+				  show_if="slot3_has_save" @pressed="_on_slot3_del_pressed" />
 		</HBoxContainer>
 	  </Panel>
 	  <Button name="BackBtn" class="save-btn save-btn-back" text="返 回"

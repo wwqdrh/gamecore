@@ -41,7 +41,9 @@ var progress: Dictionary = {}
 ## 派生，进度/总表变化后调 refresh_views() 重建，
 ## UI 列表 data="bean:xiuxian_task:views"。
 ## status_group：任务列表页签过滤字段（"active"=进行中 accepted/completed、
-## "done"=已完成 submitted 留档、""=未接取 available/locked 不进列表）
+## "done"=已完成 submitted 留档、
+## "avail"=可接取任务目录 available（📍 找 giver 接取）+ locked（前置未达预览）。
+## 任务列表默认页签即"可接取"——玩家不用盲找 NPC，看目录就知道下一步找谁对话
 var views: Array = []
 
 ## 总表中文分类 -> 列表页签 category id
@@ -76,32 +78,48 @@ func refresh_views() -> void:
 		var locked := status == STATUS_LOCKED
 		var r2 := "✨ %d" % int(r.get("exp", 0)) if int(r.get("exp", 0)) > 0 \
 				else ("🪙 %d" % int(r.get("coins", 0)) if int(r.get("coins", 0)) > 0 else "")
+		# 接取引导：目录里直接告诉玩家去哪找谁对话（giver 取自定义表）
+		var giver := str(t.get("giver", ""))
+		var hint := ""
+		var desc := str(t.get("desc", ""))
+		if status == STATUS_AVAILABLE:
+			hint = "找「%s」接取" % giver
+			desc = "📍 %s · %s" % [hint, desc]
+		elif locked:
+			hint = "完成前置任务后开放"
+			desc = "🔒 %s · %s" % [hint, desc]
 		out.append({
 			"id": tid,
 			"category": cid,
 			"icon": "🔒" if locked else CATEGORY_ICONS.get(cid, "📜"),
 			"title": "%s·%s" % [cat, str(t.get("name", tid))],
-			"desc": str(t.get("desc", "")),
+			"desc": desc,
+			"hint": hint,
 			"progress": "%d/%d" % [step, total],
 			"reward1": "💎 %d" % int(r.get("spirit_stones", 0)),
 			"reward2": r2,
 			"status": status,
 			"status_group": _status_group(status),
-			"btn_text": "封印" if locked else ("领取" if status == STATUS_COMPLETED \
-					else ("✅ 已完成" if status == STATUS_SUBMITTED else "前往")),
+			"btn_text": "未解锁" if locked else ("领取" if status == STATUS_COMPLETED \
+					else ("✅ 已完成" if status == STATUS_SUBMITTED else \
+					("去接取" if status == STATUS_AVAILABLE else "前往"))),
 			"btn_state": "locked" if locked else ("reward" if status == STATUS_COMPLETED \
-					else ("done" if status == STATUS_SUBMITTED else "go")),
+					else ("done" if status == STATUS_SUBMITTED else \
+					("find" if status == STATUS_AVAILABLE else "go"))),
 		})
 	update("views", out, {}, false)
 
 
 ## 视图状态组（任务列表页签过滤）：
 ## accepted/completed → "active"（进行中），submitted → "done"（已完成留档），
-## available/locked → ""（未接取，不进任务列表）
+## available/locked → "avail"（可接取任务目录——available 带接取指引，
+## locked 前置未达仅预览，让玩家看到完整任务链与去向）
 func _status_group(status: String) -> String:
 	if status == STATUS_ACCEPTED or status == STATUS_COMPLETED:
 		return "active"
-	return "done" if status == STATUS_SUBMITTED else ""
+	if status == STATUS_SUBMITTED:
+		return "done"
+	return "avail"
 
 
 # ------------------------------------------------------------------ 查询
@@ -223,8 +241,19 @@ func complete_task(task_id: String) -> bool:
 	_grant_rewards(task_id)
 	set_task_status(task_id, STATUS_SUBMITTED)
 	XiuDialogState.ins().set_flag("task_%s_done" % task_id)
+	_unlock_successors(task_id)
 	print("[XiuTaskState] 任务完成: %s %s" % [task_id, str(get_task(task_id).get("name", ""))])
 	return true
+
+
+## 前置链解锁：任务完成后，解锁所有 precondition 指向它的任务
+## （locked → available；主线链 main_001→002→004→003 按完成进度自动点亮，
+## 对话/任务的 task_accept 才能接取；幂等——非 locked 调 unlock 无副作用）
+func _unlock_successors(task_id: String) -> void:
+	for t in tasks.values():
+		var tid := str(t.get("id", ""))
+		if str(t.get("precondition", "")) == task_id:
+			unlock_task(tid)
 
 
 ## 发放任务奖励（各资源路由到对应 Bean）

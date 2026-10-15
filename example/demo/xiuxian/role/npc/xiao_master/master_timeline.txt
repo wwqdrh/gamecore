@@ -12,13 +12,14 @@
 #      满足条件的 stage；无条件 stage 恒通过）
 
 # 首次对话：寒暄引出父亲旧事 + 可接任务
+# （met_xiao_master 参与本段 gate 取反，必须经选项动作置位——
+#   行上置位会让本段推进时 gate 失配，三个选项全部丢失）
 [master_intro@!met_xiao_master]
 (萧老爷,云舟)
 云家小子？这一路风尘，倒比你爹当年年轻时稳当。
-@set_flag:met_xiao_master
-- 长辈认得我父亲？@goto:master_father
-- 有什么能帮忙的吗？@goto:master_task_offer
-- 打扰了，在下借宝地歇脚。@goto:master_guest
+- 长辈认得我父亲？@set_flag:met_xiao_master;goto:master_father
+- 有什么能帮忙的吗？@set_flag:met_xiao_master;goto:master_task_offer
+- 打扰了，在下借宝地歇脚。@set_flag:met_xiao_master;goto:master_guest
 
 # 任务可接（已相识、未接、未完成）：交代差事
 [master_task_offer@met_xiao_master;!task_side_003_accepted;!task_side_003_done]

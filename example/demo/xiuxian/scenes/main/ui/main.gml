@@ -38,6 +38,11 @@
 		   content_margin="56" close_on_overlay="true">
 	  <Gml src="docsbook/docsbook.gml" />
 	</Modal>
+	<!-- 世界舆图（ui/map/）：GdMiniMap 拼接缩略图 + 玩家位置光点 -->
+	<Modal name="MapModal" ui_id="MapModal" anchor="full"
+		   content_margin="120" close_on_overlay="true">
+	  <Gml src="map/map_modal.gml" />
+	</Modal>
 	<Modal name="StoreModal" ui_id="StoreModal" anchor="full"
 		   content_margin="56" close_on_overlay="true">
 	  <Gml src="store/store_panel.gml" />

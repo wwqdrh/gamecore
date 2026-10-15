@@ -71,17 +71,12 @@ impl INode2D for GdMapMarker {
     }
 
     fn ready(&mut self) {
-        // 按格子坐标自动定位到格心（约定：父级即地图根，位于原点）
-        let cs = self.cell_size as f32;
-        let pos = Vector2::new(
-            (self.cell.x as f32 + 0.5) * cs,
-            (self.cell.y as f32 + 0.5) * cs,
-        );
-        self.base_mut().set_position(pos);
-
         // 加入分组供 GdMapManager 收集（编辑器内也加入，便于场景内统计）
         self.base_mut().add_to_group(MAP_MARKER_GROUP);
-        self.base_mut().queue_redraw();
+        // 同步定位（同帧消费者如 open_map→try_teleport 依赖位置已就绪）；
+        // GdDigLayer 场景由其 ready 在显示变换就位后重定位（子 ready 先于
+        // 父 ready，此刻 to_local 拿到的还不是最终父变换）
+        self.snap_to_cell();
     }
 
     fn process(&mut self, delta: f64) {
@@ -200,14 +195,38 @@ impl GdMapMarker {
     #[signal]
     fn s_triggered();
 
+    /// 世界语义格心 → 父级局部空间定位。
+    /// 父级是实现了 cell_to_center 的地图根（GdQuickMap/GdDigLayer，约定
+    /// 位于原点）：GdDigLayer 双网格显示层会给根自身加半格偏移+图集缩放
+    /// （scale=cs/ts_px），把格心直接当局部坐标会被放大飘出地图（历史
+    /// bug 同 GdDigLayer 光标"飞远+压多格"）——用 to_local 换算回局部；
+    /// 无变换父级（GdQuickMap）结果与老公式一致。无 cell_to_center 的
+    /// 父级回退老公式（纯 Node2D 容器场景）。
+    #[func]
+    pub fn snap_to_cell(&mut self) {
+        let cs = self.cell_size as f32;
+        if cs <= 0.0 {
+            return;
+        }
+        let cell = self.cell;
+        let offset = Vector2::new((cell.x as f32 + 0.5) * cs, (cell.y as f32 + 0.5) * cs);
+        let local = self.base().get_parent().and_then(|p| {
+            let mut p = p.try_cast::<Node2D>().ok()?;
+            if !p.has_method("cell_to_center") {
+                return None;
+            }
+            let world: Vector2 = p.call("cell_to_center", &[cell.to_variant()]).to();
+            Some(p.to_local(world))
+        }).unwrap_or(offset);
+        self.base_mut().set_position(local);
+        self.base_mut().queue_redraw();
+    }
+
     /// 放置到指定格子（更新 cell 并同步位置；GdMapManager 吸附不可通行格子时调用）
     #[func]
     pub fn place_at(&mut self, cell: Vector2i) {
         self.cell = cell;
-        let cs = self.cell_size as f32;
-        let pos = Vector2::new((cell.x as f32 + 0.5) * cs, (cell.y as f32 + 0.5) * cs);
-        self.base_mut().set_position(pos);
-        self.base_mut().queue_redraw();
+        self.snap_to_cell();
     }
 
     /// 本格中心的全局坐标

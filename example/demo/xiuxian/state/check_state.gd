@@ -47,12 +47,12 @@ func _initialize() -> void:
 	gs.reset_demo()
 
 	# 2. 任务总表：全量查询（不区分解锁状态；定义源 task.json → task.gjson）
-	check(task.get_all_tasks().size() == XiuTaskTable.count(), "任务总表应与定义表条数一致（10 条）")
-	check(XiuTaskTable.count() == 10, "任务定义表应有 10 条（8 迁移 + side_003 + sect_tournament）")
+	check(task.get_all_tasks().size() == XiuTaskTable.count(), "任务总表应与定义表条数一致（11 条）")
+	check(XiuTaskTable.count() == 11, "任务定义表应有 11 条（8 迁移 + side_003 + sect_tournament + main_004）")
 	check(not task.get_task("side_003").is_empty(), "测试任务 side_003 应在总表中")
 	check(task.get_task_ids().has("main_003"), "未解锁任务 main_003 也应在总表中")
-	check(task.get_tasks_by_category("主线").size() == 3, "主线任务应 3 条")
-	check(task.get_locked_tasks().size() == 4, "未解锁任务应 4 条（main_003/side_002/bounty_001/sect_tournament）")
+	check(task.get_tasks_by_category("主线").size() == 4, "主线任务应 4 条")
+	check(task.get_locked_tasks().size() == 5, "未解锁任务应 5 条（main_003/main_004/side_002/bounty_001/sect_tournament）")
 	check(task.get_unlocked_tasks().size() == 6, "已解锁任务应 6 条（含 side_003）")
 	check(str(task.get_task("main_001").get("name")) == "初入仙途", "main_001 名称应正确")
 	check(task.get_task("no_such").is_empty(), "未知 id 应返回空字典")
@@ -79,9 +79,9 @@ func _initialize() -> void:
 		task.get_task_status("main_001"), task.get_progress("main_001").get("step")])
 
 	# 4. 道具总表：全量/分类/品阶/关键字（均含未解锁；定义源自 item.gjson）
-	check(item.get_all_items().size() == 26, "道具总表应有 26 条（含未解锁）")
-	check(item.get_items_by_type("消耗").size() == 13, "消耗类应 13 条")
-	check(item.get_items_by_type("材料").size() == 8, "材料类应 8 条")
+	check(item.get_all_items().size() == 34, "道具总表应有 34 条（含未解锁）")
+	check(item.get_items_by_type("消耗").size() == 16, "消耗类应 16 条")
+	check(item.get_items_by_type("材料").size() == 11, "材料类应 11 条")
 	check(item.get_items_by_rarity("仙品").size() == 7, "仙品应 7 条（含未解锁）")
 	check(item.get_items_by_rarity("帝品").size() == 1, "帝品应 1 条（帝品雏丹）")
 	check(item.search_items("丹").size() == 10, "搜「丹」应命中 10 条")

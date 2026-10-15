@@ -255,6 +255,65 @@ layer.s_regrowned(item_id: String, cell_key: int)  # 补种成功信号——cel
   会使同条目后续铺设位置漂移（生长位置本就不固定，矿数守恒由 regrow 补足目标
   = 本次实际铺设数保证）。
 
+## GdMiniMap 聚焦模式（HUD 右上角小地图，2026-10-15）
+
+`<MiniMap>` 新增导出 `fit_current`（默认 false）：
+- **false（缺省）**：全世界拼接 + 固定 `cell_px` + 内容反推 `custom_minimum_size`
+  （MapModal 世界舆图用法，行为不变）
+- **true（聚焦）**：只绘制 `set_current` 的那一张，按控件可用区自适应格距
+  （铺满短边）+ 居中；`custom_minimum_size` 置零（尺寸交给宿主布局）；
+  跨图传送连线不画（对端不在集内，`portal_pair` 返回 None），本图出口
+  仍画青色光点。GML 属性 `fit_current="true"` 走 builder 布尔白名单
+  （show_names/pulse/fit_current 同支）
+- **HUD 范本**（mainhud_minimap.gml/.gd）：Panel 框 + 内嵌聚焦 MiniMap +
+  底部地图名 Label（组件名画在图上方会裁，聚焦模式用 `show_names="false"`
+  走外部 Label）+ `@pressed="show:MapModal"` 点击开世界舆图。脚本刷新
+  两层：`s_map_changed(alias)` 切图联动 + `_process` 0.25s 节流刷玩家光点；
+  MapManager 晚到自愈——`_process` 里 `_map_mgr == null` 时走全量
+  `_refresh`（惰性重查+补接信号），已就绪走轻路径只刷光点
+- **红线**：直连带参信号（如 `s_map_changed(alias)`）的回调必须有匹配形参
+  （`func _refresh(_alias: String = "")`），零参方法 connect 成功但触发时报
+  「Method expected 0 argument(s), but called with 1」且刷新静默失效
+
+## 动作预览光标（GdActionCursor，两类地图统一协议，2026-10-15）
+
+**组件**：`GdActionCursor`（Node2D，map/gd_action_cursor.rs）——通用
+「下一击将处理的格子」高亮。显示职责全在组件内：格心定位（纯算术
+`(cell+0.5)*cs`，**严禁回调父级 cell_to_center**——地图根在
+set_cursor_for 持可变借用期间驱动组件，回调=单借用重入 panic）、
+动作着色（dig=白/water=蓝/plant=绿/harvest=金/mine=橙）、贴图可选
+（未配置画色框）、呼吸动画。
+
+**统一协议**（GdQuickMap 与 GdDigLayer 均内置，ready 自建子节点
+"ActionCursor"）：
+- `set_cursor_for(cell, action)`：按动作过滤显示——谓词留在地图根
+  （农田层看地形状态；GdQuickMap 的 "mine" 经鸭子协议查子
+  GdDecoLayer.is_mineable_at——mineable deco 实例必挂 Health 子节点）
+- `set_cursor_cell(cell)`：通用高亮（DigLayer 过滤可锄格；QuickMap 界内即亮）
+- `clear_cursor()`：隐藏
+- 导出 `cursor_texture`（可选贴图样式）
+- 未知动作一律隐藏（负反馈：GdDigLayer 的 mine/GdQuickMap 的 dig 等无语义动作不亮）
+
+**宿主驱动**（player.gd `_update_dig_cursor`）：till→"dig" / water→"water"
+/ plant→"plant" / mine→"mine"（挖矿镐，挥击扇区格，矿石格才亮）；
+空手→"harvest"（鼠标悬停格）。**每帧同步会覆盖手动调用**——探针/测试
+手动点亮前先停玩家 process。
+
+## 架构红线：地图根必须保持单位变换（2026-10-15）
+
+**根节点（GdQuickMap / GdDigLayer / GdMapBasic）严禁携带显示变换**（位置 0、缩放 1）：
+- 双网格显示需要的「半格偏移 + 图集缩放」全部打在**显示子层**上
+  （GdQuickMap 的 layer 子层、GdDigLayer 的 `Display` TileMapLayer 子层，z=-1）
+- 全项目唯一坐标约定：逻辑格心 = `(cell + 0.5) * cell_size`（世界语义，
+  world_to_cell/cell_to_center 纯除法）。子组件（GdMapMarker/光标/作物
+  sprite/deco）直接按此约定挂根下定位
+- 历史 bug：GdDigLayer 曾把偏移+缩放打在根上（scale=cs/ts_px），同一颗
+  GdMapMarker 在 home 图被放大 2 倍甩出地图——传送点不可见、玩家踩不到。
+  GdMapMarker.snap_to_cell 保留 to_local(cell_to_center(cell)) 补偿作为
+  自愈防御，但**新地图根一律不许带变换**
+- 显示子层经 `GdDigLayer.get_display_layer()` 获取（tileset/显示格/材质
+  都在子层上；测试断言瓦片走子层，逻辑断言走根）
+
 ## GdDigLayer — 挖地地形层（TileMapLayer，tool，可作地图根）
 
 继承 TileMapLayer 的单层双网格地形系统（参考 example/map/Jess.tscn 的 TileMapDual
@@ -397,3 +456,63 @@ map.generate(int(state.floor_seed()))          # 层种子出图（同种子同�
   settle_view/boss_cleared），存档恢复残留 running 由控制器 _wire 作废
 - 进度持久化注意：boss_cleared 这类"一次性"标记必须放 Bean 并提供
   reset_demo（跨运行确定性测试依赖）
+
+## 传送点网络设计范式（2026-10-15，六图互通实战）
+
+**落点 = 目的传送点旁一格**（沿行进方向），严禁落在本体或地图中部：
+- 落在本体 → 玩家 `_apply_map` 后落格即触发 try_teleport 二次弹回
+  （home→xiaozhai 落在返程点上，玩家表现为"传了却在原地/地图中间"）
+- 落在中部 → 玩家要跑半天才能找到出口，体验割裂
+
+**传送点放边线 + 陆桥对齐（消除割裂感的核心）**：
+- 传送点放在**面向对图的边线格**（x=0/w-1 或 y=0/h-1），不出边线就
+  会有"走到图深处才传走"的割裂感；成对地图在拼接方向上取同一世界
+  行/列（layout 偏移 + 本地格 = 世界格，双向偏差 ≤ 2）
+- **gate_rects 边界陆桥**（GdQuickMap 导出）：`gate_rects`（Array[Rect2i]）
+  + `gate_terrain`（默认 "grass"）——噪声/建筑叠加后、连通性挖洞前把
+  矩形覆写为指定地形，在边线开出向图内延伸 4 格左右的可通行走廊
+  （如西 gate = Rect2i(0, row-1, 4, 3)）。通道若与主陆区断开，
+  connected_terrain 挖洞自动桥接——**候选格不再依赖探针试错**，
+  程序化地形也能确定性地保证"边线落点可走、腹地连通"
+- 地形程序化生成（seed）时传送点仍要压在 gate 覆盖的格子上（不压
+  山/水）；对角连接（如图 A 东北角 ↔ 图 B 西南角的捷径环）天生不
+  共线，只要求双边线，不要求行/列对齐
+
+**三件套测试**（改动传送拓扑必跑）：
+- `test/check_map_portal.gd`：静态拓扑（双向成对/本体可行走/**边线
+  断言**/落点可行走且紧邻返程点不在其本体/**同轴面对面世界行/列
+  对齐**/**传送点 find_path 到腹地最远格非空**），93 断言
+- `test/check_teleport_walk.gd`：运行时闭环（真实主场景逐环
+  try_teleport，断言落格==target_cell、不压点、6 图贯通）
+  ——注意用 marker.global_position 喂 try_teleport（自动含 MapLayer
+  偏移，与玩家 global_position 同坐标系；手算格心×cell_size 会偏）
+- `test/regen_map_thumbs.gd`：地图尺寸/种子/地形/传送点/布局改动后
+  重跑（LAYOUT 常量与 check_map_portal.gd 保持一致），重新 dump
+  世界缩略数据（GdMiniMap 渲染源）
+
+**防御**：player.gd `_apply_map` 把 last_cell 设为实际落格（而非哨兵值），
+出生格压点也不会被 _process 的 cell-change 判定二次触发。
+
+## GdMiniMap 世界缩略地图（rust/src/map/gd_minimap.rs）
+
+`<MiniMap>`（GML Control 组件）：渲染**多张地图拼接后的缩略图**——
+地形色块网格 + 传送点配对连线（双向对自动配对画线）+ 当前地图金框 +
+玩家呼吸光点。数据驱动、不耦合地图实现：
+
+```
+minimap.add_map(alias, 显示名, ox, oy, w, h, PackedInt32Array(cells), PackedStringArray(terrains))
+minimap.add_portal(alias, cell, to_alias, to_cell, label)
+minimap.set_current(alias)      # 金框 + 玩家锚点图
+minimap.set_player_cell(cell)   # 当前图内格子；(-9999,-9999) 隐藏
+minimap.set_terrain_color(name, color)  # 覆盖内置色板（grass/forest/mountain/water/sand...）
+```
+
+- cells 行主序地形索引（值=terrains 下标）；demo 数据源
+  `state/map/map_thumbs.json`（regen_map_thumbs.gd 离线 dump，XiuMapThumbs 加载）
+- 范本 example/demo/xiuxian/scenes/main/ui/map/（MapModal：mainhud
+  「地图」按钮 show:MapModal；map_modal.gd 灌数据 + 刷新）
+- **UI 面板接 MapManager 的时序坑**：面板 _ready 处于 Modal 装配期，
+  find_ui/组件表可能未就绪且不会重试——宿主 Modal 用**父链查找**
+  （has_method("is_modal_open")），MapManager 在 _refresh 里惰性重查 +
+  补接信号；玩家节点从 get_tree().root 递归 find_child（玩家挂在
+  GdScene 下，与 GDCORE 全局场景根无父子关系）

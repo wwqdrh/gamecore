@@ -19,6 +19,11 @@ pub struct GdCoreData {
     initial_data: GString,
     inited: bool,
 
+    /// 写盘抑制开关（与 save_fn 闭包共享）：删除存档后的 Bean 默认值回填等
+    /// 初始化写不应把刚删的文件"复活"，由 GDCORE.delete_save 开启、
+    /// set_save_id 重新激活该档时关闭。内存数据照常更新，只是不落盘。
+    suppress_save: std::rc::Rc<std::cell::Cell<bool>>,
+
     base: Base<Resource>,
 }
 
@@ -32,6 +37,7 @@ impl IResource for GdCoreData {
             initial_scope: GString::from("init"),
             initial_data: GString::from("{}"),
             inited: false,
+            suppress_save: std::rc::Rc::new(std::cell::Cell::new(false)),
             base,
         }
     }
@@ -53,6 +59,7 @@ impl GdCoreData {
             initial_scope: GString::new(),
             initial_data: GString::new(),
             inited: false,
+            suppress_save: std::rc::Rc::new(std::cell::Cell::new(false)),
             base,
         });
         instance.bind_mut().initial(filename, data, force, scope);
@@ -148,7 +155,13 @@ impl GdCoreData {
         let file_existed = existed_at_load;
         let warn_once = std::rc::Rc::new(std::cell::Cell::new(false));
         let warn_once_save = warn_once.clone();
+        let suppress_save = self.suppress_save.clone();
         let save_fn = Box::new(move |data: Vec<u8>| {
+            // 写盘抑制（删除存档流程）：内存照常更新，只是不落盘——
+            // 防止 Bean 默认值回填把刚删除的存档文件立即写回复活
+            if suppress_save.get() {
+                return;
+            }
             // 编辑器守卫（2026-10-12）：编辑器进程严禁写存档——编辑器内存态
             // 可能来自编辑场景时的 Bean 加载，回写会覆盖磁盘真档（与 30s
             // flush 同源事故）。玩家按 F5 运行的是独立进程，不受影响。
@@ -217,6 +230,20 @@ impl GdCoreData {
                 }),
             );
         }
+    }
+
+    /// 写盘抑制开关：开启后所有 save 请求直接跳过（内存数据照常更新）。
+    /// 删除存档流程专用（GDCORE.delete_save 开启，set_save_id 重新激活关闭），
+    /// 业务侧请勿自行调用。
+    #[func]
+    pub fn set_save_suppressed(&self, on: bool) {
+        self.suppress_save.set(on);
+    }
+
+    /// 写盘抑制是否生效中
+    #[func]
+    pub fn is_save_suppressed(&self) -> bool {
+        self.suppress_save.get()
     }
 
     #[func]

@@ -150,7 +150,8 @@ func test_terrain_layers() -> void:
 	map.generate(2026)
 
 	# 每种地形一个 TileMapLayer（图层栈顺序 = 地形下标顺序，0 在最底）
-	assert_eq(map.get_child_count(), 5, "5 种地形应生成 5 个图层")
+	# + 1 个 ActionCursor 动作光标组件（ready 自建）
+	assert_eq(map.get_child_count(), 6, "5 种地形图层 + 1 个动作光标组件")
 
 	# 草地层：双网格模式，偏移半格且有内容
 	var grass := map.get_terrain_layer(2)

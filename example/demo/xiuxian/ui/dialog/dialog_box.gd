@@ -20,7 +20,8 @@
 #   set_flag / has_flag / clear_flag —— 委托 XiuDialogState（跨运行持久化，
 #     对话进度记录：GdDialogue 的 stage flag 门控 [stage@flag] 也走这里）
 #   set_counter / add_counter / get_counter —— 运行时计数（不持久化）
-# 任务联动命令：task_accept:任务id / task_complete:任务id（发放奖励）
+# 任务联动命令：task_accept:任务id / task_complete:任务id（发放奖励）/
+#   task_advance:任务id（推进一步，未接取无效果）/ item_give:道具id,数量
 extends CanvasLayer
 
 ## GdDialogue 节点路径
@@ -200,6 +201,31 @@ func task_complete(task_id: String) -> void:
 		var coins := int(r.get("coins", 0))
 		if coins > 0:
 			print("[DialogBox] 获得金币 +%d" % coins)
+
+
+## 推进一步任务：timeline 中写 @task_advance:任务id
+## （talk/collect 类 objective 的显式推进位；对未接取任务无效果——
+##   调用方需保证段落的 flag 门控已确保任务处于 accepted）
+func task_advance(task_id: String) -> void:
+	var ts := XiuTaskState.ins()
+	if ts.get_task_status(task_id) != ts.STATUS_ACCEPTED:
+		return
+	ts.advance_task(task_id)
+
+
+## 发放道具：timeline 中写 @item_give:道具id,数量
+## （数量参数经 exec_response 以字符串传入，这里显式转 int）
+func item_give(item_id: String, count: Variant = 1) -> void:
+	var n := int(count)
+	if item_id.is_empty() or n <= 0:
+		return
+	XiuItemState.ins().add_item(item_id, n)
+	print("[DialogBox] 获得道具: %s x%d" % [item_id, n])
+
+
+## 查询任务状态（stage flag 门控用）：[stage@task_status:main_004,accepted]
+func task_status(task_id: String, status: String) -> bool:
+	return XiuTaskState.ins().get_task_status(task_id) == status
 
 
 func set_counter(key: String, value: int) -> void:

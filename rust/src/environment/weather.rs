@@ -466,10 +466,14 @@ impl GdWeather {
         n as i64
     }
 
-    /// 获取效果通道活动层覆盖层（测试/扩展用）
+    /// 获取活动覆盖层（测试/扩展用）：fx 天气（rain/snow/...）返回 fx 层
+    /// 覆盖层；tint 天气（day/night/...）返回 tint 通道覆盖层——双通道取非空者
     #[func]
     pub fn get_overlay(&self) -> Option<Gd<ColorRect>> {
-        self.layers[self.active].overlay.clone()
+        self.layers[self.active]
+            .overlay
+            .clone()
+            .or_else(|| self.tint_overlay.clone())
     }
 
     // ---------- tint 通道内部 ----------

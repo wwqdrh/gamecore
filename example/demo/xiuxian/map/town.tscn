@@ -19,20 +19,29 @@ terrain_dualgrid_textures = PackedStringArray("", "res://example/map/assets/tile
 terrain_shaders = PackedStringArray("", "", "", "", "water_flow")
 blocked_terrains = PackedStringArray("water", "mountain")
 connected_terrain = "grass"
+gate_terrain = "grass"
+gate_rects = Array[Rect2i]([Rect2i(0, 10, 4, 3), Rect2i(28, 12, 4, 3), Rect2i(27, 0, 5, 4)])
+
+[node name="TeleportWest" type="GdMapMarker" parent="."]
+cell = Vector2i(0, 11)
+cell_size = 32
+target_alias = "xiuxian_xiaozhen"
+target_cell = Vector2i(26, 10)
+label = "返回青石镇"
 
 [node name="TeleportEast" type="GdMapMarker" parent="."]
-cell = Vector2i(28, 10)
+cell = Vector2i(31, 13)
 cell_size = 32
 target_alias = "xiuxian_map_a"
-target_cell = Vector2i(25, 13)
+target_cell = Vector2i(1, 13)
 label = "前往青草岭"
 
 [node name="TeleportNorth" type="GdMapMarker" parent="."]
-cell = Vector2i(16, 2)
+cell = Vector2i(29, 0)
 cell_size = 32
 color = Color(1, 0.72, 0.3, 1)
 target_alias = "xiuxian_map_b"
-target_cell = Vector2i(13, 8)
+target_cell = Vector2i(1, 14)
 label = "前往幽竹林"
 
 [node name="NpcElder" parent="." instance=ExtResource("1_elder")]

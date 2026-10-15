@@ -13,6 +13,10 @@ corner_radius_bottom_right = 5
 corner_radius_bottom_left = 5
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_de47h"]
+content_margin_left = 12.0
+content_margin_top = 8.0
+content_margin_right = 12.0
+content_margin_bottom = 8.0
 bg_color = Color(0.9098039, 0.8509804, 0.65882355, 1)
 border_width_left = 2
 border_width_top = 2
@@ -36,48 +40,42 @@ corner_radius_top_right = 5
 corner_radius_bottom_right = 5
 corner_radius_bottom_left = 5
 
-[node name="QuestBanner" type="HBoxContainer" unique_id=1091953832]
+[node name="QuestBanner" type="HBoxContainer" unique_id=693574036]
 mouse_filter = 2
 metadata/__script_vars = {}
 metadata/__gml_root = true
 
-[node name="@Panel@97" type="Panel" parent="." unique_id=316696527]
+[node name="@Panel@2" type="Panel" parent="." unique_id=1938547489]
 custom_minimum_size = Vector2(12, 48)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_qbsph")
 metadata/__script_vars = {}
 
-[node name="@Panel@100" type="Panel" parent="." unique_id=537214266]
-custom_minimum_size = Vector2(226, 48)
+[node name="@PanelContainer@5" type="PanelContainer" parent="." unique_id=1124400120]
+custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_de47h")
 metadata/__script_vars = {}
 
-[node name="@HBoxContainer@99" type="HBoxContainer" parent="@Panel@100" unique_id=915833739]
-layout_mode = 0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 12.0
-offset_top = 8.0
-offset_right = -12.0
-offset_bottom = -8.0
+[node name="@HBoxContainer@4" type="HBoxContainer" parent="@PanelContainer@5" unique_id=1959237064]
+layout_mode = 2
 mouse_filter = 2
-metadata/__anchor = "full"
 
-[node name="@Label@98" type="Label" parent="@Panel@100/@HBoxContainer@99" unique_id=1341650318]
+[node name="@Label@3" type="Label" parent="@PanelContainer@5/@HBoxContainer@4" unique_id=1096637101]
 layout_mode = 2
 text = "📜"
 vertical_alignment = 1
 
-[node name="QuestText" type="Label" parent="@Panel@100/@HBoxContainer@99" unique_id=1263470301]
+[node name="QuestText" type="GdUIFitLabel" parent="@PanelContainer@5/@HBoxContainer@4" unique_id=1474328608]
+fit_width = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "暂无进行中的任务"
 vertical_alignment = 1
 
-[node name="@Panel@101" type="Panel" parent="." unique_id=1596987690]
+[node name="@Panel@6" type="Panel" parent="." unique_id=2124827499]
 custom_minimum_size = Vector2(12, 48)
 layout_mode = 2
 mouse_filter = 2

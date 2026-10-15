@@ -37,8 +37,12 @@ use super::ui_form::{
 use super::ui_nav_menu::GdUINavMenu;
 use super::ui_hotbar::GdUIHotbar;
 use super::ui_tree::GdUITree;
+use crate::map::GdMiniMap;
 use super::ui_treemenu::GdUITreeMenu;
 use super::ui_richtext::GdUIRichText;
+use super::ui_toast::GdUIToast;
+use super::ui_banner::GdUIBanner;
+use super::ui_fit_label::GdUIFitLabel;
 use super::ui_theme::{ThemeVars, get_theme_color, resolve_theme_vars};
 
 /// UI 构建器：将 AST 转换为 Godot Control 节点树
@@ -225,6 +229,16 @@ impl UiBuilder {
                 "tips_title" => {
                     // 悬停提示标题（可省略，省略时只显示内容）
                     control.set_meta(&StringName::from("__tips_title"), &value.to_variant());
+                }
+                "show_if" | "hide_if" => {
+                    // 条件显隐声明：变量真值驱动 visible（show_if 正向 / hide_if 反向，
+                    // 表达式支持 ! 前缀取反）。meta 随 tscn 序列化保留，
+                    // 构建期按 <script> 变量初始求值，运行期由 GdUIReactive
+                    // （set_var / apply_conditions）响应变量变更全树重算
+                    control.set_meta(
+                        &StringName::from(format!("__{}", key).as_str()),
+                        &value.to_variant(),
+                    );
                 }
                 _ => {
                     // 信号绑定声明：on_pressed / @pressed（@ 为简写）→ 存 meta，
@@ -714,6 +728,10 @@ impl UiBuilder {
                 );
             }
         }
+
+        // 条件显隐初始求值（show_if/hide_if）：变量缺失按 false
+        // （show_if 隐藏、hide_if 显示）——运行期由 GdUIReactive 驱动重算
+        crate::ui::ui_reactive::apply_conditions_build(root, &self.script_vars);
     }
 
     /// 根据标签名实例化对应的 Godot Control
@@ -732,6 +750,8 @@ impl UiBuilder {
             "Tab" => VBoxContainer::new_alloc().upcast(),
             // 控件
             "Label" => Label::new_alloc().upcast(),
+            // 按文本长度自适应宽度标签（单行，custom_minimum_size.x 跟随文本）
+            "FitLabel" => GdUIFitLabel::new_alloc().upcast(),
             "Button" => Button::new_alloc().upcast(),
             "TextureButton" => TextureButton::new_alloc().upcast(),
             "Panel" => Panel::new_alloc().upcast(),
@@ -771,10 +791,16 @@ impl UiBuilder {
             "NavMenu" => GdUINavMenu::new_alloc().upcast(),
             // 树形结构（地图路径 / 技能树 / 分支图，四向布局 + 连线）
             "Tree" => GdUITree::new_alloc().upcast(),
+            // 世界缩略地图（多图拼接 + 传送点连线 + 玩家光点）
+            "MiniMap" => GdMiniMap::new_alloc().upcast(),
             // 树形菜单（手册目录/任务分类，多级折叠 + 自动缩进）
             "TreeMenu" => GdUITreeMenu::new_alloc().upcast(),
             // 富文本（游戏手册/教程，.gdoc 文档解析 + BBCode + 图片）
             "RichText" => GdUIRichText::new_alloc().upcast(),
+            // 队列提示条（引导/反馈，淡入淡出逐条播放）
+            "Toast" => GdUIToast::new_alloc().upcast(),
+            // 全屏演出字幅（突破/通关，居中大字 + 暗幕）
+            "Banner" => GdUIBanner::new_alloc().upcast(),
             // 快捷装备栏（数字键绑定 + 选中高亮框）
             "Hotbar" => GdUIHotbar::new_alloc().upcast(),
             // 导航菜单项（递归嵌套，使用 Control 占位）
@@ -1474,6 +1500,7 @@ fn is_transparent_tag(tag: &str) -> bool {
         tag,
         "Control"
             | "Label"
+            | "FitLabel"
             | "Panel"
             | "ColorRect"
             | "TextureRect"
@@ -1493,6 +1520,11 @@ fn is_transparent_tag(tag: &str) -> bool {
             | "Tree"
             // 树形菜单同理（菜单行各自接收）
             | "TreeMenu"
+            // 缩略地图（纯绘制，无交互）
+            | "MiniMap"
+            // 提示条/演出字幅（纯展示，播放期挡输入由运行期自管）
+            | "Toast"
+            | "Banner"
     )
 }
 
@@ -1642,6 +1674,105 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
         }
     }
 
+    // MiniMap：世界缩略地图属性（比例/留白/开关 + 配色）
+    if tag == "MiniMap" {
+        match key {
+            "cell_px" | "padding" => {
+                if let Ok(v) = value.parse::<f32>() {
+                    control.set(&StringName::from(key), &v.to_variant());
+                }
+                return control;
+            }
+            "show_names" | "pulse" | "fit_current" => {
+                let v = value == "true" || value == "1";
+                control.set(&StringName::from(key), &v.to_variant());
+                return control;
+            }
+            "paper_bg" | "map_border" | "current_border" | "player_color" | "portal_color"
+            | "link_color" | "unknown_color" | "name_color" => {
+                if let Some(c) = parse_color(value) {
+                    control.set(&StringName::from(key), &c.to_variant());
+                }
+                return control;
+            }
+            _ => {}
+        }
+    }
+
+    // Toast：队列提示条属性（时长/字号/圆角 + 配色）
+    if tag == "Toast" {
+        match key {
+            "duration" | "fade_secs" => {
+                if let Ok(v) = value.parse::<f32>() {
+                    control.set(&StringName::from(key), &v.to_variant());
+                }
+                return control;
+            }
+            "font_size" | "corner_radius" => {
+                if let Ok(v) = value.parse::<i32>() {
+                    control.set(&StringName::from(key), &v.to_variant());
+                }
+                return control;
+            }
+            "bg_color" | "border_color" | "text_color" => {
+                if let Some(c) = parse_color(value) {
+                    control.set(&StringName::from(key), &c.to_variant());
+                }
+                return control;
+            }
+            _ => {}
+        }
+    }
+
+    // Banner：演出字幅属性（时长/字号/配色 + 暗幕开关）
+    if tag == "Banner" {
+        match key {
+            "hold_secs" | "anim_secs" => {
+                if let Ok(v) = value.parse::<f32>() {
+                    control.set(&StringName::from(key), &v.to_variant());
+                }
+                return control;
+            }
+            "title_font" | "sub_font" => {
+                if let Ok(v) = value.parse::<i32>() {
+                    control.set(&StringName::from(key), &v.to_variant());
+                }
+                return control;
+            }
+            "title_color" | "sub_color" | "dim_color" => {
+                if let Some(c) = parse_color(value) {
+                    control.set(&StringName::from(key), &c.to_variant());
+                }
+                return control;
+            }
+            "dim_bg" => {
+                let v = value == "true" || value == "1";
+                control.set(&StringName::from(key), &v.to_variant());
+                return control;
+            }
+            _ => {}
+        }
+    }
+
+    // FitLabel：按文本长度自适应宽度（开关 + 余量；fit_width=false 时行为
+    // 等同普通 Label。自适应在组件 _process 脏检查中完成，文本变化即重测量）
+    if tag == "FitLabel" {
+        match key {
+            "fit_width" => {
+                let v = value == "true" || value == "1";
+                control.set(&StringName::from("fit_width"), &v.to_variant());
+                return control;
+            }
+            "fit_padding" => {
+                if let Ok(v) = value.parse::<i32>() {
+                    control.set(&StringName::from("fit_padding"), &v.to_variant());
+                }
+                return control;
+            }
+            _ => {}
+        }
+    }
+
     match key {
         // NavItem：菜单项文本存 meta
         "text" => {
@@ -1650,7 +1781,7 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
                     // NavItem 的 text 存储为 __nav_text meta
                     control.set_meta(&StringName::from("__nav_text"), &value.to_variant());
                 }
-                "Label" => {
+                "Label" | "FitLabel" => {
                     let mut lbl = control.cast::<Label>();
                     lbl.set_text(&GString::from(value));
                     return lbl.upcast();
@@ -1699,7 +1830,7 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
                 _ => HorizontalAlignment::LEFT,
             };
             match tag {
-                "Label" => {
+                "Label" | "FitLabel" => {
                     let mut lbl = control.cast::<Label>();
                     lbl.set_horizontal_alignment(alignment);
                     return lbl.upcast();
@@ -2109,7 +2240,7 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
                 _ => VerticalAlignment::TOP,
             };
             match tag {
-                "Label" => {
+                "Label" | "FitLabel" => {
                     let mut lbl = control.cast::<Label>();
                     lbl.set_vertical_alignment(alignment);
                     return lbl.upcast();
@@ -2388,7 +2519,7 @@ fn apply_attribute(mut control: Gd<Control>, tag: &str, key: &str, value: &str) 
 /// 设置文字颜色
 fn apply_text_color(control: &mut Gd<Control>, tag: &str, color: Color) {
     match tag {
-        "Label" | "Button" | "CheckButton" => {
+        "Label" | "FitLabel" | "Button" | "CheckButton" => {
             control.add_theme_color_override(
                 &StringName::from("font_color"),
                 color,

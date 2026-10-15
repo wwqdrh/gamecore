@@ -3,9 +3,9 @@
 #
 # 职责：把列表接到状态层 XiuTaskState（bean id: xiuxian_task，
 # example/demo/xiuxian/state/task/task_state.gd）的展示视图 `views` 上——
-# 数据完全由状态 Bean 驱动：只显示玩家接取过的任务（views 的 status_group
-# 字段过滤：active=进行中 accepted/completed、done=已完成 submitted 留档，
-# 未接取 available/locked 不进列表），任务接取/推进/领奖后
+# 数据完全由状态 Bean 驱动：按 views 的 status_group 字段过滤显示
+# （avail=可接取目录 available/locked、active=进行中 accepted/completed、
+# done=已完成 submitted 留档），任务解锁/接取/推进/领奖后
 # refresh_views → watch 回调 → 全部同名列表自动刷新。
 # 列表为空时切换 EmptyHint 引导文案（按过滤后条目数判定）。
 #

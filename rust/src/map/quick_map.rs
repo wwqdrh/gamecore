@@ -23,7 +23,7 @@
 
 use godot::prelude::*;
 use godot::builtin::{Array, Color, GString, PackedColorArray, PackedFloat64Array, PackedStringArray, Rect2, Rect2i, Vector2, Vector2i};
-use godot::classes::{INode2D, Image, ImageTexture, Node2D, ResourceLoader, Shader, ShaderMaterial, TileMapLayer, TileSet, TileSetAtlasSource, TileSetSource, Texture2D};
+use godot::classes::{Engine, INode2D, Image, ImageTexture, Node2D, ResourceLoader, Shader, ShaderMaterial, TileMapLayer, TileSet, TileSetAtlasSource, TileSetSource, Texture2D};
 use godot::classes::image::Format as ImageFormat;
 
 use super::dual_grid::dual_grid_atlas_coord;
@@ -180,6 +180,25 @@ pub struct GdQuickMap {
     #[export]
     paint_terrain: GString,
 
+    /// 边界通道矩形（跨地图陆桥）：在 paint_rects 之后、连通性挖洞之前把
+    /// 矩形内所有格子覆写为 gate_terrain。用于在地图边缘开出与相邻地图
+    /// 对齐的可通行走廊——成对地图在拼接方向上用同一世界行/列开 gate，
+    /// 缩略图拼接/传送换图时陆地自然连续，消除"传送点孤悬内地"的割裂感。
+    /// 典型配置：西 gate = Rect2i(0, row-1, 4, 3)（从边线向图内延伸 4 格）。
+    /// 通道若与主陆区断开，ensure_walkable_connected 会自动桥接。
+    #[export]
+    gate_rects: Array<Rect2i>,
+    /// gate_rects 应用的地形名（须在 terrain_names 中；空 = 跳过）
+    #[export]
+    gate_terrain: GString,
+
+    /// 动作预览光标贴图（可选；未配置用动作色框样式）。
+    /// 光标协议与 GdDigLayer 统一（GdActionCursor 组件）：宿主经
+    /// set_cursor_for / set_cursor_cell / clear_cursor 驱动，「下一击将
+    /// 处理的格子」——"mine" 只在子 GdDecoLayer 有可开采矿石的格子亮
+    #[export]
+    cursor_texture: Option<Gd<Texture2D>>,
+
     // ---- 运行时状态 ----
     /// 每格地形下标，-1 = 未生成
     grid: Vec<i32>,
@@ -193,6 +212,8 @@ pub struct GdQuickMap {
     heights: Vec<i32>,
     /// 每个地形对应的渲染图层（与 names 下标对应）
     layers: Vec<TerrainLayerInfo>,
+    /// 动作预览光标（ready 创建，初始隐藏）
+    cursor: Option<Gd<super::gd_action_cursor::GdActionCursor>>,
 }
 
 #[godot_api]
@@ -220,6 +241,9 @@ impl INode2D for GdQuickMap {
             connected_terrain: GString::new(),
             paint_rects: Array::new(),
             paint_terrain: GString::from("mountain"),
+            gate_rects: Array::new(),
+            gate_terrain: GString::from("grass"),
+            cursor_texture: None,
             grid: Vec::new(),
             names: Vec::new(),
             colors: Vec::new(),
@@ -227,6 +251,7 @@ impl INode2D for GdQuickMap {
             blocked_indices: Vec::new(),
             heights: Vec::new(),
             layers: Vec::new(),
+            cursor: None,
         }
     }
 
@@ -239,6 +264,7 @@ impl INode2D for GdQuickMap {
         if self.grid.is_empty() {
             self.generate_internal(self.seed_value);
         }
+        self.setup_cursor();
     }
 
     fn draw(&mut self) {
@@ -394,6 +420,87 @@ impl GdQuickMap {
         )
     }
 
+    // ---- 动作预览光标（GdActionCursor 组件；协议与 GdDigLayer 统一）----
+
+    /// 装配光标组件（ready 调达；纯本地子节点，无全局副作用）
+    fn setup_cursor(&mut self) {
+        // 光标是纯运行时交互辅助，编辑器不创建——tool 地图根的 ready 在
+        // 编辑器也跑，非 tool 子类在编辑器实例化会触发 godot-rust
+        // EditorPlaceholderV06 告警（v0.6 起返回占位实例）
+        if Engine::singleton().is_editor_hint() {
+            return;
+        }
+        let mut cur = super::gd_action_cursor::GdActionCursor::new_alloc();
+        cur.set_name("ActionCursor");
+        cur.bind_mut().set_cell_size(self.cell_size);
+        if let Some(tex) = &self.cursor_texture {
+            cur.bind_mut().set_texture(Some(tex.clone()));
+        }
+        cur.set_visible(false);
+        // z=1：盖住地形图层（z=-1）与 deco（树序在光标前），让位后挂的角色
+        cur.set_z_index(1);
+        self.base_mut().add_child(&cur);
+        self.cursor = Some(cur);
+    }
+
+    /// 显示光标于 cell（格子越界自动隐藏；无动作语义过滤——通用高亮）
+    #[func]
+    pub fn set_cursor_cell(&mut self, cell: Vector2i) {
+        let in_bounds = cell.x >= 0
+            && cell.y >= 0
+            && cell.x < self.width
+            && cell.y < self.height;
+        if let Some(cur) = self.cursor.as_mut() {
+            if in_bounds {
+                cur.bind_mut().show_at(cell, GString::new());
+            } else {
+                cur.bind_mut().hide_cursor();
+            }
+        }
+    }
+
+    /// 按动作显示光标："mine" = 该格有可开采矿石（实时查子 GdDecoLayer）；
+    /// 农田类动作（dig/water/plant/harvest）本层无语义 → 不亮（负反馈）
+    #[func]
+    pub fn set_cursor_for(&mut self, cell: Vector2i, action: GString) {
+        let show = match action.to_string().as_str() {
+            "mine" => self.is_mineable_cell(cell),
+            _ => false,
+        };
+        if let Some(cur) = self.cursor.as_mut() {
+            if show {
+                cur.bind_mut().show_at(cell, action);
+            } else {
+                cur.bind_mut().hide_cursor();
+            }
+        }
+    }
+
+    /// 隐藏光标（卸下工具/换图时调用；无光标时无害）
+    #[func]
+    pub fn clear_cursor(&mut self) {
+        if let Some(cur) = self.cursor.as_mut() {
+            cur.bind_mut().hide_cursor();
+        }
+    }
+
+    /// 格子当前是否有可开采矿石——委托给实现了 is_mineable_at 协议的
+    /// 子节点（GdDecoLayer）。地图与 deco 层互相零依赖（鸭子协议）
+    fn is_mineable_cell(&self, cell: Vector2i) -> bool {
+        for child in self.base().get_children().iter_shared() {
+            let mut child = child;
+            if child.has_method("is_mineable_at") {
+                if child
+                    .call("is_mineable_at", &[cell.to_variant()])
+                    .to::<bool>()
+                {
+                    return true;
+                }
+            }
+        }
+        false
+    }
+
     /// 手动设置某格地形（下标对应 terrain_names）
     #[func]
     pub fn set_terrain_at(&mut self, cell: Vector2i, terrain_index: i32) {
@@ -545,6 +652,10 @@ impl GdQuickMap {
         // 在连通性挖洞之前应用——建筑墙不会被桥格打通
         self.apply_paint_rects();
 
+        // 边界通道：把 gate_rects 覆写为 gate_terrain（跨地图陆桥），
+        // 同样在连通性挖洞之前应用——通道若与主陆区断开会被自动桥接
+        self.apply_gate_rects();
+
         // 连通性保证：渲染前把可通行区域挖通（桥格改主地形，渲染自然一致）
         self.ensure_walkable_connected();
 
@@ -560,25 +671,51 @@ impl GdQuickMap {
         if self.paint_rects.is_empty() {
             return;
         }
-        if self.grid.is_empty() || self.names.is_empty() {
+        let rects = self.paint_rects.clone();
+        let terrain = self.paint_terrain.to_string();
+        let painted = self.apply_rect_overrides(&rects, &terrain, "paint_rects");
+        if painted > 0 {
+            self.base_mut().queue_redraw();
+        }
+    }
+
+    /// 把 gate_rects 内的格子覆写为 gate_terrain（跨地图边界陆桥，
+    /// generate_internal 在 paint_rects 之后调达）。
+    fn apply_gate_rects(&mut self) {
+        if self.gate_rects.is_empty() {
             return;
         }
-        let paint_name = self.paint_terrain.to_string();
-        if paint_name.is_empty() {
-            return;
+        let rects = self.gate_rects.clone();
+        let terrain = self.gate_terrain.to_string();
+        let painted = self.apply_rect_overrides(&rects, &terrain, "gate_rects");
+        if painted > 0 {
+            self.base_mut().queue_redraw();
         }
-        let Some(ti) = self.names.iter().position(|s| *s == paint_name) else {
+    }
+
+    /// 矩形覆写通用实现：把 rects 内所有格子覆写为 terrain_name 对应地形。
+    /// 越界部分裁剪；地形名不在 terrain_names 中时整批跳过并告警。
+    /// 返回实际改写的格数（同值覆写不计）。
+    fn apply_rect_overrides(&mut self, rects: &Array<Rect2i>, terrain_name: &str, label: &str) -> usize {
+        if rects.is_empty() || self.grid.is_empty() || self.names.is_empty() {
+            return 0;
+        }
+        if terrain_name.is_empty() {
+            return 0;
+        }
+        let Some(ti) = self.names.iter().position(|s| *s == terrain_name) else {
             godot_warn!(
-                "GdQuickMap: paint_terrain \"{}\" 不在 terrain_names 中，跳过手绘叠加",
-                paint_name
+                "GdQuickMap: {} 地形 \"{}\" 不在 terrain_names 中，跳过叠加",
+                label,
+                terrain_name
             );
-            return;
+            return 0;
         };
         let ti = ti as i32;
         let w = self.width.max(1);
         let h = self.height.max(1);
         let mut painted = 0usize;
-        for rect in self.paint_rects.iter_shared() {
+        for rect in rects.iter_shared() {
             let x0 = rect.position.x.max(0);
             let y0 = rect.position.y.max(0);
             let x1 = (rect.position.x + rect.size.x).min(w);
@@ -593,12 +730,10 @@ impl GdQuickMap {
                 }
             }
         }
-        if painted > 0 {
-            // 同步缓存（blocked_indices / heights 在 build_terrain_table 后
-            // 由 rebuild 逻辑维护；这里只改地形归属，缓存下标不变无需处理，
-            // 但 blocked/heights 查询按下标进行——grid 值已是正确下标）
-            self.base_mut().queue_redraw();
-        }
+        // 同步缓存（blocked_indices / heights 在 build_terrain_table 后
+        // 由 rebuild 逻辑维护；这里只改地形归属，缓存下标不变无需处理，
+        // 但 blocked/heights 查询按下标进行——grid 值已是正确下标）
+        painted
     }
 
     // ---- 连通性保证 ----

@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "pipeline": "gjson",
+  "desc": "采集材料表（野外灵草与矿脉产物，开采矿石需装备玄铁镐） 字段：id/name/type/rarity/desc/source(获得方式)/price/stack/icon；type: 消耗/材料/装备/特殊；rarity: 凡品/灵品/仙品/帝品。icon=逻辑图片 id（state/item/icon_map.gd 登记）。",
+  "items": {
+    "herb_lingzhi": {
+      "id": "herb_lingzhi",
+      "name": "灵芝",
+      "type": "材料",
+      "rarity": "灵品",
+      "desc": "百年灵芝，炼丹常用辅材。",
+      "source": "山林采集；灵田种植收获。",
+      "price": 40,
+      "stack": 999,
+      "icon": "img_herb_lingzhi"
+    },
+    "herb_xueshen": {
+      "id": "herb_xueshen",
+      "name": "血参",
+      "type": "材料",
+      "rarity": "凡品",
+      "desc": "药性温和的补血药材。",
+      "source": "山地采集。",
+      "price": 8,
+      "stack": 999,
+      "icon": "img_herb_xueshen"
+    },
+    "ore_coldiron": {
+      "id": "ore_coldiron",
+      "name": "寒铁矿",
+      "type": "材料",
+      "rarity": "灵品",
+      "desc": "蕴含寒气的矿石，铸剑上品。",
+      "source": "矿脉开采（需玄铁镐）。",
+      "price": 60,
+      "stack": 999,
+      "icon": "img_ore_coldiron"
+    },
+    "ore_amethyst": {
+      "id": "ore_amethyst",
+      "name": "紫晶矿",
+      "type": "材料",
+      "rarity": "灵品",
+      "desc": "泛着紫光的晶簇，炼器辅材，萧宅后山与青石镇附近均有分布。",
+      "source": "萧宅后山与青石镇矿点开采（需玄铁镐）。",
+      "price": 45,
+      "stack": 999,
+      "icon": "img_ore_amethyst"
+    }
+  }
+}

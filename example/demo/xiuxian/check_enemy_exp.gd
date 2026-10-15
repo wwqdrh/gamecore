@@ -36,15 +36,15 @@ func _run() -> void:
 	var slime: Node = (load("res://example/demo/xiuxian/role/enemy/slime.tscn") as PackedScene).instantiate()
 	root.add_child(slime)
 	await physics_frame
-	check(int(slime.exp_reward) == 20, "slime.tscn exp_reward 应覆写为 20")
+	check(int(slime.exp_reward) == 60, "slime.tscn exp_reward 应覆写为 60（M2 数值档）")
 	check(slime.health != null, "敌人战斗组件（Health）应就绪")
 
-	# 2. 击杀史莱姆 → +20 修为（1 级升 2 级需 100，不升级）
+	# 2. 击杀史莱姆 → +60 修为（1 级升 2 级需 100，不升级）
 	slime.health.call("kill")
 	await physics_frame
-	check(int(character.exp) == 20,
-		"击败史莱姆应 +20 修为（got %d）" % int(character.exp))
-	check(character.level == 1, "20 修为不应升级")
+	check(int(character.exp) == 60,
+		"击败史莱姆应 +60 修为（got %d）" % int(character.exp))
+	check(character.level == 1, "60 修为不应升级")
 
 	# 3. 击杀傀儡（+120）→ 跨升级边界自动升段
 	var golem: Node = (load("res://example/demo/xiuxian/role/enemy/golem.tscn") as PackedScene).instantiate()
@@ -53,8 +53,8 @@ func _run() -> void:
 	check(int(golem.exp_reward) == 120, "golem.tscn exp_reward 应覆写为 120")
 	golem.health.call("kill")
 	await physics_frame
-	check(character.level == 2 and int(character.exp) == 40,
-		"击杀傀儡后应 2 级余 40（20+120-100，got lv=%d exp=%d）"
+	check(character.level == 2 and int(character.exp) == 80,
+		"击杀傀儡后应 2 级余 80（60+120-100，got lv=%d exp=%d）"
 		% [character.level, int(character.exp)])
 	check(str(character.get_realm_title()) == "斗之气二段",
 		"击杀后段位应显示 斗之气二段（got %s）" % str(character.get_realm_title()))
@@ -66,7 +66,7 @@ func _run() -> void:
 	await physics_frame
 	dumb.health.call("kill")
 	await physics_frame
-	check(int(character.exp) == 40, "exp_reward=0 击杀不应变动修为")
+	check(int(character.exp) == 80, "exp_reward=0 击杀不应变动修为")
 
 	# 还原基线
 	gs.reset_demo()

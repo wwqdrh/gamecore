@@ -25,6 +25,7 @@
 	}
 	.quality-text { color: #ffffff; font_size: 14; }
 	.detail-desc { color: #6b5a3e; font_size: 15; }
+	.detail-source { color: #8a7350; font_size: 13; }
 	.seal-text { color: #b03a2e; font_size: 26; }
 	.use-btn {
 	  background: #e8b93e;
@@ -65,6 +66,9 @@
 	  <Label name="DetailDesc" class="detail-desc"
 			 text="服用后可快速聚集天地灵气，提升修为。是修仙者常用的助修丹药。"
 			 align="center" autowrap_mode="3" size_flags_vertical="expand_fill" />
+	  <!-- 获得方式（定义表 source 字段）：坊市购买/秘境掉落/采集炼制 -->
+	  <Label name="DetailSource" class="detail-source"
+			 text="📍 坊市购得" align="center" autowrap_mode="3" />
 	  <HBoxContainer separation="10">
 		<Button name="UseBtn" class="use-btn" text="使  用" custom_minimum_size="120,44"
 				size_flags_horizontal="expand_fill" @pressed="_on_use_pressed" />

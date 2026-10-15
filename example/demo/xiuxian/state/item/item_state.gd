@@ -6,7 +6,7 @@
 #       （user://coredata.data，路径 init;xiuxian_item;items / init;xiuxian_item;bag）。
 #
 # 数据源：道具**定义**已迁移到 state/item/item.gjson（GJson 定义表，
-# 经 XiuItemTable 静态加载；改文件即改全游戏目录，无需动代码）；
+# 经 XiuItemTable 静态加载（state/item/*.json 按分类多文件，扫描目录合并）；
 # 本 Bean 只持有**运行数据**（首次注册从定义表派生总表写入存档 + 背包）。
 #
 # 查询方式（三选一）：
@@ -22,7 +22,7 @@ const TYPE_EQUIP := "装备"
 const TYPE_SPECIAL := "特殊"
 
 ## 全量道具总表（运行数据：首次注册由 item.gjson 定义表派生，此后随存档恢复；
-## 定义本身的权威来源是 item.gjson，重置/补档经 XiuItemTable 读取）
+## 定义本身的权威来源是 state/item/*.gjson 分类产物，重置/补档经 XiuItemTable 读取）
 var items: Dictionary = XiuItemTable.get_items()
 
 ## 背包持有量（item_id -> 数量；运行数据）
@@ -112,6 +112,7 @@ func refresh_bag_views() -> void:
 			"count": "x%d" % n,
 			"name": str(it.get("name", id)),
 			"desc": str(it.get("desc", "")),
+			"source": str(it.get("source", "")),
 			"quality": "稀有" if str(it.get("rarity", "")) == "灵品" else "",
 			"locked": is_item_locked(id),
 		})

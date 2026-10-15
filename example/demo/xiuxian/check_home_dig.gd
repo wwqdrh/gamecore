@@ -57,14 +57,17 @@ func _run() -> void:
 	_check(map.get_terrain_name_at(Vector2i(16, 1)) == "grass", "补丁覆盖全图（格 16,1 也为 grass）")
 	_check(map.is_walkable(Vector2i(3, 3)) and map.is_walkable(Vector2i(0, 0)),
 		"grass 全图可行走（blocked_terrains 空）")
-	# 双网格渲染：显示格 (0..=w, 0..=h) 全部有图块
+	# 双网格渲染：显示格 (0..=w, 0..=h) 全部有图块（瓦片在 Display 子层，
+	# 根保持单位变换——显示/逻辑分离架构）
+	var disp: TileMapLayer = map.get_display_layer()
+	_check(disp != null, "GdDigLayer 应有 Display 显示子层")
 	var missing := 0
 	for dy in range(0, 15):
 		for dx in range(0, 21):
-			if map.get_cell_source_id(Vector2i(dx, dy)) == -1:
+			if disp.get_cell_source_id(Vector2i(dx, dy)) == -1:
 				missing += 1
 	_check(missing == 0, "全部显示格应有图块（缺 %d 个）" % missing)
-	var tile_before: Vector2i = map.get_cell_atlas_coords(Vector2i(9, 6))
+	var tile_before: Vector2i = disp.get_cell_atlas_coords(Vector2i(9, 6))
 	_check(tile_before == Vector2i(2, 1), "纯草四角显示格应为整草图块 (2,1)，实际 %s" % tile_before)
 
 	# ---- B. 挖地限制 + 信号 ----
@@ -82,9 +85,9 @@ func _run() -> void:
 		"s_dug 信号应触发一次且参数正确（%s）" % str(dug_cells))
 
 	# ---- C. 视觉刷新 ----
-	var tile_after: Vector2i = map.get_cell_atlas_coords(Vector2i(9, 6))
+	var tile_after: Vector2i = disp.get_cell_atlas_coords(Vector2i(9, 6))
 	_check(tile_after != tile_before, "挖掘后显示格 (9,6) 图块应变化（%s → %s）" % [tile_before, tile_after])
-	var edge_tile: Vector2i = map.get_cell_atlas_coords(Vector2i(10, 6))
+	var edge_tile: Vector2i = disp.get_cell_atlas_coords(Vector2i(10, 6))
 	_check(edge_tile != Vector2i(2, 1), "相邻显示格 (10,6) 应出现过渡片（%s）" % edge_tile)
 
 	# ---- D. 持久化 roundtrip ----

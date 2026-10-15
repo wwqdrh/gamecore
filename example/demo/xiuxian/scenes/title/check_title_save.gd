@@ -4,12 +4,16 @@
 # 覆盖：1) title_menu/save_modal gml 构建并重生成 tscn（等效编辑器插件产物）
 #       2) Modal 结构与初始隐藏；点「开始游戏」打开弹窗
 #       3) 槽位摘要：空档「新游戏」、有档「境界·天数 + 继续游戏」
-#       4) 切档语义：空档 Bean 重置默认值（新游戏），有档读回进度（继续）
-#       5) 点空档槽位 → GDCORE.set_save_id + change_scene 进主场景全链路
+#       4) 删除存档：有档槽显示「删除存档」（show_if 响应式显隐）、
+#          两步确认删除（首点确认态/再点执行）、删后按钮消失且回归「新游戏」
+#       5) 切档语义：空档 Bean 重置默认值（新游戏），有档读回进度（继续）
+#       6) 点空档槽位 → GDCORE.set_save_id + change_scene 进主场景全链路
 #
 # 零污染约定（2026-10-11）：本测试是存档 UI 专项，不能用 _test 守卫
 # （被测对象就是真实槽位路径），因此**只写槽二/三的测试档并全部清理**，
 # 对槽一（save_id ""，玩家真实档）只读不断言固定内容、不写入任何字段。
+# 清场走 core.delete_save（正规删档途径，勿手动删文件——运行中实例的
+# 自动落盘会把内存态写回导致"复活"）。
 extends SceneTree
 
 const DIR := "res://example/demo/xiuxian/scenes/title/ui/"
@@ -47,15 +51,13 @@ func _run() -> void:
 		quit(1)
 		return
 
-	# 2. 环境清场：槽二/三删档；槽二制造「有档」受控样本（level=5）
+	# 2. 环境清场：槽二/三正规删档；槽二制造「有档」受控样本（level=5）
 	var core: Object = Engine.get_singleton("GDCORE")
 	core.set_save_id("")
 	var ch := XiuCharacterState.ins()
 	var slot1_exists := FileAccess.file_exists(SLOT1_PATH)
 	for id in ["2", "3"]:
-		var p := "user://coredata_%s.data" % id
-		if FileAccess.file_exists(p):
-			DirAccess.remove_absolute(p)
+		core.delete_save(id)
 	core.set_save_id("2")
 	ch.update("level", 5, {}, true)
 	check(FileAccess.file_exists("user://coredata_2.data"), "槽二测试档已生成（受控有档样本）")
@@ -108,6 +110,18 @@ func _run() -> void:
 	check(line2 != null and line2.text.contains("境界"), "槽二摘要含境界（%s）" % (line2.text if line2 else "-"))
 	check(btn3 != null and btn3.text == "新游戏", "槽三空档显示新游戏")
 
+	# 5.5 删除存档按钮响应式显隐（show_if="slotN_has_save"）
+	var del1: Button = save_root.find_child("Slot1DelBtn", true, false)
+	var del2: Button = save_root.find_child("Slot2DelBtn", true, false)
+	var del3: Button = save_root.find_child("Slot3DelBtn", true, false)
+	check(del1 != null and del2 != null and del3 != null, "三槽删除按钮节点存在")
+	check(del3 != null and not del3.visible, "空档槽位删除按钮隐藏（show_if=false）")
+	check(del2 != null and del2.visible, "有档槽位删除按钮显示（show_if=true）")
+	if slot1_exists:
+		check(del1 != null and del1.visible, "槽一（真实档存在）删除按钮显示")
+	else:
+		check(del1 != null and not del1.visible, "槽一（无档）删除按钮隐藏")
+
 	# 6. 切档语义：有档 = 继续（读回进度）；空档 = 新游戏（重置默认值）
 	core.set_save_id("")
 	await process_frame
@@ -121,6 +135,29 @@ func _run() -> void:
 	core.set_save_id("")
 	await process_frame
 	check(int(ch.level) == level_before, "切回默认档恢复原值（真实档未被污染）")
+
+	# 6.5 删除存档全流程：两步确认 + 删后响应式回归「新游戏」
+	core.set_save_id("2")
+	ch.update("level", 7, {}, true)
+	await process_frame
+	save_root.call("refresh_slots")
+	await process_frame
+	del2 = save_root.find_child("Slot2DelBtn", true, false)
+	check(del2 != null and del2.visible, "重造槽二有档后删除按钮显示")
+	save_root.call("_on_slot2_del_pressed")  # 首次点击：进入确认态
+	await process_frame
+	del2 = save_root.find_child("Slot2DelBtn", true, false)
+	check(del2 != null and del2.text == "确认删除?", "首次点击进入删除确认态")
+	check(FileAccess.file_exists("user://coredata_2.data"), "确认期内存档未被删除")
+	save_root.call("_on_slot2_del_pressed")  # 二次点击：执行删除
+	await process_frame
+	check(not FileAccess.file_exists("user://coredata_2.data"), "二次确认后存档文件已删除")
+	del2 = save_root.find_child("Slot2DelBtn", true, false)
+	check(del2 != null and not del2.visible, "删除后按钮响应式隐藏（数据变更驱动）")
+	check(GdUIReactive.get_var(save_root, "slot2_has_save") == false,
+		"响应式变量 slot2_has_save 已归 false")
+	var btn2b: Button = save_root.find_child("Slot2Btn", true, false)
+	check(btn2b != null and btn2b.text == "新游戏", "删除后主按钮回归「新游戏」")
 
 	# 7. 点空档（槽三）进入主场景：切档 + 关弹窗 + change_scene 全链路
 	#    （change_scene 会整体替换场景根，旧 title_root/modal 随之释放——
@@ -140,12 +177,10 @@ func _run() -> void:
 			and root.find_child("CalendarManager", true, false) != null,
 		"主场景组件已接线（DungeonManager/CalendarManager）")
 
-	# 8. 清理：切回默认档、删测试槽位档（真实档全程零写入）
+	# 8. 清理：切回默认档、正规删档清测试槽位（真实档全程零写入）
 	core.set_save_id("")
 	for id in ["2", "3"]:
-		var p2 := "user://coredata_%s.data" % id
-		if FileAccess.file_exists(p2):
-			DirAccess.remove_absolute(p2)
+		core.delete_save(id)
 
 	print("RESULT: fails=%d" % fails)
 	quit(1 if fails > 0 else 0)

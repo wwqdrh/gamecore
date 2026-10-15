@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "pipeline": "gjson",
+  "desc": "装备表（生产工具与武器防具，装备后生效） 字段：id/name/type/rarity/desc/source(获得方式)/price/stack/icon；type: 消耗/材料/装备/特殊；rarity: 凡品/灵品/仙品/帝品。icon=逻辑图片 id（state/item/icon_map.gd 登记）。",
+  "items": {
+	"tool_pickaxe": {
+	  "id": "tool_pickaxe",
+	  "name": "玄铁镐",
+	  "type": "装备",
+	  "rarity": "灵品",
+	  "desc": "寒铁打造的采镐，装备后点击矿石方向挥镐开采（矿石需敲击三次）。",
+	  "source": "坊市购得。",
+	  "price": 300,
+	  "stack": 1,
+	  "icon": "img_tool_pickaxe"
+	},
+	"tool_hoe": {
+	  "id": "tool_hoe",
+	  "name": "玄铁锄",
+	  "type": "装备",
+	  "rarity": "凡品",
+	  "desc": "农家用锄，装备后在可耕作地形（如家宅田地）点击方向挥锄锄地。",
+	  "source": "坊市购得（家宅初始赠送）。",
+	  "price": 120,
+	  "stack": 1,
+	  "icon": "img_tool_hoe"
+	},
+	"tool_watering_can": {
+	  "id": "tool_watering_can",
+	  "name": "青铜水壶",
+	  "type": "装备",
+	  "rarity": "凡品",
+	  "desc": "浇灌耕地的水壶，装备后对已开垦耕地点击方向浇水。湿润的耕地才能播种，且作物只在湿润时生长；久置会自然干燥。",
+	  "source": "坊市购得。",
+	  "price": 80,
+	  "stack": 1,
+	  "icon": "img_tool_watering_can"
+	},
+	"sword_qingfeng": {
+	  "id": "sword_qingfeng",
+	  "name": "青锋剑",
+	  "type": "装备",
+	  "rarity": "灵品",
+	  "desc": "青云宗制式飞剑，锋锐轻灵。",
+	  "source": "坊市兵器阁购得。",
+	  "price": 500,
+	  "stack": 1,
+	  "icon": "img_sword_qingfeng"
+	},
+	"robe_yunwen": {
+	  "id": "robe_yunwen",
+	  "name": "云纹袍",
+	  "type": "装备",
+	  "rarity": "灵品",
+	  "desc": "绣有云纹法阵的护身法袍。",
+	  "source": "坊市成衣铺购得。",
+	  "price": 450,
+	  "stack": 1,
+	  "icon": "img_robe_yunwen"
+	}
+  }
+}

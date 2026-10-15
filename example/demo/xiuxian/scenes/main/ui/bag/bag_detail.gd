@@ -47,6 +47,15 @@ func _on_selection_changed(value: Variant) -> void:
 	var desc_label := find_child("DetailDesc", true, false) as Label
 	if desc_label:
 		desc_label.text = desc
+	# 获得方式（定义表 source 字段；锁定态不展示）
+	var source_label := find_child("DetailSource", true, false) as Label
+	if source_label:
+		var source := ""
+		if not item.get("locked", false):
+			var src := str(item.get("source", ""))
+			if not src.is_empty():
+				source = "📍 获得方式：%s" % src
+		source_label.text = source
 
 
 func _on_use_pressed() -> void:

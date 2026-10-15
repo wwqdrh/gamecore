@@ -19,6 +19,7 @@ extends Panel
 @export var reward2: String = ""
 @export var btn_text: String = ""
 @export var btn_state: String = ""
+@export var hint: String = ""
 
 
 ## 条目按钮回调（task_item.gml ItemBtn 的 @pressed 声明）
@@ -32,6 +33,9 @@ func _on_task_action(btn: Control) -> void:
 			#  本条目随之移入"已完成"页签）
 			if XiuTaskState.ins().complete_task(id):
 				print("[TaskItem] 领取任务奖励: ", title)
+		"find":
+			# 可接取：指引玩家去找 giver 对话接取（接取动作在对话流里完成）
+			print("[TaskItem] 可接取任务: ", title, " → ", hint)
 		"go":
 			# 进行中：导航目标暂未接入，仅打印占位
 			print("[TaskItem] 前往任务: ", title, " 进度=", progress)

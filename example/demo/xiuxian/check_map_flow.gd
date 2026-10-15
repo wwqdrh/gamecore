@@ -60,21 +60,23 @@ func _run() -> void:
 		_finish()
 		return
 	check(mgr.get_class() == "GdMapManager", "MapManager 应为 GdMapManager 类型")
-	check(str(mgr.initial_map) == "xiuxian_xiaozhai", "initial_map 应显式配置为 xiuxian_xiaozhai（默认进萧宅）")
+	check(str(mgr.initial_map) == "xiuxian_home", "initial_map 应显式配置为 xiuxian_home（新档出生 home 农田，beat 0）")
 	var registered = mgr.get_registered_maps()
 	check(registered.has("xiuxian_xiaozhai") and registered.has("xiuxian_xiaozhen")
 		and registered.has("xiuxian_town") and registered.has("xiuxian_map_a")
 		and registered.has("xiuxian_map_b"),
 		"注册表应含萧宅/青石镇/青云坊/map_a/map_b 五个别名，实际 %s" % [registered])
 
-	# 2. 初始加载：ready 时自动进入萧宅（默认入口）
-	check(str(mgr.get_current_alias()) == "xiuxian_xiaozhai", "初始应自动加载萧宅 xiuxian_xiaozhai")
+	# 2. 初始加载：ready 时自动进入 home（默认入口）
+	check(str(mgr.get_current_alias()) == "xiuxian_home", "初始应自动加载 home xiuxian_home")
 	var cur_map: Object = mgr.get_current_map()
 	check(cur_map != null, "当前地图实例不应为空")
 	if cur_map == null:
 		_finish()
 		return
-	check(cur_map.get_class() == "GdQuickMap", "地图根应为 GdQuickMap")
+	var cur_map_class := str(cur_map.get_class())
+	check(cur_map_class == "GdQuickMap" or cur_map_class == "GdDigLayer",
+		"地图根应为 GdQuickMap（home 挖地图为 GdDigLayer），实际 %s" % cur_map_class)
 	check(mgr.get_current_cell_size() == 32, "当前地图格子尺寸应为 32")
 	var init_spawn: Vector2i = mgr.get_spawn_cell()
 	check(cur_map.is_walkable(init_spawn),
@@ -85,7 +87,16 @@ func _run() -> void:
 	print("[Map] initial: alias=%s map=%s cell_size=%d spawn=%s" % [
 		mgr.get_current_alias(), cur_map.get_class(), mgr.get_current_cell_size(), spawn_pt])
 
-	# 2b. 手绘建筑块（paint_rects，山地=建筑）：正房/厢房/南墙不可行走，大门可通行
+	# 2b. 切到萧宅检验手绘建筑块（新档出生在 home 农田；萧宅为显式进入的舞台）
+	check(mgr.open_map("xiuxian_xiaozhai", Vector2i(10, 8)), "open_map(xiaozhai) 应成功")
+	cur_map = mgr.get_current_map()
+	check(str(mgr.get_current_alias()) == "xiuxian_xiaozhai", "切图后应在萧宅")
+	check(cur_map != null, "萧宅地图实例不应为空")
+	if cur_map == null:
+		_finish()
+		return
+
+	# 2c. 手绘建筑块（paint_rects，山地=建筑）：正房/厢房/南墙不可行走，大门可通行
 	check(str(cur_map.get_terrain_name_at(Vector2i(9, 3))) == "mountain",
 		"正房 (9,3) 应为手绘山地（建筑）")
 	check(not cur_map.is_walkable(Vector2i(9, 3)), "正房格应不可通行")
@@ -159,9 +170,13 @@ func _run() -> void:
 	mgr.open_map("xiuxian_town", Vector2i(6, 10))
 	check(str(mgr.get_current_alias()) == "xiuxian_town", "open_map 应切换到青云坊")
 	var markers_t: Array = mgr.get_markers()
-	check(markers_t.size() == 2, "青云坊应有 2 个传送点（东→map_a / 北→map_b）")
-	var marker_t: Node2D = markers_t[0]
-	check(str(marker_t.target_alias) == "xiuxian_map_a", "青云坊首传送点应指向 xiuxian_map_a")
+	check(markers_t.size() == 3, "青云坊应有 3 个传送点（西→青石镇 / 东→map_a / 东北→map_b），实际 %d" % markers_t.size())
+	var marker_t: Node2D = null
+	for m in markers_t:
+		if str(m.target_alias) == "xiuxian_map_a":
+			marker_t = m
+			break
+	check(marker_t != null, "青云坊应有指向 xiuxian_map_a 的传送点")
 	var to_a: bool = mgr.try_teleport(marker_t.get_center())
 	check(to_a and str(mgr.get_current_alias()) == "xiuxian_map_a", "青云坊→青草岭传送应成功")
 	var markers_a: Array = mgr.get_markers()

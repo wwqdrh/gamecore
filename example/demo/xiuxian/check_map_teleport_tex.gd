@@ -97,8 +97,8 @@ func _run() -> void:
 	var home: Node = load(HOME).instantiate()
 	root.add_child(home)
 	await _wait_frames(4)
-	var hmat: Material = home.get_material()
-	_check(hmat != null and hmat is ShaderMaterial, "home 根图层应挂 ShaderMaterial")
+	var hmat: Material = home.get_display_layer().get_material()
+	_check(hmat != null and hmat is ShaderMaterial, "home Display 子层应挂 ShaderMaterial")
 	if hmat is ShaderMaterial:
 		var tex0 := _mat_tex(hmat, "tex0")
 		_check(tex0 != null and tex0.resource_path == TEX_PATH,
@@ -140,8 +140,8 @@ func _run() -> void:
 		_check(mgr.try_teleport(center), "try_teleport(传送点格心) 应触发")
 		_check(str(mgr.get_current_alias()) == "xiuxian_home",
 			"传送后应处于 xiuxian_home，实际 %s" % mgr.get_current_alias())
-		_check(mgr.get_spawn_cell() == Vector2i(10, 8),
-			"落点应为 target_cell (10,8)，实际 %s" % mgr.get_spawn_cell())
+		_check(mgr.get_spawn_cell() == Vector2i(18, 12),
+			"落点应为 target_cell (18,12)（传送点旁一格），实际 %s" % mgr.get_spawn_cell())
 	# 回程：home → xiaozhai
 	var back_marker: Node2D = null
 	for m in mgr.get_markers():
@@ -152,8 +152,8 @@ func _run() -> void:
 	if back_marker != null:
 		_check(mgr.try_teleport(back_marker.call("get_center")), "回程传送应触发")
 		_check(str(mgr.get_current_alias()) == "xiuxian_xiaozhai"
-			and mgr.get_spawn_cell() == Vector2i(14, 12),
-			"回程应落回萧宅入口 (14,12)，实际 %s@%s" % [mgr.get_current_alias(), mgr.get_spawn_cell()])
+			and mgr.get_spawn_cell() == Vector2i(1, 12),
+			"回程应落回萧宅西门 (1,12)（传送点旁一格），实际 %s@%s" % [mgr.get_current_alias(), mgr.get_spawn_cell()])
 	mgr.queue_free()
 	await _wait_frames(2)
 

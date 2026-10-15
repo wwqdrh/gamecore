@@ -78,7 +78,17 @@ impl GDCore {
     fn set_save_id(&mut self, id: GString) {
         let id_str = id.to_string();
         if self.save_id.to_string() == id_str {
+            // 同档重选（点「新游戏」进入等）也要解除删除写盘抑制，
+            // 否则该会话的所有进度更新都不会落盘
+            if let Some(core) = self.core_data_cache.get(&id_str) {
+                core.bind().set_save_suppressed(false);
+            }
             return;
+        }
+
+        // 重新激活目标档：解除删除抑制（delete_save 开启，重新选中即恢复落盘）
+        if let Some(core) = self.core_data_cache.get(&id_str) {
+            core.bind().set_save_suppressed(false);
         }
 
         // 会话时长属于旧存档：切档前先落盘（并入旧档累计值）
@@ -144,7 +154,15 @@ impl GDCore {
         if replaced_current {
             self.session_start_ms = Time::singleton().get_ticks_msec() as i64;
             if let Some(core) = self.core_data_cache.get(&id_str).cloned() {
+                // 删除写盘抑制：Bean 切核回填默认值（action=""，对新核必写入）
+                // 会触发落盘，把刚删的文件在同帧内"复活"——开启抑制后回填只进
+                // 内存；抑制保持到 set_save_id 重新激活该档（点「新游戏」进入）
+                core.bind().set_save_suppressed(true);
                 Self::notify_beans_switch_core(&core);
+                // 双保险：抑制外的任何写路径漏网时，最终再删一次
+                if FileAccess::file_exists(&filename) {
+                    DirAccess::remove_absolute(&filename);
+                }
             }
         }
         ok
@@ -232,6 +250,17 @@ impl GDCore {
         let Some(mut data) = self.core_data_cache.get(&id).cloned() else {
             return;
         };
+        // 幽灵建档守卫：存档文件不存在且本会话几乎无时长时跳过写盘——
+        // 标题页空转 / 删除存档后停留的会话，避免把空默认档写回磁盘
+        // （复活已删存档）。正常新游戏流程 Bean 回填会立即建档，不受影响。
+        let filename = if id.is_empty() {
+            GString::from("user://coredata.data")
+        } else {
+            GString::from(&format!("user://coredata_{}.data", id))
+        };
+        if !FileAccess::file_exists(&filename) && self.session_secs() < 1.0 {
+            return;
+        }
         let now = Time::singleton().get_ticks_msec() as i64;
         let total = stored_playtime(&data) + self.session_secs();
         // action "~" = 强制覆盖写（GJson 默认动作只写不存在的路径）

@@ -111,9 +111,10 @@ func _on_bag_changed(_value: Variant = null, _metas: Variant = null) -> void:
 	num.text = "x%d" % total
 
 
-## 任务横幅：只反映玩家已接取的任务——首个进行中（accepted，名称+步数进度），
-## 无则首个已完成待领取（completed），再无则提示文案
-## （未接取 available/locked 不上横幅；submitted 已领奖不占横幅）
+## 任务横幅：引导优先级 = 首个进行中（accepted，名称+步数进度）→
+## 首个已完成待领取（completed）→ 首个可接取（available，📍 找 giver 对话
+## 接取的指引）→ 首个未解锁预览 → 兜底文案。
+## （submitted 已领奖不占横幅）
 func _on_task_views_changed(_value: Variant = null, _metas: Variant = null) -> void:
 	var text: Label = find_child("QuestText", true, false)
 	if text == null:
@@ -131,7 +132,18 @@ func _on_task_views_changed(_value: Variant = null, _metas: Variant = null) -> v
 				claimable = true
 				break
 	if shown.is_empty():
-		text.text = "暂无进行中的任务"
+		# 无进行中任务：展示可接取目录（available 优先，其次 locked 预览）
+		for st in [XiuTaskState.STATUS_AVAILABLE, XiuTaskState.STATUS_LOCKED]:
+			for v in _task_bean.views:
+				if str(v.get("status", "")) == st:
+					shown = v
+					break
+			if not shown.is_empty():
+				break
+		if not shown.is_empty():
+			text.text = "可接取：%s · %s" % [str(shown.get("title", "")), str(shown.get("hint", ""))]
+			return
+		text.text = "暂无任务"
 	elif claimable:
 		text.text = "可领取：%s" % str(shown.get("title", ""))
 	else:

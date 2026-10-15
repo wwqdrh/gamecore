@@ -75,17 +75,24 @@ func _spawn(map: Node, state: XiuDungeonState) -> void:
 	var center := Vector2i(w / 2, h / 2)
 	spawn_cell = _nearest_walkable(map, center)
 
-	# 玩家出生格留白：怪距出生点至少 6 格
-	for i in 3 + int(state.floor):
+	# 玩家出生格留白：怪距出生点至少 6 格；二层起小怪上探一档（「灵妖」位）
+	var floor_no := int(state.floor)
+	var hp_mult := 1.6 if floor_no >= 2 else 1.0
+	var atk_mult := 1.5 if floor_no >= 2 else 1.0
+	var exp_mult := 2 if floor_no >= 2 else 1
+	for i in 3 + floor_no:
 		var key: String = ENEMY_POOL[rng.randi_range(0, ENEMY_POOL.size() - 1)]
-		_spawn_enemy(map, rng, ENEMY_SCENES[key], _random_cell(map, rng, 6), {})
+		_spawn_enemy(map, rng, ENEMY_SCENES[key], _random_cell(map, rng, 6), {},
+				hp_mult, atk_mult, exp_mult)
 
 	if state.is_boss_floor():
+		# 妖王数值：血 320（须远超二层缩放后小怪 ~190）、攻 14（斗之气可战）、
+		# 防 6、经 500
 		var boss_cfg := {
 			"display_name": "秘境妖王",
 			"max_health": 320.0,
-			"attack": 22.0,
-			"defense": 10.0,
+			"attack": 14.0,
+			"defense": 6.0,
 			"exp_reward": 500,
 			"sight_range": 288.0,
 			"body_color": Color(0.75, 0.3, 0.85),
@@ -96,9 +103,15 @@ func _spawn(map: Node, state: XiuDungeonState) -> void:
 			boss.name = "Boss"
 
 
-func _spawn_enemy(map: Node, rng: RandomNumberGenerator, scene: PackedScene, cell: Vector2i, cfg: Dictionary) -> Node:
+## hp_mult/atk_mult/exp_mult：楼层缩放（cfg 显式值优先，覆盖缩放结果）
+func _spawn_enemy(map: Node, rng: RandomNumberGenerator, scene: PackedScene, cell: Vector2i, cfg: Dictionary,
+		hp_mult: float = 1.0, atk_mult: float = 1.0, exp_mult: int = 1) -> Node:
 	var e := scene.instantiate()
 	e.enemy_cell = cell
+	if hp_mult != 1.0:
+		e.max_health = e.max_health * hp_mult
+		e.attack = e.attack * atk_mult
+		e.exp_reward = int(e.exp_reward) * exp_mult
 	for k in cfg:
 		e.set(k, cfg[k])
 	map.add_child(e)  # 实例化后挂到地图根：enemy 自吸附可行走格 + 绑定玩家

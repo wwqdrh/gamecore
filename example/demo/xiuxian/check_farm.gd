@@ -158,8 +158,8 @@ func _run() -> void:
 		"信号计数 watered≥1 / planted=1 / harvested=1，实际 %s" % str(sigs))
 
 	# ---- D. 动作光标：set_cursor_for 按动作过滤 ----
-	var cursor: Node2D = map.get_node_or_null("DigCursor")
-	_check(cursor != null, "配置 cursor_texture 后应创建 DigCursor 精灵")
+	var cursor: Node2D = map.get_node_or_null("ActionCursor")
+	_check(cursor != null, "应创建 ActionCursor 光标组件")
 	if cursor != null:
 		map.call("set_cursor_for", Vector2i(8, 6), "dig")
 		_check(cursor.visible, "dig 光标：可锄草格 → 显示")
@@ -260,7 +260,7 @@ func _run() -> void:
 	player.set("_wired", true)  # 测试桩：_on_map_clicked 的接线守卫
 	# headless 无真实鼠标（warp_mouse/push_input 均无法驱动视口鼠标位置）：
 	# 点击分流逻辑在 _on_map_clicked_at(map, target)，直调任意格覆盖全守卫链
-	var cursor2: Node2D = map.get_node_or_null("DigCursor")
+	var cursor2: Node2D = map.get_node_or_null("ActionCursor")
 	if cursor2 != null:
 		map.call("set_cursor_for", C, "harvest")
 		_check(cursor2.visible, "harvest 光标：成熟作物格 → 显示")

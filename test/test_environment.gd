@@ -75,9 +75,11 @@ func test_weather_switch() -> void:
 				assert_true(mat.get_shader() != null,
 					weather_name + " 应有动态创建的 shader")
 
-	# clear / 未知天气：覆盖层保留但隐藏，不崩溃
+	# clear / 未知天气：覆盖层保留但隐藏（density/强度渐出需要帧，给足余量）
 	w.set_weather("clear")
 	assert_eq(w.get_weather(), "clear", "天气应切换为 clear")
+	for i in 240:
+		await tree.process_frame
 	assert_true(w.get_overlay() != null, "clear 后覆盖层节点应保留")
 	assert_true(w.get_overlay().visible == false, "clear 后覆盖层应隐藏")
 

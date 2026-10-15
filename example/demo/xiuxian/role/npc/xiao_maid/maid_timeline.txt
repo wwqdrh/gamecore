@@ -7,14 +7,15 @@
 # 红线：置 flag 的 stage 结尾必须是选项或 goto（防行推进时 flag 失配断线）。
 
 # 任务进行中：与云舟聊天即完成任务（完成前引出「宗门大比」主线伏笔）
+# 红线示例：task_complete 改变的 task_side_003_done 参与本段 gate（!done），
+#   必须写在选项动作里——行上写会让选项永远不显示（推进时 gate 失配断线）
 [maid_task@task_side_003_accepted;!task_side_003_done]
 (小翠,云舟)
 哎？老爷让你来陪我聊天的？嘿嘿，那我可就不客气啦——
 （两人从晒药的讲究聊到镇上的八卦，好一会儿才停下）
 对了！七日后青云坊演武堂开宗门大比，老爷替你报了名哟。
 这几日多去秘境里历练历练，可别到时候垫底呀。
-@task_complete:side_003
-- 知道啦，回去回话。@goto:maid_end
+- 知道啦，回去回话。@task_complete:side_003;goto:maid_end
 
 # 任务完成后：熟络的问候 + 大比进展关心
 [maid_after@task_side_003_done]
@@ -29,6 +30,15 @@
 @set_flag:met_xiao_maid
 - 西厢都晒些什么？@goto:maid_herb
 - 宅子里有什么好玩的？@goto:maid_fun
+- 这宅子……和我家是什么渊源？@goto:maid_yun
+
+# beat 2：宅中近况——萧家替云家照看祖产（世界观铺垫）
+[maid_yun]
+(小翠)
+老爷说过呀——十年前你爹把祖产契书押在老爷这儿，说进秘境寻宝，
+赚了钱就回来赎。这一去就是十年，东厢那些箱子，都是云家的旧物。
+老爷每年冬至还带我去祠堂上香呢，说是给故人留个念想。
+:goto:maid_end
 
 [maid_herb]
 (小翠)

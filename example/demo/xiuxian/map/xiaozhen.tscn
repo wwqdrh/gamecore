@@ -21,6 +21,8 @@ blocked_terrains = PackedStringArray("mountain")
 connected_terrain = "grass"
 paint_terrain = "mountain"
 paint_rects = Array[Rect2i]([Rect2i(3, 4, 5, 3), Rect2i(10, 4, 5, 3), Rect2i(17, 4, 5, 3), Rect2i(4, 11, 4, 3), Rect2i(9, 11, 4, 3), Rect2i(14, 11, 6, 3)])
+gate_terrain = "grass"
+gate_rects = Array[Rect2i]([Rect2i(0, 12, 4, 3), Rect2i(24, 9, 4, 3)])
 
 [node name="DecoHarvest" type="Node" parent="."]
 script = ExtResource("4_deco")
@@ -36,18 +38,18 @@ deco_callbacks = PackedStringArray("on_ore_harvested")
 callback_target_path = NodePath("../DecoHarvest")
 
 [node name="TeleportWest" type="GdMapMarker" parent="."]
-cell = Vector2i(1, 9)
+cell = Vector2i(0, 13)
 cell_size = 32
 target_alias = "xiuxian_xiaozhai"
-target_cell = Vector2i(9, 9)
+target_cell = Vector2i(18, 12)
 label = "返回萧宅"
 
 [node name="TeleportEast" type="GdMapMarker" parent="."]
-cell = Vector2i(26, 9)
+cell = Vector2i(27, 10)
 cell_size = 32
 color = Color(1, 0.72, 0.3, 1)
 target_alias = "xiuxian_town"
-target_cell = Vector2i(6, 10)
+target_cell = Vector2i(1, 11)
 label = "前往青云坊"
 
 [node name="NpcHerbShop" parent="." instance=ExtResource("1_herb")]

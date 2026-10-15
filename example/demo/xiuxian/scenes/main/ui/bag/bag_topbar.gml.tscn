@@ -76,14 +76,14 @@ corner_radius_top_right = 20
 corner_radius_bottom_right = 20
 corner_radius_bottom_left = 20
 
-[node name="BagTopBar" type="Panel" unique_id=730152538]
+[node name="BagTopBar" type="Panel" unique_id=1549974063]
 custom_minimum_size = Vector2(0, 56)
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_0g7hy")
 metadata/__script_vars = {}
 metadata/__gml_root = true
 
-[node name="TopBarRow" type="HBoxContainer" parent="." unique_id=1855397269]
+[node name="TopBarRow" type="HBoxContainer" parent="." unique_id=1075561374]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -95,13 +95,13 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@850" type="Panel" parent="TopBarRow" unique_id=409559558]
+[node name="@Panel@884" type="Panel" parent="TopBarRow" unique_id=23223445]
 custom_minimum_size = Vector2(140, 40)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_vvaer")
 
-[node name="@Label@849" type="Label" parent="TopBarRow/@Panel@850" unique_id=532982868]
+[node name="@Label@883" type="Label" parent="TopBarRow/@Panel@884" unique_id=1361736985]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -111,19 +111,19 @@ horizontal_alignment = 1
 vertical_alignment = 1
 metadata/__anchor = "full"
 
-[node name="@Control@851" type="Control" parent="TopBarRow" unique_id=1873832636]
+[node name="@Control@885" type="Control" parent="TopBarRow" unique_id=317697681]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="@Panel@855" type="Panel" parent="TopBarRow" unique_id=305019115]
+[node name="@Panel@889" type="Panel" parent="TopBarRow" unique_id=45381488]
 custom_minimum_size = Vector2(150, 36)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_osbgd")
 metadata/__tips_title = "灵石"
 metadata/__tips = "修真界通用的硬通货（💎），可在坊市购买丹药、法器与炼器材料。"
 
-[node name="@HBoxContainer@854" type="HBoxContainer" parent="TopBarRow/@Panel@855" unique_id=1314774165]
+[node name="@HBoxContainer@888" type="HBoxContainer" parent="TopBarRow/@Panel@889" unique_id=292421678]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -134,31 +134,31 @@ offset_bottom = -4.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Label@852" type="Label" parent="TopBarRow/@Panel@855/@HBoxContainer@854" unique_id=2107871865]
+[node name="@Label@886" type="Label" parent="TopBarRow/@Panel@889/@HBoxContainer@888" unique_id=854119938]
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
 text = "💎"
 vertical_alignment = 1
 
-[node name="@Label@853" type="Label" parent="TopBarRow/@Panel@855/@HBoxContainer@854" unique_id=683971561]
+[node name="@Label@887" type="Label" parent="TopBarRow/@Panel@889/@HBoxContainer@888" unique_id=267576574]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "12,800"
 vertical_alignment = 1
 
-[node name="@Control@856" type="Control" parent="TopBarRow" unique_id=1532336816]
+[node name="@Control@890" type="Control" parent="TopBarRow" unique_id=1017933705]
 custom_minimum_size = Vector2(8, 0)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="@Panel@859" type="Panel" parent="TopBarRow" unique_id=1550693895]
+[node name="@Panel@893" type="Panel" parent="TopBarRow" unique_id=1293572088]
 custom_minimum_size = Vector2(120, 36)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_m2ihb")
 metadata/__tips_title = "储物袋容量"
 metadata/__tips = "当前已用格数 / 储物袋总格数。装满后将无法拾取或购买新物品，可先出售或使用材料腾出空间。"
 
-[node name="@HBoxContainer@858" type="HBoxContainer" parent="TopBarRow/@Panel@859" unique_id=1671126172]
+[node name="@HBoxContainer@892" type="HBoxContainer" parent="TopBarRow/@Panel@893" unique_id=1202770311]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -169,24 +169,24 @@ offset_bottom = -4.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Label@857" type="Label" parent="TopBarRow/@Panel@859/@HBoxContainer@858" unique_id=727552824]
+[node name="@Label@891" type="Label" parent="TopBarRow/@Panel@893/@HBoxContainer@892" unique_id=1984159339]
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
 text = "👝"
 vertical_alignment = 1
 
-[node name="CapacityText" type="Label" parent="TopBarRow/@Panel@859/@HBoxContainer@858" unique_id=1001032728]
+[node name="CapacityText" type="Label" parent="TopBarRow/@Panel@893/@HBoxContainer@892" unique_id=703655380]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "86/120"
 vertical_alignment = 1
 
-[node name="@Control@860" type="Control" parent="TopBarRow" unique_id=1131069251]
+[node name="@Control@894" type="Control" parent="TopBarRow" unique_id=1519010201]
 custom_minimum_size = Vector2(8, 0)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="CloseBtn" type="Button" parent="TopBarRow" unique_id=903679430]
+[node name="CloseBtn" type="Button" parent="TopBarRow" unique_id=130763076]
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_c1cm5")

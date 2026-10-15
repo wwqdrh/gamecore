@@ -26,7 +26,7 @@
 
 use godot::prelude::*;
 use godot::builtin::{Array, GString, PackedInt32Array, PackedStringArray, Rect2i, Vector2, Vector2i};
-use godot::classes::{ITileMapLayer, Image, ImageTexture, Material, ResourceLoader, Shader, ShaderMaterial, Sprite2D, TileMapLayer, TileSet, TileSetAtlasSource, TileSetSource, Texture2D};
+use godot::classes::{Engine, ITileMapLayer, Image, ImageTexture, Material, ResourceLoader, Shader, ShaderMaterial, Sprite2D, TileMapLayer, TileSet, TileSetAtlasSource, TileSetSource, Texture2D};
 use godot::global::godot_warn;
 use godot::obj::WithBaseField;
 
@@ -80,9 +80,9 @@ pub struct GdDigLayer {
     #[export]
     terrain_shader_textures: PackedStringArray,
     /// 挖地预览光标贴图（可选，编辑器设置；如 cursor.svg）：配置后 ready 时
-    /// 创建 DigCursor 精灵子节点，宿主（锄类工具）经 set_cursor_cell /
-    /// clear_cursor 驱动——指示「下一锄将处理的格子」，只在 is_diggable
-    /// 的格子显示（所见即所锄）
+    /// 创建 ActionCursor（GdActionCursor）子节点，宿主（锄类工具）经
+    /// set_cursor_cell / clear_cursor 驱动——指示「下一锄将处理的格子」，
+    /// 只在 is_diggable 的格子显示（所见即所锄）；未配置贴图则用动作色框样式
     #[export]
     cursor_texture: Option<Gd<Texture2D>>,
 
@@ -120,6 +120,14 @@ pub struct GdDigLayer {
     /// 各作物序列帧纹理缓存（下标 = crops 数组下标；def.texture 或程序化占位）
     crop_sheets: Vec<Option<Gd<Texture2D>>>,
 
+    /// 显示子层（TileMapLayer）：承接 tileset/格子/双网格偏移缩放/材质。
+    /// **架构红线：地图根节点必须保持单位变换（位置 0、缩放 1）**——
+    /// 双网格显示需要半格偏移+图集缩放，全部打在本子层上（与 GdQuickMap
+    /// 的 layer 子层同范式）。根若带变换，GdMapMarker/光标/作物等一切
+    /// 子组件的「格心 = (cell+0.5)*cell_size」局部约定都会被放大漂移
+    /// （历史 bug：home 传送点被甩出地图不可见）。
+    display: Option<Gd<TileMapLayer>>,
+
     /// 每格地形下标（行主序，width*height；ready 时按导出配置初始化）
     grid: Vec<i32>,
     /// 地形名缓存（与 terrain_names 同步）
@@ -136,8 +144,9 @@ pub struct GdDigLayer {
     mask_img: Option<Gd<Image>>,
     /// 遮罩对应的 GPU 纹理（挂进 ShaderMaterial）
     mask_tex: Option<Gd<ImageTexture>>,
-    /// 挖地预览光标精灵（cursor_texture 配置后 ready 创建，初始隐藏）
-    cursor: Option<Gd<Sprite2D>>,
+    /// 动作预览光标（GdActionCursor 组件，ready 创建，初始隐藏；
+    /// 显示/动画/定位在组件内，本层只做农田谓词判定后驱动）
+    cursor: Option<Gd<super::gd_action_cursor::GdActionCursor>>,
 
     base: Base<TileMapLayer>,
 }
@@ -181,16 +190,16 @@ impl ITileMapLayer for GdDigLayer {
             wet_tex: None,
             crop_sprites: std::collections::HashMap::new(),
             crop_sheets: Vec::new(),
+            display: None,
             base,
         }
     }
 
     fn ready(&mut self) {
         // 仅装配自身（tileset/格子/偏移），无全局副作用
-        // z_index = -1：瓦片画在本层自身画布上，gl_compatibility 下运行时
-        // 动态挂载的地图会盖住场景树更靠后的角色（GdQuickMap 的瓦片子层
-        // 同为 z=-1 所以无此问题）——与 GdQuickMap 图层约定对齐
-        self.base_mut().set_z_index(-1);
+        // 显示下沉到 Display 子层：瓦片/双网格偏移/材质全在子层（z=-1），
+        // 根保持单位变换——子组件（GdMapMarker/光标/作物）格心定位约定统一
+        self.ensure_display();
         self.sync_tables();
         if self.grid.is_empty() {
             self.init_grid();
@@ -421,32 +430,56 @@ impl GdDigLayer {
         img.get_pixel(cell.x, cell.y)
     }
 
+    /// 确保显示子层存在（ready 调达；tileset/偏移/缩放/材质全挂本子层）
+    fn ensure_display(&mut self) {
+        if self
+            .display
+            .as_ref()
+            .is_some_and(|d| d.is_instance_valid())
+        {
+            return;
+        }
+        let mut layer = TileMapLayer::new_alloc();
+        layer.set_name("Display");
+        // z_index = -1：瓦片画在本子层画布上，gl_compatibility 下运行时
+        // 动态挂载的地图会盖住场景树更靠后的角色——与 GdQuickMap 图层约定对齐
+        layer.set_z_index(-1);
+        self.base_mut().add_child(&layer);
+        self.display = Some(layer);
+    }
+
+    /// 显示子层可变引用（未初始化时兜底创建，防 ready 前调用的健壮性）
+    fn display_mut(&mut self) -> Gd<TileMapLayer> {
+        self.ensure_display();
+        self.display.clone().unwrap()
+    }
+
+    /// 显示子层（tileset/显示格/双网格偏移缩放/材质都在子层上；
+    /// 根保持单位变换，格心定位等逻辑一律走根的世界语义）
+    #[func]
+    pub fn get_display_layer(&self) -> Option<Gd<TileMapLayer>> {
+        self.display.clone()
+    }
+
     /// 显示挖地预览光标于 cell（仅 is_diggable 的格子显示——rects 外/
     /// 不可挖地形自动隐藏；宿主每帧同步「下一锄将处理的格子」）
     #[func]
     pub fn set_cursor_cell(&mut self, cell: Vector2i) {
-        if self.cursor.is_none() {
-            return;
-        }
         let show = self.is_diggable(cell);
-        // 世界语义格心 → 根局部坐标：根带半格偏移 + 图集缩放（cs/ts_px），
-        // 格心直接当局部坐标用会随根缩放 2 倍飘移（双网格下光标飞远+压多格）
-        let world = self.cell_to_center(cell);
-        let local = self.base_mut().to_local(world);
-        let Some(spr) = self.cursor.as_mut() else {
-            return;
-        };
-        spr.set_visible(show);
-        if show {
-            spr.set_position(local);
+        if let Some(cur) = self.cursor.as_mut() {
+            if show {
+                cur.bind_mut().show_at(cell, GString::from("dig"));
+            } else {
+                cur.bind_mut().hide_cursor();
+            }
         }
     }
 
     /// 隐藏挖地预览光标（卸下工具/换图时调用；无光标配置时无害）
     #[func]
     pub fn clear_cursor(&mut self) {
-        if let Some(spr) = self.cursor.as_mut() {
-            spr.set_visible(false);
+        if let Some(cur) = self.cursor.as_mut() {
+            cur.bind_mut().hide_cursor();
         }
     }
 
@@ -750,23 +783,20 @@ impl GdDigLayer {
     /// （负反馈：不可锄/已湿润/无耕地/未成熟各有语义）
     #[func]
     pub fn set_cursor_for(&mut self, cell: Vector2i, action: GString) {
-        if self.cursor.is_none() {
-            return;
-        }
         let show = match action.to_string().as_str() {
+            "dig" => self.is_diggable(cell),
             "water" => self.is_waterable(cell) && !self.is_wet(cell),
             "plant" => self.is_plantable(cell),
             "harvest" => self.is_mature(cell),
-            _ => self.is_diggable(cell),
+            // 未知动作（如 "mine"，本层无矿石语义）→ 不亮（负反馈）
+            _ => false,
         };
-        let world = self.cell_to_center(cell);
-        let local = self.base_mut().to_local(world);
-        let Some(spr) = self.cursor.as_mut() else {
-            return;
-        };
-        spr.set_visible(show);
-        if show {
-            spr.set_position(local);
+        if let Some(cur) = self.cursor.as_mut() {
+            if show {
+                cur.bind_mut().show_at(cell, action);
+            } else {
+                cur.bind_mut().hide_cursor();
+            }
         }
     }
 
@@ -1080,28 +1110,25 @@ impl GdDigLayer {
         tex.upcast::<Texture2D>()
     }
 
-    /// 装配挖地预览光标（cursor_texture 配置后创建，初始隐藏；
-    /// 纯本地子节点，无全局副作用）
+    /// 装配动作预览光标（GdActionCursor 组件，初始隐藏；纯本地子节点，
+    /// 无全局副作用）。贴图可选——未配置时组件画动作色框，协议不变
     fn setup_cursor(&mut self) {
-        let Some(tex) = self.cursor_texture.clone() else {
+        // 光标是纯运行时交互辅助，编辑器不创建——tool 地图根的 ready 在
+        // 编辑器也跑，非 tool 子类在编辑器实例化会触发 godot-rust
+        // EditorPlaceholderV06 告警（v0.6 起返回占位实例）
+        if Engine::singleton().is_editor_hint() {
             return;
-        };
-        let mut spr = Sprite2D::new_alloc();
-        spr.set_name("DigCursor");
-        spr.set_texture(&tex);
-        spr.set_visible(false);
-        // 缩放到单格大小（世界像素）：精灵在根局部空间，根带 cs/ts_px 缩放，
-        // 局部缩放 = (cell_size / 根缩放) / 贴图长边——任意尺寸素材 + 任意
-        // 图集分辨率都恰好铺满一个世界格
-        let tw = tex.get_width().max(1) as f32;
-        let th = tex.get_height().max(1) as f32;
-        let root_scale = self.base_mut().get_scale().x.max(0.01);
-        let s = self.cell_size.max(1) as f32 / root_scale / tw.max(th);
-        spr.set_scale(Vector2::new(s, s));
-        // 相对 z=1 → 绝对 0：盖住瓦片（本层根 z=-1），树序在玩家前（让位角色）
-        spr.set_z_index(1);
-        self.base_mut().add_child(&spr);
-        self.cursor = Some(spr);
+        }
+        let mut cur = super::gd_action_cursor::GdActionCursor::new_alloc();
+        cur.set_name("ActionCursor");
+        cur.bind_mut().set_cell_size(self.cell_size);
+        if let Some(tex) = &self.cursor_texture {
+            cur.bind_mut().set_texture(Some(tex.clone()));
+        }
+        // 相对 z=1 → 绝对 0：盖住瓦片（Display 子层 z=-1），树序在玩家前（让位角色）
+        cur.set_z_index(1);
+        self.base_mut().add_child(&cur);
+        self.cursor = Some(cur);
     }
 
     /// 解析导出并行数组 → 运行时缓存（names/blocked/dig_to/has_dig_area）
@@ -1194,13 +1221,12 @@ impl GdDigLayer {
         let tex = Self::load_texture(&path)?;
         let ts_px = (tex.get_width().max(4) / 4).max(1);
         let ts = Self::build_tile_set(&tex, ts_px);
-        self.base_mut().set_tile_set(&ts);
-        self.base_mut()
-            .set_position(Vector2::new(-cs / 2.0, -cs / 2.0));
-        self.base_mut().set_scale(Vector2::new(
-            cs / ts_px as f32,
-            cs / ts_px as f32,
-        ));
+        let mut display = self.display_mut();
+        display.set_tile_set(&ts);
+        // 双网格显示：偏移半格 + 图集缩放，全部打在显示子层上（根恒单位变换）
+        display.set_position(Vector2::new(-cs / 2.0, -cs / 2.0));
+        display.set_scale(Vector2::new(cs / ts_px as f32, cs / ts_px as f32));
+        drop(display);
         self.repaint_all();
         Some(())
     }
@@ -1240,18 +1266,18 @@ impl GdDigLayer {
             .map(|t| t.upcast::<Texture2D>());
         let Some(tex) = tex else { return };
         let ts = Self::build_tile_set(&tex, TPX);
-        self.base_mut().set_tile_set(&ts);
-        self.base_mut()
-            .set_position(Vector2::new(-cs / 2.0, -cs / 2.0));
-        self.base_mut()
-            .set_scale(Vector2::new(cs / TPX as f32, cs / TPX as f32));
+        let mut display = self.display_mut();
+        display.set_tile_set(&ts);
+        display.set_position(Vector2::new(-cs / 2.0, -cs / 2.0));
+        display.set_scale(Vector2::new(cs / TPX as f32, cs / TPX as f32));
+        drop(display);
         self.repaint_all();
     }
 
     /// 重画全部显示格（0..=width x 0..=height）
     fn repaint_all(&mut self) {
         let Some(sid) = self.own_source_id() else { return };
-        self.base_mut().clear();
+        self.display_mut().clear();
         for dy in 0..=self.height {
             for dx in 0..=self.width {
                 self.paint_display(sid, dx, dy);
@@ -1276,7 +1302,7 @@ impl GdDigLayer {
             is_shape(quads[2]),
             is_shape(quads[3]),
         );
-        self.base_mut()
+        self.display_mut()
             .set_cell_ex(Vector2i::new(dx, dy))
             .source_id(sid)
             .atlas_coords(Vector2i::new(ax, ay))
@@ -1298,7 +1324,8 @@ impl GdDigLayer {
 
     /// 本节点 tileset 的第一个图集 source id（无 tileset/源返回 None）
     fn own_source_id(&self) -> Option<i32> {
-        let ts = self.base().get_tile_set()?;
+        let display = self.display.as_ref()?;
+        let ts = display.get_tile_set()?;
         if ts.get_source_count() > 0 {
             Some(ts.get_source_id(0))
         } else {
@@ -1443,7 +1470,7 @@ impl GdDigLayer {
         }
         self.mask_img = Some(img);
         self.mask_tex = Some(tex);
-        self.base_mut().set_material(&mat);
+        self.display_mut().set_material(&mat);
     }
 
     /// 地形归属变化后刷新遮罩（dig/set_terrain_name_at 调达；地图小全量重填）

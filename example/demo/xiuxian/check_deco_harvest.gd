@@ -11,7 +11,7 @@
 #      按名回调 deco_harvest.gd on_ore_harvested → XiuItemState.add_item 入包
 #   4. 背包展示数据：bag_views 派生包含矿石条目（name/icon/category 正确，
 #      bag_grid.gd watch 该视图驱动背包 UI 显示）
-#   5. 装备链路：mainhud_equipbar 3 号槽 = tool_pickaxe；player.gd 挖矿模式
+#   5. 装备链路：mainhud_equipbar 4 号槽 = tool_pickaxe；player.gd 挖矿模式
 #      TARGET_DECO=16 与矿石受击盒层匹配
 extends SceneTree
 
@@ -114,11 +114,11 @@ func _run() -> void:
 			check(str(found.get("category")) == "material", "材料类矿石应归 material 页签")
 			check(str(found.get("count")) == "x1", "数量应显示 x1")
 
-	# 5. 装备链路：3 号槽 = 挖矿镐；玩家挖矿目标层与矿石受击盒匹配
+	# 5. 装备链路：4 号槽 = 挖矿镐；玩家挖矿目标层与矿石受击盒匹配
 	var equipbar_constants: Dictionary = load(EQUIPBAR_SCRIPT).get_script_constant_map()
 	var slots: Array = equipbar_constants.get("SLOT_ITEMS", [])
-	check(slots.size() >= 3 and str(slots[2]) == "tool_pickaxe",
-		"装备栏 3 号槽应为 tool_pickaxe（实际 %s）" % [slots])
+	check(slots.size() >= 4 and str(slots[3]) == "tool_pickaxe",
+		"装备栏 4 号槽应为 tool_pickaxe（实际 %s）" % [slots])
 	var player_constants: Dictionary = load(PLAYER_SCRIPT).get_script_constant_map()
 	check(int(player_constants.get("TARGET_DECO", 0)) == 16,
 		"player.gd TARGET_DECO 应为 16（layer5，与矿石受击盒匹配）")

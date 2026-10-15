@@ -94,5 +94,15 @@
 		<Label class="menu-btn-text" text="教程" align="center" />
 	  </VBoxContainer>
 	</Panel>
+	<!-- 地图（ui/map/）：世界舆图（GdMiniMap 拼接缩略图 + 玩家位置光点），
+		 同储物袋，跨组件触发 MapModal.open() -->
+	<Panel name="MenuMap" class="menu-btn" custom_minimum_size="84,84"
+	      mouse_default_cursor_shape="pointing_hand" @pressed="show:MapModal">
+	  <VBoxContainer anchor="full" margin="8 10 8 8" separation="2">
+		<Label class="menu-btn-icon" text="🗺️" size_flags_vertical="expand_fill"
+		       align="center" valign="center" />
+		<Label class="menu-btn-text" text="地图" align="center" />
+	  </VBoxContainer>
+	</Panel>
   </VBoxContainer>
 </ui>

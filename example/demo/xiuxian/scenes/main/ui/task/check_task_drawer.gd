@@ -102,28 +102,31 @@ func _run() -> void:
 	else:
 		push_error("[Check] DrawerPanel 不存在")
 		ok = false
-	# 5. 任务列表按接取状态动态显示（进行中/已完成两页签，数据由 XiuTaskState 驱动）：
-	#    基线为空 → 接取进"进行中" → 推满待领取仍留"进行中" → 领奖后移入"已完成"
+	# 5. 任务列表按接取状态动态显示（可接取/进行中/已完成三页签，数据由
+	#    XiuTaskState 驱动）：基线全量进"可接取"目录（available 带 📍 找 giver
+	#    接取指引、locked 预览）→ 接取移入"进行中" → 推满待领取仍留
+	#    "进行中" → 领奖后移入"已完成"（后继任务回填"可接取"目录）
 	if tabs:
 		var task := XiuTaskState.ins()
 		task.reset_demo()
 		var lists: Array[Node] = tabs.find_children("TaskList", "", true, false)
-		if lists.size() != 2:
-			push_error("[Check] 应有进行中/已完成两个列表实例，实际 %d" % lists.size())
+		if lists.size() != 3:
+			push_error("[Check] 应有可接取/进行中/已完成三个列表实例，实际 %d" % lists.size())
 			ok = false
 		else:
-			var active_list: GdUIVList = lists[0]
-			var done_list: GdUIVList = lists[1]
+			var avail_list: GdUIVList = lists[0]
+			var active_list: GdUIVList = lists[1]
+			var done_list: GdUIVList = lists[2]
 			# 条目数 = 子节点数 - 1（slot 模板）
 			var cnt := func(l: GdUIVList) -> int: return l.get_child_count() - 1
-			print("[Check] baseline active=%d done=%d" % [cnt.call(active_list), cnt.call(done_list)])
-			if int(cnt.call(active_list)) != 0 or int(cnt.call(done_list)) != 0:
-				push_error("[Check] 基线（未接取任何任务）两页签都应为空")
+			print("[Check] baseline avail=%d active=%d done=%d" % [cnt.call(avail_list), cnt.call(active_list), cnt.call(done_list)])
+			if int(cnt.call(avail_list)) != 11 or int(cnt.call(active_list)) != 0 or int(cnt.call(done_list)) != 0:
+				push_error("[Check] 基线应 11 条全进可接取目录、其余两页签为空")
 				ok = false
 			task.accept_task("main_001")
-			print("[Check] accepted active=%d done=%d" % [cnt.call(active_list), cnt.call(done_list)])
-			if int(cnt.call(active_list)) != 1 or int(cnt.call(done_list)) != 0:
-				push_error("[Check] 接取后进行中应 1 条、已完成 0 条")
+			print("[Check] accepted avail=%d active=%d done=%d" % [cnt.call(avail_list), cnt.call(active_list), cnt.call(done_list)])
+			if int(cnt.call(avail_list)) != 10 or int(cnt.call(active_list)) != 1 or int(cnt.call(done_list)) != 0:
+				push_error("[Check] 接取后可接取应 10 条、进行中 1 条、已完成 0 条")
 				ok = false
 			for i in 3:
 				task.advance_task("main_001")
@@ -131,9 +134,10 @@ func _run() -> void:
 				push_error("[Check] 已完成待领取应留在进行中页签")
 				ok = false
 			task.complete_task("main_001")
-			print("[Check] submitted active=%d done=%d" % [cnt.call(active_list), cnt.call(done_list)])
-			if int(cnt.call(active_list)) != 0 or int(cnt.call(done_list)) != 1:
-				push_error("[Check] 领奖后应移入已完成页签")
+			print("[Check] submitted avail=%d active=%d done=%d" % [cnt.call(avail_list), cnt.call(active_list), cnt.call(done_list)])
+			# main_001 完成解锁后继 main_002（回填可接取目录）：10 保持不变
+			if int(cnt.call(avail_list)) != 10 or int(cnt.call(active_list)) != 0 or int(cnt.call(done_list)) != 1:
+				push_error("[Check] 领奖后应移入已完成页签，后继任务回填可接取目录")
 				ok = false
 			# 还原基线，避免污染后续断言与其他测试
 			task.reset_demo()

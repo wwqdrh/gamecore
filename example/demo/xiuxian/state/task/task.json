@@ -14,18 +14,26 @@
 		"main_002": {
 			"id": "main_002", "name": "灵田风波", "category": "主线",
 			"desc": "调查灵田减产之谜，驱逐作乱的地灵鼠。", "unlock": true,
-			"precondition": "main_001", "steps": 3, "giver": "外门弟子",
-			"objectives": [{"type": "goto", "desc": "前往灵田"}, {"type": "kill", "target_role": "地灵鼠", "desc": "驱逐作乱的地灵鼠"}, {"type": "talk", "target_role": "外门弟子", "desc": "回报调查结果"}],
+			"precondition": "main_001", "steps": 2, "giver": "外门弟子",
+			"objectives": [{"type": "kill", "target_role": "地灵鼠", "desc": "驱逐灵田的三只地灵鼠"}, {"type": "talk", "target_role": "外门弟子", "desc": "回报调查结果"}],
 			"rewards": {"exp": 600, "spirit_stones": 50,
 				"items": [{"id": "ore_coldiron", "count": 3}]}
 		},
 		"main_003": {
 			"id": "main_003", "name": "秘境探幽", "category": "主线",
 			"desc": "持秘境残图进入落霞秘境，寻机上探三层。", "unlock": false,
-			"precondition": "main_002", "steps": 5, "giver": "执事长老",
+			"precondition": "main_004", "steps": 5, "giver": "执事长老",
 			"objectives": [{"type": "collect", "target_role": "map_secret", "desc": "集齐秘境残图"}, {"type": "goto", "desc": "进入落霞秘境一层"}, {"type": "goto", "desc": "探至秘境二层"}, {"type": "kill", "target_role": "守境石傀", "desc": "击败守境石傀"}, {"type": "goto", "desc": "抵达秘境三层入口"}],
 			"rewards": {"exp": 1000, "spirit_stones": 100,
 				"items": [{"id": "pill_break", "count": 1}]}
+		},
+		"main_004": {
+			"id": "main_004", "name": "破关之资", "category": "主线",
+			"desc": "齐聚三颗聚气散，突破斗者，向执事长老复命。", "unlock": false,
+			"precondition": "main_002", "steps": 3, "giver": "执事长老",
+			"objectives": [{"type": "collect", "target_role": "break_qizhe", "desc": "齐聚聚气散×3"}, {"type": "rank_up", "target_role": "dou_zhe", "desc": "突破斗者"}, {"type": "talk", "target_role": "执事长老", "desc": "向执事长老复命"}],
+			"rewards": {"exp": 1000, "spirit_stones": 100,
+				"items": [{"id": "token_sect", "count": 1}]}
 		},
 		"side_001": {
 			"id": "side_001", "name": "采药济世", "category": "支线",

@@ -151,6 +151,12 @@ timeline 的 stage 可声明 flag 条件，GdDialogue 启动/推进时经 preche
      goto_end；
   2. 门控段落必须排在无条件段落**之前**（扫描取第一个满足的 stage，
      无条件 stage 恒通过）；无条件分支段只能放文件尾部经 goto 进入。
+  3. **行函数变更本段 gate 状态 = 必须写进选项动作**：行尾 `@set_flag` 在
+     行**显示时**执行，而推进时 `next()` 先查当前 stage gate——变更的
+     flag 若参与本段 gate，推进直接 goto_end 断线（选项/后续行全丢）。
+     正确写法是把变更+goto 写进选项动作（exec_response 内变更与 goto
+     连续执行、不经 stage 检查 = 安全位）；链式选项动作语法：首命令带
+     `@`，后续裸写（`@a:1;b:2;goto:x`）。
 - **持久化**：flag 存对话 control 的 `has_flag`/`set_flag`。demo 里
   DialogBox 委托 `XiuDialogState`（GdBean，随存档持久化）→ 对话进度跨
   运行保留；框架侧 control 是任意实现 has_flag 的节点。

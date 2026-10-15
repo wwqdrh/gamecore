@@ -284,12 +284,14 @@ func test_regrow_after_interval() -> void:
 	var missing := _deco_nodes(layer).size()
 	assert_eq(missing, initial - 1, "采集后存活数应减一")
 
-	# 等 regrow 到点补种（headless 帧快但 delta 小，给足帧数余量）
+	# 等 regrow 到点补种——墙钟时限（红线：无头帧率不节流，帧数≠墙钟时间，
+	# 4000 帧固定帧数在 fps 过高时累计 delta 不足 0.05s 会假失败）
 	var regrown := [false, ""]
 	layer.connect("s_regrowned", func(item_id, _key) -> void:
 		regrown[0] = true
 		regrown[1] = str(item_id))
-	for i in 4000:
+	var deadline := Time.get_ticks_msec() + 10000
+	while Time.get_ticks_msec() < deadline:
 		await wait_frames(1)
 		if regrown[0]:
 			break

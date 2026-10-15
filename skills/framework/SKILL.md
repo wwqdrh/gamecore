@@ -70,3 +70,15 @@ Player (GdRoleMover)
 
 `rust/src/anim/`（easing/juice/EaseMover）为 Rust 内部实现，**无 GDScript 导出**；
 GDScript 侧动画直接用原生 `create_tween()`。
+
+### 无头测试红线（demo 实测沉淀）
+
+- **无头帧率不节流**：`await process_frame` 帧数 ≠ 墙钟时间（900 帧可 <1s），
+  等真实时间流逝的轮询必须用 `Time.get_ticks_msec()` 墙钟时限
+- **lambda 按值捕获标量**：GDScript lambda 内 `counter += 1` 改的是副本，
+  计数断言用 Array.append 收集
+- **rust 扩展类 `get_class()` 返回注册类名**（如 GdDigLayer 而非基类
+  GdQuickMap），类型断言勿写死基类
+- **改 tscn 数值必 grep 测试硬断言**（旧数值硬编码连带失败的教训）
+- **装配期重入**：do_swap_scene rust 栈内场景 `_ready` 禁调组件表方法——
+  引导/事件宿主用节流轮询（0.5s）或 `_process` 快照，不用 Bean watch

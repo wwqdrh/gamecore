@@ -41,6 +41,15 @@ var terrain_grids: Dictionary = {}
 ## 各地图农田状态（键 = 地图别名 → GdDigLayer.get_farm_state dump）
 var farm_states: Dictionary = {}
 
+## 各地图解锁状态（键 = 地图别名 → bool；随存档持久化）。
+## 主线四图（STARTER_MAPS）恒解锁不入表；野外图（青草岭/幽竹林）突破
+## 斗者/进入第二阶段后经 unlock_map 点亮（try_breakthrough 联动）。
+var map_unlocked: Dictionary = {}
+
+## 开局即达的主线舞台图（不参与门控）
+const STARTER_MAPS := ["xiuxian_home", "xiuxian_xiaozhai",
+	"xiuxian_xiaozhen", "xiuxian_town"]
+
 
 ## 注册/获取单例 Bean（GdBean.bean 幂等：重复调用返回同一实例）
 static func ins() -> XiuMapState:
@@ -143,3 +152,24 @@ func load_farm_state(alias: String) -> Dictionary:
 ## 清空全部农田状态（测试用；force 绕过同值短路）
 func clear_farm_states() -> void:
 	update("farm_states", {}, {}, true)
+
+
+## 地图是否已解锁（主线四图恒真；野外图查表，无记录 = 未解锁）
+func is_map_unlocked(alias: String) -> bool:
+	if STARTER_MAPS.has(alias):
+		return true
+	return bool(map_unlocked.get(alias, false))
+
+
+## 点亮地图（随存档持久化；重复点亮同值短路）
+func unlock_map(alias: String) -> void:
+	if bool(map_unlocked.get(alias, false)):
+		return
+	var d := map_unlocked.duplicate(true)
+	d[alias] = true
+	update("map_unlocked", d, {}, false)
+
+
+## 清空全部解锁记录（测试用；主线四图不受影响）
+func clear_map_unlocked() -> void:
+	update("map_unlocked", {}, {}, true)

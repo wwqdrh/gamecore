@@ -1,0 +1,70 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/ui/map/map_modal.gd" id="1_226lh"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vflu6"]
+bg_color = Color(0.09019608, 0.1254902, 0.101960786, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[node name="MapWindow" type="Panel" unique_id=1827241966]
+custom_minimum_size = Vector2(960, 600)
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_vflu6")
+script = ExtResource("1_226lh")
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray()
+
+[node name="MainColumn" type="VBoxContainer" parent="." unique_id=591030236]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 22.0
+offset_top = 14.0
+offset_right = -22.0
+offset_bottom = -12.0
+mouse_filter = 2
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="TopBar" type="HBoxContainer" parent="MainColumn" unique_id=1763657720]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Title" type="Label" parent="MainColumn/TopBar" unique_id=1869823384]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "🗺️ 修仙界舆图"
+
+[node name="CurrentName" type="Label" parent="MainColumn/TopBar" unique_id=1345788508]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 8
+theme_override_colors/font_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+text = "当前：—"
+horizontal_alignment = 2
+
+[node name="MapScroll" type="ScrollContainer" parent="MainColumn" unique_id=812565802]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="WorldMap" type="GdMiniMap" parent="MainColumn/MapScroll" unique_id=1951243372]
+cell_px = 8.0
+padding = 16.0
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Hint" type="Label" parent="MainColumn" unique_id=1642890816]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6039216, 0.65882355, 0.56078434, 1)
+text = "◉ 青点=传送口（连线互为往返）    ● 红点=你所在的位置    金框=当前地图"
+horizontal_alignment = 1

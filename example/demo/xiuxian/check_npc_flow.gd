@@ -59,7 +59,7 @@ func _run() -> void:
 	if mgr == null or dialog_layer == null:
 		_finish()
 		return
-	check(str(mgr.initial_map) == "xiuxian_xiaozhai", "initial_map 应为 xiuxian_xiaozhai（默认进萧宅）")
+	check(str(mgr.initial_map) == "xiuxian_home", "initial_map 应为 xiuxian_home（新档出生 home 农田，beat 0）")
 	var dialogue: Node = dialog_layer.get_node_or_null("Dialogue")
 	var dialog_box: Node = dialog_layer.get_node_or_null("DialogBox")
 	check(dialogue != null and dialogue.is_in_group(DIALOGUE_GROUP),
@@ -73,9 +73,10 @@ func _run() -> void:
 		_finish()
 		return
 
-	# 2. 初始加载 + NPC 落位（萧宅）
+	# 2. 切到萧宅 + NPC 落位（NPC 对话测试舞台；新档出生点在 home 农田）
+	check(mgr.open_map("xiuxian_xiaozhai", Vector2i(10, 8)), "open_map(xiaozhai) 应成功")
 	check(str(mgr.get_current_alias()) == "xiuxian_xiaozhai",
-		"初始应自动加载萧宅，实际 %s" % mgr.get_current_alias())
+		"切图后应在萧宅，实际 %s" % mgr.get_current_alias())
 	var map: Node = mgr.get_current_map()
 	check(map != null, "萧宅地图实例应已加载")
 	if map == null:

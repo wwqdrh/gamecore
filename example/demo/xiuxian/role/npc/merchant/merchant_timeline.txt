@@ -2,6 +2,19 @@
 # 语法：[stage@标记] 舞台；(角色名) 说话人轮换；- 选项@动作；
 #       @函数:参数 调用对话 control 上的方法；:goto:stage 控制流
 # UI 命令：@open_ui:StoreModal;end 打开坊市弹窗并结束对话（走 GdUIManager 注册表）
+#
+# 入口优先级：灵田风波了结后 → 失窃闲谈段（beat 6 群像一句）；日常兜底。
+
+[merchant_theft@task_main_002_done;!theft_rumor]
+(坊市商人,云舟)
+客官听说了吧？执事堂昨夜遭贼喽！这坊市几十年没出过这等事。
+(云舟)
+（先不接话，去别处再听听。）
+- （去找外门弟子打听）@goto:merchant_end
+
+[merchant_end]
+(坊市商人)
+哎，别走啊——量大还可优惠嘛！
 
 [merchant_talk]
 (坊市商人,云舟)

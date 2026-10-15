@@ -25,6 +25,10 @@
 # MapLayer 内——地图切换只替换 MapLayer 下的地图实例，玩家常驻。
 extends GdRoleMover
 
+## 传送被门控拦截（目标地图未解锁）：参数 = 目标地图别名。
+## UI 提示层（M5 引导提示条）接此信号展示「修为不足」类文案。
+signal s_portal_locked(target_alias: String)
+
 ## 最大血量
 @export var max_health := 100.0
 ## 攻击力（子弹单发伤害）
@@ -315,12 +319,12 @@ func _till_target_cell(map: Node, dir: Vector2) -> Vector2i:
 	return my_cell + offsets[wrapi(sector, 0, 8)]
 
 
-## 动作预览光标：till/water/plant 模式下每帧把「下一击将处理的格子」同步给
-## 地图（地图配置了 cursor_texture 才有光标；set_cursor_for 按动作过滤——
-## 可锄格才亮 / 未湿润格才亮 / 可播格才亮，负反馈所见即所得）；
+## 动作预览光标：till/water/plant/mine 模式下每帧把「下一击将处理的格子」同步给
+## 地图（光标协议 GdDigLayer / GdQuickMap 统一内置——GdActionCursor 组件；
+## set_cursor_for 按动作过滤——可锄格才亮 / 未湿润格才亮 / 可播格才亮 /
+## 有矿石格才亮，负反馈所见即所得）；
 ## 空手模式光标跟随鼠标所在格（"harvest" 过滤 = 悬停成熟作物才亮，
-## 不限 8 邻——远格也提示可摘，点击后会寻路走近）；其他模式/无光标协议
-## 的地图 → 清除
+## 不限 8 邻——远格也提示可摘，点击后会寻路走近）；其他模式 → 清除
 func _update_dig_cursor() -> void:
 	var map: Node = map_mgr.get_current_map()
 	if map == null:
@@ -333,6 +337,8 @@ func _update_dig_cursor() -> void:
 			cur_action = "water"
 		"plant":
 			cur_action = "plant"
+		"mine":
+			cur_action = "mine"
 		"":
 			cur_action = "harvest"
 	var has_cursor: bool = map.has_method("set_cursor_for") or map.has_method("set_cursor_cell")
@@ -608,7 +614,10 @@ func _apply_map(map: Node, snap: bool) -> void:
 	# 否则默认出生点（MapManager 已把不可行走出生格吸附到可行走格）
 	if snap:
 		global_position = _resolve_spawn_position(map)
-	last_cell = Vector2i(-9999, -9999)
+	# 出生格记入 last_cell：防止出生/落点恰好压在传送点上时，
+	# 下帧 cell != last_cell 立即二次触发传送（落点永远紧邻传送点而非其上，
+	# 此处是保险；若站在传送点上想要传送，走开一格再回来即可）
+	last_cell = map.world_to_cell(global_position)
 
 
 ## 出生位置解析：存档「上次位置」（地图匹配 + 落点格可行走校验）优先，
@@ -688,6 +697,13 @@ func _process(delta: float) -> void:
 	var cell: Vector2i = map.world_to_cell(global_position)
 	if cell != last_cell:
 		last_cell = cell
+		# 传送前置门控：命中传送点先查目标图是否解锁（只读查询，无重入）；
+		# 未解锁拦截并广播信号（UI 提示），不调 try_teleport
+		var target: String = map_mgr.get_portal_target_at(global_position)
+		if not target.is_empty() \
+				and not XiuMapState.ins().is_map_unlocked(target):
+			s_portal_locked.emit(target)
+			return
 		# 命中传送点：管理器切图并经 s_map_changed 回调重定位玩家
 		map_mgr.try_teleport(global_position)
 

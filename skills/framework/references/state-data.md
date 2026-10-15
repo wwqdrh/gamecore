@@ -208,11 +208,17 @@ func add_equip():
    ResourceLoader.load，未注册依赖），导出预设默认不打包，需在导出预设
    「Filters to export non-resource files」加 `*.gjson`
    （源 .json 若不想随包分发，在过滤器排除）。
-9. **定义表不放进度状态字段**：unlock/已获flag 等「随玩家游玩变化」的数据
+9. **定义表可按分类拆分多文件**：同目录多个 .json（各带 pipeline 标记）各自
+   生成同名 .gjson，Table 类扫描目录全量合并为一张总表（范本
+   `XiuItemTable._list_gjson_files`：DirAccess 扫 SOURCE_DIR 下 *.gjson，
+   按文件名排序逐个解密合并 items，同 id 后者覆盖并 push_warning）。
+   新增分类文件零代码接入；物理文件按系统分类，逻辑分类仍是条目 type 字段
+   （get_items_by_type 跨文件聚合）。策划字段约定见各文件 desc。
+10. **定义表不放进度状态字段**：unlock/已获flag 等「随玩家游玩变化」的数据
    属游戏进度，由 Bean 持有并持久化（范本 `XiuItemState.locked_items` +
    `unlock_item()`，初始锁定集为运行时默认值 `DEFAULT_LOCKED`）；定义表
    只回答「这个东西是什么/需要多少」。
-10. **.gjson 编辑器打开方式**：Rust 侧 `state/gjson_loader.rs` 注册了
+11. **.gjson 编辑器打开方式**：Rust 侧 `state/gjson_loader.rs` 注册了
    ResourceFormatLoader（lib.rs Scene stage 注册/注销），双击 .gjson 以
    **GdJson 资源**打开（inspector，当前无属性展示；`get_data()/query()`
    运行时可用）；.gjson 不在 textfile_extensions（密文按文本打开会产生
@@ -262,3 +268,25 @@ func add_equip():
   is_walkable 才原样落位，否则默认出生点（world_to_cell 为纯除法全局语义，
   地图在原点可直接用世界坐标校验）。位置属玩家运行态，独立成 Bean 不混入
   养成状态（XiuCharacterState）。
+
+## 删档语义与写盘抑制（delete_save「复活」坑，2026-10-15）
+
+**根因**：`delete_save` 删**当前激活档**后，`notify_beans_switch_core` 让各
+Bean 向重建的空核回填默认值（`action=""` 对新核必写入）→ `GJson::update`
+每次写都 `save_by_store()` → **文件同帧复活**。无 Bean 实例的守卫测试测不出。
+
+**修复三件套**（`rust/src/state/coredata.rs` + `gdcore.rs`）：
+1. `GdCoreData.suppress_save` 写盘抑制开关（`Rc<Cell<bool>>` 与 save_fn
+   闭包共享；抑制期间内存照常更新、不落盘）；`delete_save` 删当前档时
+   开启 + 终删双保险
+2. `set_save_id` 重新激活该档时解除抑制（**含同 id 早退路径**——否则点
+   「新游戏」进入后所有进度更新不落盘，进度全丢）
+3. `flush_play_time` 幽灵建档守卫：文件不存在且 `session_secs()<1` 时跳过
+   （标题页空转/删档后停留不再默默建档）
+
+**语义红线**：
+- 存档存在性判定以**文件是否存在**为准，勿用"内存缓存有无"判定
+  （Bean 切核回填后缓存恒非空）
+- 删档必须走 `GDCORE.delete_save`，严禁运行中手动删文件——30s 自动落盘
+  会"复活"已删文件
+- 需要在删当前档后立即做后续写盘的场景，先 `set_save_id` 重新激活再操作

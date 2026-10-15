@@ -11,6 +11,7 @@ const GML_FILES := [
 	"mainhud.gml", "mainhud_player.gml", "mainhud_resources.gml",
 	"mainhud_quest.gml", "mainhud_minimap.gml", "mainhud_menus.gml",
 	"mainhud_equipbar.gml", "mainhud_day.gml", "skill_item.gml",
+	"mainhud_guide.gml",
 ]
 
 const KEY_MENU := "mainhud.menu"
@@ -178,7 +179,7 @@ func _run() -> void:
 	# 不支持的值静默回退 FILL 会导致组件撑满整行/整屏高）
 	var height_cases := {
 		"PlayerBadge": 120.0, "ResourceBar": 120.0, "QuestBanner": 120.0,
-		"MiniMap": 200.0, "MenuColumn": 560.0,  # 5 按钮（含秘境）自然内容高度 ~524
+		"MiniMap": 200.0, "MenuColumn": 740.0,  # 8 按钮（修炼/功法/储物袋/任务/秘境/坊市/教程/地图）自然内容高度 ~700
 	}
 	for view_name in height_cases:
 		var view: Control = hud.find_child(view_name, true, false)

@@ -3,9 +3,11 @@
 	   UIVList 的 slot 模板通过 <Gml> 直接引用 task_item.gml（构建期注入），
 	   data="bean:xiuxian_task:views" 声明式绑定状态层任务展示视图
 	   （example/demo/xiuxian/state/task/task_state.gd 的 XiuTaskState）——
-	   只显示玩家接取过的任务：filter_key="status_group" +
+	   按状态组过滤任务：filter_key="status_group" +
 	   filter_value_var="status_group" 按状态组过滤，引用方用
 	   <Gml src="task_list.gml" data-status_group="变量" /> 具名注入：
+	   · "avail"  = 可接取任务目录（available 带 📍 找 giver 接取指引、
+	             locked 前置未达预览）
 	   · "active" = 进行中（accepted/completed）
 	   · "done"  = 已完成（submitted 留档）
 	   过滤值为空（独立打开）显示全部；列表为空时显示 EmptyHint 引导文案
@@ -21,7 +23,7 @@
   </script>
   <ScrollContainer name="TaskScroll" size_flags_vertical="expand_fill">
 	<VBoxContainer name="ListBox" size_flags_horizontal="expand_fill" size_flags_vertical="expand_fill">
-	  <Label name="EmptyHint" class="empty-hint" text="暂无任务，去 NPC 处接取吧"
+	  <Label name="EmptyHint" class="empty-hint" text="暂无任务"
 			 align="center" size_flags_vertical="shrink_center" visible="false" />
 	  <UIVList name="TaskList" size_flags_horizontal="expand_fill" size_flags_vertical="expand_fill"
 			   data="bean:xiuxian_task:views" filter_key="status_group" filter_value_var="status_group">

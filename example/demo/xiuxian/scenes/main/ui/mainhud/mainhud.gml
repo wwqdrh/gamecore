@@ -40,5 +40,8 @@
 		<Gml src="mainhud_equipbar.gml" size_flags_horizontal="shrink_center" />
 	  </VBoxContainer>
 	</MarginContainer>
+	<!-- 引导与演出层（全屏穿透覆盖，最后挂=最上层）：
+	     Toast 教学提示 / Banner 突破与通关字幅 / 传送门控提示 -->
+	<Gml src="mainhud_guide.gml" anchor="full" />
   </Control>
 </ui>

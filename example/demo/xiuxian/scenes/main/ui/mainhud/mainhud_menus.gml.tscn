@@ -86,14 +86,26 @@ corner_radius_top_right = 42
 corner_radius_bottom_right = 42
 corner_radius_bottom_left = 42
 
-[node name="MenuColumn" type="VBoxContainer" unique_id=1897357501]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ovi2g"]
+bg_color = Color(0.22745098, 0.3529412, 0.27450982, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
+corner_radius_top_left = 42
+corner_radius_top_right = 42
+corner_radius_bottom_right = 42
+corner_radius_bottom_left = 42
+
+[node name="MenuColumn" type="VBoxContainer" unique_id=1534587591]
 mouse_filter = 2
 script = ExtResource("1_kc8ni")
 metadata/__script_vars = {}
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray()
 
-[node name="MenuCultivate" type="Panel" parent="." unique_id=1643028314]
+[node name="MenuCultivate" type="Panel" parent="." unique_id=80496270]
 custom_minimum_size = Vector2(84, 84)
 layout_mode = 2
 mouse_default_cursor_shape = 2
@@ -101,7 +113,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_3iccf")
 metadata/__signal_pressed = "_on_menu_pressed"
 metadata/__script_vars = {}
 
-[node name="@VBoxContainer@63" type="VBoxContainer" parent="MenuCultivate" unique_id=1530385544]
+[node name="@VBoxContainer@63" type="VBoxContainer" parent="MenuCultivate" unique_id=36056670]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -112,20 +124,20 @@ offset_bottom = -8.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Label@61" type="Label" parent="MenuCultivate/@VBoxContainer@63" unique_id=1157922624]
+[node name="@Label@61" type="Label" parent="MenuCultivate/@VBoxContainer@63" unique_id=1309604845]
 layout_mode = 2
 size_flags_vertical = 3
 text = "🧘"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="@Label@62" type="Label" parent="MenuCultivate/@VBoxContainer@63" unique_id=2041362770]
+[node name="@Label@62" type="Label" parent="MenuCultivate/@VBoxContainer@63" unique_id=1798166378]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "修炼"
 horizontal_alignment = 1
 
-[node name="@Label@64" type="Label" parent="MenuCultivate" unique_id=1546695980]
+[node name="@Label@64" type="Label" parent="MenuCultivate" unique_id=1861732097]
 layout_mode = 0
 anchor_right = 1.0
 offset_top = 6.0
@@ -135,7 +147,7 @@ text = "●"
 horizontal_alignment = 2
 metadata/__anchor = "top_wide"
 
-[node name="MenuGongfa" type="Panel" parent="." unique_id=173305414]
+[node name="MenuGongfa" type="Panel" parent="." unique_id=56288111]
 custom_minimum_size = Vector2(84, 84)
 layout_mode = 2
 mouse_default_cursor_shape = 2
@@ -143,7 +155,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_cs5fp")
 metadata/__signal_pressed = "show:LevelModal"
 metadata/__script_vars = {}
 
-[node name="@VBoxContainer@67" type="VBoxContainer" parent="MenuGongfa" unique_id=207672202]
+[node name="@VBoxContainer@67" type="VBoxContainer" parent="MenuGongfa" unique_id=549880821]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -154,20 +166,20 @@ offset_bottom = -8.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Label@65" type="Label" parent="MenuGongfa/@VBoxContainer@67" unique_id=244741984]
+[node name="@Label@65" type="Label" parent="MenuGongfa/@VBoxContainer@67" unique_id=156773651]
 layout_mode = 2
 size_flags_vertical = 3
 text = "📖"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="@Label@66" type="Label" parent="MenuGongfa/@VBoxContainer@67" unique_id=2055329975]
+[node name="@Label@66" type="Label" parent="MenuGongfa/@VBoxContainer@67" unique_id=201441670]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "功法"
 horizontal_alignment = 1
 
-[node name="@Label@68" type="Label" parent="MenuGongfa" unique_id=841696324]
+[node name="@Label@68" type="Label" parent="MenuGongfa" unique_id=1722326391]
 layout_mode = 0
 anchor_right = 1.0
 offset_top = 6.0
@@ -177,7 +189,7 @@ text = "●"
 horizontal_alignment = 2
 metadata/__anchor = "top_wide"
 
-[node name="MenuBag" type="Panel" parent="." unique_id=1099026293]
+[node name="MenuBag" type="Panel" parent="." unique_id=240252536]
 custom_minimum_size = Vector2(84, 84)
 layout_mode = 2
 mouse_default_cursor_shape = 2
@@ -185,7 +197,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_udw71")
 metadata/__signal_pressed = "show:BagModal"
 metadata/__script_vars = {}
 
-[node name="@VBoxContainer@71" type="VBoxContainer" parent="MenuBag" unique_id=1329153020]
+[node name="@VBoxContainer@71" type="VBoxContainer" parent="MenuBag" unique_id=624609121]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -196,20 +208,20 @@ offset_bottom = -8.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Label@69" type="Label" parent="MenuBag/@VBoxContainer@71" unique_id=785067257]
+[node name="@Label@69" type="Label" parent="MenuBag/@VBoxContainer@71" unique_id=783656226]
 layout_mode = 2
 size_flags_vertical = 3
 text = "👝"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="@Label@70" type="Label" parent="MenuBag/@VBoxContainer@71" unique_id=752496303]
+[node name="@Label@70" type="Label" parent="MenuBag/@VBoxContainer@71" unique_id=530319969]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "储物袋"
 horizontal_alignment = 1
 
-[node name="@Label@72" type="Label" parent="MenuBag" unique_id=1336847080]
+[node name="@Label@72" type="Label" parent="MenuBag" unique_id=565045342]
 layout_mode = 0
 anchor_right = 1.0
 offset_top = 6.0
@@ -219,7 +231,7 @@ text = "●"
 horizontal_alignment = 2
 metadata/__anchor = "top_wide"
 
-[node name="MenuTask" type="Panel" parent="." unique_id=1709263932]
+[node name="MenuTask" type="Panel" parent="." unique_id=821739994]
 custom_minimum_size = Vector2(84, 84)
 layout_mode = 2
 mouse_default_cursor_shape = 2
@@ -227,7 +239,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_jtsid")
 metadata/__signal_pressed = "show:TaskDrawer"
 metadata/__script_vars = {}
 
-[node name="@VBoxContainer@75" type="VBoxContainer" parent="MenuTask" unique_id=415442662]
+[node name="@VBoxContainer@75" type="VBoxContainer" parent="MenuTask" unique_id=1528352877]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -238,20 +250,20 @@ offset_bottom = -8.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Label@73" type="Label" parent="MenuTask/@VBoxContainer@75" unique_id=1357050832]
+[node name="@Label@73" type="Label" parent="MenuTask/@VBoxContainer@75" unique_id=1747093355]
 layout_mode = 2
 size_flags_vertical = 3
 text = "📜"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="@Label@74" type="Label" parent="MenuTask/@VBoxContainer@75" unique_id=2123119526]
+[node name="@Label@74" type="Label" parent="MenuTask/@VBoxContainer@75" unique_id=2113000145]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "任务"
 horizontal_alignment = 1
 
-[node name="MenuDungeon" type="Panel" parent="." unique_id=1998875298]
+[node name="MenuDungeon" type="Panel" parent="." unique_id=386718285]
 custom_minimum_size = Vector2(84, 84)
 layout_mode = 2
 mouse_default_cursor_shape = 2
@@ -259,7 +271,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_0330s")
 metadata/__signal_pressed = "_on_dungeon_pressed"
 metadata/__script_vars = {}
 
-[node name="@VBoxContainer@78" type="VBoxContainer" parent="MenuDungeon" unique_id=1762779867]
+[node name="@VBoxContainer@78" type="VBoxContainer" parent="MenuDungeon" unique_id=451396797]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -270,20 +282,20 @@ offset_bottom = -8.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Label@76" type="Label" parent="MenuDungeon/@VBoxContainer@78" unique_id=1557879550]
+[node name="@Label@76" type="Label" parent="MenuDungeon/@VBoxContainer@78" unique_id=1082274849]
 layout_mode = 2
 size_flags_vertical = 3
 text = "🌀"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="@Label@77" type="Label" parent="MenuDungeon/@VBoxContainer@78" unique_id=1561455777]
+[node name="@Label@77" type="Label" parent="MenuDungeon/@VBoxContainer@78" unique_id=676767641]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "秘境"
 horizontal_alignment = 1
 
-[node name="MenuMarket" type="Panel" parent="." unique_id=1442536439]
+[node name="MenuMarket" type="Panel" parent="." unique_id=1843711620]
 custom_minimum_size = Vector2(84, 84)
 layout_mode = 2
 mouse_default_cursor_shape = 2
@@ -291,7 +303,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_uejvm")
 metadata/__signal_pressed = "show:StoreModal"
 metadata/__script_vars = {}
 
-[node name="@VBoxContainer@81" type="VBoxContainer" parent="MenuMarket" unique_id=1012852295]
+[node name="@VBoxContainer@81" type="VBoxContainer" parent="MenuMarket" unique_id=724106516]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -302,20 +314,20 @@ offset_bottom = -8.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Label@79" type="Label" parent="MenuMarket/@VBoxContainer@81" unique_id=107312244]
+[node name="@Label@79" type="Label" parent="MenuMarket/@VBoxContainer@81" unique_id=2100425852]
 layout_mode = 2
 size_flags_vertical = 3
 text = "🏮"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="@Label@80" type="Label" parent="MenuMarket/@VBoxContainer@81" unique_id=2065972923]
+[node name="@Label@80" type="Label" parent="MenuMarket/@VBoxContainer@81" unique_id=45160116]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "坊市"
 horizontal_alignment = 1
 
-[node name="@Label@82" type="Label" parent="MenuMarket" unique_id=1290313313]
+[node name="@Label@82" type="Label" parent="MenuMarket" unique_id=1723105423]
 layout_mode = 0
 anchor_right = 1.0
 offset_top = 6.0
@@ -325,7 +337,7 @@ text = "●"
 horizontal_alignment = 2
 metadata/__anchor = "top_wide"
 
-[node name="MenuDocs" type="Panel" parent="." unique_id=1268372474]
+[node name="MenuDocs" type="Panel" parent="." unique_id=760189985]
 custom_minimum_size = Vector2(84, 84)
 layout_mode = 2
 mouse_default_cursor_shape = 2
@@ -333,7 +345,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_jwk2t")
 metadata/__signal_pressed = "show:DocsModal"
 metadata/__script_vars = {}
 
-[node name="@VBoxContainer@85" type="VBoxContainer" parent="MenuDocs" unique_id=1137312943]
+[node name="@VBoxContainer@85" type="VBoxContainer" parent="MenuDocs" unique_id=28039474]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -344,15 +356,47 @@ offset_bottom = -8.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Label@83" type="Label" parent="MenuDocs/@VBoxContainer@85" unique_id=125252878]
+[node name="@Label@83" type="Label" parent="MenuDocs/@VBoxContainer@85" unique_id=1113925074]
 layout_mode = 2
 size_flags_vertical = 3
 text = "📚"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="@Label@84" type="Label" parent="MenuDocs/@VBoxContainer@85" unique_id=1134705640]
+[node name="@Label@84" type="Label" parent="MenuDocs/@VBoxContainer@85" unique_id=1924392526]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "教程"
+horizontal_alignment = 1
+
+[node name="MenuMap" type="Panel" parent="." unique_id=1080356145]
+custom_minimum_size = Vector2(84, 84)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_ovi2g")
+metadata/__signal_pressed = "show:MapModal"
+metadata/__script_vars = {}
+
+[node name="@VBoxContainer@88" type="VBoxContainer" parent="MenuMap" unique_id=379372694]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 10.0
+offset_right = -8.0
+offset_bottom = -8.0
+mouse_filter = 2
+metadata/__anchor = "full"
+
+[node name="@Label@86" type="Label" parent="MenuMap/@VBoxContainer@88" unique_id=1359615297]
+layout_mode = 2
+size_flags_vertical = 3
+text = "🗺️"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="@Label@87" type="Label" parent="MenuMap/@VBoxContainer@88" unique_id=1762976033]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
+text = "地图"
 horizontal_alignment = 1

@@ -87,7 +87,7 @@ fn lock_name_map()
 
 /// 就近定位 from 所属的 gml 树根（子 <Gml> 文件根也带 __gml_root，
 /// 就近命中保证各文件独立作用域）
-fn nearest_gml_root(from: &Gd<Node>) -> Option<Gd<Node>> {
+pub(crate) fn nearest_gml_root(from: &Gd<Node>) -> Option<Gd<Node>> {
 	let mut cur = Some(from.clone());
 	while let Some(n) = cur {
 		if n.has_meta(&StringName::from("__gml_root")) {
