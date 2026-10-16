@@ -14,6 +14,7 @@ mod state;
 mod rogue;
 mod console;
 mod dialog;
+mod movie;
 mod ui;
 mod anim;
 mod manager;

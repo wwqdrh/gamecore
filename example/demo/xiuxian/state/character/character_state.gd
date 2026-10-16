@@ -167,7 +167,7 @@ func try_breakthrough() -> bool:
 
 ## 进入新大阶的跨系统联动（阶段目标链，M4）：
 ##   置 rank_<阶id> flag（对话收束段门控）+ 解锁对应野外图 +
-##   推进引用该等阶的主线任务（main_004 rank_up 步）。
+##   推进引用该等阶的主线任务（main_105 rank_up 步）。
 ## 只在突破落进的阶上触发；阶内升级不走此处。
 func _on_rank_entered(nlv: int) -> void:
 	var rank: Dictionary = XiuLevelTable.get_rank_at(XiuLevelTable.rank_order_of(nlv))
@@ -180,8 +180,8 @@ func _on_rank_entered(nlv: int) -> void:
 		"dou_zhe":
 			XiuMapState.ins().unlock_map("xiuxian_map_a")
 			var ts := XiuTaskState.ins()
-			if ts.get_task_status("main_004") == ts.STATUS_ACCEPTED:
-				ts.advance_task("main_004")
+			if ts.get_task_status("main_105") == ts.STATUS_ACCEPTED:
+				ts.advance_task("main_105")
 
 
 # ------------------------------------------------------------------ 变更

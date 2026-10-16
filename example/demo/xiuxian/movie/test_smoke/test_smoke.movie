@@ -1,0 +1,19 @@
+# 冒烟测试剧本（test/test_movie_player.gd 使用）
+# 覆盖：scene / actor enter(from 走入) / camera focus / say(dur) / bubble
+# （rust 默认气泡）/ move（GdQuickMap 寻路）/ flag / if-jump / camera
+# unfocus / say(点击推进，rust 默认黑框) / end
+
+scene xiuxian_xiaozhai
+wait 0.3
+actor xiao_maid enter (9,8) from (16,8)
+camera focus xiao_maid 0.6
+say xiao_maid 1.0 测试台词一（dur 定时推进，无需点击）。
+bubble xiao_maid 1.0 测试气泡。
+move xiao_maid (11,8)
+flag movie_test_flag
+if movie_test_flag jump tail
+say xiao_maid 1.0 不该出现的分支。
+:tail
+camera unfocus
+say xiao_maid 测试台词二（等点击推进，测试脚本置位确认标志）。
+end

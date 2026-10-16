@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://fsa76hw3xkii"]
+[gd_scene load_steps=7 format=3 uid="uid://fsa76hw3xkii"]
 
 [ext_resource type="PackedScene" path="res://example/demo/xiuxian/scenes/main/ui/main.gml.tscn" id="1_ui"]
 [ext_resource type="PackedScene" path="res://example/demo/xiuxian/role/player/player.tscn" id="2_player"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/dungeon_manager.gd" id="4_dungeon"]
 [ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/calendar_manager.gd" id="5_calendar"]
 [ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/map_restore.gd" id="6_restore"]
+[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/movie_trigger.gd" id="7_movie"]
 
 [node name="Index" type="GdScene"]
 anchors_preset = 15
@@ -28,6 +29,9 @@ click_teleport = false
 
 [node name="MapRestore" type="Node" parent="."]
 script = ExtResource("6_restore")
+
+[node name="MovieTrigger" type="Node" parent="."]
+script = ExtResource("7_movie")
 
 [node name="DungeonManager" type="CanvasLayer" parent="."]
 layer = 10

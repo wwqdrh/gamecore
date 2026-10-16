@@ -1,0 +1,29 @@
+# 第一阶段开场演出：农田醒来（prologue）
+# 接线：scenes/main/movie_trigger.gd（新档/未播过自动开播，播完
+# XiuMovieState 置位不再重播）。台词黑框/头顶气泡为 rust 框架默认实现。
+#
+# 分镜：田埂醒来 → 小翠从画面外寻来 → 交代家主有请 → 小翠走出画面回府 → 主角独白留悬念
+
+scene xiuxian_home
+# 玩家演出站位声明：田埂醒来（玩家位置随档持久化会覆盖默认落位；
+# 显式落位保证与小翠的对话站位靠近）
+player (9,6)
+wait 0.8
+
+# 小翠从东边画面外寻来（home 图 20x14，(22,7) 在图外视野外）
+actor xiao_maid enter (11,7) from (22,7)
+camera focus xiao_maid 0.9
+bubble xiao_maid 2.5 少爷！少爷！你可算醒了——你从田埂上摔下来，昏了整整半日！
+bubble xiao_maid 2.5 老爷和夫人急得不行，正都在前厅等着呢。
+camera unfocus
+
+# 小翠先行回府复命（走出画面后消失）
+camera follow player
+bubble xiao_maid 2.5 那翠儿先回去复命，少爷随后就到呀。
+actor xiao_maid exit to (22,2)
+
+# 主角独白（穿越者视角，留身世悬念）
+camera focus player 0.8
+say player 3.5 （萧家……我竟然成了萧家的少爷。这具身体的前主，似乎藏着什么秘密。）
+say player 2.5 （先回去看看再说。）
+end

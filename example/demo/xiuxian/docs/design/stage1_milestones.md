@@ -1,7 +1,42 @@
-# 第一阶段里程碑实施记录（M1~M6）
+# 第一阶段里程碑实施记录（M1~M6 + 2026-10-16 任务重排）
 
 > 对应设计：`story/04_stage1_design.md` §9；内容对照见 `stage1_content.md`。
 > 每步走「改表/改码 → headless 测试 → 修」小循环，M1→M6 串行。
+
+---
+
+## M7 任务链重排（2026-10-16，家族篇 10 条 + 宗门篇 5 条）
+
+用户规约：第一阶段=进宗门之前的**家族内任务 + 游玩系统教学**（约十条），
+阶段结尾=**突破斗者 + 宗门选拔前 10 名**；宗门任务归第二阶段；定义表按
+篇章拆文件。
+
+**做了**：
+- 定义表拆分：`state/task/stage1.json`（家族篇主线 6 + 支线 4）+
+  `stage2.json`（宗门篇 5），删旧 task.json；`XiuTaskTable` 升级目录扫描
+  合并 *.gjson（镜像 XiuItemTable._list_gjson_files）
+- 主线重编：main_101~105 + sect_tournament（category 改主线、文案改
+  「宗门选拔·前 10 名」、夺魁领奖置 stage1_clear）；stage2 用 main_201/202、
+  daily_201、guild_201、bounty_201
+- collect 步 `auto:true` 背包监听自动推进（XiuTaskState watch bag +
+  call_deferred；剧情赠药型不加 auto 走显式 advance 防跳步）
+- advance_task 置步级 flag `task_<id>_step<N>`（timeline 步级门控：
+  杀完鼠才能回报、采到药才能交付）
+- **NPC entry_stage 全部置空**（关键坑：entry 直达无条件兜底段会绕过
+  gate 优先级扫描，任务段永远进不去——小翠对话不复位任务段即此根因）
+- timeline 重写 7 份：master（真相段/复命段收编）、maid、lady（+农事接取）、
+  storyteller（说书挂 main_104）、disciple、elder（删主线段，收编 stage2
+  报到/签到）、arena（选拔文案+stage1_clear）；herb/smith 加任务段
+- 新钩子：`map/home_farm_task.gd`（side_104 农事计步，监听 s_dug/
+  s_planted/s_watered）；home_pest TASK_ID→main_103；character_state
+  rank_up→main_105
+- `game_state.gd apply_task_rewards` 补发 coins（与 complete_task 对齐）
+- 测试重写：check_task_flow / check_state / check_task_drawer /
+  check_stage1_flow（+collect auto 断言）/ check_stage1_dialog（lint 支持
+  step flag + 新 stage 表）/ check_stage1_enemy / check_stage1_clear /
+  check_tournament_flow
+
+**验收**：上述 8 套件全绿 + test_runner 166/166（2026-10-16）。
 
 ---
 

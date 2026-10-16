@@ -6,7 +6,7 @@ func _init() -> void:
 	display_name = "药铺掌柜"
 	role_name = "白芷"
 	timeline_path = "res://example/demo/xiuxian/role/npc/herb_shop/herb_timeline.txt"
-	entry_stage = "herb_talk"
+	entry_stage = ""  # 置空：入口选段交给 timeline gate 优先级扫描（entry 直达无条件兜底段会绕过门控）
 	npc_cell = Vector2i(5, 8)
 	ai_behavior = 0
 	body_color = Color(0.55, 0.8, 0.5)

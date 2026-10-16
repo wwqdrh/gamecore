@@ -1,0 +1,181 @@
+{
+	"version": 1,
+	"pipeline": "gjson",
+	"chapter": "宗门篇（第二阶段）",
+	"desc": "第二阶段任务：通过宗门选拔录入青云宗外门之后的宗门任务（报到/秘境/日常/巡逻/悬赏）。category: 主线/日常/宗门/悬赏；precondition=前置任务 id；steps=完成所需步数；rewards: exp/spirit_stones/coins/items[{id,count}]；giver=接取对话角色。",
+	"tasks": {
+		"main_201": {
+			"id": "main_201",
+			"name": "宗门报到",
+			"category": "主线",
+			"desc": "选拔得中，持宗门令前往青云宗报到——先到山门，再向执事长老登记，最后入住外门弟子舍。",
+			"precondition": "sect_tournament",
+			"steps": 3,
+			"giver": "执事长老",
+			"objectives": [
+				{
+					"type": "goto",
+					"desc": "前往青云宗山门"
+				},
+				{
+					"type": "talk",
+					"target_role": "执事长老",
+					"desc": "向执事长老报到"
+				},
+				{
+					"type": "goto",
+					"desc": "入住外门弟子舍"
+				}
+			],
+			"rewards": {
+				"exp": 400,
+				"spirit_stones": 30,
+				"items": [
+					{
+						"id": "herb_lingzhi",
+						"count": 2
+					},
+					{
+						"id": "pill_hp",
+						"count": 3
+					}
+				]
+			}
+		},
+		"main_202": {
+			"id": "main_202",
+			"name": "秘境探幽",
+			"category": "主线",
+			"desc": "持秘境残图进入落霞秘境，寻机上探三层。",
+			"precondition": "main_201",
+			"steps": 5,
+			"giver": "执事长老",
+			"objectives": [
+				{
+					"type": "collect",
+					"target_role": "map_secret",
+					"desc": "集齐秘境残图"
+				},
+				{
+					"type": "goto",
+					"desc": "进入落霞秘境一层"
+				},
+				{
+					"type": "goto",
+					"desc": "探至秘境二层"
+				},
+				{
+					"type": "kill",
+					"target_role": "守境石傀",
+					"desc": "击败守境石傀"
+				},
+				{
+					"type": "goto",
+					"desc": "抵达秘境三层入口"
+				}
+			],
+			"rewards": {
+				"exp": 1000,
+				"spirit_stones": 100,
+				"items": [
+					{
+						"id": "pill_break",
+						"count": 1
+					}
+				]
+			}
+		},
+		"daily_201": {
+			"id": "daily_201",
+			"name": "每日签到",
+			"category": "日常",
+			"desc": "每日到执事堂签到，领取基本供奉。",
+			"precondition": "",
+			"steps": 1,
+			"giver": "执事长老",
+			"objectives": [
+				{
+					"type": "talk",
+					"target_role": "执事长老",
+					"desc": "每日签到"
+				}
+			],
+			"rewards": {
+				"exp": 80,
+				"spirit_stones": 10,
+				"items": [
+					{
+						"id": "pill_hp",
+						"count": 1
+					}
+				]
+			}
+		},
+		"guild_201": {
+			"id": "guild_201",
+			"name": "宗门巡逻",
+			"category": "宗门",
+			"desc": "巡视山门四处阵眼，清理滋扰妖兽。",
+			"precondition": "",
+			"steps": 2,
+			"giver": "执事长老",
+			"objectives": [
+				{
+					"type": "goto",
+					"desc": "巡视四处阵眼"
+				},
+				{
+					"type": "kill",
+					"target_role": "妖兽",
+					"desc": "清理滋扰妖兽"
+				}
+			],
+			"rewards": {
+				"exp": 200,
+				"spirit_stones": 25,
+				"items": [
+					{
+						"id": "pill_mp",
+						"count": 2
+					}
+				]
+			}
+		},
+		"bounty_201": {
+			"id": "bounty_201",
+			"name": "悬赏·血衣楼",
+			"category": "悬赏",
+			"desc": "追查血衣楼细作，取回失窃的宗门名录。",
+			"precondition": "guild_201",
+			"steps": 3,
+			"giver": "执事长老",
+			"objectives": [
+				{
+					"type": "talk",
+					"target_role": "贾先生",
+					"desc": "从说书先生处打听线索"
+				},
+				{
+					"type": "kill",
+					"target_role": "血衣楼细作",
+					"desc": "击败血衣楼细作"
+				},
+				{
+					"type": "talk",
+					"target_role": "执事长老",
+					"desc": "取回宗门名录"
+				}
+			],
+			"rewards": {
+				"exp": 500,
+				"spirit_stones": 80,
+				"items": [
+					{
+						"id": "map_secret",
+						"count": 1
+					}
+				]
+			}
+		}
+	}
+}

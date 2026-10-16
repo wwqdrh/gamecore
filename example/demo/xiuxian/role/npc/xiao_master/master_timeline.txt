@@ -1,54 +1,86 @@
 # 萧远山（萧老爷）对话时间线（萧宅家主，本角色专属）
 #
 # 对话进度记录：stage 经 flag 门控（GdDialogue precheck → control.has_flag
-# → XiuDialogState 持久化），触发器 start_from 按 flag 自动选段——
-#   - 初见段 [master_intro@!met_xiao_master] 只在首次对话进入（进入即置 flag）
-#   - 任务段按 task_side_003_accepted / task_side_003_done（XiuTaskState
-#     接取/完成时写入）三态流转：可接 → 进行中 → 完成日常
+# → XiuDialogState 持久化），触发器 start_from 按 flag 自动选段。
+# 任务 flag 体系：task_<id>_accepted（接取）/ task_<id>_step<N>（第 N 步达成，
+# advance_task 自动置）/ task_<id>_done（提交）。
+#
+# 主线链在本角色的段落：
+#   · main_101 初来乍到  —— 初见/拜见段接取+推进
+#   · side_101 家主嘱托  —— 嘱托段接取，小翠处完成
+#   · main_105 破关之资  —— 真相段赠药接取（token_clue 门控），突破后复命段收束
+#
 # 两条写作红线：
 #   1. 置 flag 的 stage，本段结尾必须是选项或 goto——行推进时若当前
 #      stage 的 flag 已失配，timeline 会判定过期直接 goto_end 断掉对话
 #   2. 门控段落必须排在无条件分支段落之前（start_from 从头扫描取第一个
 #      满足条件的 stage；无条件 stage 恒通过）
+#   3. 变更本段 gate 状态的操作必须写在选项动作里（exec_response 内变更
+#      +goto 连续执行）；行上只放不影响本段 gate 的变更
 
-# 首次对话：寒暄引出父亲旧事 + 可接任务
-# （met_xiao_master 参与本段 gate 取反，必须经选项动作置位——
-#   行上置位会让本段推进时 gate 失配，三个选项全部丢失）
-[master_intro@!met_xiao_master]
+# ---- main_105 真相段：坊市令牌线索齐备 → 吐真相 + 赠聚气散×3 + 接任务 ----
+# token_clue 由外门弟子段置位（main_104 流程中）；main_105 前置 main_104
+# 已提交（done）才 available，gift 段 gate 双重保险
+[master_gift@task_main_104_done;token_clue;!task_main_105_accepted]
+(萧老爷,云舟)
+（萧老爷听完令牌之事，沉默半晌，起身关上了门）
+云纹令牌……是执事堂的制式。十年前你父亲进秘境前，
+坊市底册上他的印押被人做了手脚——他不是失职，是替人背了黑锅。
+@set_flag:master_truth
+（老爷从祠堂请出一只木匣，里面三只玉瓶并排而卧）
+这是云家托我保管的聚气散，压箱底的破关之资。
+服下它们，突破斗者——宗门选拔只收斗者境，去把萧萧云家的名字，重新立起来。
+- 弟子定不辱命。@task_accept:main_105;item_give:break_qizhe,3;task_advance:main_105;goto:master_end
+
+# ---- main_105 复命段：突破斗者后收束（rank_dou_zhe 由突破时置位） ----
+[master_break@task_main_105_accepted;rank_dou_zhe;!task_main_105_step3]
+(萧老爷,云舟)
+气海初开，斗者之境——好！好一个破关之资！
+云家有后，我萧家也没白疼你这小子。
+选拔的荐书我已替你递到演武堂，秦重教头那边去报名便是。
+- 多谢萧伯伯成全。@task_advance:main_105;goto:master_end
+
+# ---- main_101 初见/拜见段：接取 + 推进（step1 直达 completed，列表领奖） ----
+[master_meet@!task_main_101_accepted;!task_main_101_done]
 (萧老爷,云舟)
 云家小子？这一路风尘，倒比你爹当年年轻时稳当。
-- 长辈认得我父亲？@set_flag:met_xiao_master;goto:master_father
-- 有什么能帮忙的吗？@set_flag:met_xiao_master;goto:master_task_offer
-- 打扰了，在下借宝地歇脚。@set_flag:met_xiao_master;goto:master_guest
+罢了，既在你萧伯伯这里住下，就别当自己是客人——
+先说说话，看看这宅子，往后还要托付你照应的地方。
+- 拜见萧伯伯。@task_accept:main_101;task_advance:main_101;set_flag:met_xiao_master;goto:master_father
 
-# 任务可接（已相识、未接、未完成）：交代差事
-[master_task_offer@met_xiao_master;!task_side_003_accepted;!task_side_003_done]
+# ---- side_101 嘱托段：main_101 提交后可接（小翠处完成） ----
+[master_side_offer@task_main_101_done;!task_side_101_accepted;!task_side_101_done]
 (萧老爷)
-云舟啊，来得正好。院里小翠每日晒药闷得慌，你去陪她说说话——
+对了，院里小翠每日晒药闷得慌，你去陪她说说话——
 就当替我这个做家主的关心下下人。
-- 好，我去去就来。@goto:master_task_ok
+- 好，我去去就来。@task_accept:side_101;goto:master_end
 - 改日再说吧。@goto:master_end
 
-# 任务进行中：催促
-[master_task_pending@met_xiao_master;task_side_003_accepted;!task_side_003_done]
+# ---- side_101 进行中：催促 ----
+[master_side_pending@task_side_101_accepted;!task_side_101_done]
 (萧老爷)
 见过小翠了吗？西厢出门左转便是，别让她等急了。
 - 这就去。@goto:master_end
 
-# 任务完成后：日常再访
-[master_catchup@met_xiao_master;task_side_003_done]
+# ---- main_103 接取段：家主关心田产（小翠提议后正式指派） ----
+# main_102 提交后可接；接取后此段失配自动让位给后续段落
+[master_main103_offer@task_main_102_done;!task_main_103_accepted;!task_main_103_done]
 (萧老爷)
-和你小翠妹妹聊过了？这丫头念叨你半天了，看来聊得投缘。
+府里那几亩灵田近来收成不好，小翠说是地灵鼠闹的。
+你既是来修行的，正好拿它们练练手——家传的剑法，也该见血了。
+- 交给我吧。@task_accept:main_103;goto:master_end
+- 容我先准备准备。@goto:master_end
+
+# ---- 日常兜底 ----
+[master_talk]
+(萧老爷,云舟)
+有事？说吧。
+@set_flag:met_xiao_master
 - 再讲讲我父亲的事。@goto:master_father
+- 灵田里能种些什么？@goto:master_farm
 - 没什么事，路过看看。@goto:master_guest
 
 # ---- 以下为各分支（只能经 goto 进入）----
-
-[master_task_ok]
-(萧老爷)
-好孩子。去吧，她在西厢晒药材呢。
-@task_accept:side_003
-:goto:master_end
 
 [master_father]
 (萧老爷)
@@ -67,6 +99,12 @@
 (萧老爷)
 有志气。不过秘境凶险，先把根基打牢。
 镇上回春堂的白芷姑娘有些门道，去了替我问声好。
+:goto:master_end
+
+[master_farm]
+(萧老爷)
+后院灵田，锄松了土、下种、浇透了水，剩下的交给日头。
+你婶娘那里有种子，去了言语一声便是。
 :goto:master_end
 
 [master_guest]

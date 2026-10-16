@@ -294,7 +294,7 @@ role/
 ## 日历/时间驱动的剧情解锁（demo 范本：宗门大比）
 
 对话 flag 不只能由对话自己置——外部系统（日历/计时器）也能写 flag 驱动
-timeline 门控。范本：xiuxian 宗门大比（task_sect_tournament，unlock=false）：
+timeline 门控。范本：xiuxian 宗门大比（task_sect_tournament，前置 main_004，日历到点 unlock_task）：
 
 - `CalendarManager`（主场景根，0.5s 节流）按 WeatherManager 游戏时长推算
   「第 N 天」写 XiuCalendarState（mainhud 徽章 watch）；

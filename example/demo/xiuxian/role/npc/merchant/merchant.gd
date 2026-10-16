@@ -6,7 +6,7 @@ func _init() -> void:
 	display_name = "坊市商人"
 	role_name = "坊市商人"
 	timeline_path = "res://example/demo/xiuxian/role/npc/merchant/merchant_timeline.txt"
-	entry_stage = "merchant_talk"
+	entry_stage = ""  # 置空：入口选段交给 timeline gate 优先级扫描（entry 直达无条件兜底段会绕过门控）
 	npc_cell = Vector2i(17, 13)
 	ai_behavior = 1  # AI_WANDER 随机游走
 	wander_radius = 96.0  # 约三格，不离摊位太远

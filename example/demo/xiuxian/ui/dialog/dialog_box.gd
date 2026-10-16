@@ -133,6 +133,13 @@ func _close() -> void:
 	click_catcher.hide()
 
 
+# 说明：剧情演出（GdMoviePlayer）的台词黑框与头顶气泡已 rust 化为框架
+# 默认实现（dialog/movie_ui.rs GdMovieDialogBox / GdMovieBubble），
+# 演出不再复用本对话框 UI。本脚本保留普通对话 UI + 状态函数：
+#   has_flag / set_flag / clear_flag 仍作为演出 flag 指令的委托宿主
+#   （movie_player 的 flag/if-jump 经 control 鸭子调用到这里）。
+
+
 ## 按行切换立绘：空路径或加载失败隐藏（无立绘角色如玩家不占位遮挡文本）
 func _set_portrait(path: String) -> void:
 	if path.is_empty():

@@ -99,11 +99,15 @@ func _run() -> void:
 	_check(dlg.has_flag("tutorial_shown"), "教学开播即置 tutorial_shown")
 	toast.call("clear_toasts")
 
-	# ---- B. 主线前段：main_001 → main_002（真实虫害事件）----
-	_check(ts.accept_task("main_001"), "接取 main_001")
-	ts.advance_task("main_001")  # 老爷对话（对话链 check_task_flow 已覆盖）
-	_check(ts.complete_task("main_001"), "提交 main_001（解锁 main_002）")
-	_check(ts.accept_task("main_002"), "接取 main_002")
+	# ---- B. 主线前段：main_101 → main_103（真实虫害事件）----
+	_check(ts.accept_task("main_101"), "接取 main_101")
+	ts.advance_task("main_101")  # 老爷对话（对话链 check_task_flow 已覆盖）
+	_check(ts.complete_task("main_101"), "提交 main_101（解锁 main_102）")
+	_check(ts.accept_task("main_102"), "接取 main_102")
+	ts.advance_task("main_102")
+	ts.advance_task("main_102")
+	_check(ts.complete_task("main_102"), "提交 main_102（解锁 main_103）")
+	_check(ts.accept_task("main_103"), "接取 main_103")
 
 	# 切到萧宅农田 → PestEvent 真实刷鼠
 	mgr.call("open_map", "xiuxian_home", Vector2i(10, 7))
@@ -120,20 +124,24 @@ func _run() -> void:
 		await _wait(4)
 	var advanced: bool = await _poll(
 		func() -> bool:
-			return int(ts.get_progress("main_002").get("step", 0)) >= 1,
+			return int(ts.get_progress("main_103").get("step", 0)) >= 1,
 		120)
-	_check(advanced, "清剿 3 只 → main_002 击杀步推进（home_pest 联动）")
+	_check(advanced, "清剿 3 只 → main_103 击杀步推进（home_pest 联动）")
 	var corpses_gone: bool = await _poll(
 		func() -> bool: return _find_mice(map).is_empty(), 120)
 	_check(corpses_gone, "击杀后尸体清理（死亡动画销毁）")
-	ts.advance_task("main_002")  # talk 外门弟子回报
-	_check(ts.complete_task("main_002"), "提交 main_002（前置链解锁 main_004）")
-	_check(ts.get_task_status("main_004") == ts.STATUS_AVAILABLE, "main_004 已解锁")
+	ts.advance_task("main_103")  # talk 小翠回报
+	_check(ts.complete_task("main_103"), "提交 main_103（前置链解锁 main_104）")
+	_check(ts.get_task_status("main_104") == ts.STATUS_AVAILABLE, "main_104 已解锁")
+	ts.accept_task("main_104")
+	ts.advance_task("main_104")
+	ts.advance_task("main_104")
+	_check(ts.complete_task("main_104"), "提交 main_104（解锁 main_105）")
 
 	# ---- C. 真相段 → 突破演出（真实 Banner）----
-	_check(ts.accept_task("main_004"), "接取 main_004")
-	it.add_item("break_qizhe", 3)  # 长老赠药（item_give 对话命令已单测）
-	ts.advance_task("main_004")    # collect ×3
+	_check(ts.accept_task("main_105"), "接取 main_105")
+	it.add_item("break_qizhe", 3)  # 萧老爷赠药（item_give 对话命令已单测）
+	ts.advance_task("main_105")    # collect ×3
 	ch.add_exp(20000)
 	_check(ch.level == 10, "经验封顶斗之气 10 段")
 	_check(ch.can_breakthrough(), "聚气散×3 齐备可突破")
@@ -147,14 +155,16 @@ func _run() -> void:
 		var playing: bool = await _poll(
 			func() -> bool: return bool(banner.call("is_playing")), 60)
 		_check(playing, "突破演出真实播放")
-	_check(int(ts.get_progress("main_004").get("step", 0)) == 2, "rank_up 步已推进")
+	_check(int(ts.get_progress("main_105").get("step", 0)) == 2, "rank_up 步已推进")
 	_check(it.get_count("break_qizhe") == 0, "突破消耗聚气散×3")
 
 	# ---- D. 复命收束 → 通关字幅（可能排队在突破演出后接播）----
-	ts.advance_task("main_004")  # talk 长老复命
-	_check(ts.complete_task("main_004"), "提交 main_004")
-	_check(it.get_count("token_sect") == 1, "宗门令牌入包")
-	# stage1_clear 由 elder 收束段选项动作置位（对话侧已被 check_stage1_dialog
+	ts.advance_task("main_105")  # talk 萧老爷复命
+	_check(ts.complete_task("main_105"), "提交 main_105")
+	_check(it.get_count("token_sect") == 1, "宗门引荐令入包")
+	_check(ts.get_task_status("sect_tournament") == ts.STATUS_AVAILABLE,
+		"main_105 提交 → 宗门选拔点亮（第 7 天日历自动接取）")
+	# stage1_clear 由 arena 收束段选项动作置位（对话侧已被 check_stage1_dialog
 	# 覆盖）——此处置位以驱动 guide→Banner 通关字幅的真实联动
 	dlg.set_flag("stage1_clear")
 	_check(dlg.has_flag("stage1_clear"), "阶段通关 flag 置位")
@@ -189,7 +199,7 @@ func _run() -> void:
 	mgr.call("open_map", "xiuxian_map_a", Vector2i(5, 5))
 	await _wait(10)
 	_check(str(mgr.get_current_alias()) == "xiuxian_map_a", "青草岭解锁后可真实进入")
-	_check(not ts.complete_task("main_004"), "已提交任务重复提交应失败")
+	_check(not ts.complete_task("main_105"), "已提交任务重复提交应失败")
 
 	# ---- 结果 ----
 	load("res://example/demo/xiuxian/state/test_save_guard.gd").restore()

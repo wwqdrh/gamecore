@@ -1,13 +1,15 @@
-# Stage1 M4 验收：第一阶段任务闭环端到端（状态层全链）
+# Stage1 验收：家族篇（第一阶段）任务闭环端到端（状态层全链）
 #
 # 覆盖：
-#   1. 主线链 main_001 → main_002 → main_004：前置链自动解锁
-#      （complete_task 解锁 precondition 指向的后继任务）
-#   2. 数值闭环：任务奖励修为 + 副本经验 → 斗之气阶满（5500 修为曲线）
-#   3. 突破联动：try_breakthrough（break_qizhe×3）→ level 11（斗者一段）/
-#      rank_dou_zhe flag / xiuxian_map_a 解锁 / main_004 rank_up 步推进
-#   4. 传送门控：XiuMapState.is_map_unlocked 状态转换
-#   5. 收束：main_004 talk 步推进 → complete → token_sect 入包
+#   1. 主线链 main_101 → 102 → 103 → 104 → 105 → sect_tournament：
+#      前置链自动解锁（complete_task 解锁 precondition 指向的后继任务）
+#   2. collect(auto) 步自动推进：背包获得目标物品 → watch("bag") 延迟一帧推进
+#   3. 步级 flag：advance_task 置 task_<id>_step<N>（台词本门控用）
+#   4. 数值闭环：任务奖励修为 → 斗之气阶满（5500 修为曲线）
+#   5. 突破联动：try_breakthrough（break_qizhe×3）→ level 11（斗者一段）/
+#      rank_dou_zhe flag / xiuxian_map_a 解锁 / main_105 rank_up 步推进
+#   6. 收束：main_105 talk 步推进 → complete → token_sect 入包；
+#      sect_tournament（宗门选拔）解锁 → 完成 → stage2 main_201 点亮
 #
 # 运行：godot --headless -s res://test/check_stage1_flow.gd
 extends SceneTree
@@ -41,39 +43,67 @@ func _run() -> void:
 	mp.clear_map_unlocked()
 	it.reset_demo()
 
-	# ---- 1. main_001 初入仙途：接 → 3 步 → 交 ----
-	_check(ts.get_task_status("main_001") == ts.STATUS_AVAILABLE, "main_001 初始可接取")
-	_check(ts.get_task_status("main_002") == ts.STATUS_AVAILABLE, "main_002 初始可接取")
-	_check(ts.get_task_status("main_004") == ts.STATUS_LOCKED, "main_004 初始锁定（前置未达）")
-	_check(ts.accept_task("main_001"), "接取 main_001")
-	ts.advance_task("main_001")  # goto 山门
-	ts.advance_task("main_001")  # talk 长老
-	_check(ts.get_task_status("main_001") == ts.STATUS_ACCEPTED, "两步后仍在进行中")
-	ts.advance_task("main_001")  # goto 弟子舍（第 3 步 → completed）
-	_check(ts.get_task_status("main_001") == ts.STATUS_COMPLETED, "三步后 completed")
-	_check(ts.complete_task("main_001"), "提交 main_001 领奖")
-	_check(ts.get_task_status("main_001") == ts.STATUS_SUBMITTED, "main_001 已提交")
-	_check(int(ch.exp) > 0 or ch.level > 1, "奖励修为已入账（exp=%d lv=%d）" % [int(ch.exp), ch.level])
-	_check(it.get_count("herb_lingzhi") == 2 and it.get_count("pill_hp") == 3,
-		"main_001 奖励道具入包（灵芝×2 回血丹×3）")
+	# ---- 1. main_101 初来乍到：接 → 推进 → 交 ----
+	_check(ts.get_task_status("main_101") == ts.STATUS_AVAILABLE, "main_101 初始可接取")
+	_check(ts.get_task_status("main_102") == ts.STATUS_LOCKED, "main_102 初始锁定（前置 main_101 未提交，链式推导）")
+	_check(ts.get_task_status("side_102") == ts.STATUS_AVAILABLE, "无前置支线 side_102 恒可接取")
+	_check(ts.accept_task("main_101"), "接取 main_101")
+	ts.advance_task("main_101")  # talk 萧老爷（steps=1 → completed）
+	_check(ts.get_task_status("main_101") == ts.STATUS_COMPLETED, "一步走满应 completed")
+	_check(dlg.has_flag("task_main_101_step1"), "步级 flag task_main_101_step1 应同步")
+	_check(ts.complete_task("main_101"), "提交 main_101 领奖")
+	_check(int(ch.coins) == 30, "main_101 奖励金币 30 入账")
 
-	# ---- 2. main_002 灵田风波：前置链解锁检查 + 击杀推进 ----
-	_check(ts.get_task_status("main_002") == ts.STATUS_AVAILABLE, "main_002 本就 unlock，不受链影响")
-	_check(ts.accept_task("main_002"), "接取 main_002")
-	ts.advance_task("main_002")  # kill×3 记 1 步（home_pest 联动）
-	ts.advance_task("main_002")  # talk 外门弟子
-	_check(ts.complete_task("main_002"), "提交 main_002")
-	_check(it.get_count("ore_coldiron") == 3, "main_002 奖励寒铁×3 入包")
-	_check(ts.get_task_status("main_004") == ts.STATUS_AVAILABLE,
-		"main_002 完成 → 前置链自动解锁 main_004")
+	# ---- 2. main_102 宅中众人：前置链解锁 + 两步推进 ----
+	_check(ts.get_task_status("main_102") == ts.STATUS_AVAILABLE, "main_101 提交 → 前置链点亮 main_102")
+	_check(ts.get_task_status("side_101") == ts.STATUS_AVAILABLE, "side_101（pre main_101）同步点亮")
+	_check(ts.get_task_status("side_104") == ts.STATUS_LOCKED, "side_104 前置 main_102 未提交应锁定")
+	_check(ts.accept_task("main_102"), "接取 main_102")
+	ts.advance_task("main_102")  # talk 萧夫人
+	ts.advance_task("main_102")  # talk 小翠 → completed
+	_check(ts.complete_task("main_102"), "提交 main_102")
+	_check(ts.get_task_status("side_104") == ts.STATUS_AVAILABLE, "main_102 提交 → side_104 点亮")
 
-	# ---- 3. main_004 破关之资：真相段（接取+赠药+collect 步） ----
-	_check(ts.accept_task("main_004"), "接取 main_004（elder 真相段选项动作）")
+	# ---- 3. main_103 灵田风波：击杀推进（home_pest 联动位） ----
+	_check(ts.get_task_status("main_103") == ts.STATUS_AVAILABLE, "main_103 前置链点亮")
+	_check(ts.accept_task("main_103"), "接取 main_103")
+	ts.advance_task("main_103")  # kill 地灵鼠×3（home_pest advance）
+	_check(dlg.has_flag("task_main_103_step1"), "击杀步级 flag 应置位（回报段门控用）")
+	ts.advance_task("main_103")  # talk 小翠回报 → completed
+	_check(ts.complete_task("main_103"), "提交 main_103")
+	_check(it.get_count("pill_hp") == 2, "main_103 奖励回血丹×2 入包")
+
+	# ---- 4. collect(auto) 自动推进：side_102 采药济世 ----
+	_check(ts.accept_task("side_102"), "接取 side_102")
+	it.add_item("herb_xueshen", 1)  # 采集入库（deco 回调同路径）
+	for i in 3:
+		await process_frame  # watch("bag") → call_deferred 推进
+	_check(int(ts.get_progress("side_102").get("step", 0)) == 1,
+		"collect(auto) 步应在背包获得血参后自动推进（1/2）")
+	_check(dlg.has_flag("task_side_102_step1"), "采集步级 flag 应置位（白芷交付段门控用）")
+	ts.advance_task("side_102")  # talk 白芷 → completed
+	_check(ts.complete_task("side_102"), "提交 side_102")
+	_check(ts.get_task_status("side_103") == ts.STATUS_AVAILABLE, "side_103（pre side_102）点亮")
+
+	# ---- 5. main_104 坊市风声：两步对话推进 ----
+	_check(ts.accept_task("main_104"), "接取 main_104")
+	ts.advance_task("main_104")  # talk 贾先生（置 theft_rumor 走对话）
+	ts.advance_task("main_104")  # talk 外门弟子（置 token_clue）→ completed
+	_check(ts.complete_task("main_104"), "提交 main_104")
+	dlg.set_flag("token_clue")  # 对话流程置位（幂等，保障下方真相段语义）
+
+	# ---- 6. main_105 破关之资：真相段接取 + 赠药 + collect（非 auto） ----
+	_check(ts.get_task_status("main_105") == ts.STATUS_AVAILABLE, "main_105 前置链点亮")
+	_check(ts.accept_task("main_105"), "接取 main_105（master_gift 段选项动作）")
 	it.add_item("break_qizhe", 3)
-	ts.advance_task("main_004")  # collect 聚气散×3（真相段 advance）
-	_check(int(ts.get_progress("main_004").get("step", 0)) == 1, "collect 步已推进（1/3）")
+	for i in 3:
+		await process_frame
+	_check(int(ts.get_progress("main_105").get("step", 0)) == 0,
+		"非 auto 的 collect 步不应被背包监听推进（剧情赠药走显式 advance）")
+	ts.advance_task("main_105")  # collect 聚气散×3（真相段 advance）
+	_check(int(ts.get_progress("main_105").get("step", 0)) == 1, "collect 步已推进（1/3）")
 
-	# ---- 4. 修为攒到斗之气阶满 + 突破联动 ----
+	# ---- 7. 修为攒到斗之气阶满 + 突破联动 ----
 	# 斗之气 1→10 级共需 100+200+…+1000 = 5500；奖励+副本大头在任务外，
 	# 测试直接补足（数值曲线校算见 04_stage1_design.md §5）
 	ch.add_exp(20000)
@@ -89,18 +119,28 @@ func _run() -> void:
 	_check(not mp.is_map_unlocked("xiuxian_map_b"), "幽竹林仍锁定（第二阶段）")
 	_check(not mp.is_map_unlocked("某未入表地图"), "未入表地图默认锁定")
 	_check(mp.is_map_unlocked("xiuxian_town"), "主线四图恒解锁")
-	_check(int(ts.get_progress("main_004").get("step", 0)) == 2,
-		"突破联动推进 main_004 rank_up 步（2/3）")
+	_check(int(ts.get_progress("main_105").get("step", 0)) == 2,
+		"突破联动推进 main_105 rank_up 步（2/3）")
 
-	# ---- 5. 收束：复命 → complete → 宗门令牌 ----
-	ts.advance_task("main_004")  # talk 长老复命（elder final 段选项动作）
-	_check(int(ts.get_progress("main_004").get("step", 0)) == 3, "talk 步推进（3/3）")
-	_check(ts.complete_task("main_004"), "提交 main_004")
-	_check(it.get_count("token_sect") == 1, "宗门令牌入包")
-	_check(ts.get_task_status("main_003") == ts.STATUS_AVAILABLE,
-		"main_004 完成 → 前置链解锁秘境探幽（第二阶段钩子）")
+	# ---- 8. 收束：复命 → complete → 宗门令牌 → 选拔解锁 ----
+	ts.advance_task("main_105")  # talk 萧老爷复命（master_break 段选项动作）
+	_check(int(ts.get_progress("main_105").get("step", 0)) == 3, "talk 步推进（3/3）")
+	_check(ts.complete_task("main_105"), "提交 main_105")
+	_check(it.get_count("token_sect") == 1, "宗门引荐令入包")
+	_check(ts.get_task_status("sect_tournament") == ts.STATUS_AVAILABLE,
+		"main_105 完成 → 前置链解锁宗门选拔（第 7 天日历自动接取）")
 
-	# ---- 6. 幂等与重置 ----
+	# ---- 9. sect_tournament 宗门选拔：报名 → 夺魁 → stage2 点亮 ----
+	_check(ts.accept_task("sect_tournament"), "接取 sect_tournament")
+	ts.advance_task("sect_tournament")  # talk 秦重报名（start_match 联动）
+	ts.advance_task("sect_tournament")  # kill 比武弟子（对手死亡联动）→ completed
+	_check(ts.complete_task("sect_tournament"), "提交 sect_tournament（领奖位同时置 stage1_clear）")
+	dlg.set_flag("stage1_clear")  # arena_win 选项动作置位（幂等，保障语义）
+	_check(dlg.has_flag("stage1_clear"), "第一阶段收束 flag stage1_clear 应置位")
+	_check(ts.get_task_status("main_201") == ts.STATUS_AVAILABLE,
+		"选拔完成 → stage2 main_201 宗门报到点亮")
+
+	# ---- 10. 幂等与重置 ----
 	_check(not ch.try_breakthrough(), "未满段重复突破应失败")
 	mp.clear_map_unlocked()
 	_check(not mp.is_map_unlocked("xiuxian_map_a"), "clear_map_unlocked 复位野外图")

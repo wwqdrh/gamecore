@@ -51,8 +51,9 @@ func _on_menu_pressed(btn: Control) -> void:
 ## 「秘境」动作按钮：不进功能页互斥，直接经组件表调 DungeonManager.start_run()
 ## （跨组件查找一律走 GdSceneRoot 组件注册表，禁止 get_parent 链/find_child 魔法）
 func _on_dungeon_pressed(_btn: Control) -> void:
-	var mgr: Node = _scene_root().get_component("DungeonManager")
-	if mgr != null and mgr.has_method("start_run"):
+	# 无类型接收 + is_instance_valid：防组件表死引用赋类型变量报错（双保险）
+	var mgr = _scene_root().get_component("DungeonManager")
+	if mgr != null and is_instance_valid(mgr) and mgr.has_method("start_run"):
 		mgr.start_run()
 
 

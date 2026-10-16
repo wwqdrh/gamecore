@@ -66,6 +66,7 @@ func _populate() -> void:
 func _refresh() -> void:
 	if _minimap == null:
 		return
+	_heal_dangling_mgr()
 	# MapManager 在 process 中自注册，面板 _ready 时可能尚未就绪 → 惰性重查
 	# + 补接 s_map_changed（_ready 时缓存落空后此处自愈）
 	if _map_mgr == null:
@@ -106,14 +107,22 @@ func _find_scene_root() -> Node:
 
 
 ## MapManager 经场景根组件表获取（MapManager 在 process 中自注册，可能晚到）
+## 无类型接收 + is_instance_valid 校验：防切场景间隙组件表残留死引用
+## （框架侧 get_component 已自愈，此处为双保险，同 mainhud_minimap.gd）
 func _find_map_manager() -> Node:
 	var scene_root: Node = _find_scene_root()
-	if scene_root == null:
+	if scene_root == null or not is_instance_valid(scene_root):
 		return null
-	var mgr: Node = scene_root.get_component("MapManager")
-	if mgr != null and mgr.has_method("get_current_map"):
+	var mgr = scene_root.get_component("MapManager")
+	if mgr != null and is_instance_valid(mgr) and mgr.has_method("get_current_map"):
 		return mgr
 	return null
+
+
+## 缓存的 MapManager 悬垂自愈（旧场景实例已释放 → 置空待重查）
+func _heal_dangling_mgr() -> void:
+	if _map_mgr != null and not is_instance_valid(_map_mgr):
+		_map_mgr = null
 
 
 func _on_map_changed(_alias: String) -> void:

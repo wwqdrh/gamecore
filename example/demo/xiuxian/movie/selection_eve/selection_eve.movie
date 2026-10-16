@@ -1,0 +1,33 @@
+# 宗门选拔前夜（selection_eve）
+# 触发建议：main_105 复命完成（stage1_clear 置位）后、sect_tournament
+# 报名前播放。接线示例：
+#   movie.play()
+#   await movie.s_movie_finished
+#   ts.unlock_task("sect_tournament")  # 点亮选拔任务
+#
+# 分镜：青云坊公告 → 长老宣规 → 秦重挑衅 → 主角立誓
+
+scene xiuxian_town
+player (9,9)  # 站位显式声明（镇中）
+wait 0.6
+
+actor elder enter (10,9)
+actor arena_master enter (8,9)
+
+# 长老宣规
+camera focus elder 1.2
+say elder 3.5 三日后，青云宗选拔大比开幕。凡斗者境以下、年满十六者，皆可登台一试。
+say elder 2.5 前十名者，入青云宗门墙；此乃我青云坊一年一度的盛事。
+
+# 秦重挑衅
+camera focus arena_master 1.2
+say arena_master 3.0 哦？这不是萧家那位刚突破斗者的小少爷么。
+say arena_master 几日功夫就想登台？演武堂的擂台，可不是田埂。
+say player 3.0 （前十名，就能进入青云宗……这是离开萧家、探寻身世的机会。）
+say player 演武堂见分晓。
+camera unfocus
+
+actor elder exit
+actor arena_master exit
+say player 2.5 （三日后，选拔大比——这一战，不容有失。）
+end

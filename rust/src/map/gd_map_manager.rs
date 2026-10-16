@@ -157,6 +157,19 @@ impl INode for GdMapManager {
         self.base_mut().set_process(false);
     }
 
+    fn exit_tree(&mut self) {
+        // 本节点随场景释放时注销两张表，防跨场景死引用：
+        //   · GDCORE 全局节点表（manager_id 槽位）：同步条件清理——exit_tree
+        //     先于新场景 _ready，此刻槽位若非本实例只能是更早的残留，
+        //     直接跳过（不自愈，留 get_component 读取自愈兜底）
+        //   · 场景根组件表（component_name 槽位）：call_deferred 条件注销
+        //     ——场景替换发生在 GdSceneRoot 的 Rust 调用栈内，同步调它的
+        //     任何方法会重入 bind_mut panic（同 demo DungeonManager 约定）；
+        //     延迟到帧末执行时若新实例已注册同名组件，条件判定（owner
+        //     同一性）保证不误删新注册
+        self.unregister_from_tables();
+    }
+
     fn unhandled_input(&mut self, event: Gd<InputEvent>) {
         if !self.click_teleport {
             return;
@@ -534,6 +547,46 @@ impl GdMapManager {
             }
         }
         0.0
+    }
+
+    /// 条件注销：GDCORE 全局节点表（manager_id 槽位，同步）+ 场景根组件表
+    /// （component_name 槽位，call_deferred 调 unregister_component_if）。
+    /// 详见 exit_tree 注释。
+    fn unregister_from_tables(&self) {
+        let Some(gdcore) = Engine::singleton().get_singleton("GDCORE") else {
+            return;
+        };
+        let mut gdcore = gdcore;
+        let get_m = StringName::from("get_global_node");
+        if !gdcore.has_method(&get_m) {
+            return;
+        }
+        let self_var = self.base().clone().to_variant();
+
+        // 1. 全局节点表：同步条件清理（此刻槽位仍指向本实例才清）
+        let rm_m = StringName::from("remove_global_node");
+        if gdcore.has_method(&rm_m) {
+            let cur = gdcore.call(&get_m, &[self.manager_id.to_variant()]);
+            if cur.get_type() == godot::builtin::VariantType::OBJECT && cur == self_var {
+                gdcore.call(&rm_m, &[self.manager_id.to_variant()]);
+            }
+        }
+
+        // 2. 场景根组件表：延迟条件注销（防重入 + 防误删新注册）
+        let root_var = gdcore.call(&get_m, &[GString::from("default").to_variant()]);
+        if root_var.get_type() != godot::builtin::VariantType::OBJECT {
+            return;
+        }
+        let Ok(mut scene_root) = root_var.try_to::<Gd<Node>>() else {
+            return;
+        };
+        if !scene_root.has_method("unregister_component_if") {
+            return;
+        }
+        scene_root.call_deferred(
+            &StringName::from("unregister_component_if"),
+            &[self.component_name.to_variant(), self_var],
+        );
     }
 
     /// 注册到 GDCore 全局节点表

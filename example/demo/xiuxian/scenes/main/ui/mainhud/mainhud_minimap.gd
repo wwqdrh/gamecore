@@ -29,12 +29,20 @@ func _process(delta: float) -> void:
 	if _acc < REFRESH_INTERVAL:
 		return
 	_acc = 0.0
+	_heal_dangling_mgr()
 	# MapManager 晚到自愈：_ready 时组件表未登记 → 惰性重查走全量
 	# _refresh（补接 s_map_changed）；已就绪则只刷玩家光点（轻路径）
 	if _map_mgr == null:
 		_refresh()
 	else:
 		_refresh_player()
+
+
+## 缓存的 MapManager 悬垂自愈（旧场景实例已释放 → 置空待重查；
+## 信号连接随旧实例释放自动断开，无需手动 disconnect）
+func _heal_dangling_mgr() -> void:
+	if _map_mgr != null and not is_instance_valid(_map_mgr):
+		_map_mgr = null
 
 
 ## 灌入世界缩略数据（聚焦模式只画 set_current 的那一张，数据仍全量灌入
@@ -70,6 +78,7 @@ func _populate() -> void:
 func _refresh(_changed_alias: String = "") -> void:
 	if _minimap == null:
 		return
+	_heal_dangling_mgr()
 	# MapManager 在 process 中自注册，面板 _ready 时可能尚未就绪 → 惰性重查
 	# + 补接 s_map_changed（与 map_modal.gd 同款自愈）
 	if _map_mgr == null:
@@ -116,11 +125,14 @@ func _find_scene_root() -> Node:
 
 
 ## MapManager 经场景根组件表获取（MapManager 在 process 中自注册，可能晚到）
+## 无类型接收 + is_instance_valid 校验：防切场景间隙组件表残留死引用
+## （freed 实例赋给 Node 类型变量会报 "Trying to assign invalid previously
+## freed instance"；框架侧 get_component 已自愈，此处为双保险）
 func _find_map_manager() -> Node:
 	var scene_root: Node = _find_scene_root()
-	if scene_root == null:
+	if scene_root == null or not is_instance_valid(scene_root):
 		return null
-	var mgr: Node = scene_root.get_component("MapManager")
-	if mgr != null and mgr.has_method("get_current_map"):
+	var mgr = scene_root.get_component("MapManager")
+	if mgr != null and is_instance_valid(mgr) and mgr.has_method("get_current_map"):
 		return mgr
 	return null

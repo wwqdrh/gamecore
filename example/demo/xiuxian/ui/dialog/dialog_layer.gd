@@ -20,7 +20,7 @@ var dialog_box: CanvasLayer
 
 
 func _ready() -> void:
-	layer = 2  # 高于 UILayer(1)，对话框覆盖在主 UI 之上
+	layer = XiuUILayers.DIALOG  # 高于主 HUD(1)，对话框覆盖在主 UI 之上
 	dialogue = GdDialogue.new()
 	dialogue.name = "Dialogue"
 	add_child(dialogue)
@@ -31,6 +31,6 @@ func _ready() -> void:
 	dialog_box.dialogue_path = NodePath("../Dialogue")
 	# 嵌套 CanvasLayer 的层级是全局排序的（不随父 CanvasLayer）：
 	# DialogBox 默认 layer=1 与 UILayer(1) 同层，会被 mainhud 底部道具栏遮住。
-	# 拉到 3：高于 UILayer(1) 与本层(2)，对话框/选项永远置顶。
-	dialog_box.layer = 3
+	# 拉到 3：高于主 HUD(1) 与本层(2)，对话框/选项永远置顶（层号见 ui_layers.gd）。
+	dialog_box.layer = XiuUILayers.DIALOG_BOX
 	add_child(dialog_box)

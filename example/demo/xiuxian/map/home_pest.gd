@@ -1,9 +1,9 @@
-# 萧宅农田虫害事件（main_002「灵田风波」战斗位）—— 挂在 home 场景根下
+# 萧宅农田虫害事件（main_103「灵田风波」战斗位）—— 挂在 home 场景根下
 #
 # 职责：
-#   1. main_002 进行中（accepted）时在农田刷 3 只地灵鼠（换皮变体
+#   1. main_103 进行中（accepted）时在农田刷 3 只地灵鼠（换皮变体
 #      mouse.tscn，站位格不可行走会由 enemy 自吸附兜底）
-#   2. 清剿计数满 3 → advance_task 推进一步（剩下「回报外门弟子」1 步）
+#   2. 清剿计数满 3 → advance_task 推进一步（剩下「回报小翠」1 步）
 #
 # 语义与边界：
 #   · _process 0.5s 节流轮询任务状态，不走 Bean watch（红线：watch 回调内
@@ -14,7 +14,7 @@
 #     仅在 status==accepted 时推进，未接取/已提交均无副作用
 extends Node
 
-const TASK_ID := "main_002"
+const TASK_ID := "main_103"
 const TOTAL := 3
 const MOUSE_SCENE := preload("res://example/demo/xiuxian/role/enemy/mouse.tscn")
 ## 刷怪格（农田中部散布；home 全图草地方可走）

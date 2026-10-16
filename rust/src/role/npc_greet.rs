@@ -14,10 +14,10 @@
 //   2. 本组件 lines 随机一条
 //   3. 都没有 → 本次不显示
 //
-// 气泡显示：宿主有 show_bubble(text, secs) 时鸭子调用（复用宿主样式，
-// 与闲聊/自言自语共用一个气泡位，后者被覆盖属预期）；否则自建 Label 子
-// 节点（本组件继承 Node2D 保证变换链不断——红线：空间组件不可挂非
-// CanvasItem 父下）。
+// 气泡显示：统一走 dialog/movie_ui.rs 的 show_bubble_on——宿主有
+// show_bubble(text, secs) 时鸭子调用（复用宿主样式，与闲聊/自言自语
+// 共用一个气泡位，后者被覆盖属预期）；否则自动挂 rust 默认头顶气泡
+// （GdMovieBubble，自带超时隐藏）。
 //
 // 玩家解析：与 GdDialogTrigger 同范式——"player" 分组 > 宿主兄弟节点中
 // 第一个 GdRoleMover。
@@ -25,8 +25,10 @@
 use rand::Rng;
 
 use godot::prelude::*;
-use godot::builtin::{GString, PackedStringArray, Vector2};
-use godot::classes::{INode2D, Label, Node, Node2D};
+use godot::builtin::{GString, PackedStringArray};
+use godot::classes::{INode2D, Node, Node2D};
+
+use crate::dialog::{hide_bubble_on, show_bubble_on};
 
 use crate::role::GdRoleMover;
 
@@ -61,12 +63,8 @@ pub struct GdNpcGreet {
     cooldown_left: f64,
     /// 玩家上一帧是否在范围内（边沿触发）
     was_inside: bool,
-    /// 自建气泡剩余显示时间（宿主 show_bubble 时不用）
-    show_left: f64,
     /// tick 累计（0.2s 节流）
     acc: f64,
-    /// 自建气泡标签（宿主无 show_bubble 时才创建）
-    label: Option<Gd<Label>>,
 
     base: Base<Node2D>,
 }
@@ -83,9 +81,7 @@ impl INode2D for GdNpcGreet {
             initial_cooldown: 2.0,
             cooldown_left: 2.0,
             was_inside: false,
-            show_left: 0.0,
             acc: 0.0,
-            label: None,
             base,
         }
     }
@@ -96,7 +92,9 @@ impl INode2D for GdNpcGreet {
 
     fn process(&mut self, delta: f64) {
         if !self.enable {
-            self.hide_label();
+            // 禁用（演出模式/测试）只冻结触发，不逐帧收气泡——每帧 hide 会
+            // 打架：演出 bubble 指令刚 show 完下一帧就被这里隐藏（实测一闪
+            // 而过）。气泡本身超时自隐，禁用残留几秒无害。
             return;
         }
         // 0.2s 节流：距离判定是分钟级逻辑
@@ -109,16 +107,9 @@ impl INode2D for GdNpcGreet {
         if self.cooldown_left > 0.0 {
             self.cooldown_left -= step;
         }
-        // 自建气泡倒计时收起
-        if self.show_left > 0.0 {
-            self.show_left -= step;
-            if self.show_left <= 0.0 {
-                self.hide_label();
-            }
-        }
         // 宿主忙（对话/闲聊/赶路）：不触发且收起气泡（对话开始时立即让位）
         if self.host_busy() {
-            self.hide_label();
+            self.hide_host_bubble();
             self.was_inside = self.player_inside();
             return;
         }
@@ -217,13 +208,8 @@ impl GdNpcGreet {
             return;
         }
         let secs = self.line_secs + rng.gen_range(0.0..0.5);
-        // 显示：宿主 show_bubble 优先（共用气泡位），否则自建标签
-        if host.has_method("show_bubble") {
-            host.call("show_bubble", &[GString::from(text.as_str()).to_variant(), secs.to_variant()]);
-            self.hide_label();
-        } else {
-            self.show_label(&text, secs);
-        }
+        // 显示：宿主 show_bubble 优先（共用气泡位），否则 rust 默认头顶气泡
+        show_bubble_on(&mut host, &text, secs);
         self.cooldown_left = self.cooldown + rng.gen_range(0.0..3.0);
         self.base_mut().emit_signal(
             &StringName::from("s_greet"),
@@ -231,48 +217,9 @@ impl GdNpcGreet {
         );
     }
 
-    // ---- 自建气泡（宿主无 show_bubble 时的兜底显示） ----
-
-    fn ensure_label(&mut self) -> Gd<Label> {
-        if let Some(ref l) = self.label {
-            if l.is_instance_valid() {
-                return l.clone();
-            }
-        }
-        let mut l = Label::new_alloc();
-        l.set_name("__GreetBubble");
-        l.add_theme_font_size_override(&StringName::from("font_size"), 11);
-        l.add_theme_color_override(&StringName::from("font_color"), Color::from_rgb(1.0, 0.97, 0.9));
-        l.add_theme_color_override(&StringName::from("font_outline_color"), Color::from_rgb(0.12, 0.1, 0.06));
-        l.add_theme_constant_override(&StringName::from("outline_size"), 4);
-        l.set_horizontal_alignment(godot::global::HorizontalAlignment::CENTER);
-        l.set_autowrap_mode(godot::classes::text_server::AutowrapMode::WORD_SMART);
-        l.set_position(Vector2::new(-80.0, -70.0));
-        l.set_size(Vector2::new(160.0, 30.0));
-        l.set_mouse_filter(godot::classes::control::MouseFilter::IGNORE);
-        l.set_visible(false);
-        {
-            let mut base = self.base_mut();
-            base.add_child(&l);
-        }
-        self.label = Some(l.clone());
-        l
-    }
-
-    fn show_label(&mut self, text: &str, secs: f64) {
-        let mut l = self.ensure_label();
-        l.set_text(&GString::from(text));
-        l.set_visible(true);
-        self.show_left = secs;
-    }
-
-    fn hide_label(&mut self) {
-        self.show_left = 0.0;
-        if let Some(ref l) = self.label {
-            if l.is_instance_valid() {
-                let mut l = l.clone();
-                l.set_visible(false);
-            }
-        }
+    /// 收起宿主身上的气泡（宿主忙时让位）
+    fn hide_host_bubble(&mut self) {
+        let Some(mut host) = self.host() else { return };
+        hide_bubble_on(&mut host);
     }
 }

@@ -2,71 +2,33 @@
 # 语法：[stage@标记] 舞台；(角色名) 说话人轮换；- 选项@动作；
 #       @函数:参数 调用对话 control 上的方法；:goto:stage 控制流
 #
+# 所属篇章：宗门篇（第二阶段）——玩家通过宗门选拔录入青云宗后的对话位。
+# 家族篇的真相段（main_004 赠药/复命）已迁往萧老爷（master_timeline）。
+#
 # 入口 stage 按排列顺序做优先级（get_first_flag 从头扫描取第一个满足者）：
-#   1. elder_main4_final  突破斗者后复命收束（main_004 完成位）
-#   2. elder_main4        见令牌吐真相 + 赠聚气散×3 + 接 main_004（beat 7 前半）
-#   3. elder_exam         考校 + 报到（main_001 的接取与 talk 步推进位，beat 4）
-#   4. elder_talk         日常兜底
+#   1. elder_report   宗门报到（main_201 的 talk 步推进位）
+#   2. elder_daily    每日签到（daily_201 接取与推进）
+#   3. elder_talk     日常兜底
 #
 # 红线：段内行函数（@set_flag/@task_accept 等）会改变状态，若该状态参与
-#   本段 gate 表达式，则从变更行推进到后续行时 gate 失配 → 对话直接断线
-#   （timeline.next() 先查 gate 再取行）。因此**所有变更本段 gate 状态的
-#   操作必须写在选项动作里**（exec_response 内变更+goto 连续执行，中间
-#   不经过 stage 检查）；行上只放不影响本段 gate 的变更。
-# 链式选项动作语法：首命令带 @，后续命令裸写（@a:1;b:2;goto:xx）。
-# rank_dou_zhe 标记由 try_breakthrough 进入斗者阶时置位（M4 联动）。
+#   本段 gate 表达式，则从变更行推进到后续行时 gate 失配 → 对话直接断线。
+#   因此**所有变更本段 gate 状态的操作必须写在选项动作里**（exec_response
+#   内变更+goto 连续执行）；行上只放不影响本段 gate 的变更。
 
-# ---- beat 7 后半：突破斗者后复命收束（阶段通关位） ----
-# rank_dou_zhe 由 try_breakthrough 进入斗者阶时置位（M4 联动）
-[elder_main4_final@rank_dou_zhe;task_main_004_accepted;!task_main_004_done]
+# ---- stage2 main_201 报到：talk 步推进位 ----
+# goto 步（山门/弟子舍）由测试或后续换图钩子推进；本段推进 talk 步
+[elder_report@task_main_201_accepted;!task_main_201_step2]
 (执事长老,云舟)
-气海初开，斗者之境——好，好一个破关之资。
-当年之事，牵扯的不止一个贼。这枚宗门令牌你收好，
-持此令，青草岭的山门与落霞秘境的旧路，都会为你打开。
-(云舟)
-多谢长老。父亲的下落，弟子亲自去查。
-(执事长老)
-去吧。执事堂的门，为你常开。
-- （郑重收下令牌）@task_advance:main_004;task_complete:main_004;set_flag:stage1_clear;goto:elder_end
+选拔前十——不错，青云宗收你了。
+名册在此登记，外门弟子舍在西院，安顿去吧。
+往后每日来执事堂签到，别懈怠。
+- 弟子告退。@task_advance:main_201;goto:elder_end
 
-# ---- beat 7 前半：坊市失窃线索 → 吐露真相 + 赠聚气散×3 + 接 main_004 ----
-[elder_main4@token_clue;!task_main_004_accepted]
-(执事长老,云舟)
-（长老看到你，欲言又止，终于叹了口气）
-坐吧。坊市失窃那个贼，袖口露出的半块玄铁令牌——你可知是谁的制式？
-(云舟)
-弟子不知。只是……云纹，像我云家的东西。
+# ---- stage2 daily_201 每日签到 ----
+[elder_daily@!task_daily_201_done]
 (执事长老)
-好孩子，眼力不错。当年你父亲入职册，佩的正是云纹令牌。
-昨夜失窃的是十年前的坊市底册，上面记着你父亲入职的印押与监印人名讳。
-你父亲不是失职，他是被人做了局，替人背了十年的黑锅。
-@set_flag:elder_truth
-（长老从袖中取出三只玉瓶，推到你面前）
-此处有三颗聚气散，是执事堂压箱底的破关之资。
-服下它们，突破斗者，再来见我——有些话，突破之后再说不迟。
-- 弟子定不辱命。@task_accept:main_004;item_give:break_qizhe,3;task_advance:main_004;goto:elder_end
-
-# ---- beat 4：初见考校 + 报到（main_001 接取与 talk 步推进位） ----
-[elder_exam@!task_main_001_accepted;!task_main_001_done]
-(执事长老,云舟)
-你就是新入门的外门弟子？先别急着行礼——入门第一课，回答我一个问题。
-你说，修行修的到底是什么？
-- 修的是心境。@goto:elder_exam2
-- 修的是力量。@goto:elder_exam2
-
-[elder_exam2]
-(执事长老)
-嗯……勉强算半个答案。力无善恶，心无根骨，都撑不远。
-再问一题：若同门抢了你的灵草，你如何处置？
-- 据理力争，绝不退让。@goto:elder_exam3
-- 让给他便是，和气为重。@goto:elder_exam3
-
-[elder_exam3]
-(执事长老)
-（长老盯了你半晌，忽而一笑）
-罢了，答案不在嘴上，在往后的路上。这里登记者名，外门弟子舍在西院，
-安顿去吧。往后每日来执事堂签到，别懈怠。
-- 弟子告退。@task_accept:main_001;task_advance:main_001;goto:elder_end
+签到？册子在案上，按个手印，领今日的供奉。
+- 签到。@task_accept:daily_201;task_advance:daily_201;goto:elder_end
 
 # ---- 日常兜底 ----
 [elder_talk]

@@ -7,10 +7,11 @@
 #   1. 最近触发：两个 NPC 触发圈重叠时，只有离玩家最近的触发器能启动对话
 #   2. 对话进度：萧老爷初见段（置 met_xiao_master）只进一次，
 #      再次对话自动跳到任务可接段（flag 门控 + start_from 回退选段）
-#   3. 任务接取：选项「有什么能帮忙的吗」→ 交代差事 → @task_accept:side_003
-#   4. 任务完成：与小翠对话进入任务段 → @task_complete:side_003 →
-#      奖励 50 金币入账（XiuCharacterState.coins），状态 submitted
-#   5. 任务关闭：完成后萧老爷对话不再出现任务可接段（日常再访段）
+#   3. 主线接取：选项「拜见萧伯伯」→ @task_accept:main_101 + 推进直达
+#      completed（steps=1，列表领奖语义）
+#   4. 支线接取：side_101 家主嘱托（前置 main_101 提交后解锁）→
+#      @task_accept:side_101 → 与小翠对话 @task_complete → 50 金币
+#   5. 任务关闭：完成后萧老爷对话回日常兜底段（任务可接段不再出现）
 #   6. 幂等：已提交任务重复 complete 返回 false；重置后可重复演示
 extends SceneTree
 
@@ -68,23 +69,30 @@ func _run() -> void:
 	var dlg: XiuDialogState = XiuDialogState.ins()
 	tasks.reset_demo()
 	ch.reset_demo()
-	check(XiuTaskTable.count() == 11, "任务定义表应有 11 条（8 迁移 + side_003 + sect_tournament + main_004），实际 %d" % XiuTaskTable.count())
+	check(XiuTaskTable.count() == 15, "任务定义表应有 15 条（stage1 家族篇 10 + stage2 宗门篇 5），实际 %d" % XiuTaskTable.count())
+	check(str(tasks.get_task("main_101").get("name")) == "初来乍到", "main_101 应为家族篇首任务")
+	check(str(tasks.get_task("sect_tournament").get("category")) == "主线", "sect_tournament 应为主线（宗门选拔）")
+	check(str(tasks.get_task("daily_201").get("giver")) == "执事长老", "stage2 daily_201 应在总表中")
 
-	# 0b. 任务目录视图（2026-10-15 引导改造）：available/locked 均入"可接取"
-	# 组并带接取指引（找 giver 对话），玩家不用盲找 NPC
+	# 0b. 任务目录视图：仅 available 进"可接取"组并带接取指引；
+	# 前置未满足（locked）不进目录——前置没完成后续任务不显示
 	var v_main1 := {}
 	for v in tasks.views:
-		if str(v.get("id", "")) == "main_001":
+		if str(v.get("id", "")) == "main_101":
 			v_main1 = v
 	check(str(v_main1.get("status_group", "")) == "avail", "可接取任务应入 avail 状态组（任务目录页签）")
-	check(str(v_main1.get("hint", "")) == "找「执事长老」接取", "可接取任务应带 giver 接取指引，实际 %s" % str(v_main1.get("hint", "")))
+	check(str(v_main1.get("hint", "")) == "找「萧老爷」接取", "可接取任务应带 giver 接取指引，实际 %s" % str(v_main1.get("hint", "")))
 	check(str(v_main1.get("btn_state", "")) == "find", "可接取任务按钮应为 find（去接取）")
-	var v_main3 := {}
+	var v_main2 := {}
 	for v in tasks.views:
-		if str(v.get("id", "")) == "main_003":
-			v_main3 = v
-	check(str(v_main3.get("status_group", "")) == "avail", "未解锁任务应入 avail 组作链路预览")
-	check(str(v_main3.get("btn_state", "")) == "locked", "未解锁任务按钮应为 locked（未解锁）")
+		if str(v.get("id", "")) == "main_102":
+			v_main2 = v
+	check(str(v_main2.get("status_group", "")) == "", "前置未满足的任务不应进任何页签（status_group 空）")
+	check(str(v_main2.get("btn_state", "")) == "locked", "未解锁任务按钮应为 locked（不展示，仅视图字段完整）")
+	check(tasks.get_task_status("sect_tournament") == "locked",
+		"sect_tournament 前置 main_105 未完成应推导为 locked（定义表已无 unlock 字段）")
+	check(tasks.get_task_status("side_102") == "available",
+		"无前置任务应推导为 available（unlock 状态由前置链推导而非定义表）")
 
 	# 1. 装配
 	var main_scene: PackedScene = load("res://example/demo/xiuxian/scenes/main/index.tscn")
@@ -159,7 +167,7 @@ func _run() -> void:
 		check(not dialogue.is_playing(), "cancel_dialog 应停掉共享 Dialogue 播放")
 	print("[Task] nearest: far_rejected=%s near_started=%s" % [not started_far, started_near])
 
-	# ---- 3. 对话进度 + 任务接取（全新进度）----
+	# ---- 3. 对话进度 + 主线接取（main_101：初见段接取+推进）----
 	tasks.reset_demo()
 	ch.reset_demo()
 	check(not dlg.has_flag("met_xiao_master"), "重置后 met_xiao_master 应为 false")
@@ -170,23 +178,38 @@ func _run() -> void:
 	check(master_trigger.start_dialog(), "萧老爷对话应可触发")
 	var intro_text := str(dialog_box.text_label.text)
 	check(intro_text.contains("稳当"), "首次对话应进入初见段，实际：%s" % intro_text)
-	# 选项：有什么能帮忙的吗 → 任务交代段（met_xiao_master 经选项动作置位）
-	await advance_once(dialogue, dialog_box, "帮忙")
+	await advance_once(dialogue, dialog_box)  # 第 2 行
+	await advance_once(dialogue, dialog_box)  # 第 3 行
+	# 选项：拜见萧伯伯 → @task_accept:main_101;task_advance:main_101;goto:master_father
+	await advance_once(dialogue, dialog_box, "拜见")
 	check(dlg.has_flag("met_xiao_master"), "初见选项应置 met_xiao_master（持久化 flag）")
-	var offer_text := str(dialog_box.text_label.text)
-	check(offer_text.contains("小翠"), "应进入任务交代段（提及小翠），实际：%s" % offer_text)
-	await advance_once(dialogue, dialog_box)  # 交代段第 2 行（选项挂这行）
-	# 选项：好，我去去就来 → master_task_ok（@task_accept:side_003 落在台词上）
-	await advance_once(dialogue, dialog_box, "去去就来")
-	check(str(dialog_box.text_label.text).contains("好孩子"), "应进入应承段，实际：%s" % str(dialog_box.text_label.text))
-	check(tasks.get_task_status("side_003") == "accepted", "任务应已接取（accepted）")
-	check(dlg.has_flag("task_side_003_accepted"), "应同步任务接取 flag")
-	check(int(ch.coins) == 0, "接取任务不发奖励，金币应为 0")
+	check(tasks.get_task_status("main_101") == "submitted",
+		"main_101 接取即推进终步（steps=1 → 自动领奖直达 submitted）")
+	check(dlg.has_flag("task_main_101_accepted"), "应同步任务接取 flag")
+	check(dlg.has_flag("task_main_101_step1"), "应同步任务步级 flag（step1）")
+	check(int(ch.coins) == 30, "终步自动领奖应到账 30 金币，实际 %d" % int(ch.coins))
+	check(str(dialog_box.text_label.text).contains("何止认得"), "应进入父亲旧事段，实际：%s" % str(dialog_box.text_label.text))
 	await advance_to_end(dialogue, dialog_box)
 	check(not dialogue.is_playing(), "对话应播完")
-	print("[Task] accepted: status=%s" % tasks.get_task_status("side_003"))
 
-	# ---- 4. 任务完成（与小翠对话）----
+	# 列表领奖：main_101 已由 advance_task 终步自动领奖 → 后继点亮
+	check(tasks.get_task_status("main_101") == "submitted", "main_101 应为 submitted")
+	check(tasks.get_task_status("side_101") == "available", "side_101 前置 main_101 提交后应解锁")
+	check(tasks.get_task_status("main_102") == "available", "main_102 前置 main_101 提交后应解锁")
+	print("[Task] main_101 submitted, successors unlocked")
+
+	# ---- 4. 支线接取（side_101 嘱托段）+ 完成（与小翠对话）----
+	check(master_trigger.start_dialog(), "萧老爷对话应可再次触发")
+	var offer_text := str(dialog_box.text_label.text)
+	check(offer_text.contains("晒药闷得慌"), "应进入 side_101 嘱托段，实际：%s" % offer_text)
+	await advance_once(dialogue, dialog_box)  # 第 2 行（选项挂这行）
+	# 选项：好，我去去就来 → @task_accept:side_101;goto:master_end
+	await advance_once(dialogue, dialog_box, "去去就来")
+	check(str(dialog_box.text_label.text).contains("南门出去"), "应进入收尾段，实际：%s" % str(dialog_box.text_label.text))
+	check(tasks.get_task_status("side_101") == "accepted", "任务应已接取（accepted）")
+	check(dlg.has_flag("task_side_101_accepted"), "应同步任务接取 flag")
+	await advance_to_end(dialogue, dialog_box)
+
 	# 玩家挪到小翠身边（否则小翠触发器让位给更近的老爷）
 	player.global_position = maid.global_position + Vector2(cs * 0.5, 0)
 	for i in 3:
@@ -195,27 +218,27 @@ func _run() -> void:
 	var maid_text := str(dialog_box.text_label.text)
 	check(maid_text.contains("陪我聊天"), "应进入任务对话段，实际：%s" % maid_text)
 	await advance_once(dialogue, dialog_box)  # 第 2 行（八卦）
-	await advance_once(dialogue, dialog_box)  # 第 3 行（大比伏笔）
+	await advance_once(dialogue, dialog_box)  # 第 3 行（选拔伏笔）
 	await advance_once(dialogue, dialog_box)  # 第 4 行（选项挂这行）
 	check(dialog_box.responding, "任务段末行应出现「知道啦」选项")
-	# 选项动作 @task_complete:side_003;goto:maid_end（完成位在选项动作里）
+	# 选项动作 @task_complete:side_101;goto:maid_end（完成位在选项动作里）
 	await advance_once(dialogue, dialog_box, "知道啦")
-	check(tasks.get_task_status("side_003") == "submitted", "任务应完成并提交（submitted）")
-	check(int(ch.coins) == 50, "奖励应为 50 金币，实际 %d" % int(ch.coins))
-	check(dlg.has_flag("task_side_003_done"), "应同步任务完成 flag")
-	check(not tasks.complete_task("side_003"), "已提交任务重复完成应返回 false")
+	check(tasks.get_task_status("side_101") == "submitted", "任务应完成并提交（submitted）")
+	check(int(ch.coins) == 80, "累计奖励应为 80 金币（main_101 的 30 + side_101 的 50），实际 %d" % int(ch.coins))
+	check(dlg.has_flag("task_side_101_done"), "应同步任务完成 flag")
+	check(not tasks.complete_task("side_101"), "已提交任务重复完成应返回 false")
 	await advance_to_end(dialogue, dialog_box)
 	check(not dialogue.is_playing(), "小翠对话应播完")
 	print("[Task] completed: coins=%s" % str(ch.coins))
 
-	# ---- 5. 任务关闭：萧老爷再访不再出现任务段 ----
-	# 玩家挪回老爷身边（step4 站在小翠处，若夫人日程落位凑近会让位拒启）
+	# ---- 5. 任务关闭：萧老爷再访回日常兜底段 ----
+	# side_101 已提交 → 嘱托段失配；main_102 未提交 → 灵田风波段失配 → 兜底
 	player.global_position = mpos + Vector2(cs * 0.5, 0)
 	for i in 3:
 		await physics_frame
 	check(master_trigger.start_dialog(), "萧老爷对话应可再次触发")
 	var catchup_text := str(dialog_box.text_label.text)
-	check(catchup_text.contains("投缘"), "应进入任务完成后的日常段，实际：%s" % catchup_text)
+	check(catchup_text.contains("有事？说吧"), "应进入日常兜底段，实际：%s" % catchup_text)
 	check(not catchup_text.contains("晒药闷得慌"), "任务可接段不应再出现")
 	await advance_to_end(dialogue, dialog_box)
 	check(not dialogue.is_playing(), "再访对话应播完")
@@ -223,7 +246,7 @@ func _run() -> void:
 
 	# ---- 6. 重置后可重复演示 ----
 	tasks.reset_demo()
-	check(tasks.get_task_status("side_003") == "available", "重置后任务应回到可接取")
+	check(tasks.get_task_status("main_101") == "available", "重置后任务应回到可接取")
 	check(not dlg.has_flag("met_xiao_master"), "重置应清空对话 flag")
 
 	index.queue_free()

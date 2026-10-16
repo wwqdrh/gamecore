@@ -247,16 +247,21 @@ impl GdNpcChat {
         let mut rng = rand::thread_rng();
         let secs = self.line_secs + rng.gen_range(0.0..0.6);
         if let Some(mut host) = self.host() {
-            if i < self.my_lines.len() && host.has_method("show_bubble") {
+            if i < self.my_lines.len() {
                 let line = self.my_lines.get(i).unwrap_or_default();
-                host.call("show_bubble", &[line.to_variant(), (secs).to_variant()]);
+                // 宿主 show_bubble 优先，否则 rust 默认头顶气泡
+                crate::dialog::show_bubble_on(
+                    &mut host,
+                    &line.to_string(),
+                    secs,
+                );
             }
         }
         if let Some(ref partner) = self.partner {
             let mut p = partner.clone();
-            if i < self.partner_lines.len() && p.has_method("show_bubble") {
+            if i < self.partner_lines.len() {
                 let line = self.partner_lines.get(i).unwrap_or_default();
-                p.call("show_bubble", &[line.to_variant(), (secs).to_variant()]);
+                crate::dialog::show_bubble_on(&mut p, &line.to_string(), secs);
             }
         }
         self.line_timer = secs;
@@ -264,9 +269,7 @@ impl GdNpcChat {
 
     fn end_chat(&mut self) {
         if let Some(mut host) = self.host() {
-            if host.has_method("hide_bubble") {
-                host.call("hide_bubble", &[]);
-            }
+            crate::dialog::hide_bubble_on(&mut host);
             if host.has_method("set_paused") {
                 host.call("set_paused", &[false.to_variant()]);
             }
@@ -274,9 +277,7 @@ impl GdNpcChat {
         if let Some(ref partner) = self.partner {
             if partner.is_instance_valid() {
                 let mut p = partner.clone();
-                if p.has_method("hide_bubble") {
-                    p.call("hide_bubble", &[]);
-                }
+                crate::dialog::hide_bubble_on(&mut p);
                 if p.has_method("set_paused") {
                     p.call("set_paused", &[false.to_variant()]);
                 }

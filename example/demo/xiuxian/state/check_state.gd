@@ -46,37 +46,42 @@ func _initialize() -> void:
 	# 还原演示基线（GdBean 属性跨运行经存档恢复，必须先重置保证确定性）
 	gs.reset_demo()
 
-	# 2. 任务总表：全量查询（不区分解锁状态；定义源 task.json → task.gjson）
-	check(task.get_all_tasks().size() == XiuTaskTable.count(), "任务总表应与定义表条数一致（11 条）")
-	check(XiuTaskTable.count() == 11, "任务定义表应有 11 条（8 迁移 + side_003 + sect_tournament + main_004）")
-	check(not task.get_task("side_003").is_empty(), "测试任务 side_003 应在总表中")
-	check(task.get_task_ids().has("main_003"), "未解锁任务 main_003 也应在总表中")
-	check(task.get_tasks_by_category("主线").size() == 4, "主线任务应 4 条")
-	check(task.get_locked_tasks().size() == 5, "未解锁任务应 5 条（main_003/main_004/side_002/bounty_001/sect_tournament）")
-	check(task.get_unlocked_tasks().size() == 6, "已解锁任务应 6 条（含 side_003）")
-	check(str(task.get_task("main_001").get("name")) == "初入仙途", "main_001 名称应正确")
+	# 2. 任务总表：全量查询（不区分解锁状态；定义源 stage1/stage2.json → *.gjson）
+	check(task.get_all_tasks().size() == XiuTaskTable.count(), "任务总表应与定义表条数一致（15 条）")
+	check(XiuTaskTable.count() == 15, "任务定义表应有 15 条（stage1 家族篇 10 + stage2 宗门篇 5）")
+	check(not task.get_task("sect_tournament").is_empty(), "stage1 收官任务 sect_tournament 应在总表中")
+	check(task.get_task_ids().has("main_202"), "未解锁任务 main_202 也应在总表中")
+	check(task.get_tasks_by_category("主线").size() == 8, "主线任务应 8 条（stage1 六条 + stage2 报到/秘境）")
+	# 解锁状态由前置链推导（2026-10-16 起定义表不携带 unlock 字段）：
+	# locked = 有前置且前置未提交 11 条
+	#（main_102/103/104/105、sect_tournament、side_101/103/104、main_201/202、bounty_201）
+	check(task.get_locked_tasks().size() == 11, "未解锁任务应 11 条")
+	check(task.get_unlocked_tasks().size() == 4, "已解锁任务应 4 条（无前置：main_101/side_102/daily_201/guild_201）")
+	check(str(task.get_task("main_101").get("name")) == "初来乍到", "main_101 名称应正确")
 	check(task.get_task("no_such").is_empty(), "未知 id 应返回空字典")
-	# 初始状态推导：无进度记录时按 unlock 推导
-	check(task.get_task_status("main_001") == "available", "已解锁无进度应为 available")
-	check(task.get_task_status("main_003") == "locked", "未解锁无进度应为 locked")
+	# 初始状态推导：无进度记录时按前置链推导（定义表已无 unlock 字段）
+	check(task.get_task_status("main_101") == "available", "无前置无进度应为 available")
+	check(task.get_task_status("main_102") == "locked", "前置 main_101 未提交应推导 locked")
+	check(task.get_task_status("sect_tournament") == "locked", "前置链未达应推导 locked")
 	print("[State] task catalog: total=%d main=%d locked=%d" % [
 		task.get_all_tasks().size(), task.get_tasks_by_category("主线").size(),
 		task.get_locked_tasks().size()])
 
 	# 3. 任务推进状态机：available → accepted → completed → submitted
-	task.set_task_status("main_001", "accepted")
-	for i in 3:
-		var step: int = task.advance_task("main_001")
-		check(step == i + 1, "main_001 第 %d 步推进应返回 step=%d" % [i + 1, i + 1])
-	check(task.get_task_status("main_001") == "completed", "3 步走满应自动转 completed")
-	check(task.get_tasks_by_status("completed").size() == 1, "completed 查询应命中 main_001")
+	#    （advance 同步步级 flag task_<id>_step<N>，台词本门控用）
+	task.set_task_status("main_101", "accepted")
+	var step1: int = task.advance_task("main_101")
+	check(step1 == 1, "main_101 推进应返回 step=1")
+	check(task.get_task_status("main_101") == "completed", "1 步走满应自动转 completed")
+	check(task.get_tasks_by_status("completed").size() == 1, "completed 查询应命中 main_101")
+	check(XiuDialogState.ins().has_flag("task_main_101_step1"), "步级 flag task_main_101_step1 应同步到对话状态")
 	# Bean 路径查询（GJson 路径语义）
-	check(str(task.get_value_by_key("progress;main_001;status")) == "completed",
-		"路径查询 progress;main_001;status 应为 completed")
-	check(str(task.get_value_by_key("tasks;main_002;precondition")) == "main_001",
-		"路径查询 tasks;main_002;precondition 应为 main_001")
+	check(str(task.get_value_by_key("progress;main_101;status")) == "completed",
+		"路径查询 progress;main_101;status 应为 completed")
+	check(str(task.get_value_by_key("tasks;main_102;precondition")) == "main_101",
+		"路径查询 tasks;main_102;precondition 应为 main_101")
 	print("[State] task flow: status=%s step=%s" % [
-		task.get_task_status("main_001"), task.get_progress("main_001").get("step")])
+		task.get_task_status("main_101"), task.get_progress("main_101").get("step")])
 
 	# 4. 道具总表：全量/分类/品阶/关键字（均含未解锁；定义源自 item.gjson）
 	check(item.get_all_items().size() == 34, "道具总表应有 34 条（含未解锁）")
@@ -174,7 +179,7 @@ func _initialize() -> void:
 	print("[State] breakthrough: lv=%d realm=%s" % [
 		character.level, character.get_realm_title()])
 
-	# 6. 跨分类联动：提交 main_001 → 道具入库 + 经验/灵石 + 状态 submitted
+	# 6. 跨分类联动：提交 main_101 → 金币/经验入账 + 状态 submitted
 	# （5c 已推进到斗者一段，先重置基线并复原第 4 节末状态：
 	#   3 级余 50 / 灵石 40 / 背包回春丹 3）
 	gs.reset_demo()
@@ -183,26 +188,24 @@ func _initialize() -> void:
 	item.add_item("pill_hp", 3)
 	check(character.level == 3 and int(character.exp) == 50,
 		"联动前置：应为 3 级余 50（got lv=%d exp=%d）" % [character.level, character.exp])
-	var summary: Dictionary = gs.apply_task_rewards("main_001")
+	var summary: Dictionary = gs.apply_task_rewards("main_101")
 	check(not summary.is_empty(), "任务奖励发放应成功")
-	check(int(summary["levels"]) == 1, "400 经验应再升 1 级（3→4）")
-	check(character.level == 4 and character.exp == 150, "奖励后应 4 级余 150 经验（50+400-300）")
-	check(character.spirit_stones == 70, "灵石 40+30 应为 70")
-	check(item.get_count("herb_lingzhi") == 2, "奖励灵芝应入库 2")
-	check(item.get_count("pill_hp") == 6, "奖励回春丹应 3+3=6")
-	check(task.get_task_status("main_001") == "submitted", "提交后状态应为 submitted")
-	print("[State] rewards main_001: items=%s exp=%s stones=%s levels=%s" % [
-		str(summary["items"]), str(summary["exp"]),
-		str(summary["spirit_stones"]), str(summary["levels"])])
+	check(int(summary["levels"]) == 0, "80 经验不足升 1 级（3 级需 300）")
+	check(character.level == 3 and character.exp == 130, "奖励后应 3 级余 130 经验（50+80）")
+	check(int(character.coins) == 30, "奖励金币 30 应入账")
+	check(item.get_bag_list().size() == 1, "main_101 无道具奖励，背包应仍只有回春丹")
+	check(task.get_task_status("main_101") == "submitted", "提交后状态应为 submitted")
+	print("[State] rewards main_101: items=%s exp=%s levels=%s" % [
+		str(summary["items"]), str(summary["exp"]), str(summary["levels"])])
 
 	# 7. GJson 直查（跨 Bean，路径语义 "bean_id;字段;子键"）
-	check(int(XiuGameState.query("xiuxian_character;level")) == 4,
-		"query 人物等级应为 4")
-	check(int(XiuGameState.query("xiuxian_item;bag;pill_hp")) == 6,
-		"query 背包回春丹应为 6")
-	check(str(XiuGameState.query("xiuxian_task;tasks;main_003;name")) == "秘境探幽",
+	check(int(XiuGameState.query("xiuxian_character;level")) == 3,
+		"query 人物等级应为 3")
+	check(int(XiuGameState.query("xiuxian_item;bag;pill_hp")) == 3,
+		"query 背包回春丹应为 3")
+	check(str(XiuGameState.query("xiuxian_task;tasks;main_202;name")) == "秘境探幽",
 		"query 未解锁任务名称应为 秘境探幽")
-	check(str(XiuGameState.query("xiuxian_task;progress;main_001;status")) == "submitted",
+	check(str(XiuGameState.query("xiuxian_task;progress;main_101;status")) == "submitted",
 		"query 任务进度状态应为 submitted")
 	check(XiuGameState.query("no;such;path", "默认值") == "默认值",
 		"未命中路径应返回默认值")
@@ -212,14 +215,14 @@ func _initialize() -> void:
 	print("[State] gjson query: level=%s pill_hp=%s locked_name=%s json_len=%d" % [
 		str(XiuGameState.query("xiuxian_character;level")),
 		str(XiuGameState.query("xiuxian_item;bag;pill_hp")),
-		str(XiuGameState.query("xiuxian_task;tasks;main_003;name")),
+		str(XiuGameState.query("xiuxian_task;tasks;main_202;name")),
 		dump.length()])
 
 	# 8. 基线还原（演示语义：跑完检查回到干净状态）
 	gs.reset_demo()
 	check(character.level == 1 and character.exp == 0, "还原后应回到 1 级 0 经验")
 	check(item.get_bag_list().is_empty(), "还原后背包应为空")
-	check(task.get_task_status("main_001") == "available", "还原后 main_001 应回到 available")
+	check(task.get_task_status("main_101") == "available", "还原后 main_101 应回到 available")
 
 	_finish()
 

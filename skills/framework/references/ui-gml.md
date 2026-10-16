@@ -894,6 +894,44 @@ StyleBoxFlat 等纯 Resource 用 `new_gd()`（NewGd trait）非 `new_alloc`。
 范本：`example/demo/xiuxian/scenes/main/ui/mainhud/mainhud_guide.gd`
 （教学连发/突破演出/通关字幅/门控提示四合一）。
 
+## 悬停 tips：静态声明与列表条目运行期接线
+
+GML 元素 `tips="内容"` `tips_title="标题"`（构建期存 `__tips`/`__tips_title`
+meta 随 tscn 序列化，builder 接线到树根自动创建的 `__GmlTipsHost`
+GdUITooltip 宿主，悬停显示、鼠标位置定位一次）：
+
+```xml
+<Panel class="currency-box" tips_title="灵石" tips="修真界通用硬通货。">...</Panel>
+```
+
+**列表动态条目的 tips 必须运行期接线**：`update()` 重建的条目是 slot 模板
+duplicate（duplicate 不刷新 tips meta，且新条目没有宿主接线）——条目脚本
+数据注入后手动接：
+
+```gdscript
+# 面板控制器：懒创建共享宿主（GdUITooltip），供条目沿父链取用
+func gml_tips_host() -> Control:
+    var host := get_node_or_null("__GmlTipsHost") as Control
+    if host == null:
+        var tip: Control = GdUITooltip.new()
+        tip.name = "__GmlTipsHost"
+        tip.set("follow_mouse", false)
+        add_child(tip)   # 最后添加 = 绘制最上层
+        host = tip
+    return host
+
+# 条目脚本：_ready 补偿调用（注入发生在挂树前，见坑 7）
+func _apply_tips() -> void:
+    var n := get_parent()
+    while n != null:
+        if n.has_method("gml_tips_host"):
+            (n.call("gml_tips_host") as Control).call("setup_hover", self, tips_title, tips)
+            return
+        n = n.get_parent()
+```
+
+范本：`example/demo/xiuxian/scenes/main/ui/reward/`（领奖弹窗奖励格子）。
+
 ## 按文本自适应宽度：FitLabel（ui_fit_label.rs）
 
 固定宽度面板里长文本溢出的解法：`<FitLabel>`（Label 子类）+

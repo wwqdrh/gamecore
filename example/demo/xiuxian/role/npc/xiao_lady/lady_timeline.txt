@@ -1,15 +1,38 @@
 # 柳氏（萧夫人）对话时间线（萧宅主母，本角色专属）
 #
-# 入口优先级：报到任务进行中 → 临行嘱托段；否则日常寒暄兜底。
+# 入口优先级：main_102 接取段（main_101 提交后）→ side_104 农事教学接取/
+# 催促段 → 日常寒暄兜底。
+# 任务 flag 体系：task_<id>_accepted / task_<id>_step<N> / task_<id>_done。
+# 红线：置 flag 的 stage 结尾必须是选项或 goto；变更本段 gate 状态的操作
+# 必须写在选项动作里（接取+推进同选项，行推进时 gate 已失配 → goto 直达下一段）。
 
-# beat 3.5：接了报到任务还未完成——临行嘱托
-[lady_sendoff@task_main_001_accepted;!task_main_001_done]
+# ---- main_102 接取 + 第一步推进（拜会夫人） ----
+# gate 用 task_main_101_done 保证任务已解锁（前置链 main_101 提交）；
+# 接取即 advance 置 step1，本段失配自动让位
+[lady_main102@task_main_101_done;!task_main_102_accepted]
 (萧夫人,云舟)
-听说你要去青云坊报到？去吧，路上仔细些。
-出门在外，丹药要备足，遇事莫逞强。
-你爹的事……唉，执事长老若肯说，你便多听几句；不肯说，也别逼问。
-:goto:lady_end
+外头日头毒，先进来喝盏茶。
+老爷让我念叨你：既在府里住下，就别拘着——
+西厢晒药的小翠嘴最甜，去认认门，往后日子好过些。
+- 谢夫人款待。@task_accept:main_102;task_advance:main_102;goto:lady_end
 
+# ---- side_104 接取：送种子，指点农事 ----
+[lady_farm_offer@task_main_102_step1;!task_side_104_accepted;!task_side_104_done]
+(萧夫人,云舟)
+后院灵田闲着也是闲着，想不想学着自己种点什么？
+（夫人递来一只小布袋，里面是几粒青菜种子）
+锄松了土，下种，浇透水——三步，急不得，也懒不得。
+- 学！@task_accept:side_104;item_give:seeds_veg,3;goto:lady_end
+- 改日再学吧。@goto:lady_end
+
+# ---- side_104 进行中：催促（三步自动计步，无需回报） ----
+[lady_farm_pending@task_side_104_accepted;!task_side_104_done]
+(萧夫人)
+田里的活计就三样：锄地、下种、浇水。种子可拿好了？
+对着田按动作就行，做一步算一步，不用回来回话。
+- 这就去。@goto:lady_end
+
+# ---- 日常寒暄兜底 ----
 [lady_talk]
 (萧夫人,云舟)
 外头日头毒，先喝盏茶再走。

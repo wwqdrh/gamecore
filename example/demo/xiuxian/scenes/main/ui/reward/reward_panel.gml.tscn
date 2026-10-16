@@ -1,0 +1,203 @@
+[gd_scene format=3 uid="uid://de57jqp6hu8if"]
+
+[ext_resource type="Script" uid="uid://depimpwxxhtmp" path="res://example/demo/xiuxian/scenes/main/ui/reward/reward_panel.gd" id="1_bp6d1"]
+[ext_resource type="Script" uid="uid://b4ipfenkr7nel" path="res://example/demo/xiuxian/scenes/main/ui/reward/reward_item.gd" id="2_3libq"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_x55md"]
+bg_color = Color(0.09019608, 0.07058824, 0.039215688, 0.9019608)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.63529414, 0.2901961, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ucdq0"]
+bg_color = Color(0.16470589, 0.14117648, 0.09411765, 0.8509804)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.7176471, 0.5882353, 0.2901961, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_l2yyk"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.5411765, 0.41568628, 0.16470589, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.9490196, 0.7921569, 0.34901962, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dhpjv"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.4411765, 0.3156863, 0.064705886, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.9490196, 0.7921569, 0.34901962, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_q471q"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.6611765, 0.53568625, 0.28470588, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="RewardPanel" type="Panel" unique_id=1008515263]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_x55md")
+script = ExtResource("1_bp6d1")
+metadata/__anchor = "full"
+metadata/__pct_margin = "24%"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray()
+
+[node name="MainColumn" type="VBoxContainer" parent="." unique_id=59561247]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+mouse_filter = 2
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="TitleLabel" type="Label" parent="MainColumn" unique_id=544410449]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.9490196, 0.7921569, 0.34901962, 1)
+text = "任务完成"
+horizontal_alignment = 1
+
+[node name="SubtitleLabel" type="Label" parent="MainColumn" unique_id=703904217]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.7254902, 0.6784314, 0.5568628, 1)
+horizontal_alignment = 1
+
+[node name="@Control@26156" type="Control" parent="MainColumn" unique_id=252764596]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="RewardList" type="GdUIHList" parent="MainColumn" unique_id=677353410]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="RewardCell" type="Panel" parent="MainColumn/RewardList" unique_id=1594075193]
+visible = false
+custom_minimum_size = Vector2(78, 96)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_ucdq0")
+script = ExtResource("2_3libq")
+metadata/__tips_title = "{{tips_title}}"
+metadata/__tips = "{{tips}}"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray()
+
+[node name="IconBox" type="CenterContainer" parent="MainColumn/RewardList/RewardCell" unique_id=771586643]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 8.0
+offset_right = -5.0
+offset_bottom = -24.0
+mouse_filter = 2
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="MainColumn/RewardList/RewardCell/IconBox" unique_id=127986290]
+layout_mode = 2
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="CellTex" type="TextureRect" parent="MainColumn/RewardList/RewardCell/IconBox" unique_id=1340458181]
+visible = false
+custom_minimum_size = Vector2(34, 34)
+layout_mode = 2
+mouse_filter = 2
+stretch_mode = 5
+
+[node name="NameLabel" type="Label" parent="MainColumn/RewardList/RewardCell" unique_id=935281798]
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -30.0
+offset_right = -4.0
+offset_bottom = -3.0
+theme_override_colors/font_color = Color(0.84705883, 0.79607844, 0.65882355, 1)
+horizontal_alignment = 1
+metadata/__tpl_text = "name"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="MainColumn/RewardList/RewardCell" unique_id=1553332792]
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -6.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.9490196, 0.8901961, 0.72156864, 1)
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="@Control@26157" type="Control" parent="MainColumn" unique_id=31623957]
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="@CenterContainer@26158" type="CenterContainer" parent="MainColumn" unique_id=583886119]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="ConfirmBtn" type="Button" parent="MainColumn/@CenterContainer@26158" unique_id=1684311529]
+custom_minimum_size = Vector2(140, 44)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_l2yyk")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_dhpjv")
+theme_override_styles/hover = SubResource("StyleBoxFlat_q471q")
+text = "确  认"
+metadata/__signal_pressed = "_on_confirm_pressed"

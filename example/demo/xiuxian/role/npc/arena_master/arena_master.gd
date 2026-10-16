@@ -17,7 +17,7 @@ func _init() -> void:
 	display_name = "演武教头·秦重"
 	role_name = "秦重"
 	timeline_path = "res://example/demo/xiuxian/role/npc/arena_master/arena_timeline.txt"
-	entry_stage = "arena_intro"
+	entry_stage = ""  # 置空：入口选段交给 timeline gate 优先级扫描（entry 直达无条件兜底段会绕过门控）
 	npc_cell = Vector2i(20, 10)
 	ai_behavior = 0  # AI_IDLE 站桩（主持台）
 	body_color = Color(0.85, 0.62, 0.3)

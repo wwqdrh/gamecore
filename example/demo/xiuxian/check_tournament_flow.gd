@@ -12,8 +12,9 @@
 #      天数徽章文案「第 7 天」
 #   4. 演武堂：town 有演武教头；start_match() 置 match_started + 任务 1/2
 #      + 比武弟子登台（town 地图子节点）
-#   5. 夺魁：对手死亡 → tournament_won + 任务 2/2 completed
-#   6. 领奖：complete_task → submitted，修为/灵石/青云剑到账
+#   5. 夺魁：对手死亡 → tournament_won + 任务 2/2
+#   6. 自动领奖：终步达成 advance_task 自动 complete_task（发奖+弹窗数据），
+#      修为/灵石/青云剑到账，无需手动领取
 #   7. 幂等：重复 start_match 不重复刷怪；重复到日不重复解锁
 extends SceneTree
 
@@ -92,9 +93,10 @@ func _run() -> void:
 	var day_label: Label = _find_label(index, "DayText")
 	check(day_label != null, "mainhud 应有天数徽章 DayText")
 
-	check(str(tasks.get_task(TID).get("name", "")) == "宗门大比", "任务总表应含宗门大比")
+	check(str(tasks.get_task(TID).get("name", "")) == "宗门选拔", "任务总表应含宗门选拔（stage1 收官）")
+	check(str(tasks.get_task(TID).get("category", "")) == "主线", "宗门选拔应为主线任务")
 	check(tasks.get_task_status(TID) == XiuTaskState.STATUS_LOCKED,
-		"开赛前任务应为 locked")
+		"开赛前任务应为 locked（前置 main_105 未提交）")
 	check(int(calendar.day) == 1, "初始应为第 1 天")
 
 	# 2. 时间推进到第 7 天（6.5 天处 set_total_time，等日历轮询追上）
@@ -134,21 +136,24 @@ func _run() -> void:
 		await _wait_frames(2)
 		check(master._opponent == opp, "重复 start_match 不应新刷对手")
 
-	# 5. 夺魁
+	# 5. 夺魁 → 自动领奖（advance_task 终步达成 → deferred complete_task）
 	if opp != null and is_instance_valid(opp):
 		opp.health.kill()
-	await _wait_frames(2)
-	check(dialog.has_flag("tournament_won"), "对手倒下应置 flag tournament_won")
-	check(tasks.get_task_status(TID) == XiuTaskState.STATUS_COMPLETED,
-		"夺魁后任务应为 completed（待领奖）")
+	await _poll(func() -> bool: return dialog.has_flag("tournament_won"),
+			30, "对手倒下应置 flag tournament_won")
+	await _poll(func() -> bool:
+		return tasks.get_task_status(TID) == XiuTaskState.STATUS_SUBMITTED,
+			30, "夺魁后应自动领奖到 submitted（终步 advance 自动 complete）")
 
-	# 6. 领奖（对话 @task_complete:sect_tournament 的落点方法）
-	check(tasks.complete_task(TID), "complete_task 应成功")
-	check(tasks.get_task_status(TID) == XiuTaskState.STATUS_SUBMITTED, "领奖后应为 submitted")
+	# 6. 奖励到账断言（自动领奖已发）
 	check(int(char_state.level) > 1 or int(char_state.exp) > exp0,
 		"奖励修为应到账（exp 为级内经验，整除升级时归零，以等级兜底）")
 	check(int(char_state.spirit_stones) >= 120, "奖励灵石应到账")
 	check(int(items.get_count("sword_qingfeng")) == 1, "青云剑应入包")
+	# stage1_clear 由 arena_win 对话选项动作置位（timeline 侧覆盖）；
+	# 提交后 stage2 前置链点亮
+	check(tasks.get_task_status("main_201") == XiuTaskState.STATUS_AVAILABLE,
+		"选拔提交 → stage2 main_201 宗门报到点亮")
 
 	# 7. 幂等：再次到日（第 8 天）不重复解锁/接取
 	weather.set_total_time(7.5 * DAY_LEN)

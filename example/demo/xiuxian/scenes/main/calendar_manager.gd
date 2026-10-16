@@ -33,7 +33,7 @@ var _toast_tween: Tween
 
 
 func _ready() -> void:
-	layer = 10
+	layer = XiuUILayers.FULLSCREEN
 	_make_toast()
 	# 场景装配即接线（含存档时间基准恢复）——严禁留给 0.5s 轮询首跑：
 	# 期间任何对 WeatherManager 的 set_total_time（测试推时间/未来业务）都会

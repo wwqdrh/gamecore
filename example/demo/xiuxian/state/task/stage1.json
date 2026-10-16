@@ -1,0 +1,300 @@
+{
+	"version": 1,
+	"pipeline": "gjson",
+	"chapter": "家族篇（第一阶段）",
+	"desc": "第一阶段任务：进入宗门之前的家族内任务 + 游玩系统教学任务（对话/寻路/战斗/采集/锻造/农事/探索）。剧情结尾 = 突破斗者 + 宗门选拔考试获得前 10 名。category: 主线/支线；precondition=前置任务 id（完成即开放）；steps=完成所需步数；objectives 与步骤一一对应，collect 步带 auto:true 时背包获得该物品自动推进一步；rewards: exp/spirit_stones/coins/items[{id,count}]；giver=接取对话角色。",
+	"tasks": {
+		"main_101": {
+			"id": "main_101",
+			"name": "初来乍到",
+			"category": "主线",
+			"desc": "寄居萧府的第一个清晨，先去正堂拜见家主萧老爷，问问眼下该做些什么。",
+			"precondition": "",
+			"steps": 1,
+			"giver": "萧老爷",
+			"objectives": [
+				{
+					"type": "talk",
+					"target_role": "萧老爷",
+					"desc": "拜见家主萧老爷"
+				}
+			],
+			"rewards": {
+				"exp": 80,
+				"coins": 30
+			}
+		},
+		"main_102": {
+			"id": "main_102",
+			"name": "宅中众人",
+			"category": "主线",
+			"desc": "萧老爷提点：既要在府中住下，就去拜会萧夫人与丫鬟小翠，混个脸熟。",
+			"precondition": "main_101",
+			"steps": 2,
+			"giver": "萧夫人",
+			"objectives": [
+				{
+					"type": "talk",
+					"target_role": "萧夫人",
+					"desc": "拜会萧夫人"
+				},
+				{
+					"type": "talk",
+					"target_role": "小翠",
+					"desc": "与丫鬟小翠聊聊"
+				}
+			],
+			"rewards": {
+				"exp": 120,
+				"coins": 30
+			}
+		},
+		"main_103": {
+			"id": "main_103",
+			"name": "灵田风波",
+			"category": "主线",
+			"desc": "府中灵田连日减产，家主说是地灵鼠作乱——去田里清剿三只地灵鼠，再回报小翠。",
+			"precondition": "main_102",
+			"steps": 2,
+			"giver": "萧老爷",
+			"objectives": [
+				{
+					"type": "kill",
+					"target_role": "地灵鼠",
+					"desc": "驱逐灵田的三只地灵鼠"
+				},
+				{
+					"type": "talk",
+					"target_role": "小翠",
+					"desc": "回报清剿结果"
+				}
+			],
+			"rewards": {
+				"exp": 200,
+				"spirit_stones": 30,
+				"items": [
+					{
+						"id": "pill_hp",
+						"count": 2
+					}
+				]
+			}
+		},
+		"main_104": {
+			"id": "main_104",
+			"name": "坊市风声",
+			"category": "主线",
+			"desc": "小翠提起：昨夜执事堂遭了贼，丢了一册十年前的旧档。去青石镇找说书先生和外门弟子，把风声听全。",
+			"precondition": "main_103",
+			"steps": 2,
+			"giver": "小翠",
+			"objectives": [
+				{
+					"type": "talk",
+					"target_role": "贾先生",
+					"desc": "听说书先生讲失窃旧事"
+				},
+				{
+					"type": "talk",
+					"target_role": "外门弟子",
+					"desc": "向外门弟子打听令牌与选拔"
+				}
+			],
+			"rewards": {
+				"exp": 150,
+				"coins": 40
+			}
+		},
+		"main_105": {
+			"id": "main_105",
+			"name": "破关之资",
+			"category": "主线",
+			"desc": "云纹令牌的旧事有了眉目。回府禀明萧老爷，取祖传聚气散突破斗者——宗门选拔只收斗者境。",
+			"precondition": "main_104",
+			"steps": 3,
+			"giver": "萧老爷",
+			"objectives": [
+				{
+					"type": "collect",
+					"target_role": "break_qizhe",
+					"desc": "收下聚气散×3"
+				},
+				{
+					"type": "rank_up",
+					"target_role": "dou_zhe",
+					"desc": "突破斗者"
+				},
+				{
+					"type": "talk",
+					"target_role": "萧老爷",
+					"desc": "向萧老爷复命"
+				}
+			],
+			"rewards": {
+				"exp": 300,
+				"spirit_stones": 50,
+				"items": [
+					{
+						"id": "token_sect",
+						"count": 1
+					}
+				]
+			}
+		},
+		"sect_tournament": {
+			"id": "sect_tournament",
+			"name": "宗门选拔",
+			"category": "主线",
+			"desc": "七日后青云坊演武堂开宗门选拔，取前 10 名录入青云宗外门。开赛前可在落霞秘境历练提升修为，开赛后前往演武堂应考。",
+			"precondition": "main_105",
+			"steps": 2,
+			"giver": "演武教头·秦重",
+			"objectives": [
+				{
+					"type": "talk",
+					"target_role": "秦重",
+					"desc": "向演武教头报名应考"
+				},
+				{
+					"type": "kill",
+					"target_role": "比武弟子·武痴",
+					"desc": "擂台之上力挫对手，跻身前十"
+				}
+			],
+			"rewards": {
+				"exp": 800,
+				"spirit_stones": 120,
+				"items": [
+					{
+						"id": "sword_qingfeng",
+						"count": 1
+					}
+				]
+			}
+		},
+		"side_101": {
+			"id": "side_101",
+			"name": "家主嘱托",
+			"category": "支线",
+			"desc": "萧老爷希望云舟去和丫鬟小翠聊一聊，听听宅子里的近况。",
+			"precondition": "main_101",
+			"steps": 1,
+			"giver": "萧老爷",
+			"objectives": [
+				{
+					"type": "talk",
+					"target_role": "小翠",
+					"desc": "和丫鬟小翠谈一谈"
+				}
+			],
+			"rewards": {
+				"coins": 50
+			}
+		},
+		"side_102": {
+			"id": "side_102",
+			"name": "采药济世",
+			"category": "支线",
+			"desc": "为回春堂采集血参，救治镇上疫病——顺道学学怎么在野外采药。",
+			"precondition": "",
+			"steps": 2,
+			"giver": "白芷",
+			"objectives": [
+				{
+					"type": "collect",
+					"target_role": "herb_xueshen",
+					"auto": true,
+					"desc": "在青草岭采集血参"
+				},
+				{
+					"type": "talk",
+					"target_role": "白芷",
+					"desc": "把血参交给药铺掌柜"
+				}
+			],
+			"rewards": {
+				"exp": 150,
+				"spirit_stones": 20,
+				"items": [
+					{
+						"id": "herb_xueshen",
+						"count": 2
+					}
+				]
+			}
+		},
+		"side_103": {
+			"id": "side_103",
+			"name": "铸剑问道",
+			"category": "支线",
+			"desc": "替欧冶氏收集寒铁，铸成一柄本命飞剑——顺道学学装备怎么穿戴。",
+			"precondition": "side_102",
+			"steps": 3,
+			"giver": "铁牛",
+			"objectives": [
+				{
+					"type": "collect",
+					"target_role": "ore_coldiron",
+					"auto": true,
+					"desc": "在青草岭采掘寒铁"
+				},
+				{
+					"type": "talk",
+					"target_role": "铁牛",
+					"desc": "把寒铁交给铁牛"
+				},
+				{
+					"type": "talk",
+					"target_role": "铁牛",
+					"desc": "取回本命飞剑"
+				}
+			],
+			"rewards": {
+				"exp": 300,
+				"spirit_stones": 40,
+				"items": [
+					{
+						"id": "sword_qingfeng",
+						"count": 1
+					}
+				]
+			}
+		},
+		"side_104": {
+			"id": "side_104",
+			"name": "灵田初耕",
+			"category": "支线",
+			"desc": "萧夫人送你一包青菜种子：后院灵田闲着也是闲着，学着自己种点什么。",
+			"precondition": "main_102",
+			"steps": 3,
+			"giver": "萧夫人",
+			"objectives": [
+				{
+					"type": "farm",
+					"target_role": "till",
+					"desc": "用锄头开垦一畦田"
+				},
+				{
+					"type": "farm",
+					"target_role": "plant",
+					"desc": "播下一粒种子"
+				},
+				{
+					"type": "farm",
+					"target_role": "water",
+					"desc": "给田地浇灌"
+				}
+			],
+			"rewards": {
+				"exp": 100,
+				"coins": 20,
+				"items": [
+					{
+						"id": "seeds_veg",
+						"count": 2
+					}
+				]
+			}
+		}
+	}
+}

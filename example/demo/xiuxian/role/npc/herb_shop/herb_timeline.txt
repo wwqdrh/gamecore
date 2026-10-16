@@ -1,4 +1,36 @@
 # 白芷对话时间线（回春堂药铺掌柜，本角色专属）
+#
+# 任务位：side_102 采药济世（教学：野外采集）——
+#   接取段（gate !accepted;!done，任务无前置恒可接）→
+#   交付段（collect auto 步入包置 task_side_102_step1 后，聊天即推进）→
+#   日常段兜底。
+# 红线：置 flag 的 stage 结尾必须是选项或 goto；变更本段 gate 状态的操作
+# 必须写在选项动作里。
+
+# ---- side_102 接取段 ----
+[herb_side_offer@!task_side_102_accepted;!task_side_102_done]
+(白芷,云舟)
+客官面生，气血倒还充足。我这儿有桩活计——
+镇上疫病抬头，缺血参入药。青草岭崖边就有野生的，
+你去采几株，工钱药材两不亏欠。
+- 我去去就回。@task_accept:side_102;goto:herb_herb_teach
+- 改日再来。@goto:herb_end
+
+[herb_herb_teach]
+(白芷)
+采药认准了：地图上亮着标记的草簇，走近按采集就行。
+采到一株血参，回来跟我说一声便算交差。
+:goto:herb_end
+
+# ---- side_102 交付段（采集入包已自动置 step1） ----
+# gate 排除 step2（推进后段失配让位日常）
+[herb_side_report@task_side_102_step1;!task_side_102_step2]
+(白芷,云舟)
+血参到手了？成色不错——疫病那头有救了。
+（白芷把血参仔细收进药匣，提笔记了账）
+- 交付差事。@task_advance:side_102;goto:herb_end
+
+# ---- 日常段兜底 ----
 [herb_talk]
 (白芷,云舟)
 回春堂。气血两亏的回春丹，跌打损伤的金疮药——客官要点什么？

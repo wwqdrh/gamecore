@@ -6,7 +6,7 @@
 use godot::prelude::*;
 use godot::builtin::{GString, VarDictionary, VarArray, Variant, StringName, Color, NodePath};
 use godot::classes::{
-    Node, INode, Control, CanvasLayer, ColorRect, PackedScene, Engine, Tween,
+    Node, INode, Object, Control, CanvasLayer, ColorRect, PackedScene, Engine, Tween,
 };
 use godot::classes::control::LayoutPreset;
 
@@ -440,9 +440,40 @@ impl GdSceneRoot {
 
     /// 按组件名查询组件（未注册返回 nil）。
     /// 跨组件协作的标准入口：`scene_root.get_component("MapManager")`。
+    ///
+    /// 读取时自愈：登记对象已释放（业务漏 unregister 的兜底）→ 清除死引用
+    /// 并返回 nil。防切场景间隙 get_component 命中 freed 实例——GDScript
+    /// 侧把 freed 实例赋给 `Node` 类型变量会直接报
+    /// "Trying to assign invalid previously freed instance"。
     #[func]
-    pub fn get_component(&self, name: GString) -> Variant {
-        self.components.get_or_nil(&name.to_variant())
+    pub fn get_component(&mut self, name: GString) -> Variant {
+        let key = name.to_variant();
+        let val = self.components.get_or_nil(&key);
+        if val.get_type() == godot::builtin::VariantType::OBJECT {
+            let Ok(obj) = val.try_to::<Gd<Object>>() else {
+                return val;
+            };
+            if !obj.is_instance_valid() {
+                godot_warn!(
+                    "GdSceneRoot: component '{}' is a freed instance, dropped (业务漏注销)",
+                    name
+                );
+                self.components.erase(&key);
+                return Variant::nil();
+            }
+        }
+        val
+    }
+
+    /// 条件注销组件（仅当表内对象即 owner 时移除）。
+    /// 供 call_deferred 使用：场景切换时旧实例延迟注销，若此刻新实例已
+    /// 注册同名组件，无条件注销会误删新注册——按 owner 同一性判定规避。
+    #[func]
+    pub fn unregister_component_if(&mut self, name: GString, owner: Variant) {
+        let key = name.to_variant();
+        if self.components.get_or_nil(&key) == owner {
+            self.components.erase(&key);
+        }
     }
 
     /// 注销组件（组件释放时调用，防死引用）

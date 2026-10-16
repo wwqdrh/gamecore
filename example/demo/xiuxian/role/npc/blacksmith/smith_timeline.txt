@@ -1,4 +1,40 @@
 # 铁牛对话时间线（铁匠铺师傅，本角色专属）
+#
+# 任务位：side_103 铸剑问道（教学：装备获取）——
+#   接取段（前置 side_102 提交后可接）→ 交料段（collect auto 置 step1）→
+#   取剑段（step2 后聊天即推进，completed 走列表领奖）→ 日常段兜底。
+# 红线：置 flag 的 stage 结尾必须是选项或 goto；变更本段 gate 状态的操作
+# 必须写在选项动作里。
+
+# ---- side_103 接取段（gate 用 side_102 提交保证解锁） ----
+[smith_side_offer@task_side_102_done;!task_side_103_accepted;!task_side_103_done]
+(铁牛,云舟)
+白芷那头说你有采药的手艺？正好，我这儿也有桩活——
+打一柄好剑要寒铁作引，青草岭的矿簇里有，你去掘几块来。
+- 这就去。@task_accept:side_103;goto:smith_ore_teach
+- 先缓缓。@goto:smith_end
+
+[smith_ore_teach]
+(铁牛)
+矿簇认准了：崖壁上黑黝黝那种。抡镐敲下来就进你包里，
+攒够了回来找我。
+:goto:smith_end
+
+# ---- side_103 交料段（采集入包已自动置 step1） ----
+[smith_side_give@task_side_103_step1;!task_side_103_step2]
+(铁牛,云舟)
+寒铁来了？递来我瞅瞅……成色好，够用！
+炉子已经热上了，你先转转，回头来取剑。
+- 交付寒铁。@task_advance:side_103;goto:smith_end
+
+# ---- side_103 取剑段（completed 走任务列表领奖） ----
+[smith_side_fetch@task_side_103_step2;!task_side_103_step3]
+(铁牛,云舟)
+呼——成了！你瞧瞧这刃口，吹毛断发！
+剑名青风，跟着云澈兄弟一个性子，正得很。
+- 收下宝剑。@task_advance:side_103;goto:smith_end
+
+# ---- 日常段兜底 ----
 [smith_talk]
 (铁牛,云舟)
 让让火——呼，好嘞。小兄弟，打刀还是修剑？

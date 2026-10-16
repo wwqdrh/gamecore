@@ -684,9 +684,8 @@ impl GdNpcSchedule {
         let lines = &self.entries[idx as usize].lines;
         if !lines.is_empty() && rng.gen_bool(0.65) {
             let line = lines[rng.gen_range(0..lines.len())].clone();
-            if host.has_method("show_bubble") {
-                host.call("show_bubble", &[GString::from(line.as_str()).to_variant()]);
-            }
+            // 宿主 show_bubble 优先，否则 rust 默认头顶气泡
+            crate::dialog::show_bubble_on(&mut host, &line, 3.0);
         } else {
             // 环顾四周
             let dirs = ["left", "right", "up", "down"];

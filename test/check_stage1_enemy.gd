@@ -1,13 +1,13 @@
-# 第一阶段 M2 验收 —— 灵田虫害事件（main_002 战斗位）端到端
+# 第一阶段 M2 验收 —— 灵田虫害事件（main_103 战斗位）端到端
 #
 # 运行：perl -e 'alarm 180; exec @ARGV' godot --headless --path . \
 #   -s res://test/check_stage1_enemy.gd
 #
 # 覆盖：
-#   1. 接取 main_002 后进 home（萧宅农田）→ PestEvent 自动刷地灵鼠×3
+#   1. 接取 main_103 后进 home（萧宅农田）→ PestEvent 自动刷地灵鼠×3
 #      （数值档：血 20/攻 3/经 40）
 #   2. 击杀计数：前 2 只死亡任务不推进，第 3 只死亡推进一步（steps=2 中
-#      的 kill 步），状态保持 accepted（剩「回报外门弟子」步）
+#      的 kill 步），状态保持 accepted（剩「回报小翠」步）
 #   3. 未接取任务不刷怪（PestEvent 轮询门控）
 #   4. 副本数值档回归：check_dungeon_flow / check_enemy_flow 另行覆盖
 extends SceneTree
@@ -63,10 +63,11 @@ func _run() -> void:
 	check(mgr.open_map("xiuxian_home", Vector2i(3, 3)), "应能打开 home")
 	for i in 40:
 		await process_frame
-	check(_mice(mgr.get_current_map()).is_empty(), "未接取 main_002 时不应刷地灵鼠")
+	check(_mice(mgr.get_current_map()).is_empty(), "未接取 main_103 时不应刷地灵鼠")
 
-	# 3. 接取任务 → 回 home → PestEvent 刷鼠×3
-	check(tasks.accept_task("main_002"), "main_002 应可接取")
+	# 3. 前置链走到 main_103 可接取 → 回 home → PestEvent 刷鼠×3
+	_check_chain()
+	check(tasks.accept_task("main_103"), "main_103 应可接取")
 	check(mgr.open_map("xiuxian_home", Vector2i(3, 3)), "应能重进 home")
 	# PestEvent 0.5s 节流轮询 + 刷怪/吸附，给足帧数
 	for i in 90:
@@ -86,13 +87,13 @@ func _run() -> void:
 		e.get("health").kill()  # 直调死亡（s_died → PestEvent 计数）
 		for f in 5:
 			await process_frame
-		var p: Dictionary = tasks.get_progress("main_002")
+		var p: Dictionary = tasks.get_progress("main_103")
 		if i < 2:
 			check(int(p.get("step", 0)) == 0, "击杀 %d/3 时任务不应推进" % (i + 1))
 		else:
 			check(int(p.get("step", 0)) == 1, "清剿 3/3 应推进一步，实际 step=%d" % int(p.get("step", 0)))
-			check(str(tasks.get_task_status("main_002")) == "accepted",
-					"清剿完成后应保持 accepted（剩回报步），实际 %s" % tasks.get_task_status("main_002"))
+			check(str(tasks.get_task_status("main_103")) == "accepted",
+					"清剿完成后应保持 accepted（剩回报步），实际 %s" % tasks.get_task_status("main_103"))
 
 	# 5. 清理
 	index.queue_free()
@@ -106,3 +107,15 @@ func _finish() -> void:
 		print("[Stage1Enemy] RESULT=FAIL")
 	load("res://example/demo/xiuxian/state/test_save_guard.gd").restore()
 	quit(0 if ok else 1)
+
+
+## 走完 main_101 → main_102 前置链（main_103 前置依赖）
+func _check_chain() -> void:
+	var tasks: XiuTaskState = XiuTaskState.ins()
+	tasks.accept_task("main_101")
+	tasks.advance_task("main_101")
+	tasks.complete_task("main_101")
+	tasks.accept_task("main_102")
+	tasks.advance_task("main_102")
+	tasks.advance_task("main_102")
+	tasks.complete_task("main_102")

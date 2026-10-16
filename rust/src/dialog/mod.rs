@@ -8,6 +8,7 @@
 mod gddialogue;
 mod speaker;
 mod dialog_trigger;
+mod movie_ui;
 
 pub use gddialogue::GdDialogue;
 pub use speaker::GdRoleSpeaker;
@@ -15,3 +16,4 @@ pub use dialog_trigger::{
     GdDialogTrigger,
     TRIGGER_PROXIMITY, TRIGGER_INTERACT, TRIGGER_AUTO, TRIGGER_MANUAL,
 };
+pub use movie_ui::{GdMovieBubble, GdMovieDialogBox, hide_bubble_on, show_bubble_on};

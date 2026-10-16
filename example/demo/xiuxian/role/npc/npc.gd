@@ -73,8 +73,6 @@ var _snapped := false
 var _wired := false
 var _ai_applied := false
 var _hint: Label
-var _bubble: Label
-var _bubble_timer: Timer
 
 
 func _ready() -> void:
@@ -83,7 +81,6 @@ func _ready() -> void:
 	# set_grid_path 下发的路径队列无人消费，日程导航永卡 navigating=true 站桩）
 	move_mode = 2  # MODE_GRID
 	_make_visual()
-	_make_bubble()
 	_make_dialog_parts()
 	_make_schedule_and_chat()
 	_make_ai()
@@ -172,6 +169,18 @@ func _apply_ai_points(map: Node, cs: int) -> void:
 
 
 # ---- 生活化：日程系统 + 相遇闲聊（角色目录 schedule.json，格式见 NPC_LIFE.md） ----
+
+## GdMoviePlayer 演出模式契约（鸭子调用，spawn 后立即置位）：
+## enabled=true 时屏蔽日程/闲聊/问候/AI 等自治系统——否则日程「场景进入
+## 直接落位」会在演出数秒后把角色瞬移到日程点（实测 3.2s 跳走）；
+## 站位吸附一并禁用（from/to 走位由剧本指令落位）。演出实例随演出释放，
+## 无需恢复；false 恢复全部自治（外部复用本契约时用）。
+func set_movie_actor(enabled: bool) -> void:
+	for sys: Node in [schedule, chat, greet, brain]:
+		if sys != null and is_instance_valid(sys):
+			sys.set("enable", not enabled)
+	if enabled:
+		_snapped = true
 
 func _make_schedule_and_chat() -> void:
 	var path := schedule_path
@@ -264,45 +273,12 @@ func _resolve_npc_id() -> String:
 	return npc_id if not npc_id.is_empty() else role_name
 
 
-# ---- 头顶气泡：自言自语 / 闲聊 / 重逢问候（GdNpcSchedule/GdNpcChat 鸭子调用） ----
-
-func _make_bubble() -> void:
-	_bubble = Label.new()
-	_bubble.add_theme_font_size_override("font_size", 11)
-	_bubble.add_theme_color_override("font_color", Color(1.0, 0.97, 0.9))
-	_bubble.add_theme_color_override("font_outline_color", Color(0.12, 0.1, 0.06))
-	_bubble.add_theme_constant_override("outline_size", 4)
-	_bubble.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_bubble.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_bubble.position = Vector2(-70, -66)
-	_bubble.size = Vector2(140, 30)
-	_bubble.visible = false
-	_bubble.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(_bubble)
-
-	_bubble_timer = Timer.new()
-	_bubble_timer.one_shot = true
-	_bubble_timer.timeout.connect(func() -> void: _bubble.visible = false)
-	add_child(_bubble_timer)
-
-
-func show_bubble(text: String, secs := 3.0) -> void:
-	if _bubble == null:
-		return
-	_bubble.text = text
-	_bubble.visible = true
-	_bubble_timer.start(secs)
-
-
-func hide_bubble() -> void:
-	if _bubble != null:
-		_bubble.visible = false
-
-
 # ---- 玩家靠近主动寒暄：重逢问候（打破"每次见面都是初次认识"） ----
 #
 # 问候统一由 GdNpcGreet 驱动（文案经 resolve_greeting 解析，重逢问候优先）；
 # 本方法仅在其缺位（无 schedule.json/greet 段）时兜底。
+# 气泡默认实现已 rust 化（GdMovieBubble，dialog/movie_ui.rs）——
+# GdNpcSchedule/GdNpcChat/GdNpcGreet 与演出统一经 show_bubble_on 调用。
 
 ## GdNpcGreet 鸭子回调：remeet_flag 已置时返回重逢问候，否则返回空串
 ##（空串 = 交还给 greet 组件的 lines 随机）
@@ -324,7 +300,8 @@ func _on_player_near() -> void:
 		return
 	if not XiuDialogState.ins().has_flag(remeet_flag):
 		return
-	show_bubble(remeet_greeting)
+	var tag: Node = GdMovieBubble.ensure(self)
+	tag.call("show_bubble", remeet_greeting, 3.0)
 
 
 # ---- 对话节点接线：分组查找共享 GdDialogue ----

@@ -1,0 +1,28 @@
+# 突破斗者演出（breakthrough）
+# 触发建议：try_breakthrough 成功进入斗者一段时播放（与现有 Banner 字幅
+# 叠加使用，建议 Banner 播完再起演出）。接线示例：
+#   if movie.call("play") != null: pass  # 或先 stop Banner
+#
+# 分镜：院中聚气 → 地动山摇 → 突破成功 → 父亲欣慰
+
+scene xiuxian_xiaozhai
+player (10,8)  # 站位显式声明（院中聚气）
+wait 0.6
+
+actor xiao_master enter (8,8)
+camera follow xiao_master
+say xiao_master 聚气散已尽数服下，凝气最后一关，成败在此一举。
+
+# 突破瞬间：震屏 + 聚焦主角
+camera focus player 0.8
+camera shake 7.0
+wait 1.0
+say player 3.0 （气感如潮水般涌向丹田……成了！斗者！我终于踏入了斗者的门槛！）
+camera unfocus
+camera shake 4.0
+wait 0.6
+
+say xiao_master 3.0 好！好！我萧战的儿子，从今日起便是真正的斗者了！
+say xiao_master 青云宗的选拔就在眼前——莫要让为父失望。
+camera unfocus
+end

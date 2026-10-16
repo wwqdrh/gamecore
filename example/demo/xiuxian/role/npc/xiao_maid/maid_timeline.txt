@@ -1,30 +1,59 @@
 # 丫鬟小翠对话时间线（萧宅丫鬟，本角色专属）
 #
 # 对话进度记录：stage 经 flag 门控（与 master_timeline 同规则）——
-#   任务进行中 [maid_task@task_side_003_accepted] 优先进入，聊完即完成
-#   任务（@task_complete:side_003 → 50 金币）；完成后走熟络问候段；
-#   日常段 [maid_talk@!task_side_003_accepted] 只在未接任务时作为入口。
-# 红线：置 flag 的 stage 结尾必须是选项或 goto（防行推进时 flag 失配断线）。
+# 任务 flag 体系：task_<id>_accepted / task_<id>_step<N> / task_<id>_done。
+# 本角色承接的主线节点：
+#   · main_102 宅中众人   —— 第二步「与丫鬟小翠聊聊」（聊天即推进）
+#   · main_103 灵田风波   —— 催促（未杀鼠）/ 回报（杀完置 step1 后）
+#   · main_104 坊市风声   —— 灵田风波了结后接取（去镇上打听）
+#   · side_101 家主嘱托   —— 聊天即完成（50 金币）
+# 红线：置 flag 的 stage 结尾必须是选项或 goto（防行推进时 flag 失配断线）；
+# 变更本段 gate 状态的操作必须写在选项动作里。
 
-# 任务进行中：与云舟聊天即完成任务（完成前引出「宗门大比」主线伏笔）
-# 红线示例：task_complete 改变的 task_side_003_done 参与本段 gate（!done），
+# ---- main_102 第二步：与云舟聊天即推进一步 ----
+# gate 排除 step2（推进后 flag 置位，段失配让位）——避免领奖前后重复进入
+[maid_main102@task_main_102_accepted;!task_main_102_step2]
+(小翠,云舟)
+哎？夫人让你来跟我认认门的？嘿嘿，那我可就不客气啦——
+（两人从晒药的讲究聊到镇上的八卦，好一会儿才停下）
+- 聊得挺投缘。@task_advance:main_102;goto:maid_end
+
+# ---- main_103 催促（接了任务还没杀完鼠） ----
+[maid_main103_pending@task_main_103_accepted;!task_main_103_step1]
+(小翠)
+地灵鼠就在灵田里蹿呢！你拿着剑去赶赶——
+别真下死手呀……好吧，是鼠就得赶，下手吧。
+- 这就去。@goto:maid_end
+
+# ---- main_103 回报（杀完三只，home_pest 推进置 step1） ----
+[maid_main103_report@task_main_103_step1;!task_main_103_step2]
+(小翠,云舟)
+田里的鼠清干净啦？老爷一早就念叨这事呢！
+（小翠掰着指头把田垄数了一遍，眉开眼笑）
+- 回报清剿结果。@task_advance:main_103;goto:maid_end
+
+# ---- main_103 提交后：接取坊市风声（主线） ----
+[maid_main104_offer@task_main_103_done;!task_main_104_accepted;!task_main_104_done]
+(小翠,云舟)
+对了云舟哥，昨夜可出了件怪事——执事堂遭贼了！
+说是丢了一册十年前的旧档。镇上茶棚的贾先生今早说书都讲这个，
+你去听听？外门弟子们也在传，说是贼人袖口露了半块令牌呢。
+- 我去去就回。@task_accept:main_104;goto:maid_end
+- 先忙田里的事。@goto:maid_end
+
+# ---- side_101 进行中：与云舟聊天即完成任务 ----
+# 红线示例：task_complete 改变的 task_side_101_done 参与本段 gate（!done），
 #   必须写在选项动作里——行上写会让选项永远不显示（推进时 gate 失配断线）
-[maid_task@task_side_003_accepted;!task_side_003_done]
+[maid_side101@task_side_101_accepted;!task_side_101_done]
 (小翠,云舟)
 哎？老爷让你来陪我聊天的？嘿嘿，那我可就不客气啦——
 （两人从晒药的讲究聊到镇上的八卦，好一会儿才停下）
-对了！七日后青云坊演武堂开宗门大比，老爷替你报了名哟。
+对了！七日后青云坊演武堂开宗门选拔，取前 10 名录入青云宗呢。
 这几日多去秘境里历练历练，可别到时候垫底呀。
-- 知道啦，回去回话。@task_complete:side_003;goto:maid_end
+- 知道啦，回去回话。@task_complete:side_101;goto:maid_end
 
-# 任务完成后：熟络的问候 + 大比进展关心
-[maid_after@task_side_003_done]
-(小翠,云舟)
-又来啦？宗门大比准备得怎么样啦？可别给萧宅丢脸哟。
-- 好说好说。@goto:maid_end
-
-# 日常闲聊（未接任务时的入口）
-[maid_talk@!task_side_003_accepted]
+# ---- 日常兜底 ----
+[maid_talk]
 (小翠,云舟)
 哎，你就是萧老爷说的那位小客人？我在西厢晒药材呢。
 @set_flag:met_xiao_maid

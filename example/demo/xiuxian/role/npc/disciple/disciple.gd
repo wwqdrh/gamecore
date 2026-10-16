@@ -6,7 +6,7 @@ func _init() -> void:
 	display_name = "外门弟子"
 	role_name = "外门弟子"
 	timeline_path = "res://example/demo/xiuxian/role/npc/disciple/disciple_timeline.txt"
-	entry_stage = "disciple_talk"
+	entry_stage = ""  # 置空：入口选段交给 timeline gate 优先级扫描（entry 直达无条件兜底段会绕过门控）
 	npc_cell = Vector2i(23, 7)
 	ai_behavior = 2  # AI_PATROL 路径巡逻
 	patrol_cells = [

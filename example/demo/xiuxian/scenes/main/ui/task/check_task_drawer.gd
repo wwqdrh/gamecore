@@ -120,24 +120,26 @@ func _run() -> void:
 			# 条目数 = 子节点数 - 1（slot 模板）
 			var cnt := func(l: GdUIVList) -> int: return l.get_child_count() - 1
 			print("[Check] baseline avail=%d active=%d done=%d" % [cnt.call(avail_list), cnt.call(active_list), cnt.call(done_list)])
-			if int(cnt.call(avail_list)) != 11 or int(cnt.call(active_list)) != 0 or int(cnt.call(done_list)) != 0:
-				push_error("[Check] 基线应 11 条全进可接取目录、其余两页签为空")
+			# 基线可接取 = 无前置任务 4 条（main_101/side_102/daily_201/guild_201）；
+			# 有前置的 11 条（main_102~105、sect_tournament、side_101/103/104、
+			# main_201/202、bounty_201）不显示
+			if int(cnt.call(avail_list)) != 4 or int(cnt.call(active_list)) != 0 or int(cnt.call(done_list)) != 0:
+				push_error("[Check] 基线可接取目录应 4 条（无前置任务）、其余两页签为空")
 				ok = false
-			task.accept_task("main_001")
+			task.accept_task("main_101")
 			print("[Check] accepted avail=%d active=%d done=%d" % [cnt.call(avail_list), cnt.call(active_list), cnt.call(done_list)])
-			if int(cnt.call(avail_list)) != 10 or int(cnt.call(active_list)) != 1 or int(cnt.call(done_list)) != 0:
-				push_error("[Check] 接取后可接取应 10 条、进行中 1 条、已完成 0 条")
+			if int(cnt.call(avail_list)) != 3 or int(cnt.call(active_list)) != 1 or int(cnt.call(done_list)) != 0:
+				push_error("[Check] 接取后可接取应 3 条、进行中 1 条、已完成 0 条")
 				ok = false
-			for i in 3:
-				task.advance_task("main_001")
+			task.advance_task("main_101")
 			if int(cnt.call(active_list)) != 1 or int(cnt.call(done_list)) != 0:
 				push_error("[Check] 已完成待领取应留在进行中页签")
 				ok = false
-			task.complete_task("main_001")
+			task.complete_task("main_101")
 			print("[Check] submitted avail=%d active=%d done=%d" % [cnt.call(avail_list), cnt.call(active_list), cnt.call(done_list)])
-			# main_001 完成解锁后继 main_002（回填可接取目录）：10 保持不变
-			if int(cnt.call(avail_list)) != 10 or int(cnt.call(active_list)) != 0 or int(cnt.call(done_list)) != 1:
-				push_error("[Check] 领奖后应移入已完成页签，后继任务回填可接取目录")
+			# main_101 完成解锁后继 main_102/side_101（点亮进可接取目录）：3 → 5
+			if int(cnt.call(avail_list)) != 5 or int(cnt.call(active_list)) != 0 or int(cnt.call(done_list)) != 1:
+				push_error("[Check] 领奖后应移入已完成页签，后继任务点亮进可接取目录")
 				ok = false
 			# 还原基线，避免污染后续断言与其他测试
 			task.reset_demo()

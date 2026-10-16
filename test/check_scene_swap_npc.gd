@@ -29,14 +29,23 @@ func _initialize() -> void:
 		return
 	await _wait(10)  # 覆盖 call_deferred 的时间源接线帧
 
+	# 新档出生点是 xiuxian_home（2026-10-15 修正），NPC 内嵌在各城镇地图 tscn
+	# ——显式开 xiaozhai 后再查 NPC（open_map 属实机路径的一部分）
+	var cur_scene: Node = app.call("get_current_scene")
+	var mgr: Node = cur_scene.get_node_or_null("MapManager")
+	if mgr == null:
+		print("[SmokeSwap] FAIL: 找不到 MapManager")
+		quit(2)
+		return
+	mgr.call("open_map", "xiuxian_xiaozhai", Vector2i(10, 8))
+	await _wait(10)
+
 	var npcs := _find_npcs(app)
 	print("[SmokeSwap] npc_count=", npcs.size())
 	var wired := 0
 	var scheds := 0
-	var wm: Node = null
-	for c in root.get_children():
-		if c.get_class() == "GdWeatherManager":
-			wm = c
+	# WeatherManager 挂主场景根直下（不在组件表）——场景内取，勿查 root 直属
+	var wm: Node = cur_scene.get_node_or_null("WeatherManager")
 	print("[SmokeSwap] wm_hour=", wm.get_hour() if wm != null else "<无 WeatherManager>")
 	for npc in npcs:
 		var sch: Node = npc.get_node_or_null("Schedule")

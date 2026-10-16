@@ -1,0 +1,81 @@
+[gd_scene format=3 uid="uid://dralsx8w4ffg5"]
+
+[ext_resource type="Script" uid="uid://b4ipfenkr7nel" path="res://example/demo/xiuxian/scenes/main/ui/reward/reward_item.gd" id="1_0wi25"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5jhjb"]
+bg_color = Color(0.16470589, 0.14117648, 0.09411765, 0.8509804)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.7176471, 0.5882353, 0.2901961, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="RewardCell" type="Panel" unique_id=673601575]
+custom_minimum_size = Vector2(78, 96)
+size_flags_horizontal = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_5jhjb")
+script = ExtResource("1_0wi25")
+metadata/__tips_title = "{{tips_title}}"
+metadata/__tips = "{{tips}}"
+metadata/__script_vars = {}
+metadata/__gml_root = true
+metadata/__data_contract = PackedStringArray()
+
+[node name="IconBox" type="CenterContainer" parent="." unique_id=181763470]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 8.0
+offset_right = -5.0
+offset_bottom = -24.0
+mouse_filter = 2
+metadata/__anchor = "full"
+metadata/__script_vars = {}
+
+[node name="CellIcon" type="Label" parent="IconBox" unique_id=1950214287]
+layout_mode = 2
+metadata/__tpl_text = "icon"
+metadata/__tpl_keys = "text"
+
+[node name="CellTex" type="TextureRect" parent="IconBox" unique_id=2066437000]
+visible = false
+custom_minimum_size = Vector2(34, 34)
+layout_mode = 2
+mouse_filter = 2
+stretch_mode = 5
+
+[node name="NameLabel" type="Label" parent="." unique_id=1236500967]
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -30.0
+offset_right = -4.0
+offset_bottom = -3.0
+theme_override_colors/font_color = Color(0.84705883, 0.79607844, 0.65882355, 1)
+horizontal_alignment = 1
+metadata/__tpl_text = "name"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}
+
+[node name="CountLabel" type="Label" parent="." unique_id=689906000]
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+offset_right = -6.0
+offset_bottom = -2.0
+theme_override_colors/font_color = Color(0.9490196, 0.8901961, 0.72156864, 1)
+horizontal_alignment = 2
+metadata/__tpl_text = "count"
+metadata/__tpl_keys = "text"
+metadata/__anchor = "bottom_wide"
+metadata/__script_vars = {}

@@ -2,7 +2,7 @@
 extends EditorPlugin
 ## gamecore 编辑器插件
 ##   - 自动挂载 Lua 控制台面板（` 键呼出）
-##   - .gml 按纯文本方式打开/编辑（注册到 textfile_extensions）
+##   - .gml / .movie 按纯文本方式打开/编辑（注册到 textfile_extensions）
 ##   - 自动扫描项目中的 .gml，调用 Rust 侧 GdUiBuilder 构建并生成
 ##     同名 .gml.tscn（真实场景文件，可运行/可挂载）；.gml 修改后
 ##     对应 .gml.tscn 自动重新生成（GML 是唯一源码，tscn 是生成产物）
@@ -35,7 +35,7 @@ func _enter_tree():
 	# 清理编辑器布局中残留的 .gml "场景" 页签（旧版 loader 的工作流产物，
 	# 现在 .gml 是纯文本，作为场景重新打开会报 No loader found）
 	_cleanup_gml_open_scenes()
-	# .gml 按纯文本打开（编辑器可直接编辑源码）
+	# .gml / .movie 按纯文本打开（编辑器可直接编辑源码/剧本）
 	_register_gml_text_extension()
 
 
@@ -322,7 +322,9 @@ func _generate_gjson(json_path: String) -> bool:
 	return true
 
 
-## 把 gml 加入纯文本扩展（FileSystem 面板可见、双击用文本编辑器打开）。
+## 把框架纯文本格式加入 FileSystem 面板可见扩展（双击用文本编辑器打开）：
+##   · gml   —— UI 组件源码
+##   · movie —— 剧情演出剧本（行式 DSL，语法见 rust/src/movie/script.rs）
 ## 注意：gjson 不在纯文本扩展里——它是加密产物（密文无文本编辑意义），
 ## 双击按文本打开只会产生无效 UTF-8 错误日志；由 Rust 侧注册的
 ## ResourceFormatLoader（state/gjson_loader.rs）接管，双击以 GdJson 资源
@@ -344,9 +346,10 @@ func _register_gml_text_extension() -> void:
 	var parts := PackedStringArray()
 	for ext in extensions:
 		var e := String(ext).strip_edges()
-		if e != "" and e != "gml" and e != "gjson":
+		if e != "" and e != "gml" and e != "gjson" and e != "movie":
 			parts.append(e)
 	parts.append("gml")
+	parts.append("movie")
 	# 始终以 String 形式写回（4.6 引擎按 String 解析）
 	editor_settings.set_setting(setting_name, ",".join(parts))
 

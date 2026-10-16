@@ -84,6 +84,10 @@ func apply_task_rewards(task_id: String) -> Dictionary:
 	if stones != 0:
 		character.add_spirit_stones(stones)
 		summary["spirit_stones"] = stones
+	var coins := int(rewards.get("coins", 0))
+	if coins != 0:
+		character.add_coins(coins)
+		summary["coins"] = coins
 	task.set_task_status(task_id, XiuTaskState.STATUS_SUBMITTED)
 	return summary
 

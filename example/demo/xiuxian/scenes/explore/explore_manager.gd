@@ -40,7 +40,7 @@ var _retry_left := 0
 
 
 func _ready() -> void:
-	layer = 10
+	layer = XiuUILayers.FULLSCREEN
 	_make_toast()
 
 

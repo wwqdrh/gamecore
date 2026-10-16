@@ -107,7 +107,11 @@ func _lint_all() -> void:
 			for g in stages[sname]["gate"]:
 				var t: String = g.strip_edges().lstrip("!")
 				if t.begins_with("task_"):
-					var tid: String = t.trim_prefix("task_").trim_suffix("_accepted").trim_suffix("_done")
+					# 任务 flag 三态：_accepted / _done / _step<N>（advance 置）
+					var tid: String = t.trim_prefix("task_")
+					var re := RegEx.new()
+					re.compile("_(accepted|done|step\\d+)$")
+					tid = re.sub(tid, "", true)
 					_check(task_ids.has(tid),
 						"%s [%s] gate 引用任务存在: %s" % [rel, sname, tid])
 				elif ":" in t:
@@ -157,6 +161,10 @@ func _changed_flags(line: String) -> Array:
 		out.append("task_%s_accepted" % tid)
 	for tid in _extract_cmds(line, "task_complete"):
 		out.append("task_%s_done" % tid)
+	for tid in _extract_cmds(line, "task_advance"):
+		# 步级 flag 上界取不到 steps，按宽上界枚举（仅行函数场景，保守覆盖）
+		for i in range(1, 10):
+			out.append("task_%s_step%d" % [tid, i])
 	return out
 
 
@@ -178,8 +186,8 @@ func _dynamic() -> void:
 	root.add_child(dlg)
 	dlg.set_timeline_path(NPC_DIR + "elder/elder_timeline.txt")
 	var names := dlg.all_stages()
-	var want := ["elder_main4_final", "elder_main4", "elder_exam", "elder_exam2",
-		"elder_exam3", "elder_talk", "elder_guide", "elder_market", "elder_end"]
+	var want := ["elder_report", "elder_daily", "elder_talk",
+		"elder_guide", "elder_market", "elder_end"]
 	var got := {}
 	for n in names:
 		got[str(n)] = true
@@ -202,19 +210,19 @@ func _dynamic() -> void:
 
 	# 3. task_advance：未接取无效果，接取后推进
 	var ts := XiuTaskState.ins()
-	db.task_advance("main_004")
-	_check(ts.get_task_status("main_004") != ts.STATUS_ACCEPTED,
+	db.task_advance("main_105")
+	_check(ts.get_task_status("main_105") != ts.STATUS_ACCEPTED,
 		"task_advance 对未接取任务无效果")
 	ts.reset_demo()
-	ts.unlock_task("main_004")
-	ts.accept_task("main_004")
-	var step0 := int(ts.get_progress("main_004").get("step", 0))
-	db.task_advance("main_004")
-	var step1 := int(ts.get_progress("main_004").get("step", 1))
+	ts.unlock_task("main_105")
+	ts.accept_task("main_105")
+	var step0 := int(ts.get_progress("main_105").get("step", 0))
+	db.task_advance("main_105")
+	var step1 := int(ts.get_progress("main_105").get("step", 1))
 	_check(step1 == step0 + 1, "task_advance 已接取任务推进一步（%d→%d）" % [step0, step1])
 
 	# 4. task_status 门控查询
-	_check(db.task_status("main_004", "accepted"), "task_status 查询 accepted")
-	_check(not db.task_status("main_004", "completed"), "task_status 状态不符返回 false")
+	_check(db.task_status("main_105", "accepted"), "task_status 查询 accepted")
+	_check(not db.task_status("main_105", "completed"), "task_status 状态不符返回 false")
 	ts.reset_demo()
 	db.queue_free()

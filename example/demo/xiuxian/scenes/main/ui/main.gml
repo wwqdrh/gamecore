@@ -52,6 +52,13 @@
 		   content_margin="56" close_on_overlay="true" key_bind="escape">
 	  <Gml src="setting/settings_panel.gml" />
 	</Modal>
+	<!-- 任务领奖弹窗（ui/reward/）：complete_task 自动发奖后由面板 watch
+		 last_reward 自动弹出（黑色透明遮罩 + 居中标题/奖励格子/确认按钮）；
+		 close_on_overlay=false——必须点「确认」关闭，防误触遮罩丢展示 -->
+	<Modal name="TaskRewardModal" ui_id="TaskRewardModal" anchor="full"
+		   content_margin="40" close_on_overlay="false">
+	  <Gml src="reward/reward_panel.gml" />
+	</Modal>
 	<!-- 秘境结算弹窗已迁移至探索场景（scenes/explore/ui/explore.gml）：
 		 进入秘境 = 整场景切换，结算在 explore HUD 中展示，关闭后回主场景 -->
   </Control>

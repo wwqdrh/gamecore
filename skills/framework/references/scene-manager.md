@@ -50,6 +50,18 @@ scene_root.get_component_names()   # 已注册组件名列表（调试用）
 - **自动注册**：`ViewCamera`（GdSceneRoot ready 挂相机时）、`MapManager`
   （GdMapManager process 前几帧自动向场景根注册，兼容 GdScene 延迟创建
   默认管理器的时序；重试约 5 秒后放弃并告警）
+- **自动注销（2026-10-16）**：GdMapManager 在 `exit_tree` 自动清理两张表
+  ——场景根组件表用 `unregister_component_if(name, owner)` **条件注销**
+  （表内对象即自己才删，防「旧实例延迟注销误删新实例注册」的切场景竞态，
+  且对场景根只能 call_deferred——同步调会重入 do_swap_scene 的 bind_mut
+  panic）；GDCORE 全局节点表（manager_id 槽位）同步条件清理。
+  自定义组件仍须业务自觉注销。
+- **get_component 读取自愈（2026-10-16）**：登记对象已释放 → 框架侧清除
+  死引用并返回 null（打警告）。这是业务漏注销的兜底——**切场景间隙
+  get_component 不可能再返回 freed 实例**（GDScript 侧把 freed 实例赋给
+  `Node` 类型变量会报 "Trying to assign invalid previously freed instance"）。
+  UI 缓存组件引用（如 `_map_mgr` 成员）仍建议加悬垂自愈双保险：
+  `if ref != null and not is_instance_valid(ref): ref = null`。
 - 场景根 `manager_id` 非 "default" 时，GdMapManager 无法自动找到场景根，
   需装配侧显式 `register_component("MapManager", $MapManager)`
 - 查询时机注意：组件注册晚于子节点 ready（MapManager 靠 process 重试、

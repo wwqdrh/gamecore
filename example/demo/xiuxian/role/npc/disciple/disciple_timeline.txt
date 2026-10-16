@@ -2,31 +2,48 @@
 # 语法：[stage@标记] 舞台；(角色名) 说话人轮换；- 选项@动作；
 #       @函数:参数 调用对话 control 上的方法；:goto:stage 控制流
 #
-# 入口优先级：听闻失窃（theft_rumor）→ 令牌伏笔段（beat 6，置 token_clue）；
-# 日常指路兜底。段尾无 goto = 对话自然结束（本文件惯例）。
+# 入口优先级：main_104「坊市风声」第二步（theft_rumor 已置、令牌段未触发）
+# → 令牌线索收束后讲选拔规矩的日常段 → 指路兜底。段尾无 goto = 对话自然结束。
+# 红线：变更本段 gate 状态（token_clue / task 推进）必须写在选项动作里。
 
-[disciple_theft@theft_rumor;!token_clue]
+# ---- main_104 第二步：云纹令牌（置 token_clue——萧老爷真相段的前置线索） ----
+[disciple_main104@task_main_104_accepted;theft_rumor;!token_clue]
 (外门弟子,云舟)
-师兄听说了吗？昨晚执事堂遭贼！我夜里起来透风，瞧见一条黑影翻墙走了。
-那黑影袖口露出半块令牌——玄铁的，刻着云纹，可不像咱宗门的东西。
+师兄你也听说了？夜里透风，我瞧见那黑影翻墙走的——
+袖口露出半块令牌，玄铁的，刻着云纹，可不像咱宗门的东西。
 (云舟)
 云纹令牌……你看真切？
 (外门弟子)
-千真万确！哎，你可别说是我讲的。执事长老这几日脸色差得很，
-你去执事堂瞧瞧吧，八成正为这事犯愁呢。
-- （云纹……先去找执事长老）@set_flag:token_clue;goto:disciple_gate
+千真万确！执事堂这几日脸色差得很。哎，对了——
+七日后演武堂开宗门选拔，取前 10 名录入青云宗，你报了没？
+听说萧老爷给你递了荐书，考个斗者境进去，稳稳的前十！
+- （云纹……先回府禀明萧伯伯）@task_advance:main_104;set_flag:token_clue;goto:disciple_gate
 
+# 日常指路兜底（令牌线索已收束的玩家走这里）
 [disciple_talk]
 (外门弟子,云舟)
 师兄也是新来的吧？这座坊市我最熟！
+- 选拔的规矩讲讲？@goto:disciple_exam
 - 传送阵都在哪里？@goto:disciple_gate
 - 你怎么不去历练？@goto:disciple_lazy
+
+[disciple_exam]
+(外门弟子)
+宗门选拔，七年一回！演武堂擂台定名次，取前 10 录入青云宗外门。
+门槛是斗者境——先把修为攒够，突破不了说啥都白搭。
+:goto:disciple_end
 
 [disciple_gate]
 (外门弟子)
 东门出去是青草岭，北边小径通幽竹林。
 地图上发亮框的地方就是传送阵，站上去就能走。
+:goto:disciple_end
 
 [disciple_lazy]
 (外门弟子)
 咳，我这是……战略性地保存实力！等你从青草岭回来再聊。
+:goto:disciple_end
+
+[disciple_end]
+(外门弟子)
+往后常来！坊市里的事，问我就对了。

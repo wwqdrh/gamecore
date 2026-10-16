@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" path="res://example/demo/xiuxian/map/assets/crop_sheet.png" id="3_crop"]
 [ext_resource type="Script" path="res://example/demo/xiuxian/map/dig_save.gd" id="2DigSave"]
 [ext_resource type="Script" path="res://example/demo/xiuxian/map/home_pest.gd" id="4_pest"]
+[ext_resource type="Script" path="res://example/demo/xiuxian/map/home_farm_task.gd" id="5_farm"]
 
 [sub_resource type="GdCropDef" id="GdCropDef_veg"]
 id = "veg_green"
@@ -55,6 +56,9 @@ map_alias = "xiuxian_home"
 
 [node name="PestEvent" type="Node" parent="."]
 script = ExtResource("4_pest")
+
+[node name="FarmTaskEvent" type="Node" parent="."]
+script = ExtResource("5_farm")
 
 [node name="TeleportXiaozhai" type="GdMapMarker" parent="."]
 cell = Vector2i(19, 12)
