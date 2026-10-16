@@ -1,4 +1,4 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://ccyr10qi4l0fi"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vpgqp"]
 bg_color = Color(0.9647059, 0.9411765, 0.87058824, 1)
@@ -91,13 +91,13 @@ corner_radius_top_right = 16
 corner_radius_bottom_right = 16
 corner_radius_bottom_left = 16
 
-[node name="RealmPanel" type="Panel" unique_id=1640394962]
+[node name="RealmPanel" type="Panel" unique_id=2132708206]
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_vpgqp")
 metadata/__script_vars = {}
 metadata/__gml_root = true
 
-[node name="RealmColumn" type="VBoxContainer" parent="." unique_id=265813830]
+[node name="RealmColumn" type="VBoxContainer" parent="." unique_id=828522070]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -109,62 +109,62 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="RealmTitleRow" type="CenterContainer" parent="RealmColumn" unique_id=1610907511]
+[node name="RealmTitleRow" type="CenterContainer" parent="RealmColumn" unique_id=995646038]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="@HBoxContainer@618" type="HBoxContainer" parent="RealmColumn/RealmTitleRow" unique_id=179866246]
+[node name="@HBoxContainer@26338" type="HBoxContainer" parent="RealmColumn/RealmTitleRow" unique_id=1617685633]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="RealmNow" type="Label" parent="RealmColumn/RealmTitleRow/@HBoxContainer@618" unique_id=2024392817]
+[node name="RealmNow" type="Label" parent="RealmColumn/RealmTitleRow/@HBoxContainer@26338" unique_id=822167177]
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
 theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+theme_override_font_sizes/font_size = 20
 text = "炼气三层"
 vertical_alignment = 1
 
-[node name="@Control@616" type="Control" parent="RealmColumn/RealmTitleRow/@HBoxContainer@618" unique_id=2042876718]
+[node name="@Control@26336" type="Control" parent="RealmColumn/RealmTitleRow/@HBoxContainer@26338" unique_id=1969932591]
 custom_minimum_size = Vector2(10, 0)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="RealmArrow" type="Label" parent="RealmColumn/RealmTitleRow/@HBoxContainer@618" unique_id=1753505908]
+[node name="RealmArrow" type="Label" parent="RealmColumn/RealmTitleRow/@HBoxContainer@26338" unique_id=1808982002]
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
 theme_override_colors/font_color = Color(0.65882355, 0.26666668, 0.22745098, 1)
+theme_override_font_sizes/font_size = 20
 text = "→"
 vertical_alignment = 1
 
-[node name="@Control@617" type="Control" parent="RealmColumn/RealmTitleRow/@HBoxContainer@618" unique_id=1226891048]
+[node name="@Control@26337" type="Control" parent="RealmColumn/RealmTitleRow/@HBoxContainer@26338" unique_id=1648843012]
 custom_minimum_size = Vector2(10, 0)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="RealmNext" type="Label" parent="RealmColumn/RealmTitleRow/@HBoxContainer@618" unique_id=684231957]
+[node name="RealmNext" type="Label" parent="RealmColumn/RealmTitleRow/@HBoxContainer@26338" unique_id=805028214]
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
 theme_override_colors/font_color = Color(0.36862746, 0.5529412, 0.47843137, 1)
+theme_override_font_sizes/font_size = 20
 text = "炼气四层"
 vertical_alignment = 1
 
-[node name="@Control@619" type="Control" parent="RealmColumn" unique_id=1981477101]
+[node name="@Control@26339" type="Control" parent="RealmColumn" unique_id=1380511]
 custom_minimum_size = Vector2(0, 8)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="RingRow" type="CenterContainer" parent="RealmColumn" unique_id=781959585]
+[node name="RingRow" type="CenterContainer" parent="RealmColumn" unique_id=517675666]
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
 
-[node name="ProgressRing" type="Panel" parent="RealmColumn/RingRow" unique_id=1466089147]
+[node name="ProgressRing" type="Panel" parent="RealmColumn/RingRow" unique_id=236483467]
 custom_minimum_size = Vector2(160, 160)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_1smaj")
 
-[node name="RingInner" type="Panel" parent="RealmColumn/RingRow/ProgressRing" unique_id=981410457]
+[node name="RingInner" type="Panel" parent="RealmColumn/RingRow/ProgressRing" unique_id=315365342]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -176,52 +176,52 @@ mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_44sc2")
 metadata/__anchor = "full"
 
-[node name="RealmProgress" type="Label" parent="RealmColumn/RingRow/ProgressRing/RingInner" unique_id=530381261]
+[node name="RealmProgress" type="Label" parent="RealmColumn/RingRow/ProgressRing/RingInner" unique_id=1109831863]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_font_sizes/font_size = 34
 theme_override_colors/font_color = Color(0.24705882, 0.41960785, 0.34509805, 1)
+theme_override_font_sizes/font_size = 34
 text = "62%"
 horizontal_alignment = 1
 vertical_alignment = 1
 metadata/__anchor = "full"
 
-[node name="@Control@620" type="Control" parent="RealmColumn" unique_id=985557490]
+[node name="@Control@26340" type="Control" parent="RealmColumn" unique_id=1027107409]
 custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="BreakthroughRow" type="CenterContainer" parent="RealmColumn" unique_id=66728735]
+[node name="BreakthroughRow" type="CenterContainer" parent="RealmColumn" unique_id=1303360395]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="BreakthroughBtn" type="Button" parent="RealmColumn/BreakthroughRow" unique_id=866893787]
+[node name="BreakthroughBtn" type="Button" parent="RealmColumn/BreakthroughRow" unique_id=887456819]
 custom_minimum_size = Vector2(180, 52)
 layout_mode = 2
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
 theme_override_styles/normal = SubResource("StyleBoxFlat_orv2e")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_7wyml")
 theme_override_styles/hover = SubResource("StyleBoxFlat_d58k7")
-theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
 text = "突  破"
 metadata/__signal_pressed = "_on_breakthrough_pressed"
 
-[node name="@Control@621" type="Control" parent="RealmColumn" unique_id=1811642485]
+[node name="@Control@26341" type="Control" parent="RealmColumn" unique_id=1470646784]
 custom_minimum_size = Vector2(0, 8)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="MaterialRow" type="CenterContainer" parent="RealmColumn" unique_id=1916267227]
+[node name="MaterialRow" type="CenterContainer" parent="RealmColumn" unique_id=1092254990]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="MaterialChip" type="Panel" parent="RealmColumn/MaterialRow" unique_id=1066999304]
+[node name="MaterialChip" type="Panel" parent="RealmColumn/MaterialRow" unique_id=640280379]
 custom_minimum_size = Vector2(130, 40)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_q5ytj")
 
-[node name="MaterialChipRow" type="HBoxContainer" parent="RealmColumn/MaterialRow/MaterialChip" unique_id=632119479]
+[node name="MaterialChipRow" type="HBoxContainer" parent="RealmColumn/MaterialRow/MaterialChip" unique_id=1597666890]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -230,20 +230,20 @@ offset_right = -10.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="MaterialIcon" type="Label" parent="RealmColumn/MaterialRow/MaterialChip/MaterialChipRow" unique_id=1003599732]
+[node name="MaterialIcon" type="Label" parent="RealmColumn/MaterialRow/MaterialChip/MaterialChipRow" unique_id=1105332029]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "🟢"
 vertical_alignment = 1
 
-[node name="@Control@622" type="Control" parent="RealmColumn/MaterialRow/MaterialChip/MaterialChipRow" unique_id=697050729]
+[node name="@Control@26342" type="Control" parent="RealmColumn/MaterialRow/MaterialChip/MaterialChipRow" unique_id=1361641283]
 custom_minimum_size = Vector2(6, 0)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="MaterialText" type="Label" parent="RealmColumn/MaterialRow/MaterialChip/MaterialChipRow" unique_id=1831856326]
+[node name="MaterialText" type="Label" parent="RealmColumn/MaterialRow/MaterialChip/MaterialChipRow" unique_id=1061577251]
 layout_mode = 2
-theme_override_font_sizes/font_size = 15
 theme_override_colors/font_color = Color(0.41960785, 0.3529412, 0.24313726, 1)
+theme_override_font_sizes/font_size = 15
 text = "聚气丹 x5"
 vertical_alignment = 1

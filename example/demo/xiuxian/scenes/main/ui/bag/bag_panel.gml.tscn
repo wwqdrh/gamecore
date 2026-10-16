@@ -1,10 +1,10 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://3fo30fj21ytn"]
 
-[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/ui/bag/bag_panel.gd" id="1_72e87"]
-[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/ui/bag/bag_categories.gd" id="2_dxpfn"]
-[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/ui/bag/bag_grid.gd" id="3_715p6"]
-[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/ui/bag/bag_item.gd" id="4_yw5uq"]
-[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/ui/bag/bag_detail.gd" id="5_1ivjw"]
+[ext_resource type="Script" uid="uid://defxvw2ev5414" path="res://example/demo/xiuxian/scenes/main/ui/bag/bag_panel.gd" id="1_72e87"]
+[ext_resource type="Script" uid="uid://c1fkobnxcufcp" path="res://example/demo/xiuxian/scenes/main/ui/bag/bag_categories.gd" id="2_dxpfn"]
+[ext_resource type="Script" uid="uid://t5258loc0f1h" path="res://example/demo/xiuxian/scenes/main/ui/bag/bag_grid.gd" id="3_715p6"]
+[ext_resource type="Script" uid="uid://ev012igar36m" path="res://example/demo/xiuxian/scenes/main/ui/bag/bag_item.gd" id="4_yw5uq"]
+[ext_resource type="Script" uid="uid://bul8bbv28by60" path="res://example/demo/xiuxian/scenes/main/ui/bag/bag_detail.gd" id="5_1ivjw"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0hr80"]
 bg_color = Color(0.9411765, 0.9098039, 0.8235294, 1)
@@ -359,7 +359,7 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[node name="BagPanel" type="Panel" unique_id=576319650]
+[node name="BagPanel" type="Panel" unique_id=1263183169]
 anchor_right = 1.0
 anchor_bottom = 1.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_0hr80")
@@ -370,7 +370,7 @@ metadata/__script_vars = {}
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray()
 
-[node name="MainMargin" type="MarginContainer" parent="." unique_id=1711238258]
+[node name="MainMargin" type="MarginContainer" parent="." unique_id=1083415358]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -382,11 +382,11 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="MainColumn" type="VBoxContainer" parent="MainMargin" unique_id=817521786]
+[node name="MainColumn" type="VBoxContainer" parent="MainMargin" unique_id=1977065875]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="BagTopBar" type="Panel" parent="MainMargin/MainColumn" unique_id=1926887625]
+[node name="BagTopBar" type="Panel" parent="MainMargin/MainColumn" unique_id=203769176]
 custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 mouse_filter = 2
@@ -394,7 +394,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_a7d7t")
 metadata/__script_vars = {}
 metadata/__gml_root = true
 
-[node name="TopBarRow" type="HBoxContainer" parent="MainMargin/MainColumn/BagTopBar" unique_id=2146537205]
+[node name="TopBarRow" type="HBoxContainer" parent="MainMargin/MainColumn/BagTopBar" unique_id=550184958]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -406,13 +406,13 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@844" type="Panel" parent="MainMargin/MainColumn/BagTopBar/TopBarRow" unique_id=1743262188]
+[node name="@Panel@26077" type="Panel" parent="MainMargin/MainColumn/BagTopBar/TopBarRow" unique_id=1190334403]
 custom_minimum_size = Vector2(140, 40)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_s4dqp")
 
-[node name="@Label@843" type="Label" parent="MainMargin/MainColumn/BagTopBar/TopBarRow/@Panel@844" unique_id=1729356457]
+[node name="@Label@26076" type="Label" parent="MainMargin/MainColumn/BagTopBar/TopBarRow/@Panel@26077" unique_id=510275750]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -422,19 +422,19 @@ horizontal_alignment = 1
 vertical_alignment = 1
 metadata/__anchor = "full"
 
-[node name="@Control@845" type="Control" parent="MainMargin/MainColumn/BagTopBar/TopBarRow" unique_id=307523046]
+[node name="@Control@26078" type="Control" parent="MainMargin/MainColumn/BagTopBar/TopBarRow" unique_id=636659216]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="@Panel@849" type="Panel" parent="MainMargin/MainColumn/BagTopBar/TopBarRow" unique_id=204658421]
+[node name="@Panel@26082" type="Panel" parent="MainMargin/MainColumn/BagTopBar/TopBarRow" unique_id=1863149265]
 custom_minimum_size = Vector2(150, 36)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_nxw76")
 metadata/__tips_title = "灵石"
 metadata/__tips = "修真界通用的硬通货（💎），可在坊市购买丹药、法器与炼器材料。"
 
-[node name="@HBoxContainer@848" type="HBoxContainer" parent="MainMargin/MainColumn/BagTopBar/TopBarRow/@Panel@849" unique_id=199990890]
+[node name="@HBoxContainer@26081" type="HBoxContainer" parent="MainMargin/MainColumn/BagTopBar/TopBarRow/@Panel@26082" unique_id=831915282]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -445,31 +445,31 @@ offset_bottom = -4.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Label@846" type="Label" parent="MainMargin/MainColumn/BagTopBar/TopBarRow/@Panel@849/@HBoxContainer@848" unique_id=1464353200]
+[node name="@Label@26079" type="Label" parent="MainMargin/MainColumn/BagTopBar/TopBarRow/@Panel@26082/@HBoxContainer@26081" unique_id=1080596420]
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
 text = "💎"
 vertical_alignment = 1
 
-[node name="@Label@847" type="Label" parent="MainMargin/MainColumn/BagTopBar/TopBarRow/@Panel@849/@HBoxContainer@848" unique_id=338671559]
+[node name="@Label@26080" type="Label" parent="MainMargin/MainColumn/BagTopBar/TopBarRow/@Panel@26082/@HBoxContainer@26081" unique_id=388580469]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "12,800"
 vertical_alignment = 1
 
-[node name="@Control@850" type="Control" parent="MainMargin/MainColumn/BagTopBar/TopBarRow" unique_id=1435356360]
+[node name="@Control@26083" type="Control" parent="MainMargin/MainColumn/BagTopBar/TopBarRow" unique_id=2056071137]
 custom_minimum_size = Vector2(8, 0)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="@Panel@853" type="Panel" parent="MainMargin/MainColumn/BagTopBar/TopBarRow" unique_id=822802186]
+[node name="@Panel@26086" type="Panel" parent="MainMargin/MainColumn/BagTopBar/TopBarRow" unique_id=939031923]
 custom_minimum_size = Vector2(120, 36)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_5qhyv")
 metadata/__tips_title = "储物袋容量"
 metadata/__tips = "当前已用格数 / 储物袋总格数。装满后将无法拾取或购买新物品，可先出售或使用材料腾出空间。"
 
-[node name="@HBoxContainer@852" type="HBoxContainer" parent="MainMargin/MainColumn/BagTopBar/TopBarRow/@Panel@853" unique_id=619287348]
+[node name="@HBoxContainer@26085" type="HBoxContainer" parent="MainMargin/MainColumn/BagTopBar/TopBarRow/@Panel@26086" unique_id=1238004879]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -480,45 +480,45 @@ offset_bottom = -4.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Label@851" type="Label" parent="MainMargin/MainColumn/BagTopBar/TopBarRow/@Panel@853/@HBoxContainer@852" unique_id=1169128119]
+[node name="@Label@26084" type="Label" parent="MainMargin/MainColumn/BagTopBar/TopBarRow/@Panel@26086/@HBoxContainer@26085" unique_id=58521265]
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
 text = "👝"
 vertical_alignment = 1
 
-[node name="CapacityText" type="Label" parent="MainMargin/MainColumn/BagTopBar/TopBarRow/@Panel@853/@HBoxContainer@852" unique_id=1699880058]
+[node name="CapacityText" type="Label" parent="MainMargin/MainColumn/BagTopBar/TopBarRow/@Panel@26086/@HBoxContainer@26085" unique_id=255069485]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "86/120"
 vertical_alignment = 1
 
-[node name="@Control@854" type="Control" parent="MainMargin/MainColumn/BagTopBar/TopBarRow" unique_id=131120161]
+[node name="@Control@26087" type="Control" parent="MainMargin/MainColumn/BagTopBar/TopBarRow" unique_id=759989924]
 custom_minimum_size = Vector2(8, 0)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="CloseBtn" type="Button" parent="MainMargin/MainColumn/BagTopBar/TopBarRow" unique_id=556490704]
+[node name="CloseBtn" type="Button" parent="MainMargin/MainColumn/BagTopBar/TopBarRow" unique_id=616861399]
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 theme_override_styles/normal = SubResource("StyleBoxFlat_epfod")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_80roq")
 theme_override_styles/hover = SubResource("StyleBoxFlat_f40hw")
-theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "✕"
 metadata/__signal_pressed = "_on_close_pressed"
 
-[node name="@Control@855" type="Control" parent="MainMargin/MainColumn" unique_id=924063592]
+[node name="@Control@26088" type="Control" parent="MainMargin/MainColumn" unique_id=1590481144]
 custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="BodyRow" type="HBoxContainer" parent="MainMargin/MainColumn" unique_id=330544617]
+[node name="BodyRow" type="HBoxContainer" parent="MainMargin/MainColumn" unique_id=260057893]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 mouse_filter = 2
 
-[node name="CategoryPanel" type="Panel" parent="MainMargin/MainColumn/BodyRow" unique_id=231032347]
+[node name="CategoryPanel" type="Panel" parent="MainMargin/MainColumn/BodyRow" unique_id=65632129]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
@@ -529,7 +529,7 @@ metadata/__script_vars = {}
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray()
 
-[node name="CatColumn" type="VBoxContainer" parent="MainMargin/MainColumn/BodyRow/CategoryPanel" unique_id=1108651505]
+[node name="CatColumn" type="VBoxContainer" parent="MainMargin/MainColumn/BodyRow/CategoryPanel" unique_id=2023562257]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -541,14 +541,14 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CatAll" type="Panel" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn" unique_id=1784773964]
+[node name="CatAll" type="Panel" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn" unique_id=1988328492]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_aetnk")
 metadata/__signal_pressed = "_on_category"
 
-[node name="@HBoxContainer@858" type="HBoxContainer" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatAll" unique_id=1062752780]
+[node name="@HBoxContainer@26091" type="HBoxContainer" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatAll" unique_id=2039313928]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -557,26 +557,26 @@ offset_right = -8.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Label@856" type="Label" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatAll/@HBoxContainer@858" unique_id=1816493648]
+[node name="@Label@26089" type="Label" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatAll/@HBoxContainer@26091" unique_id=366926771]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "🔳"
 vertical_alignment = 1
 
-[node name="@Label@857" type="Label" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatAll/@HBoxContainer@858" unique_id=1158920820]
+[node name="@Label@26090" type="Label" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatAll/@HBoxContainer@26091" unique_id=1507184800]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "全部"
 vertical_alignment = 1
 
-[node name="CatTool" type="Panel" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn" unique_id=1598839433]
+[node name="CatTool" type="Panel" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn" unique_id=2134164486]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_5b6dp")
 metadata/__signal_pressed = "_on_category"
 
-[node name="@HBoxContainer@861" type="HBoxContainer" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatTool" unique_id=1770963624]
+[node name="@HBoxContainer@26094" type="HBoxContainer" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatTool" unique_id=1297632604]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -585,26 +585,26 @@ offset_right = -8.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Label@859" type="Label" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatTool/@HBoxContainer@861" unique_id=462866283]
+[node name="@Label@26092" type="Label" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatTool/@HBoxContainer@26094" unique_id=1125716296]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "🗡️"
 vertical_alignment = 1
 
-[node name="@Label@860" type="Label" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatTool/@HBoxContainer@861" unique_id=571647965]
+[node name="@Label@26093" type="Label" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatTool/@HBoxContainer@26094" unique_id=1756117180]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "法器"
 vertical_alignment = 1
 
-[node name="CatPill" type="Panel" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn" unique_id=33301161]
+[node name="CatPill" type="Panel" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn" unique_id=1120424171]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_j8qot")
 metadata/__signal_pressed = "_on_category"
 
-[node name="@HBoxContainer@864" type="HBoxContainer" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatPill" unique_id=1607665455]
+[node name="@HBoxContainer@26097" type="HBoxContainer" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatPill" unique_id=1535091818]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -613,26 +613,26 @@ offset_right = -8.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Label@862" type="Label" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatPill/@HBoxContainer@864" unique_id=802417799]
+[node name="@Label@26095" type="Label" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatPill/@HBoxContainer@26097" unique_id=1540956042]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "⚗️"
 vertical_alignment = 1
 
-[node name="@Label@863" type="Label" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatPill/@HBoxContainer@864" unique_id=1228655299]
+[node name="@Label@26096" type="Label" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatPill/@HBoxContainer@26097" unique_id=1165924857]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "丹药"
 vertical_alignment = 1
 
-[node name="CatMaterial" type="Panel" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn" unique_id=136086601]
+[node name="CatMaterial" type="Panel" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn" unique_id=1687053866]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_vlwvf")
 metadata/__signal_pressed = "_on_category"
 
-[node name="@HBoxContainer@867" type="HBoxContainer" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatMaterial" unique_id=579401350]
+[node name="@HBoxContainer@26100" type="HBoxContainer" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatMaterial" unique_id=1710561317]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -641,26 +641,26 @@ offset_right = -8.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Label@865" type="Label" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatMaterial/@HBoxContainer@867" unique_id=1962770510]
+[node name="@Label@26098" type="Label" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatMaterial/@HBoxContainer@26100" unique_id=568636045]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "🌿"
 vertical_alignment = 1
 
-[node name="@Label@866" type="Label" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatMaterial/@HBoxContainer@867" unique_id=1730692304]
+[node name="@Label@26099" type="Label" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatMaterial/@HBoxContainer@26100" unique_id=620788767]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "材料"
 vertical_alignment = 1
 
-[node name="CatTalisman" type="Panel" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn" unique_id=1020653173]
+[node name="CatTalisman" type="Panel" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn" unique_id=1278688647]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_43xhu")
 metadata/__signal_pressed = "_on_category"
 
-[node name="@HBoxContainer@870" type="HBoxContainer" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatTalisman" unique_id=1688924062]
+[node name="@HBoxContainer@26103" type="HBoxContainer" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatTalisman" unique_id=615384807]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -669,24 +669,24 @@ offset_right = -8.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Label@868" type="Label" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatTalisman/@HBoxContainer@870" unique_id=899258811]
+[node name="@Label@26101" type="Label" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatTalisman/@HBoxContainer@26103" unique_id=762863600]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "📜"
 vertical_alignment = 1
 
-[node name="@Label@869" type="Label" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatTalisman/@HBoxContainer@870" unique_id=1248772108]
+[node name="@Label@26102" type="Label" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn/CatTalisman/@HBoxContainer@26103" unique_id=813419116]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.2901961, 0.22745098, 0.13333334, 1)
 text = "符篆"
 vertical_alignment = 1
 
-[node name="@Control@871" type="Control" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn" unique_id=2142791247]
+[node name="@Control@26104" type="Control" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn" unique_id=1782832001]
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
 
-[node name="@Label@872" type="Label" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn" unique_id=1862404727]
+[node name="@Label@26105" type="Label" parent="MainMargin/MainColumn/BodyRow/CategoryPanel/CatColumn" unique_id=1616231882]
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6901961, 0.22745098, 0.18039216, 1)
@@ -694,12 +694,12 @@ text = "修
 仙"
 horizontal_alignment = 1
 
-[node name="@Control@873" type="Control" parent="MainMargin/MainColumn/BodyRow" unique_id=733338482]
+[node name="@Control@26106" type="Control" parent="MainMargin/MainColumn/BodyRow" unique_id=368214694]
 custom_minimum_size = Vector2(12, 0)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="GoodsPanel" type="Panel" parent="MainMargin/MainColumn/BodyRow" unique_id=1533196467]
+[node name="GoodsPanel" type="Panel" parent="MainMargin/MainColumn/BodyRow" unique_id=1910304576]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 4.0
@@ -713,7 +713,7 @@ metadata/__script_vars = {
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray()
 
-[node name="GoodsScroll" type="ScrollContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel" unique_id=1376359004]
+[node name="GoodsScroll" type="ScrollContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel" unique_id=629826985]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -726,7 +726,7 @@ metadata/__script_vars = {
 "category": ""
 }
 
-[node name="GoodsGrid" type="GdUIGrid" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll" unique_id=1209671092]
+[node name="GoodsGrid" type="GdUIGrid" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll" unique_id=2091468764]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/h_separation = 6
@@ -737,7 +737,7 @@ metadata/__filter_key = "category"
 metadata/__signal_s_click_item = "_on_item_clicked"
 metadata/__filter_value = ""
 
-[node name="BagCell" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=142047680]
+[node name="BagCell" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid" unique_id=600895742]
 visible = false
 custom_minimum_size = Vector2(58, 80)
 layout_mode = 2
@@ -747,9 +747,9 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_hi44w")
 script = ExtResource("4_yw5uq")
 metadata/__script_vars = {}
 metadata/__gml_root = true
-metadata/__data_contract = PackedStringArray("icon", "icon_texture", "count", "quality", "locked", "selected")
+metadata/__data_contract = PackedStringArray()
 
-[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/BagCell" unique_id=1137960672]
+[node name="RareFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/BagCell" unique_id=647577709]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -759,7 +759,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_xc5dy")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/BagCell" unique_id=235317559]
+[node name="IconBox" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/BagCell" unique_id=584104557]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -771,19 +771,19 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/BagCell/IconBox" unique_id=2062427837]
+[node name="CellIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/BagCell/IconBox" unique_id=1078538041]
 layout_mode = 2
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="CellTex" type="TextureRect" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/BagCell/IconBox" unique_id=186077260]
+[node name="CellTex" type="TextureRect" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/BagCell/IconBox" unique_id=1727555206]
 visible = false
 custom_minimum_size = Vector2(34, 34)
 layout_mode = 2
 mouse_filter = 2
 stretch_mode = 5
 
-[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/BagCell" unique_id=753035729]
+[node name="LockIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/BagCell" unique_id=1042203219]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -794,7 +794,7 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/BagCell" unique_id=954310817]
+[node name="CountLabel" type="Label" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/BagCell" unique_id=954566438]
 visible = false
 layout_mode = 0
 anchor_top = 1.0
@@ -810,7 +810,7 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/BagCell" unique_id=1798963063]
+[node name="SelectedFrame" type="Panel" parent="MainMargin/MainColumn/BodyRow/GoodsPanel/GoodsScroll/GoodsGrid/BagCell" unique_id=622795793]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -820,12 +820,12 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_bgmy0")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Control@876" type="Control" parent="MainMargin/MainColumn/BodyRow" unique_id=1615315783]
+[node name="@Control@26109" type="Control" parent="MainMargin/MainColumn/BodyRow" unique_id=1881750136]
 custom_minimum_size = Vector2(12, 0)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="DetailPanel" type="Panel" parent="MainMargin/MainColumn/BodyRow" unique_id=2118025484]
+[node name="DetailPanel" type="Panel" parent="MainMargin/MainColumn/BodyRow" unique_id=761751218]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 2.3
@@ -837,7 +837,7 @@ metadata/__script_vars = {}
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray()
 
-[node name="DetailColumn" type="VBoxContainer" parent="MainMargin/MainColumn/BodyRow/DetailPanel" unique_id=1347947390]
+[node name="DetailColumn" type="VBoxContainer" parent="MainMargin/MainColumn/BodyRow/DetailPanel" unique_id=164980670]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -849,12 +849,12 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Control@879" type="Control" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn" unique_id=1567322714]
+[node name="@Control@26112" type="Control" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn" unique_id=531371173]
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
 
-[node name="@CenterContainer@878" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn/@Control@879" unique_id=1591315082]
+[node name="@CenterContainer@26111" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn/@Control@26112" unique_id=515827882]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -863,13 +863,13 @@ offset_bottom = -10.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Panel@877" type="Panel" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn/@Control@879/@CenterContainer@878" unique_id=1144058291]
+[node name="@Panel@26110" type="Panel" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn/@Control@26112/@CenterContainer@26111" unique_id=247972387]
 custom_minimum_size = Vector2(120, 120)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_bjc3w")
 
-[node name="DetailIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn/@Control@879/@CenterContainer@878/@Panel@877" unique_id=997481579]
+[node name="DetailIcon" type="Label" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn/@Control@26112/@CenterContainer@26111/@Panel@26110" unique_id=1315778774]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -879,7 +879,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 metadata/__anchor = "full"
 
-[node name="SealText" type="Label" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn/@Control@879" unique_id=1311241750]
+[node name="SealText" type="Label" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn/@Control@26112" unique_id=1573595222]
 layout_mode = 0
 anchor_left = 1.0
 anchor_top = 1.0
@@ -891,23 +891,23 @@ theme_override_colors/font_color = Color(0.6901961, 0.22745098, 0.18039216, 1)
 text = "闲"
 metadata/__anchor = "bottom_right"
 
-[node name="DetailName" type="Label" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn" unique_id=187382144]
+[node name="DetailName" type="Label" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn" unique_id=1353918179]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
 text = "聚气丹"
 horizontal_alignment = 1
 
-[node name="@CenterContainer@881" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn" unique_id=956650225]
+[node name="@CenterContainer@26114" type="CenterContainer" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn" unique_id=239835019]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="@Panel@880" type="Panel" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn/@CenterContainer@881" unique_id=2039630980]
+[node name="@Panel@26113" type="Panel" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn/@CenterContainer@26114" unique_id=1091828520]
 custom_minimum_size = Vector2(64, 26)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_6hr43")
 
-[node name="QualityText" type="Label" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn/@CenterContainer@881/@Panel@880" unique_id=52645598]
+[node name="QualityText" type="Label" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn/@CenterContainer@26114/@Panel@26113" unique_id=1037983747]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -917,50 +917,50 @@ horizontal_alignment = 1
 vertical_alignment = 1
 metadata/__anchor = "full"
 
-[node name="DetailDesc" type="Label" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn" unique_id=684518548]
+[node name="DetailDesc" type="Label" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn" unique_id=1458303751]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_colors/font_color = Color(0.41960785, 0.3529412, 0.24313726, 1)
 text = "服用后可快速聚集天地灵气，提升修为。是修仙者常用的助修丹药。"
 horizontal_alignment = 1
 
-[node name="DetailSource" type="Label" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn" unique_id=153179593]
+[node name="DetailSource" type="Label" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn" unique_id=1920084755]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.5411765, 0.4509804, 0.3137255, 1)
 text = "📍 坊市购得"
 horizontal_alignment = 1
 
-[node name="@HBoxContainer@882" type="HBoxContainer" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn" unique_id=792527157]
+[node name="@HBoxContainer@26115" type="HBoxContainer" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn" unique_id=1464397642]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="UseBtn" type="Button" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn/@HBoxContainer@882" unique_id=1383245865]
+[node name="UseBtn" type="Button" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn/@HBoxContainer@26115" unique_id=899225510]
 custom_minimum_size = Vector2(120, 44)
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
 theme_override_styles/normal = SubResource("StyleBoxFlat_uj5qp")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_mvq5w")
 theme_override_styles/hover = SubResource("StyleBoxFlat_4gc10")
-theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
 text = "使  用"
 metadata/__signal_pressed = "_on_use_pressed"
 
-[node name="SellBtn" type="Button" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn/@HBoxContainer@882" unique_id=12016270]
+[node name="SellBtn" type="Button" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn/@HBoxContainer@26115" unique_id=737726847]
 custom_minimum_size = Vector2(72, 44)
 layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 theme_override_styles/normal = SubResource("StyleBoxFlat_h34n2")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_kpr15")
 theme_override_styles/hover = SubResource("StyleBoxFlat_m3dpj")
-theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "出售"
 metadata/__signal_pressed = "_on_sell_pressed"
 
-[node name="ComposeBtn" type="Button" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn/@HBoxContainer@882" unique_id=1704132933]
+[node name="ComposeBtn" type="Button" parent="MainMargin/MainColumn/BodyRow/DetailPanel/DetailColumn/@HBoxContainer@26115" unique_id=669653765]
 custom_minimum_size = Vector2(72, 44)
 layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 theme_override_styles/normal = SubResource("StyleBoxFlat_b10h6")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_jdgfn")
 theme_override_styles/hover = SubResource("StyleBoxFlat_ly1fy")
-theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "合成"
 metadata/__signal_pressed = "_on_compose_pressed"

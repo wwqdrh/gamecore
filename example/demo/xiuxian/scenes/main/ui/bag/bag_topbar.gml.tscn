@@ -1,4 +1,4 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://cqpicd776cq1t"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0g7hy"]
 bg_color = Color(0.18039216, 0.2901961, 0.22745098, 1)
@@ -76,14 +76,14 @@ corner_radius_top_right = 20
 corner_radius_bottom_right = 20
 corner_radius_bottom_left = 20
 
-[node name="BagTopBar" type="Panel" unique_id=1549974063]
+[node name="BagTopBar" type="Panel" unique_id=1070017858]
 custom_minimum_size = Vector2(0, 56)
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_0g7hy")
 metadata/__script_vars = {}
 metadata/__gml_root = true
 
-[node name="TopBarRow" type="HBoxContainer" parent="." unique_id=1075561374]
+[node name="TopBarRow" type="HBoxContainer" parent="." unique_id=34422786]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -95,13 +95,13 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Panel@884" type="Panel" parent="TopBarRow" unique_id=23223445]
+[node name="@Panel@26065" type="Panel" parent="TopBarRow" unique_id=1939875610]
 custom_minimum_size = Vector2(140, 40)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_vvaer")
 
-[node name="@Label@883" type="Label" parent="TopBarRow/@Panel@884" unique_id=1361736985]
+[node name="@Label@26064" type="Label" parent="TopBarRow/@Panel@26065" unique_id=2128618029]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -111,19 +111,19 @@ horizontal_alignment = 1
 vertical_alignment = 1
 metadata/__anchor = "full"
 
-[node name="@Control@885" type="Control" parent="TopBarRow" unique_id=317697681]
+[node name="@Control@26066" type="Control" parent="TopBarRow" unique_id=487859729]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="@Panel@889" type="Panel" parent="TopBarRow" unique_id=45381488]
+[node name="@Panel@26070" type="Panel" parent="TopBarRow" unique_id=1939562072]
 custom_minimum_size = Vector2(150, 36)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_osbgd")
 metadata/__tips_title = "灵石"
 metadata/__tips = "修真界通用的硬通货（💎），可在坊市购买丹药、法器与炼器材料。"
 
-[node name="@HBoxContainer@888" type="HBoxContainer" parent="TopBarRow/@Panel@889" unique_id=292421678]
+[node name="@HBoxContainer@26069" type="HBoxContainer" parent="TopBarRow/@Panel@26070" unique_id=675104944]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -134,31 +134,31 @@ offset_bottom = -4.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Label@886" type="Label" parent="TopBarRow/@Panel@889/@HBoxContainer@888" unique_id=854119938]
+[node name="@Label@26067" type="Label" parent="TopBarRow/@Panel@26070/@HBoxContainer@26069" unique_id=1830208711]
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
 text = "💎"
 vertical_alignment = 1
 
-[node name="@Label@887" type="Label" parent="TopBarRow/@Panel@889/@HBoxContainer@888" unique_id=267576574]
+[node name="@Label@26068" type="Label" parent="TopBarRow/@Panel@26070/@HBoxContainer@26069" unique_id=177647919]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "12,800"
 vertical_alignment = 1
 
-[node name="@Control@890" type="Control" parent="TopBarRow" unique_id=1017933705]
+[node name="@Control@26071" type="Control" parent="TopBarRow" unique_id=1882832934]
 custom_minimum_size = Vector2(8, 0)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="@Panel@893" type="Panel" parent="TopBarRow" unique_id=1293572088]
+[node name="@Panel@26074" type="Panel" parent="TopBarRow" unique_id=793973509]
 custom_minimum_size = Vector2(120, 36)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_m2ihb")
 metadata/__tips_title = "储物袋容量"
 metadata/__tips = "当前已用格数 / 储物袋总格数。装满后将无法拾取或购买新物品，可先出售或使用材料腾出空间。"
 
-[node name="@HBoxContainer@892" type="HBoxContainer" parent="TopBarRow/@Panel@893" unique_id=1202770311]
+[node name="@HBoxContainer@26073" type="HBoxContainer" parent="TopBarRow/@Panel@26074" unique_id=1186409543]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -169,29 +169,29 @@ offset_bottom = -4.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Label@891" type="Label" parent="TopBarRow/@Panel@893/@HBoxContainer@892" unique_id=1984159339]
+[node name="@Label@26072" type="Label" parent="TopBarRow/@Panel@26074/@HBoxContainer@26073" unique_id=692952232]
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
 text = "👝"
 vertical_alignment = 1
 
-[node name="CapacityText" type="Label" parent="TopBarRow/@Panel@893/@HBoxContainer@892" unique_id=703655380]
+[node name="CapacityText" type="Label" parent="TopBarRow/@Panel@26074/@HBoxContainer@26073" unique_id=1019771466]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "86/120"
 vertical_alignment = 1
 
-[node name="@Control@894" type="Control" parent="TopBarRow" unique_id=1519010201]
+[node name="@Control@26075" type="Control" parent="TopBarRow" unique_id=1654503533]
 custom_minimum_size = Vector2(8, 0)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="CloseBtn" type="Button" parent="TopBarRow" unique_id=130763076]
+[node name="CloseBtn" type="Button" parent="TopBarRow" unique_id=1476852892]
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 theme_override_styles/normal = SubResource("StyleBoxFlat_c1cm5")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_t7wmx")
 theme_override_styles/hover = SubResource("StyleBoxFlat_5wymg")
-theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "✕"
 metadata/__signal_pressed = "_on_close_pressed"

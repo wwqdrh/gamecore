@@ -10,6 +10,13 @@
 构建并保存为**同名 `.gml.tscn`**（真实场景文件，含完整节点树，可运行/可实例化/可挂载）：
 
 - `.gml` 保存后 1 秒内对应 `.gml.tscn` **自动重新生成**；若该 tscn 正打开在场景编辑器中会自动 reload
+- **引用传递重建（快照语义）**：`<Gml src>` 在构建期把子文件节点**内联快照**进父级
+  tscn（这样才有 `data-xxx` 具名注入：同一子文件多处引用各注入不同 `<script>` 变量），
+  所以子文件变了必须重建所有引用它的父级——插件维护引用依赖图
+  （`addons/gamecore/gml_deps.gd`，路径解析与 rust `resolve_include_path` 同规则），
+  改动文件按**反向索引传递展开**（多层级，改叶子 → 父级/祖父级全链重建），
+  正打开的祖先 tscn 一并 reload。编辑器启动首扫用"tscn vs 自身+传递依赖链最年轻 gml"
+  判新鲜（编辑器没开着时改子文件，下次启动自动补建上游），全鲜则零重建
 - **GML 是唯一源码，`.gml.tscn` 是生成产物**——不要手改 tscn，改动会在下次 gml 保存时被覆盖
 - GML 语法错误时只在输出面板报错（`[GmlAutoGen] xxx 生成失败: ...`），保留旧 tscn 不中断
 - 删除 `.gml` 前手动删掉对应 `.gml.tscn`（插件不做自动删除，防止误删手动挂载的引用）
@@ -615,6 +622,17 @@ func _ready() -> void:
    - 右上/右下角标 → `anchor="top_wide"/"bottom_wide"` + `align="right"` + 负 right margin
    - bottom_wide 贴底文字 → 负 top margin（如 `margin="14 -24 14 2"`，
      注意 Label 行高比 font_size 大，留余量）
+9. **GML 组件类必须 `#[class(..., tool)]`（godot-rust v0.6 前瞻告警）**：
+   编辑器插件 build_scene_file 在**编辑器上下文**实例化全部组件——非 tool 类
+   在 v0.6 会返回占位对象（不再是真实 Rust 实例），构建期属性/meta 应用与
+   tscn 直开预览都会劣化，并刷
+   `godot-rust v0.6 will change editor behavior for non-#[class(tool)] runtime classes`
+   告警。**新增组件一律带 tool**（现有 GdUIToast/GdUIBanner/GdUIFitLabel/
+   GdUITree/GdUITreeMenu/GdUIRichText/GdMiniMap/表单全家等均已标记）；
+   tool 后 ready() 会在编辑器执行——副作用必须幂等（如 Tree 从序列化行重建）。
+   误报压制的 env-var `GDRUST_SUPPRESSED_WARNINGS` 只用于临时屏蔽，勿当修复。
+   复现方法：headless 编辑器启动 + touch 一个引用该组件的 gml 叶子
+   （`godot --headless --editor --quit-after 600`，grep `v0.6 will change`）。
 
 ## Tree 树形组件（rust/src/ui/ui_tree.rs）
 

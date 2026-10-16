@@ -84,7 +84,7 @@ impl TreeNodeData {
 }
 
 #[derive(GodotClass)]
-#[class(base = Control)]
+#[class(base = Control, tool)]
 pub struct GdUITree {
     base: Base<Control>,
 

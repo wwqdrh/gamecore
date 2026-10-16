@@ -67,7 +67,7 @@ impl MenuNodeData {
 }
 
 #[derive(GodotClass)]
-#[class(base=Control)]
+#[class(base=Control, tool)]
 pub struct GdUITreeMenu {
     base: Base<Control>,
 

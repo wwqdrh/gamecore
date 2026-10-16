@@ -32,7 +32,7 @@ use godot::classes::{IRichTextLabel, RichTextLabel, FileAccess};
 use godot::prelude::*;
 
 #[derive(GodotClass)]
-#[class(base=RichTextLabel)]
+#[class(base=RichTextLabel, tool)]
 pub struct GdUIRichText {
     base: Base<RichTextLabel>,
 

@@ -1,6 +1,6 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://d2dalmdupp2sm"]
 
-[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/ui/bag/bag_item.gd" id="1_kp7oh"]
+[ext_resource type="Script" uid="uid://ev012igar36m" path="res://example/demo/xiuxian/scenes/main/ui/bag/bag_item.gd" id="1_kp7oh"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_attvk"]
 bg_color = Color(0.8745098, 0.9137255, 0.8, 1)
@@ -38,7 +38,7 @@ corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
-[node name="BagCell" type="Panel" unique_id=961883706]
+[node name="BagCell" type="Panel" unique_id=274550614]
 custom_minimum_size = Vector2(58, 80)
 size_flags_horizontal = 3
 mouse_filter = 2
@@ -46,9 +46,9 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_attvk")
 script = ExtResource("1_kp7oh")
 metadata/__script_vars = {}
 metadata/__gml_root = true
-metadata/__data_contract = PackedStringArray("icon", "icon_texture", "count", "quality", "locked", "selected")
+metadata/__data_contract = PackedStringArray()
 
-[node name="RareFrame" type="Panel" parent="." unique_id=525038934]
+[node name="RareFrame" type="Panel" parent="." unique_id=1995345086]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -58,7 +58,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_avd1i")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="IconBox" type="CenterContainer" parent="." unique_id=87665324]
+[node name="IconBox" type="CenterContainer" parent="." unique_id=1198136385]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -70,19 +70,19 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="IconBox" unique_id=239720962]
+[node name="CellIcon" type="Label" parent="IconBox" unique_id=890280583]
 layout_mode = 2
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="CellTex" type="TextureRect" parent="IconBox" unique_id=1651079850]
+[node name="CellTex" type="TextureRect" parent="IconBox" unique_id=211419138]
 visible = false
 custom_minimum_size = Vector2(34, 34)
 layout_mode = 2
 mouse_filter = 2
 stretch_mode = 5
 
-[node name="LockIcon" type="Label" parent="." unique_id=336958733]
+[node name="LockIcon" type="Label" parent="." unique_id=315497205]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -93,7 +93,7 @@ vertical_alignment = 1
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="." unique_id=1049456130]
+[node name="CountLabel" type="Label" parent="." unique_id=801777069]
 visible = false
 layout_mode = 0
 anchor_top = 1.0
@@ -109,7 +109,7 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="SelectedFrame" type="Panel" parent="." unique_id=1176972147]
+[node name="SelectedFrame" type="Panel" parent="." unique_id=1447440466]
 visible = false
 layout_mode = 0
 anchor_right = 1.0

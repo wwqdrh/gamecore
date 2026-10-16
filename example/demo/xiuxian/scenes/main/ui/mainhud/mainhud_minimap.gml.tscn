@@ -1,6 +1,6 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://o1sbrc57vyyv"]
 
-[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/ui/mainhud/mainhud_minimap.gd" id="1_4tfh7"]
+[ext_resource type="Script" uid="uid://mq4jb1vw3xic" path="res://example/demo/xiuxian/scenes/main/ui/mainhud/mainhud_minimap.gd" id="1_4tfh7"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_e58gu"]
 bg_color = Color(0.18039216, 0.2901961, 0.22745098, 1)
@@ -26,7 +26,7 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[node name="MiniMap" type="Panel" unique_id=2090902164]
+[node name="MiniMap" type="Panel" unique_id=1346898128]
 custom_minimum_size = Vector2(176, 150)
 mouse_default_cursor_shape = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_e58gu")
@@ -36,7 +36,7 @@ metadata/__script_vars = {}
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray()
 
-[node name="MapInner" type="Panel" parent="." unique_id=761962825]
+[node name="MapInner" type="Panel" parent="." unique_id=671893529]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -49,7 +49,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_oitia")
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="MiniMapView" type="GdMiniMap" parent="MapInner" unique_id=430442229]
+[node name="MiniMapView" type="GdMiniMap" parent="MapInner" unique_id=952774419]
 padding = 4.0
 show_names = false
 fit_current = true
@@ -63,7 +63,7 @@ offset_bottom = -2.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="NorthMark" type="Label" parent="MapInner" unique_id=1504571589]
+[node name="NorthMark" type="Label" parent="MapInner" unique_id=1104365372]
 layout_mode = 0
 anchor_right = 1.0
 offset_top = 4.0
@@ -73,7 +73,7 @@ text = "N"
 horizontal_alignment = 2
 metadata/__anchor = "top_wide"
 
-[node name="MapName" type="Label" parent="MapInner" unique_id=672085439]
+[node name="MapName" type="Label" parent="MapInner" unique_id=1820121398]
 layout_mode = 0
 anchor_top = 1.0
 anchor_right = 1.0

@@ -19,6 +19,9 @@ const GEN_NOTE := "[GmlAutoGen] .gml.tscn 由 .gml 自动生成，请勿手动�
 var _console_panel: CanvasLayer
 var _scan_timer: Timer
 var _gml_mtimes: Dictionary = {}
+## gml 引用依赖图（fwd: 父->[子]，rev: 子->[父]；缓存，源码可能变化时重建）
+var _gml_fwd: Dictionary = {}
+var _gml_rev: Dictionary = {}
 var _json_mtimes: Dictionary = {}
 
 
@@ -121,47 +124,87 @@ func _poll_generated_files() -> void:
 
 
 ## 轮询 .gml：收集项目内全部 .gml 文件，与上次 mtime 比对，
-## 对新增/修改的文件重新生成对应 .gml.tscn。有产物写入返回 true。
+## 对新增/修改的文件及其**所有传递引用者**（依赖图，含多层级）重建 .gml.tscn
+## （快照式构建：父级 tscn 内嵌子文件的节点快照，子文件变了必须重建父级）。
+## 有产物写入返回 true。
 func _poll_gml_files() -> bool:
 	var files := PackedStringArray()
 	_collect_files_by_ext("res://", "gml", files)
 
-	var changed: Array[String] = []
-	var seen := {}
+	# 依赖图缓存：文件集合或任一 mtime 变化时重建（图内容跟随源码，
+	# 而 mtime 变化正是源码可能变化的时机；轮询本身只读 mtime 零内容 IO）
+	var set_changed := files.size() != _gml_mtimes.size()
+	if not set_changed:
+		for path in files:
+			if not _gml_mtimes.has(path):
+				set_changed = true
+				break
+	var mtime_changed := false
 	for path in files:
-		seen[path] = true
 		var mtime := FileAccess.get_modified_time(path)
 		var last = _gml_mtimes.get(path)
+		if last != null and last != mtime:
+			mtime_changed = true
+			break
+	if set_changed or mtime_changed or _gml_fwd.is_empty():
+		_refresh_gml_graph(files)
+
+	# 检出本轮回更集合：
+	#   · 已知文件 mtime 变化（本轮编辑过）
+	#   · 首次见到（编辑器启动）：tscn 不新于自身+整条依赖链才重建
+	#     （覆盖编辑器没开着时改了子文件、下次启动补建父级/祖父级的场景；
+	#      新鲜则跳过，避免每次启动全量重建）
+	var changed: Array[String] = []
+	for path in files:
+		var mtime := FileAccess.get_modified_time(path)
+		var last = _gml_mtimes.get(path)
+		_gml_mtimes[path] = mtime
 		if last == null:
-			# 编辑器首次扫描：tscn 已存在且不旧于 gml 时跳过，避免每次启动全量重建
-			_gml_mtimes[path] = mtime
-			if _is_tscn_fresh(path):
-				continue
-			changed.append(path)
+			if not _is_closure_fresh(path):
+				changed.append(path)
 		elif last != mtime:
-			_gml_mtimes[path] = mtime
 			changed.append(path)
 
 	# .gml 被删除时清理对应的生成物
 	for path in _gml_mtimes.keys():
-		if not seen.has(path):
+		if not files.has(path):
 			_gml_mtimes.erase(path)
 
 	if changed.is_empty():
 		return false
 
+	# 传递展开引用闭包（changed + 所有上游引用者，含多层级）
+	var to_build := GmlDeps.expand_dependents(changed, _gml_rev)
+
 	var saved := false
-	for path in changed:
+	for path in to_build:
 		if _generate_tscn(path):
 			saved = true
 	if saved:
 		# .gml.tscn 若正打开在场景编辑器中，重新加载以反映最新结构
 		var open_scenes := EditorInterface.get_open_scenes()
-		for path in changed:
+		for path in to_build:
 			var tscn_path: String = path + ".tscn"
 			if tscn_path in open_scenes:
 				EditorInterface.reload_scene_from_path(tscn_path)
 	return saved
+
+
+## 重建 gml 依赖图（读全部 gml 源码——仅在集合/内容可能变化时触发）
+func _refresh_gml_graph(files: PackedStringArray) -> void:
+	var graph := GmlDeps.build_graph(files)
+	_gml_fwd = graph[0]
+	_gml_rev = graph[1]
+
+
+## 对应 .gml.tscn 是否不旧于自身 + 整条传递依赖链上最年轻的 gml
+## （父级 tscn 内嵌子文件快照，子文件更新则父级视为过期）
+func _is_closure_fresh(gml_path: String) -> bool:
+	var tscn_path := gml_path + ".tscn"
+	if not FileAccess.file_exists(tscn_path):
+		return false
+	var tscn_mtime := FileAccess.get_modified_time(tscn_path)
+	return tscn_mtime >= GmlDeps.closure_max_mtime(gml_path, _gml_fwd)
 
 
 ## 用 DirAccess 递归收集指定扩展名文件（res:// 绝对路径）
@@ -181,14 +224,6 @@ func _collect_files_by_ext(dir_path: String, ext: String, out: PackedStringArray
 			out.append(dir_path.path_join(name))
 		name = dir.get_next()
 	dir.list_dir_end()
-
-
-## 对应 .gml.tscn 是否存在且不旧于 .gml（首次扫描用于跳过未变更文件）
-func _is_tscn_fresh(gml_path: String) -> bool:
-	var tscn_path := gml_path + ".tscn"
-	if not FileAccess.file_exists(tscn_path):
-		return false
-	return FileAccess.get_modified_time(tscn_path) >= FileAccess.get_modified_time(gml_path)
 
 
 ## 构建 .gml 并保存为同名 .gml.tscn，成功返回 true

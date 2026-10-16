@@ -1,6 +1,6 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://bccugqjncycy4"]
 
-[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/ui/profile/skill_item.gd" id="1_voubx"]
+[ext_resource type="Script" uid="uid://qxl64qh8gm52" path="res://example/demo/xiuxian/scenes/main/ui/profile/skill_item.gd" id="1_voubx"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jftva"]
 bg_color = Color(0.9372549, 0.9019608, 0.8039216, 1)
@@ -69,16 +69,16 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[node name="SkillItemRoot" type="Panel" unique_id=1188487659]
+[node name="SkillItemRoot" type="Panel" unique_id=174714125]
 custom_minimum_size = Vector2(0, 72)
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_jftva")
 script = ExtResource("1_voubx")
 metadata/__script_vars = {}
 metadata/__gml_root = true
-metadata/__data_contract = PackedStringArray("icon", "title", "level", "btn_text", "locked")
+metadata/__data_contract = PackedStringArray()
 
-[node name="SkillMargin" type="MarginContainer" parent="." unique_id=1032209417]
+[node name="SkillMargin" type="MarginContainer" parent="." unique_id=1892971688]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -90,18 +90,18 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="SkillRow" type="HBoxContainer" parent="SkillMargin" unique_id=2085937297]
+[node name="SkillRow" type="HBoxContainer" parent="SkillMargin" unique_id=1633781907]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="SkillIconBg" type="Panel" parent="SkillMargin/SkillRow" unique_id=143546879]
+[node name="SkillIconBg" type="Panel" parent="SkillMargin/SkillRow" unique_id=1742500682]
 custom_minimum_size = Vector2(52, 52)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_4qs8b")
 
-[node name="SkillIcon" type="Label" parent="SkillMargin/SkillRow/SkillIconBg" unique_id=1561207016]
+[node name="SkillIcon" type="Label" parent="SkillMargin/SkillRow/SkillIconBg" unique_id=449365208]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -112,44 +112,44 @@ metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 metadata/__anchor = "full"
 
-[node name="@Control@653" type="Control" parent="SkillMargin/SkillRow" unique_id=1307255723]
+[node name="@Control@25762" type="Control" parent="SkillMargin/SkillRow" unique_id=785026770]
 custom_minimum_size = Vector2(10, 0)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="SkillInfo" type="VBoxContainer" parent="SkillMargin/SkillRow" unique_id=743771467]
+[node name="SkillInfo" type="VBoxContainer" parent="SkillMargin/SkillRow" unique_id=1612360547]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 mouse_filter = 2
 
-[node name="SkillTitle" type="Label" parent="SkillMargin/SkillRow/SkillInfo" unique_id=1954929186]
+[node name="SkillTitle" type="Label" parent="SkillMargin/SkillRow/SkillInfo" unique_id=518373774]
 layout_mode = 2
-theme_override_font_sizes/font_size = 17
 theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
+theme_override_font_sizes/font_size = 17
 metadata/__tpl_text = "title"
 metadata/__tpl_keys = "text"
 
-[node name="SkillLevel" type="Label" parent="SkillMargin/SkillRow/SkillInfo" unique_id=744352281]
+[node name="SkillLevel" type="Label" parent="SkillMargin/SkillRow/SkillInfo" unique_id=605496403]
 layout_mode = 2
-theme_override_font_sizes/font_size = 13
 theme_override_colors/font_color = Color(0.5411765, 0.47843137, 0.34509805, 1)
+theme_override_font_sizes/font_size = 13
 metadata/__tpl_text = "level"
 metadata/__tpl_keys = "text"
 
-[node name="@Control@654" type="Control" parent="SkillMargin/SkillRow" unique_id=1053179671]
+[node name="@Control@25763" type="Control" parent="SkillMargin/SkillRow" unique_id=1048784194]
 custom_minimum_size = Vector2(8, 0)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="SkillBtn" type="Button" parent="SkillMargin/SkillRow" unique_id=888344125]
+[node name="SkillBtn" type="Button" parent="SkillMargin/SkillRow" unique_id=483229813]
 custom_minimum_size = Vector2(76, 40)
 layout_mode = 2
 size_flags_vertical = 4
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
 theme_override_styles/normal = SubResource("StyleBoxFlat_y0gvr")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_ofkvo")
 theme_override_styles/hover = SubResource("StyleBoxFlat_pdtlo")
-theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
 metadata/__tpl_text = "btn_text"
 metadata/__tpl_keys = "text"
 metadata/__signal_pressed = "_on_skill_action"

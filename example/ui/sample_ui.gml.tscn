@@ -1,4 +1,4 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://c354dtqft4y2i"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8tsbr"]
 content_margin_left = 20.0
@@ -11,114 +11,123 @@ corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
-[node name="" type="VBoxContainer" unique_id=564261115]
+[node name="" type="VBoxContainer" unique_id=705929800]
 anchor_right = 1.0
 anchor_bottom = 1.0
+mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__pct_margin = "2%"
 metadata/__script_vars = {}
+metadata/__gml_root = true
 
-[node name="@Label@110" type="Label" parent="." unique_id=972955937]
+[node name="@Label@25754" type="Label" parent="." unique_id=776394073]
 layout_mode = 2
-theme_override_font_sizes/font_size = 28
 theme_override_colors/font_color = Color(0.22745098, 0.1764706, 0.36078432, 1)
+theme_override_font_sizes/font_size = 28
 text = "从 .gml 文件加载的 UI"
 horizontal_alignment = 1
 metadata/__script_vars = {}
 
-[node name="@HSeparator@111" type="HSeparator" parent="." unique_id=909127966]
+[node name="@HSeparator@25755" type="HSeparator" parent="." unique_id=1633757041]
 layout_mode = 2
+mouse_filter = 2
 metadata/__script_vars = {}
 
-[node name="@Panel@119" type="Panel" parent="." unique_id=2117380906]
+[node name="@Panel@25763" type="Panel" parent="." unique_id=381348337]
 layout_mode = 2
+mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_8tsbr")
 metadata/__pct_size = "60%,30%"
 metadata/__script_vars = {}
 
-[node name="@MarginContainer@118" type="MarginContainer" parent="@Panel@119" unique_id=98660214]
+[node name="@MarginContainer@25762" type="MarginContainer" parent="@Panel@25763" unique_id=1235093062]
 layout_mode = 0
+mouse_filter = 2
 
-[node name="@VBoxContainer@117" type="VBoxContainer" parent="@Panel@119/@MarginContainer@118" unique_id=601551270]
+[node name="@VBoxContainer@25761" type="VBoxContainer" parent="@Panel@25763/@MarginContainer@25762" unique_id=1405880908]
 layout_mode = 2
+mouse_filter = 2
 
-[node name="@Label@112" type="Label" parent="@Panel@119/@MarginContainer@118/@VBoxContainer@117" unique_id=532918596]
+[node name="@Label@25756" type="Label" parent="@Panel@25763/@MarginContainer@25762/@VBoxContainer@25761" unique_id=1207387292]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.22745098, 0.1764706, 0.36078432, 1)
 text = "这是一个从外部文件加载的 UI 布局"
 
-[node name="@Label@113" type="Label" parent="@Panel@119/@MarginContainer@118/@VBoxContainer@117" unique_id=1056341944]
+[node name="@Label@25757" type="Label" parent="@Panel@25763/@MarginContainer@25762/@VBoxContainer@25761" unique_id=1026569121]
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
 theme_override_colors/font_color = Color(0.22745098, 0.1764706, 0.36078432, 1)
+theme_override_font_sizes/font_size = 14
 text = "使用 ui_builder.parse_file() 加载"
 
-[node name="@HBoxContainer@116" type="HBoxContainer" parent="@Panel@119/@MarginContainer@118/@VBoxContainer@117" unique_id=1809727553]
+[node name="@HBoxContainer@25760" type="HBoxContainer" parent="@Panel@25763/@MarginContainer@25762/@VBoxContainer@25761" unique_id=610158170]
 layout_mode = 2
+mouse_filter = 2
 
-[node name="@Button@114" type="Button" parent="@Panel@119/@MarginContainer@118/@VBoxContainer@117/@HBoxContainer@116" unique_id=1091000955]
+[node name="@Button@25758" type="Button" parent="@Panel@25763/@MarginContainer@25762/@VBoxContainer@25761/@HBoxContainer@25760" unique_id=1061255357]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 text = "确认"
 metadata/__signal_pressed = "_on_confirm"
 
-[node name="@Button@115" type="Button" parent="@Panel@119/@MarginContainer@118/@VBoxContainer@117/@HBoxContainer@116" unique_id=1936027194]
+[node name="@Button@25759" type="Button" parent="@Panel@25763/@MarginContainer@25762/@VBoxContainer@25761/@HBoxContainer@25760" unique_id=2123580616]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 text = "取消"
 metadata/__signal_pressed = "_on_cancel"
 
-[node name="@HSeparator@120" type="HSeparator" parent="." unique_id=1174130838]
+[node name="@HSeparator@25764" type="HSeparator" parent="." unique_id=760285132]
 layout_mode = 2
+mouse_filter = 2
 metadata/__script_vars = {}
 
-[node name="@Label@121" type="Label" parent="." unique_id=639096581]
+[node name="@Label@25765" type="Label" parent="." unique_id=1039511140]
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.22745098, 0.1764706, 0.36078432, 1)
+theme_override_font_sizes/font_size = 18
 text = "水平列表"
 metadata/__script_vars = {}
 
-[node name="@GdUIHList@125" type="GdUIHList" parent="." unique_id=1879056683]
+[node name="@GdUIHList@25769" type="GdUIHList" parent="." unique_id=2091485988]
 count = 4
 highlight_mode = 1
 highlight_color = Color(1, 1, 0, 1)
 layout_mode = 2
 metadata/__script_vars = {}
 
-[node name="@Button@122" type="Button" parent="@GdUIHList@125" unique_id=189035270]
+[node name="@Button@25766" type="Button" parent="@GdUIHList@25769" unique_id=1251490601]
 visible = false
 layout_mode = 2
 text = "Slot"
 metadata/__pct_min_size = "10%,5%"
 
-[node name="_Button_122" type="Button" parent="@GdUIHList@125" unique_id=930312641]
+[node name="_Button_25766" type="Button" parent="@GdUIHList@25769" unique_id=834792317]
 layout_mode = 2
 text = "Slot"
 metadata/__pct_min_size = "10%,5%"
 
-[node name="@Button@123" type="Button" parent="@GdUIHList@125" unique_id=2142967282]
+[node name="@Button@25767" type="Button" parent="@GdUIHList@25769" unique_id=726996405]
 layout_mode = 2
 text = "Slot"
 metadata/__pct_min_size = "10%,5%"
 
-[node name="@Button@124" type="Button" parent="@GdUIHList@125" unique_id=1137443251]
+[node name="@Button@25768" type="Button" parent="@GdUIHList@25769" unique_id=958159499]
 layout_mode = 2
 text = "Slot"
 metadata/__pct_min_size = "10%,5%"
 
-[node name="@HSeparator@126" type="HSeparator" parent="." unique_id=1401961123]
+[node name="@HSeparator@25770" type="HSeparator" parent="." unique_id=1231725148]
 layout_mode = 2
+mouse_filter = 2
 metadata/__script_vars = {}
 
-[node name="@Label@127" type="Label" parent="." unique_id=1473224102]
+[node name="@Label@25771" type="Label" parent="." unique_id=1951404943]
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.22745098, 0.1764706, 0.36078432, 1)
+theme_override_font_sizes/font_size = 18
 text = "网格列表"
 metadata/__script_vars = {}
 
-[node name="@GdUIGrid@134" type="GdUIGrid" parent="." unique_id=1272235751]
+[node name="@GdUIGrid@25778" type="GdUIGrid" parent="." unique_id=1740927946]
 count = 6
 highlight_mode = 1
 highlight_color = Color(1, 0.53333336, 0, 1)
@@ -126,93 +135,100 @@ layout_mode = 2
 columns = 3
 metadata/__script_vars = {}
 
-[node name="@Panel@129" type="Panel" parent="@GdUIGrid@134" unique_id=2009432690]
+[node name="@Panel@25773" type="Panel" parent="@GdUIGrid@25778" unique_id=99631774]
 visible = false
 layout_mode = 2
+mouse_filter = 2
 metadata/__pct_min_size = "10%,10%"
 
-[node name="@MarginContainer@128" type="MarginContainer" parent="@GdUIGrid@134/@Panel@129" unique_id=461777904]
+[node name="@MarginContainer@25772" type="MarginContainer" parent="@GdUIGrid@25778/@Panel@25773" unique_id=585495515]
 layout_mode = 0
 offset_left = 5.0
 offset_top = 5.0
 offset_right = -5.0
 offset_bottom = -5.0
+mouse_filter = 2
 
-[node name="GLabel" type="Label" parent="@GdUIGrid@134/@Panel@129/@MarginContainer@128" unique_id=1557509380]
+[node name="GLabel" type="Label" parent="@GdUIGrid@25778/@Panel@25773/@MarginContainer@25772" unique_id=626548271]
 layout_mode = 2
 text = "Grid"
 
-[node name="_Panel_129" type="Panel" parent="@GdUIGrid@134" unique_id=1397146423]
+[node name="_Panel_25773" type="Panel" parent="@GdUIGrid@25778" unique_id=1363546067]
 layout_mode = 2
 metadata/__pct_min_size = "10%,10%"
 
-[node name="_MarginContainer_128" type="MarginContainer" parent="@GdUIGrid@134/_Panel_129" unique_id=1592073469]
+[node name="_MarginContainer_25772" type="MarginContainer" parent="@GdUIGrid@25778/_Panel_25773" unique_id=73301621]
 layout_mode = 0
 offset_left = 5.0
 offset_top = 5.0
 offset_right = -5.0
 offset_bottom = -5.0
+mouse_filter = 2
 
-[node name="GLabel" type="Label" parent="@GdUIGrid@134/_Panel_129/_MarginContainer_128" unique_id=1184845052]
+[node name="GLabel" type="Label" parent="@GdUIGrid@25778/_Panel_25773/_MarginContainer_25772" unique_id=347477267]
 layout_mode = 2
 text = "Grid"
 
-[node name="@Panel@130" type="Panel" parent="@GdUIGrid@134" unique_id=1965475320]
+[node name="@Panel@25774" type="Panel" parent="@GdUIGrid@25778" unique_id=548198941]
 layout_mode = 2
 metadata/__pct_min_size = "10%,10%"
 
-[node name="_MarginContainer_128" type="MarginContainer" parent="@GdUIGrid@134/@Panel@130" unique_id=1029789733]
+[node name="_MarginContainer_25772" type="MarginContainer" parent="@GdUIGrid@25778/@Panel@25774" unique_id=447234514]
 layout_mode = 0
 offset_left = 5.0
 offset_top = 5.0
 offset_right = -5.0
 offset_bottom = -5.0
+mouse_filter = 2
 
-[node name="GLabel" type="Label" parent="@GdUIGrid@134/@Panel@130/_MarginContainer_128" unique_id=1024244909]
+[node name="GLabel" type="Label" parent="@GdUIGrid@25778/@Panel@25774/_MarginContainer_25772" unique_id=984529552]
 layout_mode = 2
 text = "Grid"
 
-[node name="@Panel@131" type="Panel" parent="@GdUIGrid@134" unique_id=799131081]
+[node name="@Panel@25775" type="Panel" parent="@GdUIGrid@25778" unique_id=108518780]
 layout_mode = 2
 metadata/__pct_min_size = "10%,10%"
 
-[node name="_MarginContainer_128" type="MarginContainer" parent="@GdUIGrid@134/@Panel@131" unique_id=1183741250]
+[node name="_MarginContainer_25772" type="MarginContainer" parent="@GdUIGrid@25778/@Panel@25775" unique_id=1966385296]
 layout_mode = 0
 offset_left = 5.0
 offset_top = 5.0
 offset_right = -5.0
 offset_bottom = -5.0
+mouse_filter = 2
 
-[node name="GLabel" type="Label" parent="@GdUIGrid@134/@Panel@131/_MarginContainer_128" unique_id=863251178]
+[node name="GLabel" type="Label" parent="@GdUIGrid@25778/@Panel@25775/_MarginContainer_25772" unique_id=746026807]
 layout_mode = 2
 text = "Grid"
 
-[node name="@Panel@132" type="Panel" parent="@GdUIGrid@134" unique_id=1459133886]
+[node name="@Panel@25776" type="Panel" parent="@GdUIGrid@25778" unique_id=719912211]
 layout_mode = 2
 metadata/__pct_min_size = "10%,10%"
 
-[node name="_MarginContainer_128" type="MarginContainer" parent="@GdUIGrid@134/@Panel@132" unique_id=828517927]
+[node name="_MarginContainer_25772" type="MarginContainer" parent="@GdUIGrid@25778/@Panel@25776" unique_id=943276846]
 layout_mode = 0
 offset_left = 5.0
 offset_top = 5.0
 offset_right = -5.0
 offset_bottom = -5.0
+mouse_filter = 2
 
-[node name="GLabel" type="Label" parent="@GdUIGrid@134/@Panel@132/_MarginContainer_128" unique_id=1544093439]
+[node name="GLabel" type="Label" parent="@GdUIGrid@25778/@Panel@25776/_MarginContainer_25772" unique_id=509942660]
 layout_mode = 2
 text = "Grid"
 
-[node name="@Panel@133" type="Panel" parent="@GdUIGrid@134" unique_id=186408044]
+[node name="@Panel@25777" type="Panel" parent="@GdUIGrid@25778" unique_id=1320457909]
 layout_mode = 2
 metadata/__pct_min_size = "10%,10%"
 
-[node name="_MarginContainer_128" type="MarginContainer" parent="@GdUIGrid@134/@Panel@133" unique_id=2014182377]
+[node name="_MarginContainer_25772" type="MarginContainer" parent="@GdUIGrid@25778/@Panel@25777" unique_id=1402169945]
 layout_mode = 0
 offset_left = 5.0
 offset_top = 5.0
 offset_right = -5.0
 offset_bottom = -5.0
+mouse_filter = 2
 
-[node name="GLabel" type="Label" parent="@GdUIGrid@134/@Panel@133/_MarginContainer_128" unique_id=1097343784]
+[node name="GLabel" type="Label" parent="@GdUIGrid@25778/@Panel@25777/_MarginContainer_25772" unique_id=1101257474]
 layout_mode = 2
 text = "Grid"

@@ -1,6 +1,6 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://dotemhqhxcihn"]
 
-[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/ui/level/level_panel.gd" id="1_ctxqp"]
+[ext_resource type="Script" uid="uid://bpikyxa8w3384" path="res://example/demo/xiuxian/scenes/main/ui/level/level_panel.gd" id="1_ctxqp"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_66feg"]
 bg_color = Color(0.9411765, 0.9098039, 0.8235294, 1)
@@ -391,7 +391,7 @@ corner_radius_bottom_left = 8
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rik32"]
 bg_color = Color(0, 0, 0, 0)
 
-[node name="LevelPanel" type="Panel" unique_id=570680983]
+[node name="LevelPanel" type="Panel" unique_id=1848533445]
 anchor_right = 1.0
 anchor_bottom = 1.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_66feg")
@@ -402,7 +402,7 @@ metadata/__script_vars = {}
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray()
 
-[node name="MainMargin" type="MarginContainer" parent="." unique_id=626935805]
+[node name="MainMargin" type="MarginContainer" parent="." unique_id=830039330]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -414,17 +414,17 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="MainColumn" type="VBoxContainer" parent="MainMargin" unique_id=1876785723]
+[node name="MainColumn" type="VBoxContainer" parent="MainMargin" unique_id=1349577470]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="TopBar" type="Panel" parent="MainMargin/MainColumn" unique_id=568938232]
+[node name="TopBar" type="Panel" parent="MainMargin/MainColumn" unique_id=1165427016]
 custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_jlcq7")
 
-[node name="@MarginContainer@741" type="MarginContainer" parent="MainMargin/MainColumn/TopBar" unique_id=441361531]
+[node name="@MarginContainer@26190" type="MarginContainer" parent="MainMargin/MainColumn/TopBar" unique_id=1462621518]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -435,49 +435,49 @@ offset_bottom = -14.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="TopRow" type="HBoxContainer" parent="MainMargin/MainColumn/TopBar/@MarginContainer@741" unique_id=137483289]
+[node name="TopRow" type="HBoxContainer" parent="MainMargin/MainColumn/TopBar/@MarginContainer@26190" unique_id=416290345]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="RealmLabel" type="Label" parent="MainMargin/MainColumn/TopBar/@MarginContainer@741/TopRow" unique_id=127440871]
+[node name="RealmLabel" type="Label" parent="MainMargin/MainColumn/TopBar/@MarginContainer@26190/TopRow" unique_id=681768029]
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.9490196, 0.9254902, 0.8509804, 1)
+theme_override_font_sizes/font_size = 18
 text = "炼气一段"
 vertical_alignment = 1
 
-[node name="PointsLabel" type="Label" parent="MainMargin/MainColumn/TopBar/@MarginContainer@741/TopRow" unique_id=1546928730]
+[node name="PointsLabel" type="Label" parent="MainMargin/MainColumn/TopBar/@MarginContainer@26190/TopRow" unique_id=1298256681]
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
 theme_override_colors/font_color = Color(0.9490196, 0.9254902, 0.8509804, 1)
+theme_override_font_sizes/font_size = 14
 text = "可用技能点 0"
 vertical_alignment = 1
 
-[node name="@Control@740" type="Control" parent="MainMargin/MainColumn/TopBar/@MarginContainer@741/TopRow" unique_id=508137885]
+[node name="@Control@26189" type="Control" parent="MainMargin/MainColumn/TopBar/@MarginContainer@26190/TopRow" unique_id=449337840]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="ExpLabel" type="Label" parent="MainMargin/MainColumn/TopBar/@MarginContainer@741/TopRow" unique_id=476099881]
+[node name="ExpLabel" type="Label" parent="MainMargin/MainColumn/TopBar/@MarginContainer@26190/TopRow" unique_id=1101266033]
 layout_mode = 2
-theme_override_font_sizes/font_size = 13
 theme_override_colors/font_color = Color(0.9490196, 0.9254902, 0.8509804, 1)
+theme_override_font_sizes/font_size = 13
 text = "经验 0/100"
 vertical_alignment = 1
 
-[node name="ExpBar" type="ProgressBar" parent="MainMargin/MainColumn" unique_id=262930496]
+[node name="ExpBar" type="ProgressBar" parent="MainMargin/MainColumn" unique_id=2003222027]
 custom_minimum_size = Vector2(0, 14)
 layout_mode = 2
 theme_override_styles/background = SubResource("StyleBoxFlat_8sk3y")
 theme_override_styles/fill = SubResource("StyleBoxFlat_rgprf")
 show_percentage = false
 
-[node name="TreeScroll" type="ScrollContainer" parent="MainMargin/MainColumn" unique_id=577534255]
+[node name="TreeScroll" type="ScrollContainer" parent="MainMargin/MainColumn" unique_id=1038809889]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="GongfaTree" type="GdUITree" parent="MainMargin/MainColumn/TreeScroll" unique_id=17466883]
+[node name="GongfaTree" type="GdUITree" parent="MainMargin/MainColumn/TreeScroll" unique_id=2044509210]
 direction = "up"
 node_width = 150.0
 node_height = 46.0
@@ -500,20 +500,20 @@ custom_minimum_size = Vector2(490, 398)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="@Button@757" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree" unique_id=1337438524]
+[node name="@Button@26206" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree" unique_id=324242722]
 custom_minimum_size = Vector2(150, 46)
 layout_mode = 0
 offset_left = 170.0
 offset_top = 352.0
 offset_right = 320.0
 offset_bottom = 398.0
-theme_override_styles/normal = SubResource("StyleBoxFlat_u8rwq")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_u8rwq")
-theme_override_styles/hover = SubResource("StyleBoxFlat_a2v3g")
 theme_override_colors/font_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_colors/font_pressed_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_colors/font_hover_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_u8rwq")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_u8rwq")
+theme_override_styles/hover = SubResource("StyleBoxFlat_a2v3g")
 text = "道基"
 clip_text = true
 metadata/__tree_row = true
@@ -528,7 +528,7 @@ metadata/__tree_parent = ""
 metadata/__tips = "修行之始，气血自成（自带，无需领悟）。"
 metadata/__tips_title = "道基"
 
-[node name="__TreeArrow" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree/@Button@757" unique_id=756435284]
+[node name="__TreeArrow" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree/@Button@26206" unique_id=1457188834]
 custom_minimum_size = Vector2(18, 18)
 layout_mode = 0
 offset_left = 128.0
@@ -536,26 +536,26 @@ offset_top = 14.0
 offset_right = 147.0
 offset_bottom = 45.0
 focus_mode = 0
+theme_override_font_sizes/font_size = 11
 theme_override_styles/normal = SubResource("StyleBoxFlat_bxs1y")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_bxs1y")
 theme_override_styles/hover = SubResource("StyleBoxFlat_bxs1y")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_bxs1y")
-theme_override_font_sizes/font_size = 11
 text = "▾"
 
-[node name="@Button@758" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree" unique_id=846976478]
+[node name="@Button@26207" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree" unique_id=909721861]
 custom_minimum_size = Vector2(150, 46)
 layout_mode = 0
 offset_top = 264.0
 offset_right = 150.0
 offset_bottom = 310.0
-theme_override_styles/normal = SubResource("StyleBoxFlat_8qwvo")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_8qwvo")
-theme_override_styles/hover = SubResource("StyleBoxFlat_tavaq")
 theme_override_colors/font_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_colors/font_pressed_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_colors/font_hover_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_8qwvo")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_8qwvo")
+theme_override_styles/hover = SubResource("StyleBoxFlat_tavaq")
 text = "吐纳诀"
 clip_text = true
 metadata/__tree_row = true
@@ -570,7 +570,7 @@ metadata/__tree_parent = "root"
 metadata/__tips = "入门吐纳法：灵力上限 +20。前置：道基"
 metadata/__tips_title = "吐纳诀"
 
-[node name="__TreeArrow" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree/@Button@758" unique_id=1106528124]
+[node name="__TreeArrow" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree/@Button@26207" unique_id=2126468277]
 custom_minimum_size = Vector2(18, 18)
 layout_mode = 0
 offset_left = 128.0
@@ -578,26 +578,26 @@ offset_top = 14.0
 offset_right = 147.0
 offset_bottom = 45.0
 focus_mode = 0
+theme_override_font_sizes/font_size = 11
 theme_override_styles/normal = SubResource("StyleBoxFlat_j4xct")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_j4xct")
 theme_override_styles/hover = SubResource("StyleBoxFlat_j4xct")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_j4xct")
-theme_override_font_sizes/font_size = 11
 text = "▾"
 
-[node name="@Button@759" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree" unique_id=970127376]
+[node name="@Button@26208" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree" unique_id=1685642839]
 custom_minimum_size = Vector2(150, 46)
 layout_mode = 0
 offset_top = 176.0
 offset_right = 150.0
 offset_bottom = 222.0
-theme_override_styles/normal = SubResource("StyleBoxFlat_er83h")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_er83h")
-theme_override_styles/hover = SubResource("StyleBoxFlat_iycke")
 theme_override_colors/font_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_colors/font_pressed_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_colors/font_hover_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_er83h")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_er83h")
+theme_override_styles/hover = SubResource("StyleBoxFlat_iycke")
 text = "聚气术"
 clip_text = true
 metadata/__tree_row = true
@@ -612,7 +612,7 @@ metadata/__tree_parent = "gongfa1"
 metadata/__tips = "聚气成息：灵力上限 +40。前置：吐纳诀"
 metadata/__tips_title = "聚气术"
 
-[node name="__TreeArrow" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree/@Button@759" unique_id=570646420]
+[node name="__TreeArrow" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree/@Button@26208" unique_id=1250058652]
 custom_minimum_size = Vector2(18, 18)
 layout_mode = 0
 offset_left = 128.0
@@ -620,26 +620,26 @@ offset_top = 14.0
 offset_right = 147.0
 offset_bottom = 45.0
 focus_mode = 0
+theme_override_font_sizes/font_size = 11
 theme_override_styles/normal = SubResource("StyleBoxFlat_1myw1")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_1myw1")
 theme_override_styles/hover = SubResource("StyleBoxFlat_1myw1")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_1myw1")
-theme_override_font_sizes/font_size = 11
 text = "▾"
 
-[node name="@Button@760" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree" unique_id=616180323]
+[node name="@Button@26209" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree" unique_id=1047255290]
 custom_minimum_size = Vector2(150, 46)
 layout_mode = 0
 offset_top = 88.0
 offset_right = 150.0
 offset_bottom = 134.0
-theme_override_styles/normal = SubResource("StyleBoxFlat_q6on3")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_q6on3")
-theme_override_styles/hover = SubResource("StyleBoxFlat_ypt3k")
 theme_override_colors/font_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_colors/font_pressed_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_colors/font_hover_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_q6on3")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_q6on3")
+theme_override_styles/hover = SubResource("StyleBoxFlat_ypt3k")
 text = "周天功"
 clip_text = true
 metadata/__tree_row = true
@@ -654,7 +654,7 @@ metadata/__tree_parent = "gongfa2"
 metadata/__tips = "气行周天：灵力上限 +80。前置：聚气术"
 metadata/__tips_title = "周天功"
 
-[node name="__TreeArrow" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree/@Button@760" unique_id=39552587]
+[node name="__TreeArrow" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree/@Button@26209" unique_id=1381186754]
 custom_minimum_size = Vector2(18, 18)
 layout_mode = 0
 offset_left = 128.0
@@ -662,25 +662,25 @@ offset_top = 14.0
 offset_right = 147.0
 offset_bottom = 45.0
 focus_mode = 0
+theme_override_font_sizes/font_size = 11
 theme_override_styles/normal = SubResource("StyleBoxFlat_fiumh")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_fiumh")
 theme_override_styles/hover = SubResource("StyleBoxFlat_fiumh")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_fiumh")
-theme_override_font_sizes/font_size = 11
 text = "▾"
 
-[node name="@Button@761" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree" unique_id=1171975088]
+[node name="@Button@26210" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree" unique_id=1712073879]
 custom_minimum_size = Vector2(150, 46)
 layout_mode = 0
 offset_right = 150.0
 offset_bottom = 46.0
-theme_override_styles/normal = SubResource("StyleBoxFlat_2j0e3")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_2j0e3")
-theme_override_styles/hover = SubResource("StyleBoxFlat_weasm")
 theme_override_colors/font_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_colors/font_pressed_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_colors/font_hover_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_2j0e3")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_2j0e3")
+theme_override_styles/hover = SubResource("StyleBoxFlat_weasm")
 text = "气冲霄汉"
 clip_text = true
 metadata/__tree_row = true
@@ -695,7 +695,7 @@ metadata/__tree_parent = "gongfa3"
 metadata/__tips = "气贯长虹：灵力上限 +160。前置：周天功"
 metadata/__tips_title = "气冲霄汉"
 
-[node name="__TreeArrow" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree/@Button@761" unique_id=452812445]
+[node name="__TreeArrow" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree/@Button@26210" unique_id=545246977]
 visible = false
 custom_minimum_size = Vector2(18, 18)
 layout_mode = 0
@@ -704,27 +704,27 @@ offset_top = 14.0
 offset_right = 146.0
 offset_bottom = 45.0
 focus_mode = 0
+theme_override_font_sizes/font_size = 11
 theme_override_styles/normal = SubResource("StyleBoxFlat_axiym")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_axiym")
 theme_override_styles/hover = SubResource("StyleBoxFlat_axiym")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_axiym")
-theme_override_font_sizes/font_size = 11
 text = "▾"
 
-[node name="@Button@762" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree" unique_id=1722609961]
+[node name="@Button@26211" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree" unique_id=1507985851]
 custom_minimum_size = Vector2(150, 46)
 layout_mode = 0
 offset_left = 170.0
 offset_top = 264.0
 offset_right = 320.0
 offset_bottom = 310.0
-theme_override_styles/normal = SubResource("StyleBoxFlat_k81mi")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_k81mi")
-theme_override_styles/hover = SubResource("StyleBoxFlat_g4mvu")
 theme_override_colors/font_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_colors/font_pressed_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_colors/font_hover_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_k81mi")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_k81mi")
+theme_override_styles/hover = SubResource("StyleBoxFlat_g4mvu")
 text = "炼皮"
 clip_text = true
 metadata/__tree_row = true
@@ -739,7 +739,7 @@ metadata/__tree_parent = "root"
 metadata/__tips = "皮糙肉厚：气血上限 +50。前置：道基"
 metadata/__tips_title = "炼皮"
 
-[node name="__TreeArrow" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree/@Button@762" unique_id=219856546]
+[node name="__TreeArrow" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree/@Button@26211" unique_id=864052408]
 custom_minimum_size = Vector2(18, 18)
 layout_mode = 0
 offset_left = 128.0
@@ -747,27 +747,27 @@ offset_top = 14.0
 offset_right = 147.0
 offset_bottom = 45.0
 focus_mode = 0
+theme_override_font_sizes/font_size = 11
 theme_override_styles/normal = SubResource("StyleBoxFlat_0dgws")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_0dgws")
 theme_override_styles/hover = SubResource("StyleBoxFlat_0dgws")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_0dgws")
-theme_override_font_sizes/font_size = 11
 text = "▾"
 
-[node name="@Button@763" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree" unique_id=353266115]
+[node name="@Button@26212" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree" unique_id=1585253484]
 custom_minimum_size = Vector2(150, 46)
 layout_mode = 0
 offset_left = 170.0
 offset_top = 176.0
 offset_right = 320.0
 offset_bottom = 222.0
-theme_override_styles/normal = SubResource("StyleBoxFlat_yyuex")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_yyuex")
-theme_override_styles/hover = SubResource("StyleBoxFlat_ldqrl")
 theme_override_colors/font_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_colors/font_pressed_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_colors/font_hover_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_yyuex")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_yyuex")
+theme_override_styles/hover = SubResource("StyleBoxFlat_ldqrl")
 text = "锻骨"
 clip_text = true
 metadata/__tree_row = true
@@ -782,7 +782,7 @@ metadata/__tree_parent = "body1"
 metadata/__tips = "骨如精铁：气血上限 +100。前置：炼皮"
 metadata/__tips_title = "锻骨"
 
-[node name="__TreeArrow" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree/@Button@763" unique_id=27666245]
+[node name="__TreeArrow" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree/@Button@26212" unique_id=1541823139]
 custom_minimum_size = Vector2(18, 18)
 layout_mode = 0
 offset_left = 128.0
@@ -790,27 +790,27 @@ offset_top = 14.0
 offset_right = 147.0
 offset_bottom = 45.0
 focus_mode = 0
+theme_override_font_sizes/font_size = 11
 theme_override_styles/normal = SubResource("StyleBoxFlat_c2yru")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_c2yru")
 theme_override_styles/hover = SubResource("StyleBoxFlat_c2yru")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_c2yru")
-theme_override_font_sizes/font_size = 11
 text = "▾"
 
-[node name="@Button@764" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree" unique_id=1437684266]
+[node name="@Button@26213" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree" unique_id=119930204]
 custom_minimum_size = Vector2(150, 46)
 layout_mode = 0
 offset_left = 170.0
 offset_top = 88.0
 offset_right = 320.0
 offset_bottom = 134.0
-theme_override_styles/normal = SubResource("StyleBoxFlat_1e743")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_1e743")
-theme_override_styles/hover = SubResource("StyleBoxFlat_wy1n8")
 theme_override_colors/font_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_colors/font_pressed_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_colors/font_hover_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_1e743")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_1e743")
+theme_override_styles/hover = SubResource("StyleBoxFlat_wy1n8")
 text = "易筋"
 clip_text = true
 metadata/__tree_row = true
@@ -825,7 +825,7 @@ metadata/__tree_parent = "body2"
 metadata/__tips = "筋长力沉：气血上限 +200。前置：锻骨"
 metadata/__tips_title = "易筋"
 
-[node name="__TreeArrow" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree/@Button@764" unique_id=1649607579]
+[node name="__TreeArrow" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree/@Button@26213" unique_id=839074909]
 custom_minimum_size = Vector2(18, 18)
 layout_mode = 0
 offset_left = 128.0
@@ -833,26 +833,26 @@ offset_top = 14.0
 offset_right = 147.0
 offset_bottom = 45.0
 focus_mode = 0
+theme_override_font_sizes/font_size = 11
 theme_override_styles/normal = SubResource("StyleBoxFlat_ifwrs")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_ifwrs")
 theme_override_styles/hover = SubResource("StyleBoxFlat_ifwrs")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_ifwrs")
-theme_override_font_sizes/font_size = 11
 text = "▾"
 
-[node name="@Button@765" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree" unique_id=1840753818]
+[node name="@Button@26214" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree" unique_id=1111509595]
 custom_minimum_size = Vector2(150, 46)
 layout_mode = 0
 offset_left = 170.0
 offset_right = 320.0
 offset_bottom = 46.0
-theme_override_styles/normal = SubResource("StyleBoxFlat_7joen")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_7joen")
-theme_override_styles/hover = SubResource("StyleBoxFlat_uared")
 theme_override_colors/font_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_colors/font_pressed_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_colors/font_hover_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_7joen")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_7joen")
+theme_override_styles/hover = SubResource("StyleBoxFlat_uared")
 text = "金刚不坏"
 clip_text = true
 metadata/__tree_row = true
@@ -867,7 +867,7 @@ metadata/__tree_parent = "body3"
 metadata/__tips = "肉身成盾：气血上限 +400。前置：易筋"
 metadata/__tips_title = "金刚不坏"
 
-[node name="__TreeArrow" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree/@Button@765" unique_id=440865950]
+[node name="__TreeArrow" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree/@Button@26214" unique_id=1095060643]
 visible = false
 custom_minimum_size = Vector2(18, 18)
 layout_mode = 0
@@ -876,27 +876,27 @@ offset_top = 14.0
 offset_right = 146.0
 offset_bottom = 45.0
 focus_mode = 0
+theme_override_font_sizes/font_size = 11
 theme_override_styles/normal = SubResource("StyleBoxFlat_5cwq3")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_5cwq3")
 theme_override_styles/hover = SubResource("StyleBoxFlat_5cwq3")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_5cwq3")
-theme_override_font_sizes/font_size = 11
 text = "▾"
 
-[node name="@Button@766" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree" unique_id=2105398281]
+[node name="@Button@26215" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree" unique_id=1293169420]
 custom_minimum_size = Vector2(150, 46)
 layout_mode = 0
 offset_left = 340.0
 offset_top = 264.0
 offset_right = 490.0
 offset_bottom = 310.0
-theme_override_styles/normal = SubResource("StyleBoxFlat_4u4jl")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_4u4jl")
-theme_override_styles/hover = SubResource("StyleBoxFlat_ryuck")
 theme_override_colors/font_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_colors/font_pressed_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_colors/font_hover_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_4u4jl")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_4u4jl")
+theme_override_styles/hover = SubResource("StyleBoxFlat_ryuck")
 text = "凝神"
 clip_text = true
 metadata/__tree_row = true
@@ -911,7 +911,7 @@ metadata/__tree_parent = "root"
 metadata/__tips = "心无旁骛：悟性 +2。前置：道基"
 metadata/__tips_title = "凝神"
 
-[node name="__TreeArrow" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree/@Button@766" unique_id=66113391]
+[node name="__TreeArrow" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree/@Button@26215" unique_id=315652997]
 custom_minimum_size = Vector2(18, 18)
 layout_mode = 0
 offset_left = 128.0
@@ -919,27 +919,27 @@ offset_top = 14.0
 offset_right = 147.0
 offset_bottom = 45.0
 focus_mode = 0
+theme_override_font_sizes/font_size = 11
 theme_override_styles/normal = SubResource("StyleBoxFlat_awc3v")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_awc3v")
 theme_override_styles/hover = SubResource("StyleBoxFlat_awc3v")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_awc3v")
-theme_override_font_sizes/font_size = 11
 text = "▾"
 
-[node name="@Button@767" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree" unique_id=1519598616]
+[node name="@Button@26216" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree" unique_id=1142149791]
 custom_minimum_size = Vector2(150, 46)
 layout_mode = 0
 offset_left = 340.0
 offset_top = 176.0
 offset_right = 490.0
 offset_bottom = 222.0
-theme_override_styles/normal = SubResource("StyleBoxFlat_8ws68")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_8ws68")
-theme_override_styles/hover = SubResource("StyleBoxFlat_1sj85")
 theme_override_colors/font_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_colors/font_pressed_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_colors/font_hover_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_8ws68")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_8ws68")
+theme_override_styles/hover = SubResource("StyleBoxFlat_1sj85")
 text = "静心"
 clip_text = true
 metadata/__tree_row = true
@@ -954,7 +954,7 @@ metadata/__tree_parent = "soul1"
 metadata/__tips = "澄心如镜：悟性 +3。前置：凝神"
 metadata/__tips_title = "静心"
 
-[node name="__TreeArrow" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree/@Button@767" unique_id=1965774832]
+[node name="__TreeArrow" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree/@Button@26216" unique_id=180452639]
 custom_minimum_size = Vector2(18, 18)
 layout_mode = 0
 offset_left = 128.0
@@ -962,27 +962,27 @@ offset_top = 14.0
 offset_right = 147.0
 offset_bottom = 45.0
 focus_mode = 0
+theme_override_font_sizes/font_size = 11
 theme_override_styles/normal = SubResource("StyleBoxFlat_1gaie")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_1gaie")
 theme_override_styles/hover = SubResource("StyleBoxFlat_1gaie")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_1gaie")
-theme_override_font_sizes/font_size = 11
 text = "▾"
 
-[node name="@Button@768" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree" unique_id=1687518748]
+[node name="@Button@26217" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree" unique_id=1159003202]
 custom_minimum_size = Vector2(150, 46)
 layout_mode = 0
 offset_left = 340.0
 offset_top = 88.0
 offset_right = 490.0
 offset_bottom = 134.0
-theme_override_styles/normal = SubResource("StyleBoxFlat_n50yn")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_n50yn")
-theme_override_styles/hover = SubResource("StyleBoxFlat_drqtv")
 theme_override_colors/font_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_colors/font_pressed_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_colors/font_hover_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_n50yn")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_n50yn")
+theme_override_styles/hover = SubResource("StyleBoxFlat_drqtv")
 text = "观想"
 clip_text = true
 metadata/__tree_row = true
@@ -997,7 +997,7 @@ metadata/__tree_parent = "soul2"
 metadata/__tips = "内景观想：悟性 +5。前置：静心"
 metadata/__tips_title = "观想"
 
-[node name="__TreeArrow" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree/@Button@768" unique_id=1775470162]
+[node name="__TreeArrow" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree/@Button@26217" unique_id=185119256]
 custom_minimum_size = Vector2(18, 18)
 layout_mode = 0
 offset_left = 128.0
@@ -1005,26 +1005,26 @@ offset_top = 14.0
 offset_right = 147.0
 offset_bottom = 45.0
 focus_mode = 0
+theme_override_font_sizes/font_size = 11
 theme_override_styles/normal = SubResource("StyleBoxFlat_e7hld")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_e7hld")
 theme_override_styles/hover = SubResource("StyleBoxFlat_e7hld")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_e7hld")
-theme_override_font_sizes/font_size = 11
 text = "▾"
 
-[node name="@Button@769" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree" unique_id=2116586091]
+[node name="@Button@26218" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree" unique_id=1009641543]
 custom_minimum_size = Vector2(150, 46)
 layout_mode = 0
 offset_left = 340.0
 offset_right = 490.0
 offset_bottom = 46.0
-theme_override_styles/normal = SubResource("StyleBoxFlat_fxgit")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_fxgit")
-theme_override_styles/hover = SubResource("StyleBoxFlat_uqc68")
 theme_override_colors/font_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_colors/font_pressed_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_colors/font_hover_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_fxgit")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_fxgit")
+theme_override_styles/hover = SubResource("StyleBoxFlat_uqc68")
 text = "神游太虚"
 clip_text = true
 metadata/__tree_row = true
@@ -1039,7 +1039,7 @@ metadata/__tree_parent = "soul3"
 metadata/__tips = "神识出窍：悟性 +8。前置：观想"
 metadata/__tips_title = "神游太虚"
 
-[node name="__TreeArrow" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree/@Button@769" unique_id=1806791906]
+[node name="__TreeArrow" type="Button" parent="MainMargin/MainColumn/TreeScroll/GongfaTree/@Button@26218" unique_id=2002586126]
 visible = false
 custom_minimum_size = Vector2(18, 18)
 layout_mode = 0
@@ -1048,14 +1048,14 @@ offset_top = 14.0
 offset_right = 146.0
 offset_bottom = 45.0
 focus_mode = 0
+theme_override_font_sizes/font_size = 11
 theme_override_styles/normal = SubResource("StyleBoxFlat_rik32")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_rik32")
 theme_override_styles/hover = SubResource("StyleBoxFlat_rik32")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_rik32")
-theme_override_font_sizes/font_size = 11
 text = "▾"
 
-[node name="HintLabel" type="Label" parent="MainMargin/MainColumn" unique_id=1796719424]
+[node name="HintLabel" type="Label" parent="MainMargin/MainColumn" unique_id=1185717218]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.5411765, 0.49019608, 0.36862746, 1)
 text = "点击节点领悟功法（消耗 1 技能点）· 悬停查看详情 · 前置功法领悟后自动解锁下一层"

@@ -5,9 +5,9 @@
 	   红点用 top_wide + align right（语义明确：横跨按钮宽、贴右上）。
 	   @pressed 回调两种方式：
 	   · 方法绑定（_on_menu_pressed）就近绑定本文件脚本：点击后只上报
-	     GdState（mainhud.menu），高亮互斥由状态下行驱动
+		 GdState（mainhud.menu），高亮互斥由状态下行驱动
 	   · 内部动作（show:TaskDrawer）经统一 UI 管理层跨组件调用：任务抽屉
-	     在 ui/task/ 目录、与本文件零引用，按下时按 ui_id 查注册表触发 open() -->
+		 在 ui/task/ 目录、与本文件零引用，按下时按 ui_id 查注册表触发 open() -->
   <style>
 	.menu-btn {
 	  background: #3a5a46;
@@ -23,22 +23,13 @@
 	}
   </style>
   <VBoxContainer name="MenuColumn" separation="14">
-	<Panel name="MenuCultivate" class="menu-btn" custom_minimum_size="84,84"
-	      mouse_default_cursor_shape="pointing_hand" @pressed="_on_menu_pressed">
-	  <VBoxContainer anchor="full" margin="8 10 8 8" separation="2">
-		<Label class="menu-btn-icon" text="🧘" size_flags_vertical="expand_fill"
-		       align="center" valign="center" />
-		<Label class="menu-btn-text" text="修炼" align="center" />
-	  </VBoxContainer>
-	  <Label class="red-dot" text="●" anchor="top_wide" margin="0 6 10 0" align="right" />
-	</Panel>
 	<!-- 功法（ui/level/）：修炼/功法面板（GML Tree 功法树），同储物袋
 		 经统一 UI 管理层触发 LevelModal.open() -->
 	<Panel name="MenuGongfa" class="menu-btn" custom_minimum_size="84,84"
-	      mouse_default_cursor_shape="pointing_hand" @pressed="show:LevelModal">
+		  mouse_default_cursor_shape="pointing_hand" @pressed="show:LevelModal">
 	  <VBoxContainer anchor="full" margin="8 10 8 8" separation="2">
 		<Label class="menu-btn-icon" text="📖" size_flags_vertical="expand_fill"
-		       align="center" valign="center" />
+			   align="center" valign="center" />
 		<Label class="menu-btn-text" text="功法" align="center" />
 	  </VBoxContainer>
 	  <Label class="red-dot" text="●" anchor="top_wide" margin="0 6 10 0" align="right" />
@@ -46,10 +37,10 @@
 	<!-- 储物袋（ui/bag/）：内部动作经统一 UI 管理层跨组件触发，
 		 按下时按 ui_id=BagModal 查注册表 → Modal.open()，零文件引用 -->
 	<Panel name="MenuBag" class="menu-btn" custom_minimum_size="84,84"
-	      mouse_default_cursor_shape="pointing_hand" @pressed="show:BagModal">
+		  mouse_default_cursor_shape="pointing_hand" @pressed="show:BagModal">
 	  <VBoxContainer anchor="full" margin="8 10 8 8" separation="2">
 		<Label class="menu-btn-icon" text="👝" size_flags_vertical="expand_fill"
-		       align="center" valign="center" />
+			   align="center" valign="center" />
 		<Label class="menu-btn-text" text="储物袋" align="center" />
 	  </VBoxContainer>
 	  <Label class="red-dot" text="●" anchor="top_wide" margin="0 6 10 0" align="right" />
@@ -57,29 +48,29 @@
 	<!-- 任务抽屉（ui/task/ 目录）：内部动作经统一 UI 管理层跨组件触发，
 		 按下时按 ui_id=TaskDrawer 查注册表 → Drawer.open()，零文件引用 -->
 	<Panel name="MenuTask" class="menu-btn" custom_minimum_size="84,84"
-	      mouse_default_cursor_shape="pointing_hand" @pressed="show:TaskDrawer">
+		  mouse_default_cursor_shape="pointing_hand" @pressed="show:TaskDrawer">
 	  <VBoxContainer anchor="full" margin="8 10 8 8" separation="2">
 		<Label class="menu-btn-icon" text="📜" size_flags_vertical="expand_fill"
-		       align="center" valign="center" />
+			   align="center" valign="center" />
 		<Label class="menu-btn-text" text="任务" align="center" />
 	  </VBoxContainer>
 	</Panel>
 	<!-- 秘境（随机副本）：动作按钮（不进功能页高亮互斥）——经组件表调
 		 DungeonManager.start_run()：随机地图/随机敌人/多层爬塔/通关结算 -->
 	<Panel name="MenuDungeon" class="menu-btn" custom_minimum_size="84,84"
-	      mouse_default_cursor_shape="pointing_hand" @pressed="_on_dungeon_pressed">
+		  mouse_default_cursor_shape="pointing_hand" @pressed="_on_dungeon_pressed">
 	  <VBoxContainer anchor="full" margin="8 10 8 8" separation="2">
 		<Label class="menu-btn-icon" text="🌀" size_flags_vertical="expand_fill"
-		       align="center" valign="center" />
+			   align="center" valign="center" />
 		<Label class="menu-btn-text" text="秘境" align="center" />
 	  </VBoxContainer>
 	</Panel>
 	<!-- 坊市（ui/store/）：同储物袋，跨组件触发 StoreModal.open() -->
 	<Panel name="MenuMarket" class="menu-btn" custom_minimum_size="84,84"
-	      mouse_default_cursor_shape="pointing_hand" @pressed="show:StoreModal">
+		  mouse_default_cursor_shape="pointing_hand" @pressed="show:StoreModal">
 	  <VBoxContainer anchor="full" margin="8 10 8 8" separation="2">
 		<Label class="menu-btn-icon" text="🏮" size_flags_vertical="expand_fill"
-		       align="center" valign="center" />
+			   align="center" valign="center" />
 		<Label class="menu-btn-text" text="坊市" align="center" />
 	  </VBoxContainer>
 	  <Label class="red-dot" text="●" anchor="top_wide" margin="0 6 10 0" align="right" />
@@ -87,21 +78,11 @@
 	<!-- 教程（ui/docsbook/）：修仙手册（左 TreeMenu 目录 + 右 RichText 富文本），
 		 同储物袋，跨组件触发 DocsModal.open() -->
 	<Panel name="MenuDocs" class="menu-btn" custom_minimum_size="84,84"
-	      mouse_default_cursor_shape="pointing_hand" @pressed="show:DocsModal">
+		  mouse_default_cursor_shape="pointing_hand" @pressed="show:DocsModal">
 	  <VBoxContainer anchor="full" margin="8 10 8 8" separation="2">
 		<Label class="menu-btn-icon" text="📚" size_flags_vertical="expand_fill"
-		       align="center" valign="center" />
+			   align="center" valign="center" />
 		<Label class="menu-btn-text" text="教程" align="center" />
-	  </VBoxContainer>
-	</Panel>
-	<!-- 地图（ui/map/）：世界舆图（GdMiniMap 拼接缩略图 + 玩家位置光点），
-		 同储物袋，跨组件触发 MapModal.open() -->
-	<Panel name="MenuMap" class="menu-btn" custom_minimum_size="84,84"
-	      mouse_default_cursor_shape="pointing_hand" @pressed="show:MapModal">
-	  <VBoxContainer anchor="full" margin="8 10 8 8" separation="2">
-		<Label class="menu-btn-icon" text="🗺️" size_flags_vertical="expand_fill"
-		       align="center" valign="center" />
-		<Label class="menu-btn-text" text="地图" align="center" />
 	  </VBoxContainer>
 	</Panel>
   </VBoxContainer>
