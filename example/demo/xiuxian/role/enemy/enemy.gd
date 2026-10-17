@@ -41,11 +41,19 @@ extends GdRoleMover
 @export var body_color := Color(0.45, 0.8, 0.4)
 ## 击败经验（玩家击败本敌人获得，写入 XiuCharacterState 修为）
 @export var exp_reward := 20
+## 远战：true = 攻击相位朝玩家发射弹幕（追到 attack_range 内停下开火）；
+## false = 近战（贴身接触伤害，由 Hitbox 判定）
+@export var ranged := false
+## 远战弹速（像素/秒）
+@export var ranged_bullet_speed := 300.0
+## 远战子弹场景（ranged=true 时使用；mask=2 只打玩家受击盒）
+const RANGED_BULLET_SCENE := "res://example/demo/xiuxian/role/enemy/enemy_bullet.tscn"
 
 const AI_HUNTER := 5
 
 var brain: Node = null
 var health: Node = null
+var danmaku: Node = null
 
 var _snapped := false
 var _target_wired := false
@@ -107,6 +115,21 @@ func _make_combat() -> void:
 	hit.add_child(_make_shape(20.0))
 	add_child(hit)
 
+	if ranged:
+		_make_danmaku()
+
+
+## 远战弹幕发射器：Brain 攻击相位发 s_attack → 朝玩家单发直射。
+## 组件冷却传 0（节奏由 Brain.attack_cooldown 统一控制，避免双通道互卡）
+func _make_danmaku() -> void:
+	danmaku = GdDanmaku.new()
+	danmaku.name = "Danmaku"
+	danmaku.bullet_alias = "enemy_danmaku"
+	danmaku.bullet_scene_path = RANGED_BULLET_SCENE
+	danmaku.bullet_lifetime = 2.2
+	danmaku.muzzle_distance = 20.0
+	add_child(danmaku)
+
 
 func _make_ai() -> void:
 	brain = GdNpcBrain.new()
@@ -117,7 +140,23 @@ func _make_ai() -> void:
 	brain.wander_radius = wander_radius
 	brain.chase_memory = 2.5   # 失去视野后追击记忆
 	brain.attack_cooldown = 1.0
+	brain.s_attack.connect(_on_brain_attack)
 	add_child(brain)
+
+
+## Brain 攻击相位触发：近战 = 接触伤害（Hitbox 判定，无需动作）；
+## 远战 = 朝玩家当前坐标单发直射（伤害 = attack，与近战同源）
+func _on_brain_attack() -> void:
+	if not ranged or danmaku == null:
+		return
+	var player: Node = get_tree().get_first_node_in_group("player")
+	if player == null or not is_instance_valid(player):
+		return
+	var dir: Vector2 = (player.global_position - global_position).normalized()
+	if dir.length_squared() < 0.0001:
+		return
+	danmaku.call("cast", "single", dir,
+		{"cooldown": 0.0, "bullet": {"speed": ranged_bullet_speed, "damage": attack}})
 
 
 ## 绑定追击目标（"player" 分组；分组节点可能晚于本节点 ready，_process 重试）

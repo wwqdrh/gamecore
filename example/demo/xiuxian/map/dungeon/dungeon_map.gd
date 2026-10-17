@@ -27,6 +27,10 @@ const ENEMY_POOL := [
 	"slime", "slime", "slime", "fox", "fox", "golem",
 ]
 
+## 秘境仇恨：覆盖视野半径 → 敌人无视距离全程追击玩家
+## （近战贴身输出、远战在 attack_range 内开火，见 XiuEnemyBase.ranged）
+const AGGRO_SIGHT := 8192.0
+
 ## 出生格（generate 后解析，供玩家/测试查询）
 var spawn_cell := Vector2i(-1, -1)
 
@@ -87,14 +91,13 @@ func _spawn(map: Node, state: XiuDungeonState) -> void:
 
 	if state.is_boss_floor():
 		# 妖王数值：血 320（须远超二层缩放后小怪 ~190）、攻 14（斗之气可战）、
-		# 防 6、经 500
+		# 防 6、经 500（视野由 AGGRO_SIGHT 统一覆盖）
 		var boss_cfg := {
 			"display_name": "秘境妖王",
 			"max_health": 320.0,
 			"attack": 14.0,
 			"defense": 6.0,
 			"exp_reward": 500,
-			"sight_range": 288.0,
 			"body_color": Color(0.75, 0.3, 0.85),
 		}
 		var boss := _spawn_enemy(map, rng, ENEMY_SCENES["golem"], _random_cell(map, rng, 10), boss_cfg)
@@ -114,6 +117,7 @@ func _spawn_enemy(map: Node, rng: RandomNumberGenerator, scene: PackedScene, cel
 		e.exp_reward = int(e.exp_reward) * exp_mult
 	for k in cfg:
 		e.set(k, cfg[k])
+	e.sight_range = AGGRO_SIGHT  # 秘境怪无视距离全程仇恨（cfg 之后覆盖，必生效）
 	map.add_child(e)  # 实例化后挂到地图根：enemy 自吸附可行走格 + 绑定玩家
 	_alive += 1
 	_enemies.append(e)

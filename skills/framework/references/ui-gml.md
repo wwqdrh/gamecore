@@ -429,6 +429,14 @@ extends Panel
 - **类型匹配**：注入走 `node.set()`，data 值类型需与 @export 类型一致
   （如 `@export var count: int` 配数字）；普通 `var`（无 @export）不会被注入
 - 无脚本的条目完全不受影响；回调可直接读契约变量，无需再沿父链解析 `__item_data`
+- **红线：契约注入是构建期行为**——`@export` 变量名在 **tscn 生成时点**采集并写进
+  每个条目节点的属性；条目脚本后加 `@export`（或改了数据表）却没重建
+  `.gml.tscn` 时，老场景里条目属性仍是默认值（症状：tscn 中
+  `metadata/__data_contract = PackedStringArray()` 为空、条目无对应 `key = ...`
+  行），运行期读契约变量恒为空 → 「点选/高亮/状态」全部失配。改条目脚本
+  `@export` 或 gml 数据后**必须重建 tscn**（`check_*.gd` 里的 build+save 即重建路径）。
+  兜底写法：契约变量优先、`__item_data` meta 兜底，且**空值不参与等值比较**
+  （`"" == ""` 会把列表所有条目一起点亮）。
 
 ### `<script>` 数据块与 data 绑定
 
@@ -963,3 +971,15 @@ label.text = "可接取：主线·初入仙途 · 找「执事长老」接取"
 范本：`example/demo/xiuxian/scenes/main/ui/mainhud/mainhud_quest.gml`
 （HUD 任务横幅）；测试 `test/test_ui_fit_label.gd`（文本涨缩 + 容器撑开 +
 默认关断言）。
+
+### `<theme>` 块的隐性副作用（2026-10-17 实证）
+
+- `<theme>` 一旦声明任意变量，`apply_theme_defaults` 开始生效（theme_vars
+  非空才执行）：**主题默认值在节点属性之后应用**，会把全场景 Label 字号
+  覆盖回默认 16、按钮字号 16 等——gml 标签上的 `font_size="36"` 等属性
+  全部失效（类样式 font_size 本就不支持，见上）。
+- 结论：只想给某个组件（如 Modal 遮罩色）传主题值时**不要用 `<theme>`**，
+  改为运行期覆盖组件导出属性（如 `modal.set("overlay_color", ...)`）。
+- 类样式（`<style>` 块）支持 background/border_*/color/texture，**不支持
+  font_size**——需要字号走标签属性 `font_size="N"`（构建期
+  add_theme_font_size_override 会序列化进 tscn）。

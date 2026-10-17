@@ -6,6 +6,9 @@
 	 主场景的功能按钮列/任务抽屉/小地图/装备栏等均不进入秘境。
 	 HUD 覆盖在游戏世界之上：根与布局层 mouse_filter=IGNORE 鼠标穿透
 	 （explore.gd _ready 统一设置），交互节点（离开按钮/技能格）保持可点 -->
+	<!-- 结算弹窗遮罩色（灰 40%）由 explore.gd _ready 运行期覆盖组件导出值：
+		 不用 <theme> 传 overlay——builder 主题默认值在属性之后应用，一旦引入
+		 <theme> 会把全场景 Label 字号盖回默认 16（属性失效的隐性副作用） -->
   <style>
 	.floor-bg {
 	  background: #2e2436d8;

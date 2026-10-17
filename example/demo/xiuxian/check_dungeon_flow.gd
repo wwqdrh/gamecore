@@ -161,10 +161,63 @@ func _run() -> void:
 			"探索场景应有层数横幅")
 	check(GdUIManager.has_ui("DungeonSettleModal"), "结算弹窗应注册在探索场景")
 
+	# 4.5 秘境内左键 = 施放技能，**不点击行走**（回归：曾落到 _on_map_clicked 寻路）
+	var player: Node = get_first_node_in_group("player")
+	check(player != null, "探索场景应有玩家")
+	if player != null:
+		if await _poll(func(): return bool(player.get("_dungeon_combat")), 120,
+				"秘境应进入弹幕战斗模式（_dungeon_combat）"):
+			var dm: Node = player.get("danmaku")
+			var casts: Array = []
+			if dm != null:
+				dm.s_cast.connect(func(_shape, _count): casts.append(1))
+			# 未选中技能：左键回落技能 1（普通攻击，无冷却）
+			Engine.get_singleton("GDSTATE").set_state("mainhud.skill", "")
+			await _wait_frames(2)
+			player.call("stop")
+			var click := InputEventMouseButton.new()
+			click.button_index = MOUSE_BUTTON_LEFT
+			click.pressed = true
+			click.position = Vector2(500, 300)
+			player.call("_unhandled_input", click)
+			await _wait_frames(2)
+			check(not player.is_grid_path_active(), "秘境左键不应触发点击行走")
+			var line = player.get("path_line")
+			check(line == null or int(line.get_point_count()) == 0,
+				"秘境左键不应生成路径预览线")
+			check(casts.size() == 1, "秘境左键应施放技能（未选中 → 技能 1 兜底）")
+			# 3 号（2.5s 冷却）：首放入独立冷却账，冷却中重复点击被拒
+			Engine.get_singleton("GDSTATE").set_state("mainhud.skill", "3")
+			await _wait_frames(2)
+			player.call("_unhandled_input", click)
+			check(casts.size() == 2, "选中 3 号后左键应施放")
+			var st: Vector2 = player.call("skill_cd_state", "3")
+			check(st.y > 0.0 and st.x > 0.0, "3 号施放后应进入独立冷却记账")
+			player.call("_unhandled_input", click)
+			check(casts.size() == 2, "技能位冷却中重复点击应被静默拒绝")
+			_clear_bullets()  # 别让试射子弹干扰后续刷怪计数
+			print("[Dungeon] 秘境左键 = 施法不寻路 ok")
+
 	# 5. 第 1 层：随机出图 + 刷怪（3+1=4 只）
 	if not await _poll_floor(scene_root, 4, "第 1 层"):
 		_finish()
 		return
+
+	# 5.5 远战怪（妖狐）攻击相位应朝玩家开火：直调 Brain 攻击回调 →
+	# 场景内出现敌方子弹（mask=2 只打玩家受击盒）
+	var fox: Node = null
+	for e in get_first_floor().get_enemies():
+		if is_instance_valid(e) and bool(e.get("ranged")):
+			fox = e
+			break
+	if fox != null:
+		fox.call("_on_brain_attack")
+		check(await _poll(func(): return _count_bullets() > 0, 60,
+			"远战怪攻击相位应发射子弹"), "远战怪（妖狐）应朝玩家开火")
+		_clear_bullets()
+		print("[Dungeon] 远战怪开火 ok: %s" % fox.display_name)
+	else:
+		print("[Dungeon] 第 1 层无远战怪（随机池，跳过开火抽测）")
 
 	# 6. 全灭 → 自动进第 2 层（3+2=5 只，新地图实例）
 	var floor1: Node = get_first_floor()
@@ -315,6 +368,30 @@ func _main_map_alias(scene_root: Node) -> String:
 	return str(mgr.get_current_alias()) if mgr != null else "<null>"
 
 
+## 清理场景内所有弹幕子弹（试射后的清场，避免干扰后续刷怪计数）
+func _clear_bullets() -> void:
+	var stack: Array[Node] = [root]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		for c in n.get_children():
+			stack.append(c)
+		if n.get_class() == "GdBullet":
+			n.queue_free()
+
+
+## 场景内存活子弹数（敌方开火抽测用）
+func _count_bullets() -> int:
+	var n := 0
+	var stack: Array[Node] = [root]
+	while not stack.is_empty():
+		var cur: Node = stack.pop_back()
+		for c in cur.get_children():
+			stack.append(c)
+		if cur.get_class() == "GdBullet":
+			n += 1
+	return n
+
+
 ## 找当前随机地图的 Floor 控制器（组内唯一）
 func get_first_floor() -> Node:
 	return get_first_node_in_group("dungeon_floor")
@@ -342,6 +419,18 @@ func _poll_floor(scene_root: Node, expect_alive: int, tag: String) -> bool:
 		check(absi(e.enemy_cell.x - spawn.x) + absi(e.enemy_cell.y - spawn.y) >= 6
 			or e.name == "Boss", "%s 敌人应距出生点 ≥ 6 格" % tag)
 		break  # 逐只断言受随机性影响，抽查首只即可（生成器保证）
+	# 秘境仇恨：sight 覆盖全图，敌人无视距离主动追击（不游走待机）
+	for e in f.get_enemies():
+		check(float(e.sight_range) >= 8192.0,
+			"%s 敌人应全程仇恨（sight=%s）" % [tag, e.sight_range])
+		if bool(e.get("ranged")):
+			check(e.get("danmaku") != null, "%s 远战怪应挂弹幕发射器" % tag)
+	check(await _poll(func():
+		for e in get_first_floor().get_enemies():
+			if str(e.brain.get_ai_state()) == "chase":
+				return true
+		return false, 300, "%s 敌人应进入追击相位" % tag),
+		"%s 敌人应主动追击（chase 相位）" % tag)
 	var mgr: Node = _explore_map_mgr(scene_root)
 	check(mgr != null and str(mgr.get_current_alias()) == XiuDungeonState.DUNGEON_ALIAS,
 		"%s 当前地图应为随机场景" % tag)

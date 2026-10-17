@@ -31,6 +31,11 @@ func _ready() -> void:
 	_dungeon_bean.watch("floor", func(v = null, m = null): _on_floor_changed())
 	_dungeon_bean.watch("total_floors", func(v = null, m = null): _on_floor_changed())
 	_dungeon_bean.watch("status", func(v = null, m = null): _on_floor_changed())
+	# 结算弹窗遮罩：灰色透明（默认黑 55% 太沉）。运行期覆盖组件导出值——
+	# 不走 <theme>（builder 主题默认值在属性之后应用，会连带改写全场景字号）
+	var modal: Control = find_child("DungeonSettleModal", true, false)
+	if modal != null:
+		modal.set("overlay_color", Color(0.54, 0.54, 0.54, 0.4))
 
 
 ## 状态下行：层数横幅文案（running → 第 X/N 层；boss 层加妖王提示）

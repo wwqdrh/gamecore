@@ -42,16 +42,18 @@ const KEY_SKILL := "mainhud.skill"
 
 ## 弹幕技能表（秘境挑战技能栏 6 格）：key → 阵型描述。
 ## shape 阵型 + opts 参数全部走 GdDanmaku 描述字典（新弹幕 = 新数据不改框架）：
-##   damage 以玩家攻击力为基数按阵型弹数摊薄；cooldown 覆盖施放冷却
+##   damage 以玩家攻击力为基数按阵型弹数摊薄；cooldown = 技能位独立冷却（秒，
+##   0 = 无冷却可连发）。冷却**按技能位分别记账**（_skill_cd），组件全局单通道
+##   冷却置 0 绕开——否则放 3 号会把 1/2 号一起卡住；UI 灰罩进度条消费同源数据
 const SKILL_PATTERNS := {
 	"1": {
 		"label": "灵光速射", "shape": "single",
-		"opts": {"cooldown": 0.25,
+		"opts": {"cooldown": 0.0,
 			"bullet": {"speed": 640.0, "damage_factor": 1.0}},
 	},
 	"2": {
 		"label": "玄风扇煞", "shape": "fan",
-		"opts": {"count": 7, "spread": 70.0, "cooldown": 1.2,
+		"opts": {"count": 7, "spread": 70.0, "cooldown": 0.0,
 			"bullet": {"speed": 520.0, "damage_factor": 0.5}},
 	},
 	"3": {
@@ -79,6 +81,11 @@ const SKILL_PATTERNS := {
 	},
 }
 
+## 技能位独立冷却记账（key → {left 剩余秒, total 总时长}；无冷却技能不落表）。
+## 组件 GdDanmaku 的冷却只有一个全局通道，跨技能互卡；demo 技能层在此按位
+## 分账——UI 技能栏每帧读 skill_cd_state() 驱动灰罩进度条
+var _skill_cd := {}
+
 var map_mgr: Node = null
 var camera: Camera2D = null
 var scene_root: Node = null
@@ -98,8 +105,11 @@ var _equip_item := ""
 ## 秘境战斗中左键点击 → 施放该技能（不再是「按键即施放」）
 var _selected_skill := ""
 ## 秘境战斗模式（当前图为随机秘境）：左键 = 施放选中技能（本脚本处理），
-## 枪械/近战的框架鼠标开火路由关闭让位；主世界按装备 attack_mode 恢复
+## 枪械/近战的框架鼠标开火路由关闭让位；**点击行走在秘境内整体禁用**；
+## 主世界按装备 attack_mode 恢复点击行为
 var _dungeon_combat := false
+## 秘境未选中技能时的左键兜底技能位（技能 1 = 灵光速射，当作普通攻击）
+const DEFAULT_SKILL := "1"
 ## 兼容字段：持枪状态（射击模式下 true）
 var gun_equipped: bool:
 	get:
@@ -320,19 +330,39 @@ func _apply_attack_routing() -> void:
 
 ## 施放弹幕技能：SKILL_PATTERNS 描述 → damage_factor 换算绝对伤害 →
 ## GdDanmaku.cast_toward_mouse（朝鼠标方向按阵型编排）。
-## 选中态保持不变（连点连发，冷却内重复点击静默拒绝）
+## 冷却按技能位独立记账（_skill_cd）：冷却中静默拒绝，其余技能位不受影响；
+## 组件全局冷却传 0 绕开（单通道会把所有技能卡在一起）。选中态保持不变。
 func _cast_skill(key: String) -> void:
 	var pat: Dictionary = SKILL_PATTERNS.get(key, {})
 	if pat.is_empty() or danmaku == null:
 		return
+	var cd := float((pat.get("opts", {}) as Dictionary).get("cooldown", 0.0))
+	if cd > 0.0 and _skill_cd_left(key) > 0.0:
+		return  # 本技能位冷却中（其他技能位不受影响），静默拒绝
 	var opts: Dictionary = (pat.get("opts", {}) as Dictionary).duplicate(true)
 	var bullet: Dictionary = opts.get("bullet", {}) as Dictionary
 	bullet["damage"] = attack * float(bullet.get("damage_factor", 1.0))
 	bullet.erase("damage_factor")
 	opts["bullet"] = bullet
+	opts["cooldown"] = 0.0
 	if danmaku.cast_toward_mouse(str(pat.get("shape", "single")), opts):
-		print("[Player] 弹幕技能 %s·%s（cd %.1fs）"
-			% [key, str(pat.get("label", "")), float(opts.get("cooldown", 0.5))])
+		if cd > 0.0:
+			_skill_cd[key] = {"left": cd, "total": cd}
+		print("[Player] 弹幕技能 %s·%s（cd %s）"
+			% [key, str(pat.get("label", "")),
+			("%.1fs" % cd) if cd > 0.0 else "无"])
+
+
+## 技能位剩余冷却（秒；无记录 = 0）
+func _skill_cd_left(key: String) -> float:
+	var st: Dictionary = _skill_cd.get(key, {})
+	return float(st.get("left", 0.0))
+
+
+## 技能冷却状态（UI 灰罩进度条消费）：x = 剩余秒，y = 总时长；y = 0 表示无冷却
+func skill_cd_state(key: String) -> Vector2:
+	var st: Dictionary = _skill_cd.get(key, {})
+	return Vector2(float(st.get("left", 0.0)), float(st.get("total", 0.0)))
 
 
 # ---- 武器装配： WeaponMount 挂简单基础图形（正式素材就位后替换） ----
@@ -794,6 +824,13 @@ func _on_map_changed(_alias: String) -> void:
 
 func _process(delta: float) -> void:
 	# 注意：不覆写 _physics_process（会遮蔽 GdRoleMover 的 Rust 侧网格驱动）
+	# 技能位冷却推进：必须在一切早退分支之前（冷却与接线/地图状态无关）
+	if not _skill_cd.is_empty():
+		for k in _skill_cd.keys():
+			var st: Dictionary = _skill_cd[k]
+			var left := float(st.get("left", 0.0))
+			if left > 0.0:
+				st["left"] = maxf(0.0, left - delta)
 	# 接线重试在 process 阶段驱动（MapManager 组件注册也在其 process 中完成，
 	# 同为 process 阶段即可收敛，且不会卡死 deferred flush）
 	# 远程攻击：开火输入由 GdShooter 自身的 unhandled_input 事件路由驱动
@@ -850,11 +887,10 @@ func _unhandled_input(event: InputEvent) -> void:
 	# 此处按 attack_mode 分流双保险。
 	if event is InputEventMouseButton and event.pressed \
 			and event.button_index == MOUSE_BUTTON_LEFT:
-		# 秘境弹幕模式：已选中技能 → 左键朝鼠标施放（消费事件，不走寻路/
-		# 装备攻击——路由已在 _apply_attack_routing 让位，此处是施放入口）；
-		# 未选中技能 → 落到下方常规分流（徒手寻路/装备攻击已被框架消费）
-		if _dungeon_combat and _selected_skill != "":
-			_cast_skill(_selected_skill)
+		# 秘境弹幕模式：左键**只施放技能，绝不点击行走**——未选技能时回落
+		# 技能 1（灵光速射＝普通攻击），事件一律消费，避免落到下方寻路分流
+		if _dungeon_combat:
+			_cast_skill(_selected_skill if _selected_skill != "" else DEFAULT_SKILL)
 			get_viewport().set_input_as_handled()
 			return
 		# 装备武器时左键 = 攻击输入（框架 unhandled 路由驱动），不再触发寻路

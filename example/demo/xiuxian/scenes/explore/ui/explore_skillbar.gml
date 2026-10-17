@@ -1,7 +1,7 @@
 <ui script="explore_skillbar.gd">
   <!-- 秘境技能栏（自 mainhud 迁移，仅探索场景显示）：6 格技能（UIHList 数据驱动 +
-	   冷却态）+ 灵气经验条。数据绑定链路：<script> 定义技能数据（数据自带
-	   key/icon/cd 展示字段），UIHList data="skills" 构建期填充；
+	   运行时冷却灰罩进度条）+ 灵气经验条。数据绑定链路：<script> 定义技能数据
+	   （key/icon 展示字段），UIHList data="skills" 构建期填充；
 	   @s_click_item 回调本文件脚本，点选只上报 GdState（mainhud.skill 键名保留，
 	   玩家侧消费方 watch 同名键，跨场景兼容） -->
   <style>
@@ -24,16 +24,17 @@
 	.xp-text { color: #f2ead2; font_size: 13; }
   </style>
   <script>
-	// 技能栏数据（6 格）：key 键位角标 / icon 图标 / cd 冷却文本（空串 = 就绪）。
+	// 技能栏数据（6 格）：key 键位角标 / icon 图标（冷却灰罩运行时驱动，
+	// 冷却唯一真源 = player.gd SKILL_PATTERNS，skillbar 每帧 set_cooldown 同步）。
 	// key 对应 player.gd SKILL_PATTERNS（弹幕阵型）：1 灵光速射 / 2 玄风扇煞 /
 	// 3 周天星环 / 4 碧波灵刃 / 5 追魂符引 / 6 万剑归宗
 	var skills = [
-		{ key: "1", icon: "⚡", cd: "" },
-		{ key: "2", icon: "🌀", cd: "" },
-		{ key: "3", icon: "🌙", cd: "2.5s" },
-		{ key: "4", icon: "🍃", cd: "1.6s" },
-		{ key: "5", icon: "🧘", cd: "2s" },
-		{ key: "6", icon: "🗡️", cd: "6s" },
+		{ key: "1", icon: "⚡" },
+		{ key: "2", icon: "🌀" },
+		{ key: "3", icon: "🌙" },
+		{ key: "4", icon: "🍃" },
+		{ key: "5", icon: "🧘" },
+		{ key: "6", icon: "🗡️" },
 	]
   </script>
   <VBoxContainer name="SkillBar" separation="8">

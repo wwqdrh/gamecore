@@ -1,6 +1,6 @@
-[gd_scene format=3 uid="uid://k7865d7yra8h"]
+[gd_scene format=3]
 
-[ext_resource type="Script" uid="uid://pcpkg28ub6jj" path="res://example/demo/xiuxian/scenes/explore/ui/skill_item.gd" id="1_27ms1"]
+[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/explore/ui/skill_item.gd" id="1_27ms1"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_55mcn"]
 bg_color = Color(0.14117648, 0.23529412, 0.18039216, 1)
@@ -15,13 +15,9 @@ corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_853i0"]
-bg_color = Color(0.039215688, 0.078431375, 0.0627451, 0.7529412)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
+bg_color = Color(0.2901961, 0.2901961, 0.2901961, 0.72156864)
 
-[node name="SkillSlot" type="Panel" unique_id=1263737629]
+[node name="SkillSlot" type="Panel" unique_id=274273128]
 custom_minimum_size = Vector2(56, 56)
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -30,9 +26,9 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_55mcn")
 script = ExtResource("1_27ms1")
 metadata/__script_vars = {}
 metadata/__gml_root = true
-metadata/__data_contract = PackedStringArray()
+metadata/__data_contract = PackedStringArray("icon", "key")
 
-[node name="IconBox" type="CenterContainer" parent="." unique_id=1188130526]
+[node name="IconBox" type="CenterContainer" parent="." unique_id=842030888]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -44,35 +40,23 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="SlotIcon" type="Label" parent="IconBox" unique_id=428632929]
+[node name="SlotIcon" type="Label" parent="IconBox" unique_id=2096227528]
 layout_mode = 2
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="CdMask" type="Panel" parent="." unique_id=143900470]
+[node name="CdMask" type="Panel" parent="." unique_id=1276061226]
 visible = false
 layout_mode = 0
+anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_853i0")
-metadata/__anchor = "full"
+metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="CdText" type="Label" parent="." unique_id=522714414]
-visible = false
-layout_mode = 0
-anchor_right = 1.0
-anchor_bottom = 1.0
-theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
-horizontal_alignment = 1
-vertical_alignment = 1
-metadata/__tpl_text = "cd"
-metadata/__tpl_keys = "text"
-metadata/__anchor = "full"
-metadata/__script_vars = {}
-
-[node name="KeyBadge" type="Label" parent="." unique_id=926662478]
+[node name="KeyBadge" type="Label" parent="." unique_id=1361220485]
 layout_mode = 0
 anchor_top = 1.0
 anchor_right = 1.0

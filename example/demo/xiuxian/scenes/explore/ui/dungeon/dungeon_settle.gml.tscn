@@ -1,9 +1,9 @@
-[gd_scene format=3 uid="uid://6qypj61dvfm3"]
+[gd_scene format=3]
 
-[ext_resource type="Script" uid="uid://dq2r17basangh" path="res://example/demo/xiuxian/scenes/explore/ui/dungeon/dungeon_settle.gd" id="1_12lsv"]
+[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/explore/ui/dungeon/dungeon_settle.gd" id="1_12lsv"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_je6s6"]
-bg_color = Color(0.18039216, 0.14117648, 0.21176471, 1)
+bg_color = Color(0.18039216, 0.14117648, 0.21176471, 0.9490196)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
@@ -14,62 +14,69 @@ corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
-[node name="SettleRoot" type="Panel" unique_id=669476151]
-custom_minimum_size = Vector2(460, 0)
-theme_override_styles/panel = SubResource("StyleBoxFlat_je6s6")
+[node name="Center" type="CenterContainer" unique_id=557660169]
+anchor_right = 1.0
+anchor_bottom = 1.0
 script = ExtResource("1_12lsv")
+metadata/__anchor = "full"
 metadata/__script_vars = {}
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray()
 
-[node name="@VBoxContainer@26913" type="VBoxContainer" parent="." unique_id=476778052]
-layout_mode = 0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 24.0
-offset_top = 24.0
-offset_right = -24.0
-offset_bottom = -24.0
-mouse_filter = 2
-metadata/__anchor = "full"
+[node name="SettleRoot" type="PanelContainer" parent="." unique_id=1444779750]
+custom_minimum_size = Vector2(520, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_je6s6")
 metadata/__script_vars = {}
 
-[node name="Title" type="Label" parent="@VBoxContainer@26913" unique_id=1975766089]
+[node name="Content" type="VBoxContainer" parent="SettleRoot" unique_id=463085313]
 layout_mode = 2
+mouse_filter = 2
+
+[node name="Title" type="Label" parent="SettleRoot/Content" unique_id=2074325052]
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
 theme_override_colors/font_color = Color(0.9490196, 0.8509804, 0.54901963, 1)
-text = "秘境通关结算"
+text = "秘境通关"
 horizontal_alignment = 1
 
-[node name="LineFloors" type="Label" parent="@VBoxContainer@26913" unique_id=1875116435]
+[node name="LineFloors" type="Label" parent="SettleRoot/Content" unique_id=564720973]
 layout_mode = 2
+theme_override_font_sizes/font_size = 16
 theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "扫荡层数：-"
 horizontal_alignment = 1
 
-[node name="LineExp" type="Label" parent="@VBoxContainer@26913" unique_id=964541736]
+[node name="LineExp" type="Label" parent="SettleRoot/Content" unique_id=177213255]
 layout_mode = 2
+theme_override_font_sizes/font_size = 16
 theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "获得修为：+0"
 horizontal_alignment = 1
 
-[node name="LineStones" type="Label" parent="@VBoxContainer@26913" unique_id=887095770]
+[node name="LineStones" type="Label" parent="SettleRoot/Content" unique_id=895775947]
 layout_mode = 2
+theme_override_font_sizes/font_size = 16
 theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "获得灵石：+0"
 horizontal_alignment = 1
 
-[node name="@Label@26912" type="Label" parent="@VBoxContainer@26913" unique_id=1129066634]
+[node name="@Label@24" type="Label" parent="SettleRoot/Content" unique_id=549663626]
 layout_mode = 2
+theme_override_font_sizes/font_size = 16
 theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "—— 战利品 ——"
 horizontal_alignment = 1
 
-[node name="ItemList" type="VBoxContainer" parent="@VBoxContainer@26913" unique_id=1931248356]
+[node name="ItemList" type="HBoxContainer" parent="SettleRoot/Content" unique_id=1957736244]
 layout_mode = 2
+size_flags_horizontal = 4
 mouse_filter = 2
 
-[node name="CloseBtn" type="Button" parent="@VBoxContainer@26913" unique_id=1517303270]
+[node name="CloseBtn" type="Button" parent="SettleRoot/Content" unique_id=794120976]
+custom_minimum_size = Vector2(200, 48)
 layout_mode = 2
+size_flags_horizontal = 4
 mouse_default_cursor_shape = 2
 text = "收下奖励"
 metadata/__signal_pressed = "_on_close_pressed"

@@ -4,18 +4,14 @@
 # 数据契约（@export = 条目接受的外部注入字段，声明了才注入，类型即文档）：
 #   icon 技能图标（emoji 占位，正式版为贴图）
 #   key  键位角标（"1"~"6"）
-#   cd   冷却文本（"8s"；非空显示冷却遮罩+倒计时，空串 = 技能就绪）
-# 运行时状态（skillbar 控制器按状态键 mainhud.skill 同步，非注入契约）：
-#   selected 选中高亮（金色描边覆盖层；键位 1-6 与点选两路统一收敛）
+# 运行时状态（skillbar 控制器每帧驱动，非注入契约）：
+#   selected     选中高亮（金色描边覆盖层；键位 1-6 与点选两路统一收敛）
+#   set_cooldown 冷却灰罩进度条（灰罩盖住格子底部、清晰区自上而下推进，
+#                走完恢复全亮=可再施放；冷却唯一真源 = player.gd SKILL_PATTERNS）
 extends Panel
 
 @export var icon: String = ""
 @export var key: String = ""
-@export var cd: String = "":
-	set(value):
-		cd = value
-		if is_node_ready():
-			_apply_cd()
 
 ## 选中态（唯一真源 = GdState mainhud.skill，控制器写这里）
 var selected: bool = false:
@@ -24,22 +20,26 @@ var selected: bool = false:
 		if is_node_ready():
 			_apply_selected()
 
+## 冷却运行时状态（剩余秒 / 总时长；skillbar set_cooldown 每帧同步）
+var _cd_left := 0.0
+var _cd_total := 0.0
+
 
 func _ready() -> void:
 	# 契约注入发生在条目挂树前（构建期），is_node_ready() 为 false 时 setter
 	# 跳过 UI 联动——_ready 统一补偿应用（见 ui-gml.md 坑 7）
-	_apply_cd()
 	_apply_selected()
+	_apply_cooldown()
 
 
-func _apply_cd() -> void:
-	var cooling := cd != ""
-	var mask := find_child("CdMask", true, false) as Control
-	if mask:
-		mask.visible = cooling
-	var text := find_child("CdText", true, false) as Label
-	if text:
-		text.visible = cooling
+## 冷却同步入口（skillbar 控制器每帧调用）：
+##   left > 0 且 total > 0 → 冷却中：灰罩盖住底部 frac 比例（清晰区自上而下推进）
+##   left <= 0 / total <= 0 → 就绪：灰罩隐藏（total=0 = 该技能无冷却）
+func set_cooldown(left: float, total: float) -> void:
+	_cd_left = left
+	_cd_total = total
+	if is_node_ready():
+		_apply_cooldown()
 
 
 ## 选中高亮覆盖层（懒创建：金色描边圆角框，置顶绘制、鼠标穿透）
@@ -58,3 +58,21 @@ func _apply_selected() -> void:
 		frame.set_anchors_preset(Control.PRESET_FULL_RECT)
 		add_child(frame)
 	frame.visible = selected
+
+
+## 冷却灰罩：CdMask 锚定 bottom_wide（gml 静态声明），运行期只推 offset_top——
+## 灰罩顶边从格子顶部（frac=1）降到格子底部（frac=0），图标自上而下逐渐清晰。
+## 每帧按当前格子实际尺寸换算（条目 expand_fill，尺寸随布局变化）
+func _apply_cooldown() -> void:
+	var mask := find_child("CdMask", true, false) as Panel
+	if mask == null:
+		return
+	var cooling := _cd_left > 0.0 and _cd_total > 0.0
+	mask.visible = cooling
+	if not cooling:
+		return
+	var frac: float = clampf(_cd_left / _cd_total, 0.0, 1.0)
+	mask.anchor_top = 1.0
+	mask.anchor_bottom = 1.0
+	mask.offset_top = -size.y * frac
+	mask.offset_bottom = 0.0

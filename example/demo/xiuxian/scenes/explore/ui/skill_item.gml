@@ -1,8 +1,9 @@
 <ui script="skill_item.gd">
-  <!-- 技能格条目模板：作为 mainhud_skillbar.gml 中 UIHList 的 slot 模板（构建期注入）。
+  <!-- 技能格条目模板：作为 explore_skillbar.gml 中 UIHList 的 slot 模板（构建期注入）。
 	   数据契约见 skill_item.gd 的 @export 列表：
-	   icon 技能图标 / key 键位角标（"1"~"6"） / cd 冷却文本（"8s"，空串隐藏遮罩）
-	   {{key}} 模板绑定负责静态文本渲染，契约注入负责冷却态联动 -->
+	   icon 技能图标 / key 键位角标（"1"~"6"）
+	   {{key}} 模板绑定负责静态文本渲染；冷却灰罩是运行时状态（无冷却数据字段，
+	   冷却唯一真源 = player.gd SKILL_PATTERNS，经 skillbar 每帧 set_cooldown 驱动） -->
   <style>
 	.slot-bg {
 	  background: #243c2e;
@@ -12,10 +13,8 @@
 	}
 	.slot-icon { font_size: 26; }
 	.cd-mask {
-	  background: #0a1410c0;
-	  border_radius: 10;
+	  background: #4a4a4ab8;
 	}
-	.cd-text { color: #f2ead2; font_size: 15; }
 	.key-badge {
 	  color: #f2ead2;
 	  font_size: 11;
@@ -30,10 +29,9 @@
 	<CenterContainer name="IconBox" anchor="full" margin="5">
 	  <Label name="SlotIcon" class="slot-icon" text="{{icon}}" />
 	</CenterContainer>
-	<!-- 冷却遮罩 + 倒计时（cd 契约非空时显示，置于图标之上） -->
-	<Panel name="CdMask" class="cd-mask" anchor="full" visible="false" />
-	<Label name="CdText" class="cd-text" text="{{cd}}" anchor="full"
-	       align="center" valign="center" visible="false" />
+	<!-- 冷却灰罩（运行时驱动）：施放后盖住格子底部按剩余比例收缩，
+	     清晰区自上而下推进，走完即恢复可施放；高度由 skill_item.gd 每帧设置 -->
+	<Panel name="CdMask" class="cd-mask" anchor="bottom_wide" visible="false" />
 	<!-- 键位角标：底部居中（bottom_wide 需负 top margin 收进格子内） -->
 	<Label name="KeyBadge" class="key-badge" text="{{key}}" anchor="bottom_wide"
 	       margin="14 -24 14 2" align="center" />
