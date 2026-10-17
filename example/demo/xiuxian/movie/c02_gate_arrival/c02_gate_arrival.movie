@@ -1,0 +1,39 @@
+# 宗门篇 c02 山门初至（sect）
+# 触发建议：首次进入 xiuxian_sect（山门）时播放。播完由调用方监听
+# s_movie_finished 落籍（open_map 到山门内已由快照回迁+调用方处理）。
+# 分镜：山门全景 → 执事长老引路 → 报名册 → 遥望大殿
+
+scene xiuxian_sect
+# 玩家演出站位：南侧山门内（青云坊方向传送点旁）
+player (29,19)
+wait 0.8
+
+# 山门全景运镜
+camera pan (16,10) 2.0
+camera zoom 0.9
+wait 0.8
+camera reset_zoom
+camera follow player
+
+# 执事长老从画面外走来引路
+actor elder enter (29,18) from (29,21)
+camera focus elder 1.0
+say elder 3.5 萧家小子，一路辛苦。选拔前十，是青云坊十年未见的彩头。
+say elder 2.5 跟我走吧——外门名册在偏殿，先落籍，再拜山门。
+camera unfocus
+
+# 行至名册处
+camera follow player
+say player 3.0 （好高的石阶……这就是青云宗。从这里起，我不再只是萧家的少爷。）
+
+# 遥望大殿（宗主戏份留给 c03）
+camera pan (16,7) 1.5
+say elder 3.5 大殿之上便是宗主凌霄真人。等会儿训话，放尊敬些。
+camera pan (29,18) 1.2
+camera follow player
+
+actor elder exit to (29,21)
+say player 3.0 （青云择徒，不问出身，只问道心——我倒要看看，这条路能走多远。）
+camera unfocus
+flag sect_arrived
+end

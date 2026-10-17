@@ -54,13 +54,16 @@ helper：宿主有 `show_bubble` 复用之，否则挂默认气泡。
 2. `movie.play()`（或 `play_from(":label")`），await `s_movie_finished`；
 3. 演出期玩家被 `set_paused(true)` 锁定，结束自动解锁。
 
-本目录剧本（第一阶段三段）：
+本目录剧本：
 
-| 文件夹 | 剧情建议触发点 | 接线状态 |
-|---|---|---|
-| `prologue/` | 新档首次进主场景，播完接 main_101 引导 | ✅ 已接线：`scenes/main/movie_trigger.gd`（挂在主场景 MovieTrigger 节点），播放记录存 `XiuMovieState`（`state/movie/movie_state.gd`），播完置位不再重播 |
-| `breakthrough/` | `try_breakthrough` 成功进入斗者 | 未接线 |
-| `selection_eve/` | stage1_clear 后、sect_tournament 报名前（播完 `unlock_task`） | 未接线 |
+| 文件夹 | 剧情 | 触发点 | 接线状态 |
+|---|---|---|---|
+| `prologue/` | 农田醒来开场 | 新档首次进主场景 | ✅ 已接线：`scenes/main/movie_trigger.gd`（播放记录存 `XiuMovieState`） |
+| `breakthrough/` | 突破斗者 | `try_breakthrough` 成功 | 未接线 |
+| `selection_eve/` | 宗门选拔前夜 | stage1_clear 后 | 未接线 |
+| `c01_farewell` … `c20_vow_hometown` | **宗门篇《青云问道》20 段**（人物/情节/拆分见同目录 `character.md` / `detail.md` / `clip.md`） | 各段触发建议见 `clip.md` | 未接线（新图 `xiuxian_sect` 已注册，经夺魁领奖 `unlock_map` 点亮） |
 
 `test_smoke/` 是 headless 回归剧本（`test/test_movie_player.gd` 使用）。
+宗门篇 20 段剧本验收：`example/demo/xiuxian/check_movie_clips.gd`
+（actor 注册 / 解析 / 玩家站位可行走 / 山门传送与门控）。
 触发器接线回归：`test/test_movie_trigger.gd`（自动开播 / 播完落盘 / 重进不重播）。

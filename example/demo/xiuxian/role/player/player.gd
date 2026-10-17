@@ -96,8 +96,12 @@ var danmaku: Node = null
 var weapon_mount: Node2D = null
 ## 当前攻击模式："gun" = 射击 / "melee" = 近战 / "mine" = 挖矿 / "till" = 锄地 /
 ## "water" = 浇水 / "plant" = 播种收获 / "" = 空手（左键点击：相邻成熟作物
-## 采摘入包，否则寻路）
+## 采摘入包；点击寻路另受 click_to_move 开关控制，默认关）
 var attack_mode := ""
+## 鼠标左键点击寻路移动（产品默认**关闭**：点击不再驱动移动，移动只走
+## 键盘/WASD；空手相邻采摘、装备攻击、秘境施法不受影响）。
+## 验收脚本可临时置 true 回归预览线机制（check_path_preview.gd 范式）
+@export var click_to_move := false
 ## 当前装备道具 id（_on_equip_changed 记录；播种时作为种子 id 匹配作物 def）
 var _equip_item := ""
 ## 当前选中的弹幕技能位（"1"~"6"；空 = 未选中）。
@@ -918,6 +922,10 @@ func _on_map_clicked_at(map: Node, target: Vector2i) -> void:
 	# 空手点击：目标格有成熟作物（含脚下格）→ 摘取入包，点击被消费；
 	# 无作物/不相邻 → 落到下面的寻路（远处成熟作物也会走过去）
 	if attack_mode == "" and _harvest_at(map, target):
+		return
+	# 点击寻路产品级默认关闭（click_to_move=false）：移动只走键盘/WASD，
+	# 点击不再生成路径与预览线（采摘/攻击/施法已在上方分流，不受影响）
+	if not click_to_move:
 		return
 	# 寻路需地图支持 find_path（GdQuickMap 探索图）；GdDigLayer 小地图
 	# 不支持则跳过（home 内移动走键盘）

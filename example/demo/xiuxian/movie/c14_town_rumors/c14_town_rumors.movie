@@ -1,0 +1,33 @@
+# 宗门篇 c14 坊市异闻（town）
+# 触发建议：c13 后回青云坊休整触发。
+# 分镜：坊市说书 → 修士失踪异闻 → 孙半城抱怨赵家 → 主角心里有数
+
+scene xiuxian_town
+# 玩家演出站位：坊市街心
+player (16,9)
+wait 0.5
+
+# 说书先生（演出来坊市赶集）
+actor storyteller enter (17,9) from (13,9)
+camera follow player
+camera focus storyteller 1.0
+say storyteller 4.0 ——列位看官！近日幽竹林一带可不太平：接连有修士入秘境，出来时行囊空空，人也没了生气！
+say storyteller 3.5 有说是妖物劫道，有说是黑风煞作祟。要我说呐——妖物不劫灵石，劫灵石的，另有其人！
+camera unfocus
+
+# 孙半城插话
+actor merchant enter (17,13) from (20,13)
+camera focus merchant 1.0
+say merchant 3.0 贾先生这话在理！如今这坊市，赵家商盟压价霸市，正经买卖人快活不下去了。
+say merchant 3.0 前日我托人往幽竹林销货，伙计回来就说：林子深处灵气乱得像开了锅，白雾卷着黑气！
+camera unfocus
+
+say player 3.5 （幽竹林、灵气紊乱、劫灵石……玄鸦那晚说的「秘境意外」，不会就藏在那片林子里。）
+say player 3.0 （明日回宗，得把这事递到执事堂。）
+
+actor storyteller exit to (13,9)
+actor merchant exit to (20,13)
+say player 2.5 （但愿是我多心。）
+camera unfocus
+flag town_rumors_heard
+end

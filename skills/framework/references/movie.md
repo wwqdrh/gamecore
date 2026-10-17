@@ -65,6 +65,20 @@
 - `auto_free_actors=false` 保留在场的角色，finish 时自动回调
   `set_movie_actor(false)` 恢复日程/对话/寒暄自治（true 时直接释放无需恢复）
 
+## 常驻 NPC 抑制（演出 dedup，2026-10-17）
+
+地图场景内嵌的常驻 NPC 与剧本 actor（同一角色再实例化一份）会同屏重复。
+演出期间播放器自动**隐藏当前地图上的常驻 NPC**，结束/stop 恢复：
+
+- 触发点：`play()` 开局 + `scene` 指令（跨图开图后等装配帧、同图跳过）
+  各收一遍（`pending_suppress` 延迟到协程下一指令前消费，新图 NPC 已就位）
+- 识别契约：节点带 `npc_id` 属性（鸭子识别，框架不感知 demo 类名）；
+  **必须同时 `has_method("hide")`**——NPC 子组件 GdNpcSchedule 同样镜像了
+  `npc_id` 但纯逻辑 Node 无 hide（踩过：call("hide") panic 炸协程）
+- 演出 actor 本尊及其子树豁免（防同图二段抑制把已出场 actor 藏掉）
+- 恢复：finish/stop 先 `restore_npcs()` 再回迁快照——跨图演出回迁重载的
+  地图上是新 NPC 实例（本来就可见），旧实例条目按有效性自然跳过
+
 ## 演出锁
 
 `play()` 对 `player_path` 节点鸭子 `set_paused(true)`（GdRoleMover 剧情

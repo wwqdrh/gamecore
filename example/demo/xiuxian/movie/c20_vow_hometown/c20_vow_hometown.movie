@@ -1,0 +1,44 @@
+# 宗门篇 c20 道心立誓（home）
+# 触发建议：c19 后告假回乡（首次回 xiuxian_home 且 blood_truth_1 已置）触发。
+# 全篇收束 + 第三阶段钩子（魔道蚀骨门上门之日，即宗门篇终局之战）。
+# 分镜：田埂祭先人 → 家人话别 → 立誓再上青云
+
+scene xiuxian_home
+# 玩家演出站位：田埂醒来处（首尾呼应 prologue）
+player (9,6)
+wait 0.8
+
+camera follow player
+say player 3.5 （还是这片田埂。当初从这里醒来，只想着怎么在萧家活下去；如今回来，是来道别的。）
+
+# 祭先人（身世线落点）
+camera focus player 1.0
+say player 3.5 （爹——药王谷的爹。你的碑不在这里，但你的玉佩、你的功法，都在我身上。）
+say player 3.0 （儿子的路，从你的断点续上。）
+camera unfocus
+
+# 家人话别
+actor xiao_master enter (10,6) from (14,7)
+actor xiao_lady enter (12,7) from (15,8)
+actor xiao_maid enter (7,6) from (4,5)
+camera follow player
+camera focus xiao_master 1.0
+say xiao_master 3.5 玉佩的事，玄机老人的信我收到了。当年瞒你，是怕你担不动；如今……你自己担起来了。
+say player 2.5 爹，等我筑基，我把全部的真相带回家。
+camera focus xiao_lady 0.8
+say xiao_lady 3.0 什么筑基不筑基的——到了地头先捎个信，娘给你留门。
+say xiao_maid 2.5 少爷！这次换翠儿不哭了——少爷是去做大事的人！
+camera unfocus
+
+# 家人退场
+actor xiao_maid exit to (4,5)
+actor xiao_lady exit to (15,8)
+actor xiao_master exit to (14,7)
+
+# 立誓收束（第三阶段钩子）
+camera focus player 1.2
+say player 4.0 （魔道既已现世，萧家不可独安。蚀骨门上门之日——就是我把他们拦在门外之时。）
+say player 3.5 （青云宗、药王谷、断魂崖……一个一个来。这一次，我是为自己的名字而战。）
+camera unfocus
+flag vow_made
+end

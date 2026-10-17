@@ -1,0 +1,33 @@
+# 宗门篇 c16 幽林伏击（map_b）
+# 触发建议：main_203 goto 谷底步推进时播放。演出后可接真实战斗（妖群刷出）。
+# 分镜：林深灵气紊乱 → 赵擎反手偷袭 → 引妖扬长而去 → 苦撑
+
+scene xiuxian_map_b
+# 玩家演出站位：谷底
+player (12,10)
+wait 0.6
+
+actor rival enter (11,10) from (8,11)
+camera follow player
+say player 3.0 （谷底灵气乱得像开了锅……贾先生说的白雾卷黑气，就是这儿。赵师兄，你看见什么没有？）
+camera focus rival 1.0
+say rival 2.5 看见了。
+camera unfocus
+
+# 反手偷袭
+camera shake 7.0
+wait 0.8
+say player 3.0 （呃——！赵、赵擎？！你疯……这一掌是冲我来的？！）
+camera focus rival 1.0
+say rival 3.5 外门第一？去和谷里的妖物争吧。
+say rival 3.0 哦对了，替你数着——谷里这窝妖，十二只。够你「名动青云」了。
+camera unfocus
+
+# 扬长而去
+actor rival exit to (8,11)
+camera shake 4.0
+say player 3.5 （妖群被血腥气引来了……方才那一掌废了我半条气脉。撑住——活下去！）
+say player 3.0 （灵光速射……连珠，别停！）
+camera unfocus
+flag player_ambushed
+end

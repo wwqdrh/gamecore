@@ -1,0 +1,29 @@
+# 宗门篇 c12 青草岭遇险（map_a）
+# 触发建议：c11 后进入青草岭南崖区域（采药点）触发。
+# 分镜：崖下寻药 → 妖狐群围攻（震屏表现苦战）→ 脱险追妖
+
+scene xiuxian_map_a
+# 玩家演出站位：南崖药点
+player (18,12)
+wait 0.6
+
+camera follow player
+say player 3.0 （崖风裹着药香……找到了，清心草。白芷姑娘的咳症有救了。）
+wait 0.6
+
+# 妖狐群围攻（演出表现）
+camera shake 3.0
+say player 2.5 （不对——四周有腥风！）
+camera shake 6.0
+say player 3.0 （妖狐群！三只……不，五只！把我围在崖下了！）
+camera shake 7.0
+wait 0.8
+say player 3.5 （退到崖壁背风处，别让它们绕后——灵光速射封住正面，周天星环护住侧翼！）
+camera shake 5.0
+wait 0.8
+say player 3.0 （呼……总算打退了。头狼往雾里跑了——追上去？）
+camera unfocus
+
+say player 2.5 （这雾……妖物退进去的方向，灵气好像不太对劲。）
+flag mapa_peril_survived
+end

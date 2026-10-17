@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dralsx8w4ffg5"]
 
-[ext_resource type="Script" uid="uid://b4ipfenkr7nel" path="res://example/demo/xiuxian/scenes/main/ui/reward/reward_item.gd" id="1_0wi25"]
+[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/ui/reward/reward_item.gd" id="1_0wi25"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5jhjb"]
 bg_color = Color(0.16470589, 0.14117648, 0.09411765, 0.8509804)
@@ -14,7 +14,7 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[node name="RewardCell" type="Panel" unique_id=673601575]
+[node name="RewardCell" type="Panel" unique_id=483780683]
 custom_minimum_size = Vector2(78, 96)
 size_flags_horizontal = 4
 theme_override_styles/panel = SubResource("StyleBoxFlat_5jhjb")
@@ -23,9 +23,9 @@ metadata/__tips_title = "{{tips_title}}"
 metadata/__tips = "{{tips}}"
 metadata/__script_vars = {}
 metadata/__gml_root = true
-metadata/__data_contract = PackedStringArray()
+metadata/__data_contract = PackedStringArray("icon", "icon_texture", "count", "tips_title", "tips")
 
-[node name="IconBox" type="CenterContainer" parent="." unique_id=181763470]
+[node name="IconBox" type="CenterContainer" parent="." unique_id=1871879423]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -37,19 +37,19 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="IconBox" unique_id=1950214287]
+[node name="CellIcon" type="Label" parent="IconBox" unique_id=1439879881]
 layout_mode = 2
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="CellTex" type="TextureRect" parent="IconBox" unique_id=2066437000]
+[node name="CellTex" type="TextureRect" parent="IconBox" unique_id=1034843883]
 visible = false
 custom_minimum_size = Vector2(34, 34)
 layout_mode = 2
 mouse_filter = 2
 stretch_mode = 5
 
-[node name="NameLabel" type="Label" parent="." unique_id=1236500967]
+[node name="NameLabel" type="Label" parent="." unique_id=998927359]
 layout_mode = 0
 anchor_top = 1.0
 anchor_right = 1.0
@@ -65,7 +65,7 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="." unique_id=689906000]
+[node name="CountLabel" type="Label" parent="." unique_id=1554073166]
 layout_mode = 0
 anchor_top = 1.0
 anchor_right = 1.0

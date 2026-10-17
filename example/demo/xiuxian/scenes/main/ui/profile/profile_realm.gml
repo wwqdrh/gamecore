@@ -39,6 +39,8 @@
 	  border_radius: 16;
 	}
 	.chip-text { color: #6b5a3e; }
+	.hint-text { color: #a8443a; }
+	.chip-ok { color: #3f7a4e; }
   </style>
   <Panel name="RealmPanel" class="card-bg">
 	<VBoxContainer name="RealmColumn" anchor="full" margin="14">
@@ -65,6 +67,9 @@
 		<Button name="BreakthroughBtn" text="突  破" class="gold-btn"
 		        custom_minimum_size="180,52" @pressed="_on_breakthrough_pressed" />
 	  </CenterContainer>
+	  <Label name="BreakthroughHint" text="" class="hint-text" font_size="14"
+	         align="center" valign="center" autowrap_mode="3"
+	         custom_minimum_size="0,36" size_flags_horizontal="fill" />
 	  <Control custom_minimum_size="0,8" />
 	  <CenterContainer name="MaterialRow">
 		<Panel name="MaterialChip" class="item-chip" custom_minimum_size="130,40">

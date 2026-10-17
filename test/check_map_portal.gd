@@ -14,6 +14,7 @@ const MAPS := [
 	"res://example/demo/xiuxian/map/town.tscn",
 	"res://example/demo/xiuxian/map/map_a.tscn",
 	"res://example/demo/xiuxian/map/map_b.tscn",
+	"res://example/demo/xiuxian/map/sect.tscn",
 ]
 
 ## 与 regen_map_thumbs.gd 的 LAYOUT 一致（世界拼接偏移，格子单位）
@@ -24,6 +25,7 @@ const LAYOUT := {
 	"xiuxian_town": {"x": 98, "y": 6},
 	"xiuxian_map_a": {"x": 140, "y": 6},
 	"xiuxian_map_b": {"x": 140, "y": -16},
+	"xiuxian_sect": {"x": 98, "y": -22},
 }
 
 var _ok := 0

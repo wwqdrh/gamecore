@@ -1,0 +1,54 @@
+# 宗门篇 c17 魔修现身（map_b）
+# 触发建议：c16 战斗结算（撑过妖群）后触发。全篇最高潮，身世线决堤。
+# 分镜：玄鸦踏雾而来 → 认出玉佩「萧家余孽」→ 血脉决堤险胜 → 大师兄驰援 → 魔影遁走
+
+scene xiuxian_map_b
+# 玩家演出站位：谷底（承 c16）
+player (12,11)
+wait 0.8
+
+# 玄鸦现身
+camera zoom 1.1
+wait 0.6
+camera reset_zoom
+actor dark_cultivator enter (12,9) from (12,4)
+camera focus dark_cultivator 1.2
+say dark_cultivator 3.5 别来无恙啊，萧家的……余孽。
+say player 2.5 余孽？你说什么萧家——你到底是谁？
+say dark_cultivator 3.5 蚀骨门办事，从不报名字。倒是那块玉佩——四十年了，它居然自己找回了萧家血脉。
+camera unfocus
+
+# 身世决堤（玉佩剧烫）
+camera focus player 1.0
+camera shake 5.0
+say player 3.5 （玉佩在烧！烫得像要嵌进肉里——火光、背影、崖边那一跳……「活下去」！）
+say player 3.5 （这些不是我的记忆！是「他」的——这具身体的前主，到底经历过什么？！）
+say dark_cultivator 3.0 记起来了？那正好。功法、玉佩、命——蚀骨门要的东西，今天一起结账。
+camera unfocus
+
+# 绝境爆发
+camera shake 7.0
+wait 0.8
+say player 3.0 （《青莲功》……自己流转起来了！灵光速射——连珠！）
+camera shake 8.0
+wait 0.8
+say dark_cultivator 2.5 哦？残卷竟有此威力……有点意思。
+
+# 大师兄驰援
+actor senior_brother enter (14,11) from (20,11)
+camera focus senior_brother 1.0
+say senior_brother 3.5 萧炎！撑住——剑来！
+camera shake 6.0
+say dark_cultivator 3.0 内门首席么……蚀骨门的生意，改日再结。姓萧的小子——
+say dark_cultivator 3.5 记住，我们很快会再见面。下一次，上门自取。
+camera unfocus
+
+# 魔影遁走
+actor dark_cultivator exit to (12,4)
+camera focus senior_brother 0.8
+say senior_brother 3.0 魔修？……蚀骨门。宗门名册上除名四十年的老对头。
+say player 3.0 （余孽、四十年、玉佩……这些字眼串起来，是一条我从未想过的线。）
+camera unfocus
+actor senior_brother exit to (20,11)
+flag dark_cultivist_exposed
+end

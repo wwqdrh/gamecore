@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://tlvea8ecrw83"]
 
-[ext_resource type="Script" uid="uid://b74hgcanis1lg" path="res://example/demo/xiuxian/scenes/main/ui/setting/settings_panel.gd" id="1_d8gby"]
+[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/ui/setting/settings_panel.gd" id="1_d8gby"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tyfda"]
 bg_color = Color(0.9411765, 0.9098039, 0.8235294, 1)
@@ -228,7 +228,7 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[node name="SettingsPanel" type="Panel" unique_id=85119433]
+[node name="SettingsPanel" type="Panel" unique_id=1757099654]
 anchor_right = 1.0
 anchor_bottom = 1.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_tyfda")
@@ -239,7 +239,7 @@ metadata/__script_vars = {}
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray()
 
-[node name="MainMargin" type="MarginContainer" parent="." unique_id=297014149]
+[node name="MainMargin" type="MarginContainer" parent="." unique_id=1744005356]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -251,17 +251,17 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="MainColumn" type="VBoxContainer" parent="MainMargin" unique_id=171619731]
+[node name="MainColumn" type="VBoxContainer" parent="MainMargin" unique_id=559358360]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="@Panel@26145" type="Panel" parent="MainMargin/MainColumn" unique_id=874795217]
+[node name="@Panel@759" type="Panel" parent="MainMargin/MainColumn" unique_id=1081919221]
 custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_d437o")
 
-[node name="@HBoxContainer@26144" type="HBoxContainer" parent="MainMargin/MainColumn/@Panel@26145" unique_id=1009869974]
+[node name="@HBoxContainer@758" type="HBoxContainer" parent="MainMargin/MainColumn/@Panel@759" unique_id=1643944778]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -272,13 +272,13 @@ offset_bottom = -8.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Panel@26140" type="Panel" parent="MainMargin/MainColumn/@Panel@26145/@HBoxContainer@26144" unique_id=253169425]
+[node name="@Panel@754" type="Panel" parent="MainMargin/MainColumn/@Panel@759/@HBoxContainer@758" unique_id=1870416711]
 custom_minimum_size = Vector2(140, 40)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_x6kbr")
 
-[node name="@Label@26139" type="Label" parent="MainMargin/MainColumn/@Panel@26145/@HBoxContainer@26144/@Panel@26140" unique_id=1858034108]
+[node name="@Label@753" type="Label" parent="MainMargin/MainColumn/@Panel@759/@HBoxContainer@758/@Panel@754" unique_id=1112534125]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -288,54 +288,54 @@ horizontal_alignment = 1
 vertical_alignment = 1
 metadata/__anchor = "full"
 
-[node name="@Control@26141" type="Control" parent="MainMargin/MainColumn/@Panel@26145/@HBoxContainer@26144" unique_id=189501586]
+[node name="@Control@755" type="Control" parent="MainMargin/MainColumn/@Panel@759/@HBoxContainer@758" unique_id=859851732]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="@Label@26142" type="Label" parent="MainMargin/MainColumn/@Panel@26145/@HBoxContainer@26144" unique_id=2130682205]
+[node name="@Label@756" type="Label" parent="MainMargin/MainColumn/@Panel@759/@HBoxContainer@758" unique_id=53504659]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.65882355, 0.59607846, 0.47058824, 1)
 text = "按 ESC 打开 / 关闭"
 vertical_alignment = 1
 
-[node name="@Control@26143" type="Control" parent="MainMargin/MainColumn/@Panel@26145/@HBoxContainer@26144" unique_id=102238721]
+[node name="@Control@757" type="Control" parent="MainMargin/MainColumn/@Panel@759/@HBoxContainer@758" unique_id=1102726004]
 custom_minimum_size = Vector2(8, 0)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="CloseBtn" type="Button" parent="MainMargin/MainColumn/@Panel@26145/@HBoxContainer@26144" unique_id=687258670]
+[node name="CloseBtn" type="Button" parent="MainMargin/MainColumn/@Panel@759/@HBoxContainer@758" unique_id=231484817]
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 theme_override_styles/normal = SubResource("StyleBoxFlat_sk1tj")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_slgkj")
 theme_override_styles/hover = SubResource("StyleBoxFlat_mhidq")
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "✕"
 metadata/__signal_pressed = "_on_close_pressed"
 
-[node name="@ScrollContainer@26188" type="ScrollContainer" parent="MainMargin/MainColumn" unique_id=2128882128]
+[node name="@ScrollContainer@802" type="ScrollContainer" parent="MainMargin/MainColumn" unique_id=14972525]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="SettingRows" type="VBoxContainer" parent="MainMargin/MainColumn/@ScrollContainer@26188" unique_id=1173615227]
+[node name="SettingRows" type="VBoxContainer" parent="MainMargin/MainColumn/@ScrollContainer@802" unique_id=467579610]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="@Label@26148" type="Label" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows" unique_id=1645177619]
+[node name="@Label@762" type="Label" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows" unique_id=1810657748]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.41960785, 0.2901961, 0.11764706, 1)
 text = "—— 音量 ——"
 
-[node name="@Panel@26151" type="Panel" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows" unique_id=974315787]
+[node name="@Panel@765" type="Panel" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows" unique_id=1991952268]
 custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_nspn5")
 
-[node name="@HBoxContainer@26150" type="HBoxContainer" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows/@Panel@26151" unique_id=1738908398]
+[node name="@HBoxContainer@764" type="HBoxContainer" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows/@Panel@765" unique_id=908677297]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -346,14 +346,14 @@ offset_bottom = -8.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Label@26149" type="Label" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows/@Panel@26151/@HBoxContainer@26150" unique_id=636464092]
+[node name="@Label@763" type="Label" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows/@Panel@765/@HBoxContainer@764" unique_id=1206325348]
 custom_minimum_size = Vector2(96, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.2901961, 0.23529412, 0.14901961, 1)
 text = "主音量"
 vertical_alignment = 1
 
-[node name="VolMaster" type="GdUISettingSlider" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows/@Panel@26151/@HBoxContainer@26150" unique_id=1977334276]
+[node name="VolMaster" type="GdUISettingSlider" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows/@Panel@765/@HBoxContainer@764" unique_id=1844127068]
 bind = "volume:Master"
 custom_minimum_size = Vector2(300, 24)
 layout_mode = 2
@@ -362,13 +362,13 @@ size_flags_vertical = 4
 max_value = 1.0
 step = 0.01
 
-[node name="@Panel@26154" type="Panel" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows" unique_id=1314511444]
+[node name="@Panel@768" type="Panel" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows" unique_id=1823345535]
 custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_01c6y")
 
-[node name="@HBoxContainer@26153" type="HBoxContainer" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows/@Panel@26154" unique_id=507823837]
+[node name="@HBoxContainer@767" type="HBoxContainer" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows/@Panel@768" unique_id=1495339300]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -379,14 +379,14 @@ offset_bottom = -8.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Label@26152" type="Label" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows/@Panel@26154/@HBoxContainer@26153" unique_id=377039645]
+[node name="@Label@766" type="Label" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows/@Panel@768/@HBoxContainer@767" unique_id=924467143]
 custom_minimum_size = Vector2(96, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.2901961, 0.23529412, 0.14901961, 1)
 text = "音乐音量"
 vertical_alignment = 1
 
-[node name="VolMusic" type="GdUISettingSlider" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows/@Panel@26154/@HBoxContainer@26153" unique_id=1636374234]
+[node name="VolMusic" type="GdUISettingSlider" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows/@Panel@768/@HBoxContainer@767" unique_id=1799777119]
 bind = "volume:Music"
 custom_minimum_size = Vector2(300, 24)
 layout_mode = 2
@@ -395,13 +395,13 @@ size_flags_vertical = 4
 max_value = 1.0
 step = 0.01
 
-[node name="@Panel@26157" type="Panel" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows" unique_id=28860960]
+[node name="@Panel@771" type="Panel" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows" unique_id=1079830699]
 custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_0c5qx")
 
-[node name="@HBoxContainer@26156" type="HBoxContainer" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows/@Panel@26157" unique_id=125023083]
+[node name="@HBoxContainer@770" type="HBoxContainer" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows/@Panel@771" unique_id=2060797329]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -412,14 +412,14 @@ offset_bottom = -8.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Label@26155" type="Label" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows/@Panel@26157/@HBoxContainer@26156" unique_id=802548792]
+[node name="@Label@769" type="Label" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows/@Panel@771/@HBoxContainer@770" unique_id=1357737119]
 custom_minimum_size = Vector2(96, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.2901961, 0.23529412, 0.14901961, 1)
 text = "音效音量"
 vertical_alignment = 1
 
-[node name="VolAudio" type="GdUISettingSlider" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows/@Panel@26157/@HBoxContainer@26156" unique_id=1109424415]
+[node name="VolAudio" type="GdUISettingSlider" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows/@Panel@771/@HBoxContainer@770" unique_id=1022106240]
 bind = "volume:Audio"
 custom_minimum_size = Vector2(300, 24)
 layout_mode = 2
@@ -428,18 +428,18 @@ size_flags_vertical = 4
 max_value = 1.0
 step = 0.01
 
-[node name="@Label@26158" type="Label" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows" unique_id=70163219]
+[node name="@Label@772" type="Label" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows" unique_id=1923849252]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.41960785, 0.2901961, 0.11764706, 1)
 text = "—— 画面 ——"
 
-[node name="@Panel@26162" type="Panel" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows" unique_id=2129916431]
+[node name="@Panel@776" type="Panel" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows" unique_id=542139902]
 custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_vib54")
 
-[node name="@HBoxContainer@26161" type="HBoxContainer" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows/@Panel@26162" unique_id=331310152]
+[node name="@HBoxContainer@775" type="HBoxContainer" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows/@Panel@776" unique_id=240032160]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -450,30 +450,30 @@ offset_bottom = -8.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Label@26159" type="Label" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows/@Panel@26162/@HBoxContainer@26161" unique_id=2006978090]
+[node name="@Label@773" type="Label" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows/@Panel@776/@HBoxContainer@775" unique_id=1098891970]
 custom_minimum_size = Vector2(96, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.2901961, 0.23529412, 0.14901961, 1)
 text = "全屏显示"
 vertical_alignment = 1
 
-[node name="@Control@26160" type="Control" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows/@Panel@26162/@HBoxContainer@26161" unique_id=1285027856]
+[node name="@Control@774" type="Control" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows/@Panel@776/@HBoxContainer@775" unique_id=266655870]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="SwFullscreen" type="GdUISettingSwitch" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows/@Panel@26162/@HBoxContainer@26161" unique_id=981716483]
+[node name="SwFullscreen" type="GdUISettingSwitch" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows/@Panel@776/@HBoxContainer@775" unique_id=1081537825]
 bind = "fullscreen"
 layout_mode = 2
 size_flags_vertical = 4
 
-[node name="@Panel@26166" type="Panel" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows" unique_id=1000964118]
+[node name="@Panel@780" type="Panel" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows" unique_id=1617194090]
 custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_ieog1")
 
-[node name="@HBoxContainer@26165" type="HBoxContainer" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows/@Panel@26166" unique_id=1605910660]
+[node name="@HBoxContainer@779" type="HBoxContainer" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows/@Panel@780" unique_id=305501661]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -484,36 +484,36 @@ offset_bottom = -8.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Label@26163" type="Label" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows/@Panel@26166/@HBoxContainer@26165" unique_id=1516095756]
+[node name="@Label@777" type="Label" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows/@Panel@780/@HBoxContainer@779" unique_id=422305814]
 custom_minimum_size = Vector2(96, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.2901961, 0.23529412, 0.14901961, 1)
 text = "垂直同步"
 vertical_alignment = 1
 
-[node name="@Control@26164" type="Control" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows/@Panel@26166/@HBoxContainer@26165" unique_id=1283527735]
+[node name="@Control@778" type="Control" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows/@Panel@780/@HBoxContainer@779" unique_id=1459934685]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="SwVsync" type="GdUISettingSwitch" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows/@Panel@26166/@HBoxContainer@26165" unique_id=722374648]
+[node name="SwVsync" type="GdUISettingSwitch" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows/@Panel@780/@HBoxContainer@779" unique_id=176390261]
 bind = "vsync"
 default_value = true
 layout_mode = 2
 size_flags_vertical = 4
 
-[node name="@Label@26167" type="Label" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows" unique_id=1181361434]
+[node name="@Label@781" type="Label" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows" unique_id=753816051]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.41960785, 0.2901961, 0.11764706, 1)
 text = "—— 游戏 ——"
 
-[node name="@Panel@26179" type="Panel" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows" unique_id=142704552]
+[node name="@Panel@793" type="Panel" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows" unique_id=1163286472]
 custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_2sdpc")
 
-[node name="@HBoxContainer@26178" type="HBoxContainer" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows/@Panel@26179" unique_id=256565118]
+[node name="@HBoxContainer@792" type="HBoxContainer" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows/@Panel@793" unique_id=1678693262]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -524,32 +524,32 @@ offset_bottom = -8.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Label@26168" type="Label" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows/@Panel@26179/@HBoxContainer@26178" unique_id=1129073772]
+[node name="@Label@782" type="Label" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows/@Panel@793/@HBoxContainer@792" unique_id=1861356022]
 custom_minimum_size = Vector2(96, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.2901961, 0.23529412, 0.14901961, 1)
 text = "画质"
 vertical_alignment = 1
 
-[node name="@Control@26169" type="Control" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows/@Panel@26179/@HBoxContainer@26178" unique_id=2097857596]
+[node name="@Control@783" type="Control" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows/@Panel@793/@HBoxContainer@792" unique_id=157987535]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="SelGraphics" type="GdUISettingSelect" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows/@Panel@26179/@HBoxContainer@26178" unique_id=1497566895]
+[node name="SelGraphics" type="GdUISettingSelect" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows/@Panel@793/@HBoxContainer@792" unique_id=232498925]
 options = "流畅,均衡,高清,影视"
 value = "均衡"
 bind = "custom:graphics"
 layout_mode = 2
 size_flags_vertical = 4
 
-[node name="@Panel@26183" type="Panel" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows" unique_id=11572995]
+[node name="@Panel@797" type="Panel" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows" unique_id=455849764]
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_2i6yr")
 
-[node name="@HBoxContainer@26182" type="HBoxContainer" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows/@Panel@26183" unique_id=1573621458]
+[node name="@HBoxContainer@796" type="HBoxContainer" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows/@Panel@797" unique_id=1601190434]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -560,39 +560,39 @@ offset_bottom = -8.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Label@26180" type="Label" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows/@Panel@26183/@HBoxContainer@26182" unique_id=356554331]
+[node name="@Label@794" type="Label" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows/@Panel@797/@HBoxContainer@796" unique_id=2104258924]
 custom_minimum_size = Vector2(96, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.2901961, 0.23529412, 0.14901961, 1)
 text = "战斗提示"
 vertical_alignment = 1
 
-[node name="@Control@26181" type="Control" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows/@Panel@26183/@HBoxContainer@26182" unique_id=711242832]
+[node name="@Control@795" type="Control" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows/@Panel@797/@HBoxContainer@796" unique_id=492575096]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="ChkDamage" type="GdUIFormCheck" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows/@Panel@26183/@HBoxContainer@26182" unique_id=1733432071]
+[node name="ChkDamage" type="GdUIFormCheck" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows/@Panel@797/@HBoxContainer@796" unique_id=1894539971]
 label = "伤害数字"
 checked = true
 layout_mode = 2
 size_flags_vertical = 4
 metadata/__signal_s_toggled = "_on_damage_toggled"
 
-[node name="ChkDrop" type="GdUIFormCheck" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows/@Panel@26183/@HBoxContainer@26182" unique_id=1839037431]
+[node name="ChkDrop" type="GdUIFormCheck" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows/@Panel@797/@HBoxContainer@796" unique_id=1108116832]
 label = "掉落提示"
 checked = true
 layout_mode = 2
 size_flags_vertical = 4
 metadata/__signal_s_toggled = "_on_drop_toggled"
 
-[node name="@Panel@26187" type="Panel" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows" unique_id=49652506]
+[node name="@Panel@801" type="Panel" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows" unique_id=705720098]
 custom_minimum_size = Vector2(0, 140)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_735p7")
 
-[node name="@HBoxContainer@26186" type="HBoxContainer" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows/@Panel@26187" unique_id=1476295587]
+[node name="@HBoxContainer@800" type="HBoxContainer" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows/@Panel@801" unique_id=1108431865]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -603,18 +603,18 @@ offset_bottom = -8.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Label@26184" type="Label" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows/@Panel@26187/@HBoxContainer@26186" unique_id=811819709]
+[node name="@Label@798" type="Label" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows/@Panel@801/@HBoxContainer@800" unique_id=675624630]
 custom_minimum_size = Vector2(96, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.2901961, 0.23529412, 0.14901961, 1)
 text = "难度"
 
-[node name="@Control@26185" type="Control" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows/@Panel@26187/@HBoxContainer@26186" unique_id=1600084384]
+[node name="@Control@799" type="Control" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows/@Panel@801/@HBoxContainer@800" unique_id=28118330]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="RadioDifficulty" type="GdUIFormRadio" parent="MainMargin/MainColumn/@ScrollContainer@26188/SettingRows/@Panel@26187/@HBoxContainer@26186" unique_id=251644218]
+[node name="RadioDifficulty" type="GdUIFormRadio" parent="MainMargin/MainColumn/@ScrollContainer@802/SettingRows/@Panel@801/@HBoxContainer@800" unique_id=424281287]
 options = "历练,问道,渡劫"
 value = "问道"
 layout_mode = 2
@@ -622,28 +622,28 @@ size_flags_horizontal = 3
 size_flags_vertical = 4
 metadata/__signal_s_value_changed = "_on_difficulty_changed"
 
-[node name="FooterActions" type="HBoxContainer" parent="MainMargin/MainColumn" unique_id=66068957]
+[node name="FooterActions" type="HBoxContainer" parent="MainMargin/MainColumn" unique_id=1937891630]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 8
 mouse_filter = 2
 
-[node name="BackTitleBtn" type="Button" parent="MainMargin/MainColumn/FooterActions" unique_id=1478803334]
+[node name="BackTitleBtn" type="Button" parent="MainMargin/MainColumn/FooterActions" unique_id=698322740]
 custom_minimum_size = Vector2(140, 42)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 theme_override_styles/normal = SubResource("StyleBoxFlat_20v23")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_3xk10")
 theme_override_styles/hover = SubResource("StyleBoxFlat_vjcyb")
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "返回标题"
 metadata/__signal_pressed = "_on_back_title_pressed"
 
-[node name="QuitBtn" type="Button" parent="MainMargin/MainColumn/FooterActions" unique_id=517618477]
+[node name="QuitBtn" type="Button" parent="MainMargin/MainColumn/FooterActions" unique_id=306789159]
 custom_minimum_size = Vector2(140, 42)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 theme_override_styles/normal = SubResource("StyleBoxFlat_5jvpf")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_346j6")
 theme_override_styles/hover = SubResource("StyleBoxFlat_jkekt")
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "退出游戏"
 metadata/__signal_pressed = "_on_quit_pressed"

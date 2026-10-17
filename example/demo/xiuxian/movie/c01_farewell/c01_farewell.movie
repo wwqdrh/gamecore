@@ -1,0 +1,45 @@
+# 宗门篇 c01 家中辞行（xiaozhai）
+# 触发建议：夺魁（stage1_clear 置位）后首次回到萧宅时播放。
+# 分镜：院中话别 → 父亲赠玉佩（欲言又止）→ 母亲小翠叮咛 → 家人退场 → 主角独白
+# 注：电影 actor 与图内常驻 NPC 同格出场（视觉重合，不显突兀，范式同 selection_eve）
+
+scene xiuxian_xiaozhai
+# 玩家演出站位：院中（显式声明防存档位置跑偏）
+player (10,8)
+wait 0.6
+
+actor xiao_master enter (9,6)
+actor xiao_lady enter (12,7)
+actor xiao_maid enter (6,7)
+camera follow player
+
+# 父亲赠玉佩
+camera focus xiao_master 1.0
+say xiao_master 4.0 炎儿，明日一早的驴车，行李我已叫小翠收拾妥当。
+say xiao_master 到了宗门，万事谨慎。斗者之上还有筑基——青云水深，你如今只是一叶小舟。
+say player 2.5 孩儿省得。
+say xiao_master 4.0 这个，你贴身收好。
+say xiao_master 3.5 祖上传下来的旧物。到了宗门，莫要示人——切记。
+say player 3.0 （玉入手温润，纹路似篆非篆……父亲说这话时，眼睛没有看我。）
+say player 3.0 爹，这玉佩……到底是什么来历？
+say xiao_master 3.5 等你筑基，为父自会告诉你。回屋去吧，明早还要赶路。
+camera unfocus
+
+# 母亲与丫鬟叮咛
+camera focus xiao_lady 1.0
+say xiao_lady 3.5 罢了罢了，你们爷俩一开口就是修行。炎儿，衣裳我缝了三件都在包袱里。
+say xiao_maid 3.0 少爷！干粮我多塞了两张饼——宗门的饭，肯定没有家里香！
+camera unfocus
+
+# 家人退场（走出画面）
+actor xiao_maid exit down
+actor xiao_lady exit right
+actor xiao_master exit up
+
+# 主角独白（身世悬念再起）
+camera focus player 0.8
+say player 3.5 （旧玉佩、莫要示人、筑基再讲……这萧家的秘密，一件接着一件。）
+say player 2.5 （青云宗——我的名字，要让他们记住。）
+camera unfocus
+flag sect_farewell_done
+end

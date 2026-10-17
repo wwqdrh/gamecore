@@ -1,0 +1,41 @@
+# 宗门篇 c15 宗门派遣（sect）
+# 触发建议：main_203 派遣任务接取时播放（c14 后回宗上报）。
+# 分镜：执事堂传令 → 赵擎主动请缨 → 大师兄疑虑 → 点齐人手出发
+
+scene xiuxian_sect
+# 玩家演出站位：执事堂前
+player (14,8)
+wait 0.5
+
+actor elder enter (13,8) from (9,8)
+actor rival enter (17,8) from (21,8)
+actor senior_brother enter (19,9) from (24,9)
+camera follow player
+
+# 传令
+camera focus elder 1.0
+say elder 4.0 萧炎，你上报的幽竹林异动，宗主已经知晓。近来失踪的修士，最后踪迹都在那片林子。
+say elder 3.5 宗主令：着你带队入林，查明灵气紊乱之因。人证不足，妖口无凭——务必拿回实据。
+camera unfocus
+
+# 赵擎请缨
+camera focus rival 1.0
+say rival 3.0 长老，赵擎请缨同行！外门第一既在，岂容妖物猖獗？
+say player 2.5 （他自己请缨？他不知道黑袍人的事……还是，本来就知道？）
+camera unfocus
+
+# 大师兄疑虑
+camera focus senior_brother 1.0
+say senior_brother 3.5 赵擎，你上个月才在演武台输给人家，这时候抢什么功劳？
+say rival 2.5 大师兄这是怀疑我？赵家的商路也要过幽竹林，我比谁都熟。
+say senior_brother 3.0 ……罢了，多个人多份力。萧炎，队伍你带，我压阵。
+say elder 2.5 早去早回。
+camera unfocus
+
+actor elder exit to (9,8)
+actor rival exit to (21,8)
+actor senior_brother exit to (24,9)
+say player 3.0 （楚天阔压阵，稳了三分。可这队伍里藏着个「赵」字……此行，怕是不太平。）
+camera unfocus
+flag dispatch_started
+end

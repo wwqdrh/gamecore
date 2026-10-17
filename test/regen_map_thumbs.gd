@@ -12,6 +12,7 @@ const MAPS := [
 	"res://example/demo/xiuxian/map/town.tscn",
 	"res://example/demo/xiuxian/map/map_a.tscn",
 	"res://example/demo/xiuxian/map/map_b.tscn",
+	"res://example/demo/xiuxian/map/sect.tscn",
 ]
 
 ## 世界拼接布局（格子单位，含 6~8 格间隙）——与传送拓扑对应的地理排布：
@@ -26,6 +27,7 @@ const LAYOUT := {
 	"xiuxian_town": {"x": 98, "y": 6, "name": "青云坊"},
 	"xiuxian_map_a": {"x": 140, "y": 6, "name": "青草岭"},
 	"xiuxian_map_b": {"x": 140, "y": -16, "name": "幽竹林"},
+	"xiuxian_sect": {"x": 98, "y": -22, "name": "青云宗山门"},
 }
 
 var _maps: Array[Node] = []

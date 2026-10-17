@@ -115,6 +115,12 @@ pub struct GdMoviePlayer {
     scene_snapshot: Option<(GString, Vector2i)>,
     /// 回迁落位（restore 后等地图装配再校正玩家位置）
     pending_restore_cell: Option<Vector2i>,
+    /// 演出期隐藏的常驻 NPC（结束恢复可见；dedup：地图内嵌 NPC 与剧本
+    /// actor 同屏重复）
+    suppressed_npcs: Vec<Gd<Node>>,
+    /// 待执行的 NPC 抑制（play 开局 / scene 指令开图·同图跳过后置位，
+    /// 协程下一指令前消费——等装配帧完成再收，新图 NPC 才已就位）
+    pending_suppress: bool,
 }
 
 #[godot_api]
@@ -137,6 +143,8 @@ impl INode for GdMoviePlayer {
             default_box: None,
             scene_snapshot: None,
             pending_restore_cell: None,
+            suppressed_npcs: Vec::new(),
+            pending_suppress: false,
         }
     }
 
@@ -223,6 +231,9 @@ impl GdMoviePlayer {
         };
 
         self.playing = true;
+        // 演出开局先收一遍当前地图常驻 NPC（无 scene 指令的剧本也要 dedup；
+        // 有 scene 指令时开图/同图分支会再置位，下一指令前统一消费）
+        self.pending_suppress = true;
         self.lock_player(true);
         self.base_mut().emit_signal("s_movie_started", &[]);
 
@@ -244,6 +255,7 @@ impl GdMoviePlayer {
         if self.playing {
             self.playing = false;
             // 快照回迁（同步：open_map 内 s_map_changed 级联玩家 _apply_map）
+            self.restore_npcs();
             self.restore_snapshot();
             self.settle_restore_pos();
             self.lock_player(false);
@@ -274,6 +286,12 @@ impl GdMoviePlayer {
                 if !me.playing {
                     // stop() 已杀协程，这里是防御：不再执行
                     return GString::from("aborted");
+                }
+                // scene 开图/同图跳过后置位的 NPC 抑制：下一指令前消费
+                // （跨图时已等过 Frames(2) 装配帧，新图 NPC 已就位）
+                if me.pending_suppress {
+                    me.pending_suppress = false;
+                    me.suppress_map_npcs();
                 }
                 match &cmds[pc] {
                     MovieCmd::Jump { label } => WaitStep::Jump(me.resolve_label(label)),
@@ -400,7 +418,9 @@ impl GdMoviePlayer {
         let alias_g = GString::from(alias);
         let cur: GString = mgr.call("get_current_alias", &[]).to();
         if !cur.is_empty() && cur == alias_g {
-            // 同图：跳过重复开关（保留现场，无需快照回迁）
+            // 同图：跳过重复开关（保留现场，无需快照回迁）；常驻 NPC 待抑制
+            // （否则内嵌 NPC 与剧本 actor 同屏重复）
+            self.pending_suppress = true;
             return WaitStep::Frames(1);
         }
         if self.scene_snapshot.is_none() {
@@ -414,7 +434,8 @@ impl GdMoviePlayer {
         if !ok {
             godot_warn!("GdMoviePlayer: open_map('{}') failed", alias);
         }
-        // 地图装配（含 NPC _ready 级联）需要帧末落地
+        // 地图装配（含 NPC _ready 级联）需要帧末落地；NPC 抑制待装配后执行
+        self.pending_suppress = true;
         WaitStep::Frames(2)
     }
 
@@ -819,6 +840,7 @@ impl GdMoviePlayer {
         self.coroutine = None;
         self.lock_player(false);
         self.close_dialog_box();
+        self.restore_npcs();
         if self.auto_free_actors {
             self.despawn_all_actors();
         } else {
@@ -845,6 +867,63 @@ impl GdMoviePlayer {
             }
         }
         self.owned_actors.clear();
+    }
+
+    // === 常驻 NPC 抑制（演出 dedup） ===
+
+    /// 演出期隐藏当前地图上的常驻 NPC：地图场景内嵌的 NPC 与剧本 actor
+    /// （同一角色再实例化一份）会同屏重复——演出期间把常驻 NPC 藏起来，
+    /// 结束/stop 时 restore_npcs 恢复。
+    /// 识别契约：节点带 `npc_id` 属性（NPC 基类鸭子识别，框架不感知
+    /// demo 类名）；演出 actor 本尊及其子树豁免（防同图重开二段抑制
+    /// 把已出场的 actor 也藏掉）。
+    fn suppress_map_npcs(&mut self) {
+        let Some(map) = self.current_map() else { return };
+        let before = self.suppressed_npcs.len();
+        let mut stack: Vec<Gd<Node>> = vec![map];
+        while let Some(node) = stack.pop() {
+            for child in node.get_children().iter_shared() {
+                let mut c = child;
+                stack.push(c.clone());
+                // hide 守卫：npc_id 属性不止 NPC 本尊持有（子组件
+                // GdNpcSchedule 同样镜像了 npc_id，纯逻辑 Node 无 hide）
+                if c.get("npc_id").get_type() == VariantType::NIL
+                    || !c.has_method("hide")
+                    || self.is_actor_tree(&c)
+                    || self
+                        .suppressed_npcs
+                        .iter()
+                        .any(|n| n.instance_id() == c.instance_id())
+                {
+                    continue;
+                }
+                c.call("hide", &[]);
+                self.suppressed_npcs.push(c);
+            }
+        }
+        let hidden = self.suppressed_npcs.len() - before;
+        if hidden > 0 {
+            godot_print!("[GdMoviePlayer] 演出期隐藏常驻 NPC x{}", hidden);
+        }
+    }
+
+    /// 恢复演出期隐藏的常驻 NPC（结束/stop/exit_tree；实例已随旧地图
+    /// 释放的条目自然跳过——回迁重载的地图上 NPC 本来就是新实例）
+    fn restore_npcs(&mut self) {
+        self.pending_suppress = false;
+        for mut npc in self.suppressed_npcs.drain(..) {
+            if npc.is_instance_valid() {
+                npc.call("show", &[]);
+            }
+        }
+    }
+
+    /// 节点是否属于本演出的 actor（本尊或其子树）
+    fn is_actor_tree(&self, node: &Gd<Node>) -> bool {
+        self.actors.values().any(|a| {
+            a.is_instance_valid()
+                && (a.instance_id() == node.instance_id() || a.is_ancestor_of(node))
+        })
     }
 
     fn close_dialog_box(&mut self) {

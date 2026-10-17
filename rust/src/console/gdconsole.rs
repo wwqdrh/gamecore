@@ -169,6 +169,19 @@ impl GdConsole {
         let _ = globals.set(name.to_string().as_str(), Value::Nil);
     }
 
+    /// GDScript 侧向控制台推送一行输出（进度播报等），立即经 console_output 信号
+    /// 显示到面板。与 Lua print 不同：不进缓冲区、不被下一次 execute 清空。
+    #[func]
+    fn console_print(&mut self, text: GString) {
+        if text.is_empty() {
+            return;
+        }
+        let text = text.to_string();
+        godot_print!("[GdConsole] {}", text);
+        self.base_mut()
+            .emit_signal("console_output", &[GString::from(&text).to_variant()]);
+    }
+
     /// 列出所有已注册命令及其描述
     #[func]
     fn list_commands(&self) -> PackedStringArray {

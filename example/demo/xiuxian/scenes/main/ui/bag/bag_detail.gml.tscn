@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://5vtt60a51227"]
 
-[ext_resource type="Script" uid="uid://bul8bbv28by60" path="res://example/demo/xiuxian/scenes/main/ui/bag/bag_detail.gd" id="1_jlvkc"]
+[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/ui/bag/bag_detail.gd" id="1_jlvkc"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1h7xw"]
 bg_color = Color(0.9490196, 0.9254902, 0.84705883, 1)
@@ -147,7 +147,7 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[node name="DetailPanel" type="Panel" unique_id=1106901982]
+[node name="DetailPanel" type="Panel" unique_id=2142373465]
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
@@ -158,7 +158,7 @@ metadata/__script_vars = {}
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray()
 
-[node name="DetailColumn" type="VBoxContainer" parent="." unique_id=1980684240]
+[node name="DetailColumn" type="VBoxContainer" parent="." unique_id=364026152]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -170,12 +170,12 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Control@26135" type="Control" parent="DetailColumn" unique_id=1485078659]
+[node name="@Control@805" type="Control" parent="DetailColumn" unique_id=2037142791]
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
 
-[node name="@CenterContainer@26134" type="CenterContainer" parent="DetailColumn/@Control@26135" unique_id=385331908]
+[node name="@CenterContainer@804" type="CenterContainer" parent="DetailColumn/@Control@805" unique_id=454646080]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -184,13 +184,13 @@ offset_bottom = -10.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="@Panel@26133" type="Panel" parent="DetailColumn/@Control@26135/@CenterContainer@26134" unique_id=1598260683]
+[node name="@Panel@803" type="Panel" parent="DetailColumn/@Control@805/@CenterContainer@804" unique_id=1489758714]
 custom_minimum_size = Vector2(120, 120)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_b0dqe")
 
-[node name="DetailIcon" type="Label" parent="DetailColumn/@Control@26135/@CenterContainer@26134/@Panel@26133" unique_id=349290193]
+[node name="DetailIcon" type="Label" parent="DetailColumn/@Control@805/@CenterContainer@804/@Panel@803" unique_id=1894774721]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -200,7 +200,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 metadata/__anchor = "full"
 
-[node name="SealText" type="Label" parent="DetailColumn/@Control@26135" unique_id=1614354920]
+[node name="SealText" type="Label" parent="DetailColumn/@Control@805" unique_id=2042051229]
 layout_mode = 0
 anchor_left = 1.0
 anchor_top = 1.0
@@ -212,23 +212,23 @@ theme_override_colors/font_color = Color(0.6901961, 0.22745098, 0.18039216, 1)
 text = "闲"
 metadata/__anchor = "bottom_right"
 
-[node name="DetailName" type="Label" parent="DetailColumn" unique_id=1506246948]
+[node name="DetailName" type="Label" parent="DetailColumn" unique_id=231969461]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.23529412, 0.18431373, 0.10980392, 1)
 text = "聚气丹"
 horizontal_alignment = 1
 
-[node name="@CenterContainer@26137" type="CenterContainer" parent="DetailColumn" unique_id=120470646]
+[node name="@CenterContainer@807" type="CenterContainer" parent="DetailColumn" unique_id=2006273751]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="@Panel@26136" type="Panel" parent="DetailColumn/@CenterContainer@26137" unique_id=548460051]
+[node name="@Panel@806" type="Panel" parent="DetailColumn/@CenterContainer@807" unique_id=72316950]
 custom_minimum_size = Vector2(64, 26)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_c2lbv")
 
-[node name="QualityText" type="Label" parent="DetailColumn/@CenterContainer@26137/@Panel@26136" unique_id=1890003630]
+[node name="QualityText" type="Label" parent="DetailColumn/@CenterContainer@807/@Panel@806" unique_id=1030195463]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -238,50 +238,50 @@ horizontal_alignment = 1
 vertical_alignment = 1
 metadata/__anchor = "full"
 
-[node name="DetailDesc" type="Label" parent="DetailColumn" unique_id=1429596101]
+[node name="DetailDesc" type="Label" parent="DetailColumn" unique_id=1867462347]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_colors/font_color = Color(0.41960785, 0.3529412, 0.24313726, 1)
 text = "服用后可快速聚集天地灵气，提升修为。是修仙者常用的助修丹药。"
 horizontal_alignment = 1
 
-[node name="DetailSource" type="Label" parent="DetailColumn" unique_id=1610821969]
+[node name="DetailSource" type="Label" parent="DetailColumn" unique_id=1738461779]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.5411765, 0.4509804, 0.3137255, 1)
 text = "📍 坊市购得"
 horizontal_alignment = 1
 
-[node name="@HBoxContainer@26138" type="HBoxContainer" parent="DetailColumn" unique_id=2080926517]
+[node name="@HBoxContainer@808" type="HBoxContainer" parent="DetailColumn" unique_id=2142888101]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="UseBtn" type="Button" parent="DetailColumn/@HBoxContainer@26138" unique_id=1847356367]
+[node name="UseBtn" type="Button" parent="DetailColumn/@HBoxContainer@808" unique_id=831201603]
 custom_minimum_size = Vector2(120, 44)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
 theme_override_styles/normal = SubResource("StyleBoxFlat_6b38f")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_feuju")
 theme_override_styles/hover = SubResource("StyleBoxFlat_j517x")
+theme_override_colors/font_color = Color(0.2901961, 0.20392157, 0.0627451, 1)
 text = "使  用"
 metadata/__signal_pressed = "_on_use_pressed"
 
-[node name="SellBtn" type="Button" parent="DetailColumn/@HBoxContainer@26138" unique_id=667176286]
+[node name="SellBtn" type="Button" parent="DetailColumn/@HBoxContainer@808" unique_id=1515086325]
 custom_minimum_size = Vector2(72, 44)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 theme_override_styles/normal = SubResource("StyleBoxFlat_a66bk")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_7ng4e")
 theme_override_styles/hover = SubResource("StyleBoxFlat_0rrn2")
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "出售"
 metadata/__signal_pressed = "_on_sell_pressed"
 
-[node name="ComposeBtn" type="Button" parent="DetailColumn/@HBoxContainer@26138" unique_id=1605861156]
+[node name="ComposeBtn" type="Button" parent="DetailColumn/@HBoxContainer@808" unique_id=1672429380]
 custom_minimum_size = Vector2(72, 44)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 theme_override_styles/normal = SubResource("StyleBoxFlat_mgynu")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_lsp84")
 theme_override_styles/hover = SubResource("StyleBoxFlat_8f2su")
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "合成"
 metadata/__signal_pressed = "_on_compose_pressed"

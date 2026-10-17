@@ -170,7 +170,7 @@ func _run() -> void:
 	mgr.open_map("xiuxian_town", Vector2i(6, 10))
 	check(str(mgr.get_current_alias()) == "xiuxian_town", "open_map 应切换到青云坊")
 	var markers_t: Array = mgr.get_markers()
-	check(markers_t.size() == 3, "青云坊应有 3 个传送点（西→青石镇 / 东→map_a / 东北→map_b），实际 %d" % markers_t.size())
+	check(markers_t.size() == 4, "青云坊应有 4 个传送点（西→青石镇 / 东→map_a / 东北→map_b / 东北→青云宗），实际 %d" % markers_t.size())
 	var marker_t: Node2D = null
 	for m in markers_t:
 		if str(m.target_alias) == "xiuxian_map_a":

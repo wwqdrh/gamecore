@@ -1,0 +1,39 @@
+# 宗门篇 c10 深夜交易（sect）
+# 触发建议：c09 后隔日夜间（钟声/日历事件）触发。魔道线开启。
+# 分镜：后山夜色 → 黑袍人现身 → 各取所需的交易 → 隐入夜色
+
+scene xiuxian_sect
+# 玩家演出站位：后山角落（夜探视角）
+player (28,14)
+wait 0.8
+
+# 夜色独白
+camera focus player 0.8
+say player 3.0 （演武台赢了赵擎，杂役却分得更重了——名册上多出我一份后山挑水的活。）
+say player 3.0 （嗯？后山有人说话……这个时辰？）
+camera unfocus
+
+# 赵擎与黑袍人
+camera pan (26,15) 1.0
+actor rival enter (26,15) from (24,16)
+actor dark_cultivator enter (29,15) from (32,17)
+camera follow rival
+
+camera focus rival 1.0
+say rival 3.0 东西我带来了。说好的——我要外门第一的位子，你赵家给多少？
+camera focus dark_cultivator 1.0
+say dark_cultivator 3.5 少爷要位子，赵家要矿引。各取所需，两不相欠。
+say dark_cultivator 3.5 至于那位新出炉的「外门第一」……风头太盛的人，容易招风。
+say rival 3.0 你们想动他？跟我没关系，只要别在宗门里。
+say dark_cultivator 2.5 聪明。那就借一场「秘境意外」用用。
+camera unfocus
+
+# 隐入夜色
+actor rival exit to (24,16)
+actor dark_cultivator exit to (32,17)
+camera pan (28,14) 1.0
+camera follow player
+say player 3.5 （黑袍人……赵擎竟然私通外人，对付同门！不行，此事必须报给长老——可我没有凭据。）
+camera unfocus
+flag dark_deal_seen
+end

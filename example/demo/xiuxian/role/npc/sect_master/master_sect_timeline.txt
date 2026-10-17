@@ -1,0 +1,30 @@
+# 凌霄真人对话时间线（GdDialogue 语法，本角色专属）
+# 宗门篇：宗主线。日常兜底 + 授功段（c18 对质后由任务链置 flag 点亮）。
+#
+# 入口 stage 按排列顺序做优先级扫描：
+#   1. master_sect_gift  《青莲诀》授功段（c18 后 flag lianlian_gifted 门控）
+#   2. master_sect_talk  日常兜底
+
+# ---- 授功段：宗门对质后（flag 由 main_204 链置位） ----
+[master_sect_gift@lianlian_gift]
+(凌霄真人)
+《青莲诀》外门篇已录入名册，去藏经阁抄录吧。
+青云宗的规矩，护得住你。去吧。
+- 弟子遵命。@set_flag:lianlian_gifted;goto:master_sect_end
+
+# ---- 日常兜底 ----
+[master_sect_talk]
+(凌霄真人)
+青云择徒，不问出身，只问道心。
+- 弟子明白。@goto:master_sect_end
+- 恳请真人指点修行。@goto:master_sect_guide
+
+[master_sect_guide]
+(凌霄真人)
+修行如逆水行舟。外门三年，是磨，也是筛。
+@set_flag:met_sect_master
+- 谢真人教诲。@goto:master_sect_end
+
+[master_sect_end]
+(凌霄真人)
+退下吧。

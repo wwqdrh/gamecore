@@ -1,0 +1,33 @@
+# 宗门篇 c04 弟子舍重逢（sect）
+# 触发建议：main_201 goto 弟子舍步推进时播放。
+# 分镜：弟子舍前安顿 → 苏小棠重逢 → 赵擎率众堵门立威 → 隐忍收场
+
+scene xiuxian_sect
+# 玩家演出站位：外门弟子舍（场院）
+player (9,11)
+wait 0.6
+
+# 同期重逢
+actor disciple enter (10,11) from (14,13)
+camera follow player
+camera focus disciple 1.0
+say disciple 3.5 萧大哥！真巧——不，是真好！我也考进前十了，咱们同期！
+say disciple 3.0 苏小棠，往后请多关照。听说了么，咱们这一批里还有赵家商盟的赵擎，最好离他远点。
+say player 2.5 （晚了，已经照过面了。）
+camera unfocus
+
+# 赵擎堵门立威
+actor rival enter (8,12) from (4,13)
+camera focus rival 1.0
+say rival 3.5 哟，正说着本少爷呢？新来的，都听好了——外门的地界，姓赵。
+say rival 3.0 每月初七的杂役，脏活累活你们包了。不愿意？可以啊，演武台上来赢我。
+actor disciple exit to (14,13)
+say rival 2.5 识相的，把位置让出来。田埂少爷，说的就是你。
+say player 3.0 （初来乍到，不宜硬顶……但这笔账，记下了。）
+camera unfocus
+
+actor rival exit to (4,13)
+say player 3.0 （外门的地界姓赵？——很快，我会让它改姓。）
+camera unfocus
+flag dorm_reunion_done
+end

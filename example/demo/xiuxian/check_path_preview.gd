@@ -44,6 +44,9 @@ func _initialize() -> void:
 		_check(false, "player 接线完成")
 		await _finish(1)
 		return
+	# 点击寻路产品级默认关闭（click_to_move=false）——本验收专测预览线机制，
+	# 临时打开（不落盘，场景实例属性）
+	player.set("click_to_move", true)
 	var map_mgr: Node = player.get("map_mgr")
 
 	# ---- 1. 切到小镇图（GdQuickMap，支持 find_path）----

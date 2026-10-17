@@ -1,4 +1,12 @@
-[gd_scene format=3 uid="uid://bgy5rp5dcucc4"]
+[gd_scene load_steps=3 format=3 uid="uid://bgy5rp5dcucc4"]
+
+[ext_resource type="Script" path="res://example/demo/xiuxian/index.gd" id="1_index"]
+[ext_resource type="Script" path="res://addons/gamecore/ui/console_panel.gd" id="2_console"]
 
 [node name="Index" type="GdSceneRoot" unique_id=1539972960]
 entry_scene = "xiuxian_title"
+script = ExtResource("1_index")
+
+[node name="ConsolePanel" type="CanvasLayer" parent="."]
+console_layer = 200
+script = ExtResource("2_console")

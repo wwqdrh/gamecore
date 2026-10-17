@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://ba84plxuheu0h"]
 
-[ext_resource type="Script" uid="uid://cu7btabxua511" path="res://example/demo/xiuxian/scenes/main/ui/map/map_modal.gd" id="1_226lh"]
+[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/ui/map/map_modal.gd" id="1_226lh"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vflu6"]
 bg_color = Color(0.09019608, 0.1254902, 0.101960786, 1)
@@ -14,7 +14,7 @@ corner_radius_top_right = 14
 corner_radius_bottom_right = 14
 corner_radius_bottom_left = 14
 
-[node name="MapWindow" type="Panel" unique_id=1330764422]
+[node name="MapWindow" type="Panel" unique_id=1990094589]
 custom_minimum_size = Vector2(960, 600)
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_vflu6")
@@ -23,7 +23,7 @@ metadata/__script_vars = {}
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray()
 
-[node name="MainColumn" type="VBoxContainer" parent="." unique_id=77835075]
+[node name="MainColumn" type="VBoxContainer" parent="." unique_id=872625849]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -35,16 +35,16 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="TopBar" type="HBoxContainer" parent="MainColumn" unique_id=1551884379]
+[node name="TopBar" type="HBoxContainer" parent="MainColumn" unique_id=1137002448]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Title" type="Label" parent="MainColumn/TopBar" unique_id=512551582]
+[node name="Title" type="Label" parent="MainColumn/TopBar" unique_id=1921046037]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "🗺️ 修仙界舆图"
 
-[node name="CurrentName" type="Label" parent="MainColumn/TopBar" unique_id=1948173685]
+[node name="CurrentName" type="Label" parent="MainColumn/TopBar" unique_id=1582855197]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 8
@@ -52,18 +52,18 @@ theme_override_colors/font_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
 text = "当前：—"
 horizontal_alignment = 2
 
-[node name="MapScroll" type="ScrollContainer" parent="MainColumn" unique_id=1643908572]
+[node name="MapScroll" type="ScrollContainer" parent="MainColumn" unique_id=1424802535]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="WorldMap" type="GdMiniMap" parent="MainColumn/MapScroll" unique_id=715365358]
+[node name="WorldMap" type="GdMiniMap" parent="MainColumn/MapScroll" unique_id=2000959776]
 cell_px = 8.0
 padding = 16.0
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Hint" type="Label" parent="MainColumn" unique_id=2115247525]
+[node name="Hint" type="Label" parent="MainColumn" unique_id=1685739212]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6039216, 0.65882355, 0.56078434, 1)
 text = "◉ 青点=传送口（连线互为往返）    ● 红点=你所在的位置    金框=当前地图"

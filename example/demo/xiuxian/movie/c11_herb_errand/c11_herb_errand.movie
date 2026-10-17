@@ -1,0 +1,24 @@
+# 宗门篇 c11 药堂托付（xiaozhen）
+# 触发建议：宗门放历假首次回青石镇 / 采药支线接取时播放。
+# 分镜：药铺叙旧 → 白芷修书求药 → 清心草只有青草岭有 → 应下
+
+scene xiuxian_xiaozhen
+# 玩家演出站位：药铺前
+player (6,9)
+wait 0.5
+
+actor herb_shop enter (5,8)
+camera follow player
+camera focus herb_shop 1.0
+say herb_shop 3.5 哎呀，是萧公子！入了宗门，气色都比从前好了。
+say herb_shop 4.0 正想寻你——坊里清心草断了两月，镇上几家咳症压不住。这药性喜崖风，青草岭南崖才有。
+say player 2.5 白芷姑娘放心，我明日就去。
+say herb_shop 3.0 岭上妖物近来躁动得很，多带伤药，别硬闯深处。
+say herb_shop 3.0 一株清心草，换三帖金疮药——算我谢你的。
+camera unfocus
+
+actor herb_shop exit to (3,8)
+say player 3.0 （清心草、青草岭……正好，也该出去走走了。总在外门扫地，剑都要锈了。）
+camera unfocus
+flag herb_errand_taken
+end

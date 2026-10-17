@@ -1,0 +1,37 @@
+# 宗门篇 c07 老人点拨（sect）
+# 触发建议：藏经阁杂役推进后 / 练功卡关再次靠近藏经阁播放。
+# 分镜：阁前练功卡关 → 老人头也不抬点破关窍 → 瞥见玉佩神色微变（身世伏笔）
+
+scene xiuxian_sect
+# 玩家演出站位：阁前空地
+player (24,8)
+wait 0.5
+
+# 卡关独白
+camera focus player 0.8
+say player 3.0 （气感又滞了……周天走到膻中就像堵了一层纱。不行，再来——）
+camera unfocus
+wait 0.6
+camera shake 2.0
+wait 0.5
+
+# 老人点拨
+actor sweep_elder enter (26,6)
+camera focus sweep_elder 1.0
+say sweep_elder 3.5 气走周天，如扫落叶。你扫得太用力了——叶子是扫走的，不是砸走的。
+say player 3.0 ……轻一点？气机放缓，引而不压——通了！多谢老人家指点！
+say sweep_elder 2.5 嘿嘿，指点什么，我只是在说扫地。
+camera unfocus
+
+# 玉佩伏笔（关键一瞬）
+camera focus sweep_elder 1.2
+say sweep_elder 3.5 ——慢着。你这腰间物件，该擦擦了。
+say player 2.5 （他说的是……玉佩？）
+say sweep_elder 3.0 这东西，扫干净些。别让它沾了灰，也别……让人瞧见了。
+camera unfocus
+
+actor sweep_elder exit to (29,5)
+say player 3.5 （他看见了玉佩。可爹说过，莫要示人——这位老人，到底是什么人？）
+camera unfocus
+flag elder_hint_done
+end

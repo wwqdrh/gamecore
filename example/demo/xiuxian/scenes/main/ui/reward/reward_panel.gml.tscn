@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://de57jqp6hu8if"]
 
-[ext_resource type="Script" uid="uid://depimpwxxhtmp" path="res://example/demo/xiuxian/scenes/main/ui/reward/reward_panel.gd" id="1_bp6d1"]
-[ext_resource type="Script" uid="uid://b4ipfenkr7nel" path="res://example/demo/xiuxian/scenes/main/ui/reward/reward_item.gd" id="2_3libq"]
+[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/ui/reward/reward_panel.gd" id="1_bp6d1"]
+[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/ui/reward/reward_item.gd" id="2_3libq"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_x55md"]
 bg_color = Color(0.09019608, 0.07058824, 0.039215688, 0.9019608)
@@ -70,7 +70,7 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[node name="RewardPanel" type="Panel" unique_id=1008515263]
+[node name="RewardPanel" type="Panel" unique_id=867998341]
 anchor_right = 1.0
 anchor_bottom = 1.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_x55md")
@@ -81,7 +81,7 @@ metadata/__script_vars = {}
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray()
 
-[node name="MainColumn" type="VBoxContainer" parent="." unique_id=59561247]
+[node name="MainColumn" type="VBoxContainer" parent="." unique_id=307520466]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -93,29 +93,29 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="TitleLabel" type="Label" parent="MainColumn" unique_id=544410449]
+[node name="TitleLabel" type="Label" parent="MainColumn" unique_id=283742224]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.9490196, 0.7921569, 0.34901962, 1)
 text = "任务完成"
 horizontal_alignment = 1
 
-[node name="SubtitleLabel" type="Label" parent="MainColumn" unique_id=703904217]
+[node name="SubtitleLabel" type="Label" parent="MainColumn" unique_id=1377978866]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.7254902, 0.6784314, 0.5568628, 1)
 horizontal_alignment = 1
 
-[node name="@Control@26156" type="Control" parent="MainColumn" unique_id=252764596]
+[node name="@Control@720" type="Control" parent="MainColumn" unique_id=2098774589]
 custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="RewardList" type="GdUIHList" parent="MainColumn" unique_id=677353410]
+[node name="RewardList" type="GdUIHList" parent="MainColumn" unique_id=1815163427]
 layout_mode = 2
 size_flags_horizontal = 4
 
-[node name="RewardCell" type="Panel" parent="MainColumn/RewardList" unique_id=1594075193]
+[node name="RewardCell" type="Panel" parent="MainColumn/RewardList" unique_id=1432110147]
 visible = false
 custom_minimum_size = Vector2(78, 96)
 layout_mode = 2
@@ -126,9 +126,9 @@ metadata/__tips_title = "{{tips_title}}"
 metadata/__tips = "{{tips}}"
 metadata/__script_vars = {}
 metadata/__gml_root = true
-metadata/__data_contract = PackedStringArray()
+metadata/__data_contract = PackedStringArray("icon", "icon_texture", "count", "tips_title", "tips")
 
-[node name="IconBox" type="CenterContainer" parent="MainColumn/RewardList/RewardCell" unique_id=771586643]
+[node name="IconBox" type="CenterContainer" parent="MainColumn/RewardList/RewardCell" unique_id=1399395943]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -140,19 +140,19 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="CellIcon" type="Label" parent="MainColumn/RewardList/RewardCell/IconBox" unique_id=127986290]
+[node name="CellIcon" type="Label" parent="MainColumn/RewardList/RewardCell/IconBox" unique_id=1885839211]
 layout_mode = 2
 metadata/__tpl_text = "icon"
 metadata/__tpl_keys = "text"
 
-[node name="CellTex" type="TextureRect" parent="MainColumn/RewardList/RewardCell/IconBox" unique_id=1340458181]
+[node name="CellTex" type="TextureRect" parent="MainColumn/RewardList/RewardCell/IconBox" unique_id=1891175419]
 visible = false
 custom_minimum_size = Vector2(34, 34)
 layout_mode = 2
 mouse_filter = 2
 stretch_mode = 5
 
-[node name="NameLabel" type="Label" parent="MainColumn/RewardList/RewardCell" unique_id=935281798]
+[node name="NameLabel" type="Label" parent="MainColumn/RewardList/RewardCell" unique_id=217028877]
 layout_mode = 0
 anchor_top = 1.0
 anchor_right = 1.0
@@ -168,7 +168,7 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="CountLabel" type="Label" parent="MainColumn/RewardList/RewardCell" unique_id=1553332792]
+[node name="CountLabel" type="Label" parent="MainColumn/RewardList/RewardCell" unique_id=2116096630]
 layout_mode = 0
 anchor_top = 1.0
 anchor_right = 1.0
@@ -183,17 +183,17 @@ metadata/__tpl_keys = "text"
 metadata/__anchor = "bottom_wide"
 metadata/__script_vars = {}
 
-[node name="@Control@26157" type="Control" parent="MainColumn" unique_id=31623957]
+[node name="@Control@721" type="Control" parent="MainColumn" unique_id=107236440]
 custom_minimum_size = Vector2(0, 14)
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
 
-[node name="@CenterContainer@26158" type="CenterContainer" parent="MainColumn" unique_id=583886119]
+[node name="@CenterContainer@722" type="CenterContainer" parent="MainColumn" unique_id=1703852914]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="ConfirmBtn" type="Button" parent="MainColumn/@CenterContainer@26158" unique_id=1684311529]
+[node name="ConfirmBtn" type="Button" parent="MainColumn/@CenterContainer@722" unique_id=2065179140]
 custom_minimum_size = Vector2(140, 44)
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_l2yyk")

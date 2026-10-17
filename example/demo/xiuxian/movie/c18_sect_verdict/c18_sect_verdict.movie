@@ -1,0 +1,46 @@
+# 宗门篇 c18 宗门对质（sect）
+# 触发建议：c17 后返宗报到（回主场景见宗主）触发。播完置 lianlian_gift
+# 点亮凌霄真人对话的授功段（master_sect_gift）。
+# 分镜：人证物证对质 → 赵家除名待查 → 赵擎叛宗出逃 → 宗主破例亲授
+
+scene xiuxian_sect
+# 玩家演出站位：大殿前广场
+player (15,8)
+wait 0.5
+
+actor sect_master enter (16,7)
+actor senior_brother enter (14,8) from (19,9)
+actor rival enter (18,8) from (23,8)
+camera follow player
+
+# 对质
+camera focus sect_master 1.2
+say sect_master 4.0 赵擎。楚天阔亲见魔修与你在后山交割，萧炎在幽林谷底险死还生——你还有何话讲？
+camera focus rival 0.8
+say rival 3.0 真人明鉴！弟子冤枉——是萧炎与魔修串通，反咬我赵家一口！
+say senior_brother 3.0 够了。谷底那一掌，十几名弟子都听见了动静。赵擎，你走不了了。
+camera unfocus
+
+# 叛宗出逃
+camera shake 4.0
+say rival 3.5 哈……哈哈！好，好一个「宗门的规矩」！萧炎，你等着——
+say rival 3.0 赵家的商路上没有回头客，蚀骨门的名单上也没有活口！咱们后会有期！
+camera shake 6.0
+actor rival exit to (23,8)
+camera unfocus
+
+# 宗主处置与亲授
+camera focus sect_master 1.2
+say sect_master 4.0 传令：赵擎叛宗，除名悬赏；赵家商盟停牌彻查，与蚀骨门往来者，以同罪论。
+say sect_master 4.0 萧炎。此番你因祸得福——《青莲功》残卷自行护主，是它的机缘，也是你的。
+say sect_master 3.5 本座不管你父亲是谁。青云宗的规矩，护得住你。
+say player 2.5 弟子……多谢真人！
+say sect_master 3.0 《青莲诀》外门篇已录入名册。修炼遇滞，去藏经阁——那里有位扫地的，会教你。
+camera unfocus
+
+actor sect_master exit
+actor senior_brother exit to (19,9)
+say player 3.5 （宗主也知道藏经阁那位老人……玉佩、残卷、扫地老人——身世这条线，快看分晓了。）
+camera unfocus
+flag lianlian_gift
+end

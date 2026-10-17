@@ -1,0 +1,40 @@
+# 宗门篇 c03 宗主接引（sect）
+# 触发建议：main_201 宗门报到接取时播放。
+# 分镜：大殿前训话 → 授外门令牌 → 赵擎当众讥讽 → 宗主一句收场
+
+scene xiuxian_sect
+# 玩家演出站位：大殿前广场
+player (15,8)
+wait 0.6
+
+actor sect_master enter (16,7)
+actor rival enter (18,8) from (24,8)
+camera follow player
+wait 0.4
+
+# 宗主训话
+camera focus sect_master 1.2
+say sect_master 4.0 都抬起头来。青云择徒，不问出身，只问道心。
+say sect_master 4.0 选拔前十，授外门令牌。外门三年——是磨，也是筛。能不能入内门，看你们自己。
+say sect_master 2.5 令牌收好。晨钟即起，暮钟而息，误了功课，外门也容不下懒人。
+camera unfocus
+
+# 赵擎当众讥讽
+camera focus rival 1.0
+say rival 3.5 哟，这不是青云坊那位田埂里爬出来的「第一名」么。
+say rival 3.0 一个乡野家族的少爷，也配站在这大殿前？赵家的狗都比你体面。
+say player 2.5 外门第一怎么来的，赵师兄比谁都清楚。
+camera unfocus
+
+# 宗主收场
+camera focus sect_master 1.0
+say sect_master 3.0 演武场见真章。宗门之内，再有一句废话，罚扫山门一月。
+say rival 2.0 ……是，真人。
+camera unfocus
+
+actor rival exit to (24,8)
+actor sect_master exit
+say player 3.0 （赵擎……赵家商盟的嫡子。这个人，迟早再会遇上。）
+camera unfocus
+flag sect_enrolled
+end

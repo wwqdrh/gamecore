@@ -1,0 +1,34 @@
+# 宗门篇 c13 残碑古篆（map_a）
+# 触发建议：c12 后继续向迷雾深处探索触发（身世伏笔关键段）。
+# 分镜：迷雾深处 → 残碑与断剑 → 玉佩共鸣 → 前主记忆翻涌
+
+scene xiuxian_map_a
+# 玩家演出站位：迷雾深处
+player (24,4)
+wait 0.8
+
+camera zoom 0.92
+wait 0.6
+camera reset_zoom
+camera follow player
+say player 3.0 （雾越来越浓……妖物踪迹断在这儿。等等，雾里立着的是什么？）
+
+# 残碑
+camera zoom 1.15
+wait 0.8
+say player 3.0 （一块残碑……碑上刻着一个古篆——「萧」？！）
+say player 3.5 （碑前还斜插着半截断剑，剑身锈得厉害，可断口处灵光未散。好重的剑意。）
+
+# 玉佩共鸣
+camera shake 2.5
+say player 3.5 （玉佩在发烫！无风自热，和残碑隐隐共鸣——父亲的旧物，怎么会应和这荒岭里的碑？）
+say player 3.0 （而且……这块碑，我好像「见过」。不是此刻的见过——是很久以前。）
+camera shake 3.5
+wait 0.6
+
+camera reset_zoom
+say player 3.5 （记忆里翻起一阵眩音：火光、背影、一声「活下去」……这是「他」的记忆，不是我萧炎的。）
+say player 2.5 （拓下碑文，回去慢慢参详。此地不宜久留。）
+camera unfocus
+flag stele_seen
+end

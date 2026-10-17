@@ -1,0 +1,36 @@
+# 宗门篇 c19 藏经真相（sect）
+# 触发建议：c18 后深夜（钟声事件）靠近藏经阁触发。身世半揭段。
+# 分镜：深夜阁前 → 老人拦路 → 药王谷、父亲跳崖 → 半揭即止（第三阶段全揭）
+
+scene xiuxian_sect
+# 玩家演出站位：藏经阁前
+player (25,7)
+wait 0.8
+
+camera focus player 0.8
+say player 3.0 （夜半三更，藏经阁只剩虫鸣。宗主让我来找那位扫地的——他还没睡么？）
+camera unfocus
+
+# 老人拦路
+actor sweep_elder enter (26,6)
+camera focus sweep_elder 1.2
+say sweep_elder 3.5 站住。扫帚一横，就是门槛——今晚，你不是来扫地的。
+say player 2.5 前辈……您果然不是寻常杂役。
+say sweep_elder 4.0 把玉佩拿出来。嗯……药王谷的东西，落在你手里，四十年了。
+say player 3.0 药王谷？我爹只说这是祖上旧物——
+camera unfocus
+
+# 半揭身世
+camera focus sweep_elder 1.0
+say sweep_elder 4.5 你父亲不是萧家血脉，是当年药王谷的关门弟子。他不是叛门——是有人要他的命。
+say sweep_elder 4.0 他带着半卷《青莲功》和这块玉佩跳下断魂崖，被萧家老爷子在岭下捡回去……才有了你。
+say player 3.5 （火光、背影、「活下去」——原来那段记忆，是父亲跳崖那一夜。）
+say player 2.5 那位前辈，您到底是——
+say sweep_elder 3.5 剩下的，等你筑基，去问该问的人。老朽只是个扫地的。
+camera unfocus
+
+actor sweep_elder exit to (29,5)
+say player 3.5 （药王谷、断魂崖、蚀骨门……父亲的一生，原来这么长。而它的后半段，该我去走了。）
+camera unfocus
+flag blood_truth_1
+end

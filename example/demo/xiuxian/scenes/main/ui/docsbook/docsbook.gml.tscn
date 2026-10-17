@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://1j2mtw6kfgp4"]
 
-[ext_resource type="Script" uid="uid://b5o7bnqfvnqn" path="res://example/demo/xiuxian/scenes/main/ui/docsbook/docsbook.gd" id="1_crbke"]
+[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/main/ui/docsbook/docsbook.gd" id="1_crbke"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tg0ij"]
 bg_color = Color(0.9411765, 0.9098039, 0.8235294, 1)
@@ -84,7 +84,7 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[node name="DocsPanel" type="Panel" unique_id=1058995067]
+[node name="DocsPanel" type="Panel" unique_id=202836480]
 anchor_right = 1.0
 anchor_bottom = 1.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_tg0ij")
@@ -95,7 +95,7 @@ metadata/__script_vars = {}
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray()
 
-[node name="MainMargin" type="MarginContainer" parent="." unique_id=1913703028]
+[node name="MainMargin" type="MarginContainer" parent="." unique_id=1398837074]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -107,17 +107,17 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="MainColumn" type="VBoxContainer" parent="MainMargin" unique_id=1616233168]
+[node name="MainColumn" type="VBoxContainer" parent="MainMargin" unique_id=232111179]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="TopBar" type="Panel" parent="MainMargin/MainColumn" unique_id=1284141063]
+[node name="TopBar" type="Panel" parent="MainMargin/MainColumn" unique_id=2144095716]
 custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_0a3i7")
 
-[node name="@MarginContainer@26136" type="MarginContainer" parent="MainMargin/MainColumn/TopBar" unique_id=22206845]
+[node name="@MarginContainer@46" type="MarginContainer" parent="MainMargin/MainColumn/TopBar" unique_id=178208832]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -128,41 +128,41 @@ offset_bottom = -14.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="TopRow" type="HBoxContainer" parent="MainMargin/MainColumn/TopBar/@MarginContainer@26136" unique_id=1604846969]
+[node name="TopRow" type="HBoxContainer" parent="MainMargin/MainColumn/TopBar/@MarginContainer@46" unique_id=2081359482]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="TitleLabel" type="Label" parent="MainMargin/MainColumn/TopBar/@MarginContainer@26136/TopRow" unique_id=1459806764]
+[node name="TitleLabel" type="Label" parent="MainMargin/MainColumn/TopBar/@MarginContainer@46/TopRow" unique_id=1145302275]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.9490196, 0.9254902, 0.8509804, 1)
 theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.9490196, 0.9254902, 0.8509804, 1)
 text = "修仙手册"
 vertical_alignment = 1
 
-[node name="@Control@26135" type="Control" parent="MainMargin/MainColumn/TopBar/@MarginContainer@26136/TopRow" unique_id=2144045708]
+[node name="@Control@45" type="Control" parent="MainMargin/MainColumn/TopBar/@MarginContainer@46/TopRow" unique_id=1007962601]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="SubLabel" type="Label" parent="MainMargin/MainColumn/TopBar/@MarginContainer@26136/TopRow" unique_id=1185589482]
+[node name="SubLabel" type="Label" parent="MainMargin/MainColumn/TopBar/@MarginContainer@46/TopRow" unique_id=238196956]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.9490196, 0.9254902, 0.8509804, 1)
 theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.9490196, 0.9254902, 0.8509804, 1)
 text = "基础知识 · 能力体系"
 vertical_alignment = 1
 
-[node name="BodyRow" type="HBoxContainer" parent="MainMargin/MainColumn" unique_id=833474498]
+[node name="BodyRow" type="HBoxContainer" parent="MainMargin/MainColumn" unique_id=302647678]
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
 
-[node name="SideBar" type="Panel" parent="MainMargin/MainColumn/BodyRow" unique_id=1022182441]
+[node name="SideBar" type="Panel" parent="MainMargin/MainColumn/BodyRow" unique_id=1820747186]
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_fdjg4")
 
-[node name="SideMargin" type="MarginContainer" parent="MainMargin/MainColumn/BodyRow/SideBar" unique_id=1802672544]
+[node name="SideMargin" type="MarginContainer" parent="MainMargin/MainColumn/BodyRow/SideBar" unique_id=787421915]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -173,11 +173,11 @@ offset_bottom = -8.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="MenuScroll" type="ScrollContainer" parent="MainMargin/MainColumn/BodyRow/SideBar/SideMargin" unique_id=257092375]
+[node name="MenuScroll" type="ScrollContainer" parent="MainMargin/MainColumn/BodyRow/SideBar/SideMargin" unique_id=1529651300]
 layout_mode = 2
 horizontal_scroll_mode = 0
 
-[node name="DocMenu" type="GdUITreeMenu" parent="MainMargin/MainColumn/BodyRow/SideBar/SideMargin/MenuScroll" unique_id=1596679951]
+[node name="DocMenu" type="GdUITreeMenu" parent="MainMargin/MainColumn/BodyRow/SideBar/SideMargin/MenuScroll" unique_id=257515739]
 row_height = 36.0
 font_size = 15
 item_text = Color(0.2901961, 0.24705882, 0.16470589, 1)
@@ -188,72 +188,72 @@ custom_minimum_size = Vector2(240, 74)
 layout_mode = 2
 metadata/__signal_s_menu_selected = "_on_menu_selected"
 
-[node name="@Button@26141" type="Button" parent="MainMargin/MainColumn/BodyRow/SideBar/SideMargin/MenuScroll/DocMenu" unique_id=1974494833]
+[node name="@Button@51" type="Button" parent="MainMargin/MainColumn/BodyRow/SideBar/SideMargin/MenuScroll/DocMenu" unique_id=12757014]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 0
 offset_right = 240.0
 offset_bottom = 36.0
 focus_mode = 0
+theme_override_styles/normal = SubResource("StyleBoxFlat_n60cq")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_n60cq")
+theme_override_styles/hover = SubResource("StyleBoxFlat_2ko1a")
 theme_override_colors/font_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_colors/font_pressed_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_colors/font_hover_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_font_sizes/font_size = 15
-theme_override_styles/normal = SubResource("StyleBoxFlat_n60cq")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_n60cq")
-theme_override_styles/hover = SubResource("StyleBoxFlat_2ko1a")
 metadata/__menu_row = true
 metadata/__menu_id = "basics"
 metadata/__menu_text = "基础知识"
 metadata/__menu_expanded = true
 metadata/__menu_parent = ""
 
-[node name="__MenuArrow" type="Button" parent="MainMargin/MainColumn/BodyRow/SideBar/SideMargin/MenuScroll/DocMenu/@Button@26141" unique_id=703808717]
+[node name="__MenuArrow" type="Button" parent="MainMargin/MainColumn/BodyRow/SideBar/SideMargin/MenuScroll/DocMenu/@Button@51" unique_id=1241064697]
 layout_mode = 0
 offset_top = 9.0
 offset_right = 20.0
 offset_bottom = 45.0
 focus_mode = 0
-theme_override_colors/font_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
-theme_override_colors/font_pressed_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
-theme_override_colors/font_hover_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
-theme_override_font_sizes/font_size = 14
 theme_override_styles/normal = SubResource("StyleBoxFlat_x6v5n")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_x6v5n")
 theme_override_styles/hover = SubResource("StyleBoxFlat_x6v5n")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_x6v5n")
+theme_override_colors/font_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
+theme_override_colors/font_pressed_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
+theme_override_colors/font_hover_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
+theme_override_font_sizes/font_size = 14
 text = "▾"
 
-[node name="__MenuText" type="Label" parent="MainMargin/MainColumn/BodyRow/SideBar/SideMargin/MenuScroll/DocMenu/@Button@26141" unique_id=661264578]
+[node name="__MenuText" type="Label" parent="MainMargin/MainColumn/BodyRow/SideBar/SideMargin/MenuScroll/DocMenu/@Button@51" unique_id=707517532]
 layout_mode = 0
 offset_left = 22.0
 offset_right = 232.0
 offset_bottom = 36.0
-theme_override_colors/font_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 text = "基础知识"
 vertical_alignment = 1
 
-[node name="@Button@26142" type="Button" parent="MainMargin/MainColumn/BodyRow/SideBar/SideMargin/MenuScroll/DocMenu" unique_id=673195115]
+[node name="@Button@52" type="Button" parent="MainMargin/MainColumn/BodyRow/SideBar/SideMargin/MenuScroll/DocMenu" unique_id=552449832]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 0
 offset_top = 38.0
 offset_right = 240.0
 offset_bottom = 74.0
 focus_mode = 0
+theme_override_styles/normal = SubResource("StyleBoxFlat_aiuap")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_aiuap")
+theme_override_styles/hover = SubResource("StyleBoxFlat_nvdyx")
 theme_override_colors/font_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_colors/font_pressed_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_colors/font_hover_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_font_sizes/font_size = 15
-theme_override_styles/normal = SubResource("StyleBoxFlat_aiuap")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_aiuap")
-theme_override_styles/hover = SubResource("StyleBoxFlat_nvdyx")
 metadata/__menu_row = true
 metadata/__menu_id = "ability"
 metadata/__menu_text = "能力体系"
 metadata/__menu_expanded = true
 metadata/__menu_parent = "basics"
 
-[node name="__MenuArrow" type="Button" parent="MainMargin/MainColumn/BodyRow/SideBar/SideMargin/MenuScroll/DocMenu/@Button@26142" unique_id=1898642189]
+[node name="__MenuArrow" type="Button" parent="MainMargin/MainColumn/BodyRow/SideBar/SideMargin/MenuScroll/DocMenu/@Button@52" unique_id=483977606]
 visible = false
 layout_mode = 0
 offset_left = 18.0
@@ -261,33 +261,33 @@ offset_top = 9.0
 offset_right = 38.0
 offset_bottom = 45.0
 focus_mode = 0
-theme_override_colors/font_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
-theme_override_colors/font_pressed_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
-theme_override_colors/font_hover_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
-theme_override_font_sizes/font_size = 14
 theme_override_styles/normal = SubResource("StyleBoxFlat_yr3m4")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_yr3m4")
 theme_override_styles/hover = SubResource("StyleBoxFlat_yr3m4")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_yr3m4")
+theme_override_colors/font_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
+theme_override_colors/font_pressed_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
+theme_override_colors/font_hover_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
+theme_override_font_sizes/font_size = 14
 text = "▾"
 
-[node name="__MenuText" type="Label" parent="MainMargin/MainColumn/BodyRow/SideBar/SideMargin/MenuScroll/DocMenu/@Button@26142" unique_id=1931755434]
+[node name="__MenuText" type="Label" parent="MainMargin/MainColumn/BodyRow/SideBar/SideMargin/MenuScroll/DocMenu/@Button@52" unique_id=2094998537]
 layout_mode = 0
 offset_left = 40.0
 offset_right = 232.0
 offset_bottom = 36.0
-theme_override_colors/font_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.2901961, 0.24705882, 0.16470589, 1)
 text = "能力体系"
 vertical_alignment = 1
 
-[node name="DocArea" type="Panel" parent="MainMargin/MainColumn/BodyRow" unique_id=1444387867]
+[node name="DocArea" type="Panel" parent="MainMargin/MainColumn/BodyRow" unique_id=17656854]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_5bejw")
 
-[node name="DocMargin" type="MarginContainer" parent="MainMargin/MainColumn/BodyRow/DocArea" unique_id=1336908317]
+[node name="DocMargin" type="MarginContainer" parent="MainMargin/MainColumn/BodyRow/DocArea" unique_id=725148841]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -298,7 +298,7 @@ offset_bottom = -20.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="DocView" type="GdUIRichText" parent="MainMargin/MainColumn/BodyRow/DocArea/DocMargin" unique_id=745731457]
+[node name="DocView" type="GdUIRichText" parent="MainMargin/MainColumn/BodyRow/DocArea/DocMargin" unique_id=328790358]
 doc_src = "res://example/demo/xiuxian/scenes/main/ui/docsbook/docs/basics.gdoc"
 text_color = Color(0.22745098, 0.18431373, 0.11764706, 1)
 heading_color = Color(0.5411765, 0.2901961, 0.101960786, 1)

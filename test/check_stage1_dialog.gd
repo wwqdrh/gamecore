@@ -22,9 +22,13 @@ const TIMELINES := [
 	"storyteller/story_timeline.txt", "disciple/disciple_timeline.txt",
 	"merchant/merchant_timeline.txt", "herb_shop/herb_timeline.txt",
 	"blacksmith/smith_timeline.txt", "arena_master/arena_timeline.txt",
+	"sect_master/master_sect_timeline.txt", "senior_brother/senior_timeline.txt",
+	"rival/rival_timeline.txt", "sweep_elder/sweep_timeline.txt",
 ]
 ## 代码/回调置位、不在 timeline 内 set_flag 的 flag 白名单
-const CODE_FLAGS := ["rank_dou_zhe", "day7_arrived", "tournament_won", "match_started"]
+## （lianlian_gift 由宗门篇演出 c18_sect_verdict 的 flag 指令置位）
+const CODE_FLAGS := ["rank_dou_zhe", "day7_arrived", "tournament_won", "match_started",
+	"lianlian_gift"]
 
 var _ok := true
 

@@ -1,0 +1,28 @@
+# 宗门篇 c08 演武场挑衅（sect）
+# 触发建议：约战支线接取 / 计时事件触发。
+# 分镜：演武场晨练 → 赵擎寻衅 → 当众约战三日后
+
+scene xiuxian_sect
+# 玩家演出站位：演武场
+player (22,10)
+wait 0.5
+
+camera follow player
+say player 3.0 （外门的日子：晨练、杂役、藏经阁。日子清苦，功夫却见长。）
+
+# 赵擎寻衅
+actor rival enter (21,10) from (26,10)
+camera focus rival 1.0
+say rival 3.5 打得不错啊，田埂少爷。杂役扫得也干净——就是不知道你的拳头，扫不扫得动演武台。
+say rival 3.5 全外门都在传：青云坊来的新丁摘了选拔头名。本少爷听着，可不太舒服。
+say player 2.5 赵师兄想怎样？
+say rival 3.0 三日后，演武台。外门第一的名头，你我各凭本事。敢不敢？
+say player 2.5 三日后，演武台见。
+camera unfocus
+
+say rival 2.5 哼，够爽快。可别到时候哭着下台。
+actor rival exit to (26,10)
+say player 3.0 （外门第一……这一战，不为名头，为的是往后没人再敢堵弟子舍的门。）
+camera unfocus
+flag duel_scheduled
+end

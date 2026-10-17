@@ -1,0 +1,28 @@
+# 宗门篇 c06 藏经阁杂役（sect）
+# 触发建议：外门杂役任务（藏经阁）接取时播放。
+# 分镜：领杂役 → 初到阁前 → 初遇扫地老人 → 老人疯话
+
+scene xiuxian_sect
+# 玩家演出站位：藏经阁前
+player (25,7)
+wait 0.6
+
+camera follow player
+say player 3.0 （外门杂役，分到藏经阁扫地。倒是清净——书香气总比赵擎的脸耐看。）
+
+# 老人早已在阁前扫地
+actor sweep_elder enter (26,6)
+camera focus sweep_elder 1.0
+say sweep_elder 3.5 扫地，扫地。落叶扫不尽，人心也扫不净哟。
+say player 3.0 老人家，我是新分来扫阁的。您每天……都在这儿？
+say sweep_elder 3.0 扫了四十年喽。这阁里的书啊，我闭着眼都知道哪本歪了。
+say player 2.5 （四十年？这老人是杂役，还是……）
+camera unfocus
+
+# 分工收尾
+say sweep_elder 3.0 三层以下是你们外门的。扫你的地去，娃娃。
+actor sweep_elder exit to (29,5)
+say player 3.0 （疯疯癫癫的……不过，他的扫帚好像从来没停过。）
+camera unfocus
+flag library_duty_started
+end

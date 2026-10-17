@@ -11,7 +11,7 @@
 # 本脚本负责场景级回调 + 状态层数据绑定（GdBean，example/demo/xiuxian/state/）：
 #   · XiuCharacterState（xiuxian_character）→ 当前/下一境界、突破进度、
 #     战斗属性条（攻击/防御/气血/灵力，attack/defense 由属性加权派生）
-#   · XiuItemState（xiuxian_item）→ 突破材料徽章（背包首个消耗类持有）
+#   · XiuItemState（xiuxian_item）→ 突破材料徽章（真实材料 have/need）
 #   watch 注册即回调当前值，面板打开即展示存档状态
 #   （五行灵根/功法列表暂为静态配置数据，与养成状态无关）
 extends Control
@@ -34,7 +34,7 @@ func _ready() -> void:
 	_char_bean.watch("hp", func(v = null, m = null): _on_char_changed())
 	_char_bean.watch("mp", func(v = null, m = null): _on_char_changed())
 	_char_bean.watch("attrs", func(v = null, m = null): _on_char_changed())
-	_item_bean.watch("bag_views", _on_bag_changed)
+	_item_bean.watch("bag_views", func(v = null, m = null): _refresh_material_chip())
 
 
 ## 境界突破区 + 战斗属性条：全部由人物状态派生
@@ -60,18 +60,32 @@ func _on_char_changed(_value: Variant = null, _metas: Variant = null) -> void:
 	var mana: Label = find_child("ManaValue", true, false)
 	if mana:
 		mana.text = "%d/%d" % [int(_char_bean.mp), int(_char_bean.max_mp)]
+	_refresh_material_chip()
 
 
-## 突破材料徽章：背包首个消耗类道具（无持有则显示提示）
-func _on_bag_changed(_value: Variant = null, _metas: Variant = null) -> void:
+## 突破材料徽章：真实突破材料清单（have/need），不再用背包丹药顶替——
+## 回春丹等 pill 是治疗消耗品，与突破材料（breakthrough.json）无关
+## 重入红线：本函数由 level/exp/attrs/bag_views watch 回调驱动，而
+## get_breakthrough_materials 会经 XiuItemState.ins() 触发另一 Bean 的
+## update（refresh_bag_views）——watch 回调可能正处在别的 update 借用内，
+## 同步调用 = bind_mut 重入 panic，必须 call_deferred 出栈后再执行。
+func _refresh_material_chip() -> void:
+	_do_refresh_material_chip.call_deferred()
+
+
+func _do_refresh_material_chip() -> void:
 	var chip: Label = find_child("MaterialText", true, false)
 	if chip == null:
 		return
-	for v in _item_bean.bag_views:
-		if str(v.get("category", "")) == "pill":
-			chip.text = "%s %s" % [str(v.get("name", "")), str(v.get("count", ""))]
-			return
-	chip.text = "暂无突破材料"
+	var mats: Array = _char_bean.get_breakthrough_materials()
+	if mats.is_empty():
+		chip.text = "已臻圆满，无需突破"
+		return
+	var parts: PackedStringArray = []
+	for m in mats:
+		parts.append("%s %d/%d" % [
+			str(m.get("name", "")), int(m.get("have", 0)), int(m.get("need", 0))])
+	chip.text = "、".join(parts)
 
 
 # ---------- 顶栏回调（profile_topbar.gml 的 @pressed，就近解析回退到场景脚本） ----------
@@ -84,23 +98,53 @@ func _on_close_pressed() -> void:
 # ---------- 中央突破按钮（profile_realm.gml 的 @pressed） ----------
 func _on_breakthrough_pressed() -> void:
 	# 突破流程（经验体系定义见 state/level/level.gjson）：
-	#   阶内 10 段经验攒满（进度 >= 100%）→ 需要等阶突破：
-	#   突破材料齐备 → try_breakthrough 扣材料进下一阶一段；材料不足给提示
-	#   阶内未满 → 经验不足以升级，仅提示进度
-	var pct: float = _char_bean.get_exp_progress()
+	#   阶内 10 段修为圆满（经验攒满）+ 突破材料齐备 → try_breakthrough
+	#   扣材料进下一阶一段；任一条件不满足都在面板给出可见提示
+	#   （此前失败分支只 print 控制台，表现为"点击没反应"）
 	if _char_bean.is_rank_full():
-		if _char_bean.try_breakthrough():
+		var lacking: Array = []
+		for m in _char_bean.get_breakthrough_materials():
+			if int(m.get("have", 0)) < int(m.get("need", 0)):
+				lacking.append("%s(%d/%d)" % [
+					str(m.get("name", "")), int(m.get("have", 0)),
+					int(m.get("need", 0))])
+		if not _char_bean.is_breakthrough_exp_ready():
+			var need: int = _char_bean.exp_to_next(int(_char_bean.level))
+			_hint("修为尚未圆满：经验 %d/%d，攒满后方可冲关突破。" % [int(_char_bean.exp), need])
+		elif not lacking.is_empty():
+			_hint("突破材料不足：%s。集齐后即可冲关。" % "、".join(lacking))
+		elif _char_bean.try_breakthrough():
+			_hint("突破成功！迈入「%s」。" % _char_bean.get_realm_title())
 			print("[ProfilePanel] 突破成功 → ", _char_bean.get_realm_title())
 		else:
-			var lacking: Array = []
-			for m in _char_bean.get_breakthrough_materials():
-				if int(m.get("have", 0)) < int(m.get("need", 0)):
-					lacking.append("%s(%d/%d)" % [
-						str(m.get("name", "")), int(m.get("have", 0)),
-						int(m.get("need", 0))])
-			print("[ProfilePanel] 突破材料不足：%s" % "、".join(lacking))
-	elif pct >= 1.0:
+			_hint("突破失败，条件异常，请重试。")
+	elif _char_bean.get_exp_progress() >= 1.0:
 		_char_bean.add_exp(_char_bean.exp_to_next(int(_char_bean.level)))
+		_hint("升级成功 → %s。" % _char_bean.get_realm_title())
 		print("[ProfilePanel] 升级成功 → ", _char_bean.get_realm_title())
 	else:
-		print("[ProfilePanel] 修炼进度 %d%%，未满" % roundi(pct * 100.0))
+		_hint("修炼进度 %d%%，未圆满——继续打坐攒修为。" % roundi(_char_bean.get_exp_progress() * 100.0))
+		print("[ProfilePanel] 修炼进度 %d%%，未满" % roundi(_char_bean.get_exp_progress() * 100.0))
+
+
+# ---------- 行内提示（BreakthroughHint，3 秒后还原；范式同 level_panel） ----------
+var _hint_default := ""
+var _hint_timer: Timer
+
+
+func _hint(text: String) -> void:
+	var lbl: Label = find_child("BreakthroughHint", true, false)
+	if lbl == null:
+		return
+	if _hint_default.is_empty():
+		_hint_default = lbl.text
+	lbl.text = text
+	if _hint_timer == null:
+		_hint_timer = Timer.new()
+		_hint_timer.one_shot = true
+		_hint_timer.wait_time = 4.0
+		_hint_timer.timeout.connect(func():
+			if is_instance_valid(lbl):
+				lbl.text = _hint_default)
+		add_child(_hint_timer)
+	_hint_timer.start()

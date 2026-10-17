@@ -1,0 +1,52 @@
+# 宗门篇 c09 演武之战（sect）
+# 触发建议：约战到期 / 演武台交互触发。可与战斗玩法衔接：
+# 播前先打一场（或直接演出表现），此剧本默认为战后演播版。
+# 分镜：登台对峙 → 交锋（震屏表现）→ 险胜 → 大师兄抚掌
+
+scene xiuxian_sect
+# 玩家演出站位：演武台
+player (21,10)
+wait 0.5
+
+actor rival enter (23,10) from (26,10)
+actor senior_brother enter (22,8) from (20,6)
+camera follow player
+
+# 登台对峙
+camera focus rival 1.0
+say rival 3.0 别说本少爷以大欺小——外门规矩，点到即止。开始！
+camera unfocus
+
+# 交锋（演出表现，不真实开战）
+camera focus player 0.8
+say player 2.5 （灵光速射——起手不能慢，他比我沉，先抢半个身位！）
+camera shake 5.0
+wait 0.8
+say player 3.0 （好重的掌劲……硬接不下，周天星环，散开！）
+camera shake 7.0
+wait 0.8
+camera focus rival 0.8
+say rival 2.5 噗——你、你敢……
+camera unfocus
+camera shake 4.0
+wait 0.6
+
+# 分胜负
+camera focus player 1.0
+say player 3.0 承让。赵师兄，杂役名册上你的名字，还是自己划掉吧。
+say rival 2.0 你……好，好得很！
+camera unfocus
+
+# 大师兄抚掌
+camera focus senior_brother 1.0
+say senior_brother 3.5 哈哈哈哈！打得漂亮！这一手星环散打，有点我年轻时候的意思。
+say senior_brother 2.5 外门第一，实至名归。
+say rival 2.5 ……走！
+camera unfocus
+
+actor rival exit to (26,10)
+actor senior_brother exit to (20,6)
+say player 3.0 （赢了。可是赵擎看我的眼神……不像认输，像记仇。）
+camera unfocus
+flag ring_duel_won
+end

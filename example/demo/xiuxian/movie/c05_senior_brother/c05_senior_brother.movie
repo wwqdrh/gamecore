@@ -1,0 +1,37 @@
+# 宗门篇 c05 大师兄解围（sect）
+# 触发建议：c04 播完后（dorm_reunion_done 置位后）再次靠近弟子舍播放。
+# 分镜：赵擎再度堵门 → 楚天阔提剑而来 → 逼退 → 指点外门之路
+
+scene xiuxian_sect
+# 玩家演出站位：外门场院
+player (9,11)
+wait 0.5
+
+actor rival enter (8,12) from (4,13)
+camera follow player
+camera focus rival 1.0
+say rival 3.0 怎么，还赖在这儿？杂役名册上第一行，就是你的名字。
+camera unfocus
+
+# 大师兄登场（画面外走入）
+actor senior_brother enter (12,9) from (20,9)
+camera focus senior_brother 1.2
+say senior_brother 3.5 赵擎。内门的晨课，你堵在外门弟子舍，是替谁练的？
+say rival 2.5 大……大师兄。我就是跟师弟们开个玩笑。
+say senior_brother 3.5 外门第一再堵门，就先来内门过过招。滚。
+actor rival exit to (4,13)
+camera unfocus
+
+# 指点
+camera focus senior_brother 1.0
+say senior_brother 3.5 别往心里去。赵家商盟的少爷，输不起。
+say senior_brother 4.0 外门的路，一半在杂役里——挑水劈柴都是桩功；另一半在藏经阁，外门书阁三层以下随便看。
+say senior_brother 3.0 我叫楚天阔。演武场随时开着，来打一场。
+say player 2.5 萧炎。多谢大师兄。
+camera unfocus
+
+actor senior_brother exit to (20,9)
+say player 3.0 （杂役、藏经阁……外门的路，一步一步走。）
+camera unfocus
+flag met_senior_intro
+end

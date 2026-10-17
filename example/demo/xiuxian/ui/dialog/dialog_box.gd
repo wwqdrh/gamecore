@@ -235,6 +235,15 @@ func task_status(task_id: String, status: String) -> bool:
 	return XiuTaskState.ins().get_task_status(task_id) == status
 
 
+## 解锁地图：timeline 中写 @unlock_map:地图别名
+## （宗门篇：夺魁领奖点亮 xiuxian_sect，与 stage1_clear 同点置位）
+func unlock_map(alias: String) -> void:
+	if alias.is_empty():
+		return
+	XiuMapState.ins().unlock_map(alias)
+	print("[DialogBox] 解锁地图: %s" % alias)
+
+
 func set_counter(key: String, value: int) -> void:
 	counters[key] = value
 

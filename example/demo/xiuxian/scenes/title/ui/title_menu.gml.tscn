@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://cv24njht8t4o6"]
 
-[ext_resource type="Script" uid="uid://b3ggqowndeado" path="res://example/demo/xiuxian/scenes/title/ui/title_menu.gd" id="1_ybnmy"]
-[ext_resource type="Script" uid="uid://br1rt7qlixgwc" path="res://example/demo/xiuxian/scenes/title/ui/save_modal.gd" id="2_jjqqh"]
+[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/title/ui/title_menu.gd" id="1_ybnmy"]
+[ext_resource type="Script" path="res://example/demo/xiuxian/scenes/title/ui/save_modal.gd" id="2_jjqqh"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xtous"]
 bg_color = Color(0.08627451, 0.1254902, 0.17254902, 1)
@@ -355,7 +355,7 @@ corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
-[node name="TitleMenu" type="Panel" unique_id=2141365419]
+[node name="TitleMenu" type="Panel" unique_id=1206477500]
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
@@ -366,7 +366,7 @@ metadata/__script_vars = {}
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray()
 
-[node name="MenuColumn" type="VBoxContainer" parent="." unique_id=2110495568]
+[node name="MenuColumn" type="VBoxContainer" parent="." unique_id=1364387333]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -374,58 +374,58 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="@Control@26914" type="Control" parent="MenuColumn" unique_id=557883464]
+[node name="@Control@9" type="Control" parent="MenuColumn" unique_id=1527287450]
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
 
-[node name="@Label@26915" type="Label" parent="MenuColumn" unique_id=837344310]
+[node name="@Label@10" type="Label" parent="MenuColumn" unique_id=691428205]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9098039, 0.8509804, 0.65882355, 1)
 text = "仙  途"
 horizontal_alignment = 1
 
-[node name="@Label@26916" type="Label" parent="MenuColumn" unique_id=1934675044]
+[node name="@Label@11" type="Label" parent="MenuColumn" unique_id=797700350]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.5411765, 0.6039216, 0.6901961, 1)
 text = "— 修 仙 问 道 · demo —"
 horizontal_alignment = 1
 
-[node name="@Control@26917" type="Control" parent="MenuColumn" unique_id=2048590137]
+[node name="@Control@12" type="Control" parent="MenuColumn" unique_id=1635698590]
 custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="BtnStart" type="Button" parent="MenuColumn" unique_id=1095036014]
+[node name="BtnStart" type="Button" parent="MenuColumn" unique_id=1369204512]
 custom_minimum_size = Vector2(260, 56)
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 theme_override_styles/normal = SubResource("StyleBoxFlat_x608s")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_sdx7q")
 theme_override_styles/hover = SubResource("StyleBoxFlat_pvr2p")
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "开 始 游 戏"
 metadata/__signal_pressed = "_on_start_pressed"
 
-[node name="BtnQuit" type="Button" parent="MenuColumn" unique_id=1114380452]
+[node name="BtnQuit" type="Button" parent="MenuColumn" unique_id=1027387632]
 custom_minimum_size = Vector2(260, 56)
 layout_mode = 2
 size_flags_horizontal = 4
 text = "退 出 游 戏"
 metadata/__signal_pressed = "_on_quit_pressed"
 
-[node name="@Control@26918" type="Control" parent="MenuColumn" unique_id=331294094]
+[node name="@Control@13" type="Control" parent="MenuColumn" unique_id=359081115]
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
 
-[node name="@Label@26919" type="Label" parent="MenuColumn" unique_id=746605631]
+[node name="@Label@14" type="Label" parent="MenuColumn" unique_id=1229365265]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.3529412, 0.41568628, 0.47843137, 1)
 text = "ESC 打开设置 · GML 框架 demo"
 horizontal_alignment = 1
 
-[node name="SaveModal" type="GdUIModal" parent="." unique_id=1857500949]
+[node name="SaveModal" type="GdUIModal" parent="." unique_id=900059574]
 content_margin = 56
 layout_mode = 0
 anchor_right = 1.0
@@ -434,13 +434,13 @@ metadata/__ui_id = "SaveModal"
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="Overlay" type="ColorRect" parent="SaveModal" unique_id=801201903]
+[node name="Overlay" type="ColorRect" parent="SaveModal" unique_id=1187979861]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0, 0, 0, 0.55)
 
-[node name="ContentArea" type="MarginContainer" parent="SaveModal" unique_id=1582917362]
+[node name="ContentArea" type="MarginContainer" parent="SaveModal" unique_id=858994105]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -450,7 +450,7 @@ theme_override_constants/margin_top = 56
 theme_override_constants/margin_right = 56
 theme_override_constants/margin_bottom = 56
 
-[node name="SaveRoot" type="Panel" parent="SaveModal/ContentArea" unique_id=480010210]
+[node name="SaveRoot" type="Panel" parent="SaveModal/ContentArea" unique_id=1945202098]
 custom_minimum_size = Vector2(560, 0)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_rctkr")
@@ -459,7 +459,7 @@ metadata/__script_vars = {}
 metadata/__gml_root = true
 metadata/__data_contract = PackedStringArray()
 
-[node name="@VBoxContainer@26926" type="VBoxContainer" parent="SaveModal/ContentArea/SaveRoot" unique_id=1896553122]
+[node name="@VBoxContainer@21" type="VBoxContainer" parent="SaveModal/ContentArea/SaveRoot" unique_id=1855095514]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -471,19 +471,19 @@ mouse_filter = 2
 metadata/__anchor = "full"
 metadata/__script_vars = {}
 
-[node name="Title" type="Label" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@26926" unique_id=1936467093]
+[node name="Title" type="Label" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@21" unique_id=1887193676]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9098039, 0.8509804, 0.65882355, 1)
 text = "选 择 存 档"
 horizontal_alignment = 1
 
-[node name="Slot1" type="Panel" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@26926" unique_id=2127017444]
+[node name="Slot1" type="Panel" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@21" unique_id=1527398891]
 custom_minimum_size = Vector2(0, 84)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_t8b2m")
 
-[node name="@HBoxContainer@26921" type="HBoxContainer" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@26926/Slot1" unique_id=2108345110]
+[node name="@HBoxContainer@16" type="HBoxContainer" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@21/Slot1" unique_id=2087913677]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -494,56 +494,56 @@ offset_bottom = -14.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="Slot1Name" type="Label" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@26926/Slot1/@HBoxContainer@26921" unique_id=1856121310]
+[node name="Slot1Name" type="Label" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@21/Slot1/@HBoxContainer@16" unique_id=392709775]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
 text = "存档一"
 
-[node name="@VBoxContainer@26920" type="VBoxContainer" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@26926/Slot1/@HBoxContainer@26921" unique_id=1775332484]
+[node name="@VBoxContainer@15" type="VBoxContainer" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@21/Slot1/@HBoxContainer@16" unique_id=2081014117]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="Slot1Line1" type="Label" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@26926/Slot1/@HBoxContainer@26921/@VBoxContainer@26920" unique_id=670810462]
+[node name="Slot1Line1" type="Label" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@21/Slot1/@HBoxContainer@16/@VBoxContainer@15" unique_id=337469757]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.68235296, 0.73333335, 0.7882353, 1)
 text = "暂无存档"
 
-[node name="Slot1Line2" type="Label" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@26926/Slot1/@HBoxContainer@26921/@VBoxContainer@26920" unique_id=1391453659]
+[node name="Slot1Line2" type="Label" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@21/Slot1/@HBoxContainer@16/@VBoxContainer@15" unique_id=1401564017]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.68235296, 0.73333335, 0.7882353, 1)
 
-[node name="Slot1Btn" type="Button" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@26926/Slot1/@HBoxContainer@26921" unique_id=1071604022]
+[node name="Slot1Btn" type="Button" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@21/Slot1/@HBoxContainer@16" unique_id=857177682]
 custom_minimum_size = Vector2(120, 44)
 layout_mode = 2
 mouse_default_cursor_shape = 2
-theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 theme_override_styles/normal = SubResource("StyleBoxFlat_qtrng")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_x211t")
 theme_override_styles/hover = SubResource("StyleBoxFlat_ifxw0")
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "新游戏"
 metadata/__signal_pressed = "_on_slot1_pressed"
 
-[node name="Slot1DelBtn" type="Button" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@26926/Slot1/@HBoxContainer@26921" unique_id=1768694770]
+[node name="Slot1DelBtn" type="Button" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@21/Slot1/@HBoxContainer@16" unique_id=5742636]
 visible = false
 custom_minimum_size = Vector2(88, 44)
 layout_mode = 2
 mouse_default_cursor_shape = 2
-theme_override_colors/font_color = Color(0.9411765, 0.78431374, 0.72156864, 1)
 theme_override_styles/normal = SubResource("StyleBoxFlat_2freq")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_k73o4")
 theme_override_styles/hover = SubResource("StyleBoxFlat_t2s7y")
+theme_override_colors/font_color = Color(0.9411765, 0.78431374, 0.72156864, 1)
 text = "删除存档"
 metadata/__show_if = "slot1_has_save"
 metadata/__signal_pressed = "_on_slot1_del_pressed"
 
-[node name="Slot2" type="Panel" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@26926" unique_id=1377684853]
+[node name="Slot2" type="Panel" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@21" unique_id=2079145401]
 custom_minimum_size = Vector2(0, 84)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_2m5mp")
 
-[node name="@HBoxContainer@26923" type="HBoxContainer" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@26926/Slot2" unique_id=1098487732]
+[node name="@HBoxContainer@18" type="HBoxContainer" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@21/Slot2" unique_id=2069756654]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -554,56 +554,56 @@ offset_bottom = -14.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="Slot2Name" type="Label" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@26926/Slot2/@HBoxContainer@26923" unique_id=1815778013]
+[node name="Slot2Name" type="Label" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@21/Slot2/@HBoxContainer@18" unique_id=1929568384]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
 text = "存档二"
 
-[node name="@VBoxContainer@26922" type="VBoxContainer" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@26926/Slot2/@HBoxContainer@26923" unique_id=1812976019]
+[node name="@VBoxContainer@17" type="VBoxContainer" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@21/Slot2/@HBoxContainer@18" unique_id=607700733]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="Slot2Line1" type="Label" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@26926/Slot2/@HBoxContainer@26923/@VBoxContainer@26922" unique_id=498004961]
+[node name="Slot2Line1" type="Label" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@21/Slot2/@HBoxContainer@18/@VBoxContainer@17" unique_id=1621894163]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.68235296, 0.73333335, 0.7882353, 1)
 text = "暂无存档"
 
-[node name="Slot2Line2" type="Label" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@26926/Slot2/@HBoxContainer@26923/@VBoxContainer@26922" unique_id=964801279]
+[node name="Slot2Line2" type="Label" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@21/Slot2/@HBoxContainer@18/@VBoxContainer@17" unique_id=104931159]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.68235296, 0.73333335, 0.7882353, 1)
 
-[node name="Slot2Btn" type="Button" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@26926/Slot2/@HBoxContainer@26923" unique_id=41576649]
+[node name="Slot2Btn" type="Button" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@21/Slot2/@HBoxContainer@18" unique_id=1102333286]
 custom_minimum_size = Vector2(120, 44)
 layout_mode = 2
 mouse_default_cursor_shape = 2
-theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 theme_override_styles/normal = SubResource("StyleBoxFlat_gh7m7")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_o8r7k")
 theme_override_styles/hover = SubResource("StyleBoxFlat_d0xow")
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "新游戏"
 metadata/__signal_pressed = "_on_slot2_pressed"
 
-[node name="Slot2DelBtn" type="Button" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@26926/Slot2/@HBoxContainer@26923" unique_id=32496159]
+[node name="Slot2DelBtn" type="Button" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@21/Slot2/@HBoxContainer@18" unique_id=89821745]
 visible = false
 custom_minimum_size = Vector2(88, 44)
 layout_mode = 2
 mouse_default_cursor_shape = 2
-theme_override_colors/font_color = Color(0.9411765, 0.78431374, 0.72156864, 1)
 theme_override_styles/normal = SubResource("StyleBoxFlat_xnokl")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_daawl")
 theme_override_styles/hover = SubResource("StyleBoxFlat_opb6t")
+theme_override_colors/font_color = Color(0.9411765, 0.78431374, 0.72156864, 1)
 text = "删除存档"
 metadata/__show_if = "slot2_has_save"
 metadata/__signal_pressed = "_on_slot2_del_pressed"
 
-[node name="Slot3" type="Panel" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@26926" unique_id=227678168]
+[node name="Slot3" type="Panel" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@21" unique_id=1766532224]
 custom_minimum_size = Vector2(0, 84)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_r8513")
 
-[node name="@HBoxContainer@26925" type="HBoxContainer" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@26926/Slot3" unique_id=796882588]
+[node name="@HBoxContainer@20" type="HBoxContainer" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@21/Slot3" unique_id=393704556]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -614,50 +614,50 @@ offset_bottom = -14.0
 mouse_filter = 2
 metadata/__anchor = "full"
 
-[node name="Slot3Name" type="Label" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@26926/Slot3/@HBoxContainer@26925" unique_id=1673296263]
+[node name="Slot3Name" type="Label" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@21/Slot3/@HBoxContainer@20" unique_id=1772121893]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.7882353, 0.7254902, 0.54901963, 1)
 text = "存档三"
 
-[node name="@VBoxContainer@26924" type="VBoxContainer" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@26926/Slot3/@HBoxContainer@26925" unique_id=108150431]
+[node name="@VBoxContainer@19" type="VBoxContainer" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@21/Slot3/@HBoxContainer@20" unique_id=1062359839]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="Slot3Line1" type="Label" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@26926/Slot3/@HBoxContainer@26925/@VBoxContainer@26924" unique_id=1600817682]
+[node name="Slot3Line1" type="Label" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@21/Slot3/@HBoxContainer@20/@VBoxContainer@19" unique_id=1571563693]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.68235296, 0.73333335, 0.7882353, 1)
 text = "暂无存档"
 
-[node name="Slot3Line2" type="Label" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@26926/Slot3/@HBoxContainer@26925/@VBoxContainer@26924" unique_id=636811287]
+[node name="Slot3Line2" type="Label" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@21/Slot3/@HBoxContainer@20/@VBoxContainer@19" unique_id=737219810]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.68235296, 0.73333335, 0.7882353, 1)
 
-[node name="Slot3Btn" type="Button" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@26926/Slot3/@HBoxContainer@26925" unique_id=121719067]
+[node name="Slot3Btn" type="Button" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@21/Slot3/@HBoxContainer@20" unique_id=200438908]
 custom_minimum_size = Vector2(120, 44)
 layout_mode = 2
 mouse_default_cursor_shape = 2
-theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 theme_override_styles/normal = SubResource("StyleBoxFlat_0dlb3")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_w0nnv")
 theme_override_styles/hover = SubResource("StyleBoxFlat_vi42n")
+theme_override_colors/font_color = Color(0.9490196, 0.91764706, 0.8235294, 1)
 text = "新游戏"
 metadata/__signal_pressed = "_on_slot3_pressed"
 
-[node name="Slot3DelBtn" type="Button" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@26926/Slot3/@HBoxContainer@26925" unique_id=322826452]
+[node name="Slot3DelBtn" type="Button" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@21/Slot3/@HBoxContainer@20" unique_id=1347564627]
 visible = false
 custom_minimum_size = Vector2(88, 44)
 layout_mode = 2
 mouse_default_cursor_shape = 2
-theme_override_colors/font_color = Color(0.9411765, 0.78431374, 0.72156864, 1)
 theme_override_styles/normal = SubResource("StyleBoxFlat_syt2i")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_1fbug")
 theme_override_styles/hover = SubResource("StyleBoxFlat_byp0s")
+theme_override_colors/font_color = Color(0.9411765, 0.78431374, 0.72156864, 1)
 text = "删除存档"
 metadata/__show_if = "slot3_has_save"
 metadata/__signal_pressed = "_on_slot3_del_pressed"
 
-[node name="BackBtn" type="Button" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@26926" unique_id=1790926603]
+[node name="BackBtn" type="Button" parent="SaveModal/ContentArea/SaveRoot/@VBoxContainer@21" unique_id=281506490]
 custom_minimum_size = Vector2(120, 40)
 layout_mode = 2
 size_flags_horizontal = 4

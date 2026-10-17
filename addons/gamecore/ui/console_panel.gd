@@ -1,10 +1,17 @@
 # 控制台面板 - 后台控制台 UI
 # 提供输入框和日志输出区域，用户可输入 Lua 命令获取响应
 # 通过 GdConsole 单例执行命令，监听 console_output 信号显示输出
+#
+# 场景挂载：直接在场景中创建 CanvasLayer 节点并挂本脚本（class_name
+# GdConsolePanel），toggle_key 等参数在编辑器 Inspector 中设置；
+# 也可运行时 load(...).new() 动态挂载（见 example/console）。
+class_name GdConsolePanel
 extends CanvasLayer
 
-# 控制台可见性切换快捷键
+# 控制台可见性切换快捷键（默认 ` 键）
 @export var toggle_key: Key = KEY_QUOTELEFT
+# 控制台所在 CanvasLayer 层级（调试面板恒最顶，demo 建议高于演出段 100）
+@export var console_layer: int = 100
 # 控制台高度占比
 @export var console_height_ratio: float = 0.4
 # 最大日志行数
@@ -22,7 +29,7 @@ var _visible: bool = false
 
 
 func _ready() -> void:
-	layer = 100
+	layer = console_layer
 	_console = Engine.get_singleton("GdConsole")
 	_build_ui()
 	_hide_console()
@@ -31,10 +38,10 @@ func _ready() -> void:
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode == toggle_key:
-			if _visible:
-				_hide_console()
-			else:
-				_show_console()
+			toggle_console()
+			get_viewport().set_input_as_handled()
+		elif _visible and event.keycode == KEY_ESCAPE:
+			_hide_console()
 			get_viewport().set_input_as_handled()
 		elif _visible and event.keycode == KEY_UP:
 			_navigate_history(-1)
@@ -42,6 +49,32 @@ func _input(event: InputEvent) -> void:
 		elif _visible and event.keycode == KEY_DOWN:
 			_navigate_history(1)
 			get_viewport().set_input_as_handled()
+
+
+# ---- 公开 API（供外部脚本/控制台命令驱动） ----
+
+## 控制台是否打开
+func is_open() -> bool:
+	return _visible
+
+
+## 打开控制台
+func open_console() -> void:
+	if not _visible:
+		_show_console()
+
+
+## 关闭控制台
+func close_console() -> void:
+	_hide_console()
+
+
+## 切换控制台开关
+func toggle_console() -> void:
+	if _visible:
+		_hide_console()
+	else:
+		_show_console()
 
 
 func _build_ui() -> void:
