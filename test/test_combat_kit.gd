@@ -146,6 +146,44 @@ func test_bullet_lifetime_expiry_recycles() -> void:
 	assert_true(_pool().idle_count("test_combat_bullet") >= 1, "到期子弹应归还池中")
 
 
+# ---------------------------------------------------------------- AimFrame
+
+## 瞄准框：默认显示 + 固定距离跟随（headless 鼠标在 (0,0)，宿主挪离原点
+## 保证瞄准方向非零）
+func test_shooter_aim_frame_default_on_fixed_distance() -> void:
+	var shooter := _make_shooter(10.0)
+	assert_true(shooter.show_aim_frame, "瞄准框应默认显示")
+	var host := shooter.get_parent() as Node2D
+	host.position = Vector2(200, 100)  # 原点宿主与 headless 鼠标重合 → 无方向
+	shooter.aim_distance = 64.0
+	await wait_frames(2)  # process 驱动懒创建与定位
+	var frame := host.get_node_or_null("AimFrame")
+	assert_true(frame != null, "瞄准框应懒创建挂宿主下")
+	if frame != null:
+		var f := frame as Node2D
+		assert_true(f.visible, "配置开启时应显示")
+		assert_near(f.position.length(), 64.0, 0.5, "瞄准框应在宿主周边固定距离上")
+
+
+## 瞄准框：配置关闭 → 隐藏；组件禁用 → 不显示
+func test_shooter_aim_frame_config_off_hides() -> void:
+	var shooter := _make_shooter(10.0)
+	var host := shooter.get_parent() as Node2D
+	host.position = Vector2(200, 100)
+	await wait_frames(2)
+	var frame := host.get_node_or_null("AimFrame")
+	assert_true(frame != null, "默认开启应已创建瞄准框")
+	shooter.show_aim_frame = false
+	await wait_frames(2)
+	if frame != null:
+		assert_false((frame as Node2D).visible, "配置关闭后应隐藏")
+	shooter.enabled = false
+	shooter.show_aim_frame = true
+	await wait_frames(2)
+	if frame != null:
+		assert_false((frame as Node2D).visible, "组件禁用后应隐藏")
+
+
 # ---------------------------------------------------------------- 辅助
 
 func _find_bullets() -> Array:

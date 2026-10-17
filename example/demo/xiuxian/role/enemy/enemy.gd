@@ -53,6 +53,8 @@ var _dying := false
 
 
 func _ready() -> void:
+	# 加入 "enemies" 分组：玩家追踪弹（GdDanmaku homing_group）经分组索敌
+	add_to_group("enemies")
 	control_mode = 0  # CONTROL_NONE：Brain 经 grid_path 队列驱动
 	move_mode = 2     # MODE_GRID
 	speed = move_speed

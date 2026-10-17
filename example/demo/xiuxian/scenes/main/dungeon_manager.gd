@@ -6,9 +6,9 @@
 #      进入独立探索场景（随机地图/随机敌人/多层爬塔/结算都在那边）
 #   2. 送回：从探索场景回来（通关/放弃）后本节点随主场景重建，wire 时检测
 #      from_map 非空 → open_map 送回入口 → 清空入口记录
-#   3. 场景恢复：重进应用时若秘境仍 running（探索场景未重建）→ 切探索场景
-#      续玩（循 run_seed+floor 复现当层，玩家位置由 XiuPlayerState 恢复）；
-#      入场切换重试耗尽才作废进度（防卡"running 但没进图"）
+#   3. 存档恢复：重进应用时若秘境仍 running（上次退出停在秘境中）→ 作废本次
+#      挑战、留在主场景——秘境内不记录玩家位置（player._save_position 跳过），
+#      存档位置=进秘境前的地图与落点，map_restore 直接恢复，不自动重返秘境
 #
 # 组件查找约定：经 GdSceneRoot 组件注册表（register_component/get_component），
 # mainhud 跨组件调用 start_run 走同一张表；本节点 _process 逐帧重试注册；
@@ -61,7 +61,11 @@ func start_run() -> bool:
 	if str(_state.status) == XiuDungeonState.STATUS_RUNNING:
 		return false
 	var from: String = str(_map.get_current_alias())
-	if not XiuDungeonState.FIXED_MAPS.has(from):
+	# 入口图守卫：主场景注册表内任意地图均可开局（家宅/萧宅/青石镇/青云坊/
+	# 探索图…——家宅是 initial_map 默认出生图，旧守卫只认 FIXED_MAPS 三图，
+	# 从家宅/探索图点「秘境」被静默拒绝 = 按钮无反应）；仅排除随机秘境自身
+	#（主场景注册表本就不含它，双保险）
+	if from.is_empty() or from == XiuDungeonState.DUNGEON_ALIAS:
 		return false
 	# 入口记录：当前固定地图 + 玩家所在格（回主场景后原路送回）
 	var cell := Vector2i(10, 8)
@@ -69,6 +73,10 @@ func start_run() -> bool:
 	var cur_map: Object = _map.get_current_map()
 	if player != null and cur_map != null and cur_map.has_method("world_to_cell"):
 		cell = cur_map.world_to_cell(player.global_position)
+	# 入场前强制落盘当前位置（秘境内 player 不再记录位置，2s 节流窗口内的
+	# 最后位移在此补记）：关闭游戏重开，存档位置即「进秘境前」的地图与落点
+	if player != null:
+		XiuPlayerState.ins().save_pos(from, player.global_position)
 	_state.start_run(from, cell)
 	# 挑战已开启：场景切换若因转场动画防重入（is_changing）被拒，转 _process 重试
 	# （真实场景：进主场景淡入未完时立刻点「秘境」按钮，同步调用必被拒一次）
@@ -93,14 +101,14 @@ func _wire() -> bool:
 		return false
 	_wired = true
 	_state = XiuDungeonState.ins()
-	# 秘境进行中（正常路径：start_run 刚记录入口；存档恢复：重进应用时探索
-	# 场景未重建）→ 切探索场景续玩（循 run_seed+floor 复现当层；玩家位置由
-	# XiuPlayerState 恢复，alias 匹配 + 可行走校验）。被转场防重入拒绝则
-	# _process 逐帧重试，耗尽才作废（见 _process 分支）
+	# 秘境进行中且出现在主场景 wire = 存档恢复（重进应用时上次退出停在秘境；
+	# 正常入场路径 start_run 后立即切场景离开 main，不会回到这里）→
+	# 作废本次挑战、留在主场景：秘境内不记录玩家位置，存档位置即「进秘境前」
+	# 的地图与落点，map_restore 已按它开图恢复，不自动重返秘境
 	if str(_state.status) == XiuDungeonState.STATUS_RUNNING:
-		_retry_enter = true
-		_retry_left = 600
-		set_process(true)
+		print("[DungeonManager] 重开检测到未完成秘境：作废进度，回到进秘境前位置")
+		_state.finish_run()
+		_state.clear_entry()
 		return true
 	# 从探索场景回来（通关/放弃，from_map 由 ExploreManager 保留）：送回入口
 	var from_map: String = str(_state.from_map)

@@ -24,14 +24,16 @@
 	.xp-text { color: #f2ead2; font_size: 13; }
   </style>
   <script>
-	// 技能栏数据（6 格）：key 键位角标 / icon 图标 / cd 冷却文本（空串 = 就绪）
+	// 技能栏数据（6 格）：key 键位角标 / icon 图标 / cd 冷却文本（空串 = 就绪）。
+	// key 对应 player.gd SKILL_PATTERNS（弹幕阵型）：1 灵光速射 / 2 玄风扇煞 /
+	// 3 周天星环 / 4 碧波灵刃 / 5 追魂符引 / 6 万剑归宗
 	var skills = [
-		{ key: "1", icon: "🌀", cd: "" },
-		{ key: "2", icon: "⚡", cd: "" },
-		{ key: "3", icon: "🌙", cd: "8s" },
-		{ key: "4", icon: "🍃", cd: "" },
-		{ key: "5", icon: "🧘", cd: "" },
-		{ key: "6", icon: "🗡️", cd: "" },
+		{ key: "1", icon: "⚡", cd: "" },
+		{ key: "2", icon: "🌀", cd: "" },
+		{ key: "3", icon: "🌙", cd: "2.5s" },
+		{ key: "4", icon: "🍃", cd: "1.6s" },
+		{ key: "5", icon: "🧘", cd: "2s" },
+		{ key: "6", icon: "🗡️", cd: "6s" },
 	]
   </script>
   <VBoxContainer name="SkillBar" separation="8">

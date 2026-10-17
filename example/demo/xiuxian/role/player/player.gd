@@ -36,6 +36,48 @@ signal s_portal_locked(target_alias: String)
 
 ## 状态键：当前装备物品 id（与 mainhud_equipbar.gd 一致，各自声明避免缓存依赖）
 const KEY_EQUIP := "mainhud.equip"
+## 状态键：技能栏选中技能位（explore_skillbar 点选/键盘 1-6 上行，选中高亮
+## 与本侧选中态同源；秘境内左键点击施放选中技能）
+const KEY_SKILL := "mainhud.skill"
+
+## 弹幕技能表（秘境挑战技能栏 6 格）：key → 阵型描述。
+## shape 阵型 + opts 参数全部走 GdDanmaku 描述字典（新弹幕 = 新数据不改框架）：
+##   damage 以玩家攻击力为基数按阵型弹数摊薄；cooldown 覆盖施放冷却
+const SKILL_PATTERNS := {
+	"1": {
+		"label": "灵光速射", "shape": "single",
+		"opts": {"cooldown": 0.25,
+			"bullet": {"speed": 640.0, "damage_factor": 1.0}},
+	},
+	"2": {
+		"label": "玄风扇煞", "shape": "fan",
+		"opts": {"count": 7, "spread": 70.0, "cooldown": 1.2,
+			"bullet": {"speed": 520.0, "damage_factor": 0.5}},
+	},
+	"3": {
+		"label": "周天星环", "shape": "ring",
+		"opts": {"count": 16, "cooldown": 2.5,
+			"bullet": {"speed": 420.0, "damage_factor": 0.45}},
+	},
+	"4": {
+		"label": "碧波灵刃", "shape": "fan",
+		"opts": {"count": 5, "spread": 30.0, "cooldown": 1.6,
+			"bullet": {"speed": 480.0, "damage_factor": 0.6,
+				"wave_amplitude": 42.0, "wave_frequency": 3.0}},
+	},
+	"5": {
+		"label": "追魂符引", "shape": "fan",
+		"opts": {"count": 3, "spread": 24.0, "cooldown": 2.0,
+			"bullet": {"speed": 380.0, "damage_factor": 0.7,
+				"homing_group": "enemies", "homing_turn_rate": 6.0}},
+	},
+	"6": {
+		"label": "万剑归宗", "shape": "spiral",
+		"opts": {"duration": 1.2, "step": 0.08, "arms": 3,
+			"rotate": 26.0, "cooldown": 6.0,
+			"bullet": {"speed": 460.0, "damage_factor": 0.35}},
+	},
+}
 
 var map_mgr: Node = null
 var camera: Camera2D = null
@@ -43,6 +85,7 @@ var scene_root: Node = null
 var health: Node = null
 var shooter: Node = null
 var melee: Node = null
+var danmaku: Node = null
 var weapon_mount: Node2D = null
 ## 当前攻击模式："gun" = 射击 / "melee" = 近战 / "mine" = 挖矿 / "till" = 锄地 /
 ## "water" = 浇水 / "plant" = 播种收获 / "" = 空手（左键点击：相邻成熟作物
@@ -50,6 +93,13 @@ var weapon_mount: Node2D = null
 var attack_mode := ""
 ## 当前装备道具 id（_on_equip_changed 记录；播种时作为种子 id 匹配作物 def）
 var _equip_item := ""
+## 当前选中的弹幕技能位（"1"~"6"；空 = 未选中）。
+## 键位 1-6 / 技能格点选 → GDSTATE KEY_SKILL（选中语义，watch 收敛到此）；
+## 秘境战斗中左键点击 → 施放该技能（不再是「按键即施放」）
+var _selected_skill := ""
+## 秘境战斗模式（当前图为随机秘境）：左键 = 施放选中技能（本脚本处理），
+## 枪械/近战的框架鼠标开火路由关闭让位；主世界按装备 attack_mode 恢复
+var _dungeon_combat := false
 ## 兼容字段：持枪状态（射击模式下 true）
 var gun_equipped: bool:
 	get:
@@ -57,7 +107,7 @@ var gun_equipped: bool:
 
 # 上次落格判定用格子（-9999 = 未初始化，首帧强制判定一次）
 var last_cell := Vector2i(-9999, -9999)
-var path_line: Line2D
+var path_line: Line2D = null
 var _wired := false
 
 ## 上次位置节流保存（秒）：update 同值自动短路，只在实际移动后落盘
@@ -73,14 +123,12 @@ func _ready() -> void:
 	# 装备栏联动（状态下行）：watch 注册即回调当前值——HUD 后 ready 也会同步
 	if Engine.has_singleton("GDSTATE"):
 		Engine.get_singleton("GDSTATE").watch(KEY_EQUIP, _on_equip_changed)
-	# 路径预览折线（黄色），走完清除
-	path_line = Line2D.new()
-	path_line.name = "PathPreview"
-	path_line.width = 2.0
-	path_line.default_color = Color(1.0, 0.85, 0.25, 0.75)
-	path_line.z_index = 1
-	add_child(path_line)
-	s_grid_path_finished.connect(func() -> void: path_line.clear_points())
+	# 技能栏联动（选中语义）：explore_skillbar 点选技能格 / 键盘 1-6 写
+	# KEY_SKILL，watch 回调只收敛本地选中态（施放在左键点击，回调内零副作用）
+	if Engine.has_singleton("GDSTATE"):
+		Engine.get_singleton("GDSTATE").watch(KEY_SKILL, _on_skill_changed)
+	# 路径预览折线（黄色）走完即清（残线兜底在 _process：键盘打断不发 finished 信号）
+	s_grid_path_finished.connect(_on_grid_path_finished)
 	# 接线由 _process 驱动（每帧重试直到完成）。
 	# 红线：禁止 call_deferred 自重试——deferred 队列 flush 到空才结束，
 	# 自重试会让队列永不为空，主循环卡死在 flush 内（process 永不执行）。
@@ -149,6 +197,17 @@ func _make_combat() -> void:
 	weapon_mount.position = Vector2(10, 6)
 	add_child(weapon_mount)
 
+	# 弹幕发射器：秘境技能栏 6 格弹幕（键盘 1-6 / 点技能格施放）。
+	# 独立池别名——与 GdShooter 池隔离，避免懒注册重冲刷对方在飞子弹
+	danmaku = GdDanmaku.new()
+	danmaku.name = "Danmaku"
+	danmaku.bullet_alias = "player_danmaku"
+	danmaku.bullet_scene_path = "res://example/demo/xiuxian/role/player/bullet.tscn"
+	danmaku.bullet_lifetime = 1.4
+	danmaku.muzzle_distance = 18.0
+	danmaku.cast_cooldown = 0.5
+	add_child(danmaku)
+
 
 func _on_damaged(_amount: float, _current: float) -> void:
 	# 受击闪红
@@ -188,36 +247,92 @@ func _on_equip_changed(value: Variant = null, _key: Variant = null) -> void:
 	# 开启（同一 GdMelee 判定盒，挥击时同步目标掩码与伤害：战斗打敌受击盒
 	# layer3(4)，挖矿打可采集物受击盒 layer5(16)，矿石 GdHealth(3 点) 承载
 	# 敲击计数；锄地/浇水/播种不走判定盒（地形不是 Area2D），掩码清零、动作
-	# 逻辑挂 s_swing 信号）；徒手 → 两者全关，左键留给点击寻路（本脚本 _unhandled_input）
-	if shooter != null:
-		shooter.auto_fire_mouse = attack_mode == "gun"
-	if melee != null:
-		melee.auto_attack_mouse = attack_mode in ["melee", "mine", "till", "water", "plant"]
-		match attack_mode:
-			"melee":
-				melee.target_mask = TARGET_ENEMY
-				melee.attack_damage = attack * 1.6
-				melee.attack_cooldown = 0.45
-			"mine":
-				melee.target_mask = TARGET_DECO
-				melee.attack_damage = 1.0
-				melee.attack_cooldown = 0.35
-			"till":
-				melee.target_mask = 0
-				melee.attack_damage = 0.0
-				melee.attack_cooldown = 0.4
-			"water":
-				melee.target_mask = 0
-				melee.attack_damage = 0.0
-				melee.attack_cooldown = 0.5
-			"plant":
-				melee.target_mask = 0
-				melee.attack_damage = 0.0
-				melee.attack_cooldown = 0.5
-			_:
-				melee.stop()
+	# 逻辑挂 s_swing 信号）；徒手 → 两者全关，左键留给点击寻路（本脚本 _unhandled_input）。
+	# 路由最终由 _apply_attack_routing 统一裁决（秘境弹幕模式抢占左键）
+	match attack_mode:
+		"melee":
+			melee.target_mask = TARGET_ENEMY
+			melee.attack_damage = attack * 1.6
+			melee.attack_cooldown = 0.45
+		"mine":
+			melee.target_mask = TARGET_DECO
+			melee.attack_damage = 1.0
+			melee.attack_cooldown = 0.35
+		"till":
+			melee.target_mask = 0
+			melee.attack_damage = 0.0
+			melee.attack_cooldown = 0.4
+		"water":
+			melee.target_mask = 0
+			melee.attack_damage = 0.0
+			melee.attack_cooldown = 0.5
+		"plant":
+			melee.target_mask = 0
+			melee.attack_damage = 0.0
+			melee.attack_cooldown = 0.5
+		_:
+			melee.stop()
+	_apply_attack_routing()
 	_apply_weapon_visual(item)
 	print("[Player] 装备: %s → 攻击模式 %s" % [value, attack_mode if attack_mode != "" else "徒手"])
+
+
+# ---- 弹幕技能：秘境技能栏 6 格（选中高亮 + 鼠标点击施放） ----
+
+## 技能状态键变化（选中语义，上行源：键盘 1-6 / 技能格点选，两路同键）：
+## 只记录选中键（高亮由 skillbar 同名 watch 驱动），施放发生在左键点击。
+## watch 回调红线：仅赋值本地成员，不碰状态层/发射器
+func _on_skill_changed(value: Variant = null, _key: Variant = null) -> void:
+	var key := str(value) if value != null else ""
+	_selected_skill = key if SKILL_PATTERNS.has(key) else ""
+
+
+## 键盘 1-6 选中/取消技能（unhandled 阶段：UI 聚焦时不触发）。
+## 再按同键 = 取消选中；写状态键统一收敛（技能格高亮与本侧选中态同源）
+func _unhandled_key_input(event: InputEvent) -> void:
+	var ev := event as InputEventKey
+	if ev == null or not ev.pressed or ev.echo:
+		return
+	var idx := ev.keycode - KEY_1
+	if idx < 0 or idx >= SKILL_PATTERNS.size():
+		return
+	_select_skill(str(idx + 1))
+
+
+func _select_skill(key: String) -> void:
+	if not SKILL_PATTERNS.has(key):
+		return
+	var next := "" if _selected_skill == key else key
+	if Engine.has_singleton("GDSTATE"):
+		Engine.get_singleton("GDSTATE").set_state(KEY_SKILL, next)
+
+
+## 攻击输入路由裁决：秘境弹幕模式下左键施法由本脚本处理，枪械/近战的
+## 框架鼠标路由必须让位（否则事件被 GdShooter/GdMelee 先行消费，双发）；
+## 主世界按装备 attack_mode 恢复框架路由。装备变化与换图两条路径都会调
+func _apply_attack_routing() -> void:
+	if shooter != null:
+		shooter.auto_fire_mouse = (not _dungeon_combat) and attack_mode == "gun"
+	if melee != null:
+		melee.auto_attack_mouse = (not _dungeon_combat) \
+			and attack_mode in ["melee", "mine", "till", "water", "plant"]
+
+
+## 施放弹幕技能：SKILL_PATTERNS 描述 → damage_factor 换算绝对伤害 →
+## GdDanmaku.cast_toward_mouse（朝鼠标方向按阵型编排）。
+## 选中态保持不变（连点连发，冷却内重复点击静默拒绝）
+func _cast_skill(key: String) -> void:
+	var pat: Dictionary = SKILL_PATTERNS.get(key, {})
+	if pat.is_empty() or danmaku == null:
+		return
+	var opts: Dictionary = (pat.get("opts", {}) as Dictionary).duplicate(true)
+	var bullet: Dictionary = opts.get("bullet", {}) as Dictionary
+	bullet["damage"] = attack * float(bullet.get("damage_factor", 1.0))
+	bullet.erase("damage_factor")
+	opts["bullet"] = bullet
+	if danmaku.cast_toward_mouse(str(pat.get("shape", "single")), opts):
+		print("[Player] 弹幕技能 %s·%s（cd %.1fs）"
+			% [key, str(pat.get("label", "")), float(opts.get("cooldown", 0.5))])
 
 
 # ---- 武器装配： WeaponMount 挂简单基础图形（正式素材就位后替换） ----
@@ -604,10 +719,18 @@ func _apply_map(map: Node, snap: bool) -> void:
 		return
 	# 清掉旧地图遗留的路径指令（下一格在新图上无意义）
 	stop()
-	path_line.clear_points()
+	# 路径预览线挂在地图根下，随旧地图实例一起释放（引用置空重建）
+	path_line = null
 	# 网格绑定：指向当前地图实例（换图后 grid_map 缓存失效自动重解析）
 	var alias: String = map_mgr.get_current_alias()
 	grid_map_path = NodePath("../MapManager/MapLayer/" + alias)
+	# 瞄准框：秘境战斗（dungeon 图）才显示——组件默认显示，主场景/家园关掉
+	if shooter != null:
+		shooter.show_aim_frame = alias == XiuDungeonState.DUNGEON_ALIAS
+	# 战斗输入模式：秘境 = 弹幕技能（左键施法，框架鼠标开火路由让位）；
+	# 主世界 = 装备攻击（attack_mode 裁决）
+	_dungeon_combat = alias == XiuDungeonState.DUNGEON_ALIAS
+	_apply_attack_routing()
 	# 相机：跟随玩家 + 边界限制在地图矩形内
 	_apply_camera(map, snap)
 	# 出生点：优先恢复上次位置（存档记录 alias 与当前图一致且格可行走），
@@ -652,6 +775,11 @@ func _apply_camera(map: Node, snap: bool) -> void:
 
 ## 保存当前位置（地图 alias + 精确世界坐标；随档持久化，进游戏恢复出生在上次位置）
 func _save_position() -> void:
+	# 秘境内不记录位置：存档停留在进秘境前的地图与落点（入场时 start_run
+	# 已强制补记一次）——关闭游戏重开直接回到进秘境前，不会重返秘境
+	#（重开时 running 由 DungeonManager._wire 作废）
+	if _dungeon_combat:
+		return
 	var map: Node = map_mgr.get_current_map()
 	if map == null or not map.has_method("world_to_cell"):
 		return
@@ -689,6 +817,11 @@ func _process(delta: float) -> void:
 		return
 	# 锄地预览光标（每帧同步，移动中也跟随鼠标方向刷新）
 	_update_dig_cursor()
+	# 路径预览残线兜底：键盘打断/下一格失效时 Rust 侧只清 grid_path_active
+	# 不发 s_grid_path_finished——按激活态清除，防止黄线残挂跟着玩家走
+	if path_line != null and is_instance_valid(path_line) \
+			and path_line.get_point_count() > 0 and not is_grid_path_active():
+		path_line.clear_points()
 	if is_moving():
 		return
 	var map: Node = map_mgr.get_current_map()
@@ -717,6 +850,13 @@ func _unhandled_input(event: InputEvent) -> void:
 	# 此处按 attack_mode 分流双保险。
 	if event is InputEventMouseButton and event.pressed \
 			and event.button_index == MOUSE_BUTTON_LEFT:
+		# 秘境弹幕模式：已选中技能 → 左键朝鼠标施放（消费事件，不走寻路/
+		# 装备攻击——路由已在 _apply_attack_routing 让位，此处是施放入口）；
+		# 未选中技能 → 落到下方常规分流（徒手寻路/装备攻击已被框架消费）
+		if _dungeon_combat and _selected_skill != "":
+			_cast_skill(_selected_skill)
+			get_viewport().set_input_as_handled()
+			return
 		# 装备武器时左键 = 攻击输入（框架 unhandled 路由驱动），不再触发寻路
 		if attack_mode != "":
 			return
@@ -756,10 +896,32 @@ func _on_map_clicked_at(map: Node, target: Vector2i) -> void:
 	if path.is_empty():
 		return
 	set_grid_path(path)
-	# 预览线：当前位置 → 依次各格中心
+	# 预览线：当前位置 → 依次各格中心（挂地图根，世界坐标恒定不随玩家漂移）
+	var line := _ensure_path_line(map)
 	var pts := PackedVector2Array([global_position])
 	pts.append_array(path)
-	path_line.points = pts
+	line.points = pts
+
+
+## 路径预览折线（黄色）：**挂在当前地图根**而非玩家——路径点是世界坐标，
+## 旧实现挂在玩家身上导致整条线随玩家漂移；切图随旧地图实例释放重建
+func _ensure_path_line(map: Node) -> Line2D:
+	if path_line != null and is_instance_valid(path_line) and path_line.get_parent() == map:
+		return path_line
+	path_line = Line2D.new()
+	path_line.name = "PathPreview"
+	path_line.width = 2.0
+	path_line.default_color = Color(1.0, 0.85, 0.25, 0.75)
+	path_line.z_index = 1
+	map.add_child(path_line)
+	return path_line
+
+
+## 路径走完清预览线（键盘打断/路径失效时 Rust 侧不发本信号——
+## 残线兜底在 _process 按路径激活态清除）
+func _on_grid_path_finished() -> void:
+	if path_line != null and is_instance_valid(path_line):
+		path_line.clear_points()
 
 
 ## 空手采摘：目标格有成熟作物且在玩家格 8 邻范围内（含脚下格——走进田里

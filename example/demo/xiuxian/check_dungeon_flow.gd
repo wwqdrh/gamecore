@@ -8,12 +8,12 @@
 #   1. 装配：main 场景 DungeonManager 可达；MapManager 注册表**不含**随机场景
 #      （随机场景只在 explore 场景注册）；固定场景三别名分类
 #   2. 主城 UI 分离：mainhud 有道具栏 EquipBar、无技能栏 SkillBar
-#   3. 入口：start_run() 记录入口（萧宅+玩家格）→ 整场景切换 xiuxian_explore
+#   3. 入口：start_run() 记录入口（家宅+玩家格）→ 整场景切换 xiuxian_explore
 #   4. 探索场景：ExploreManager 可达；explore HUD（层数横幅/离开按钮/技能栏/
 #      结算弹窗）装配；第 1 层随机刷怪 4 只（距出生点 ≥ 6 格）
 #   5. 扫荡流转：全灭 → 自动进第 2 层（5 只，新地图实例）→ 第 3 层 boss（秘境妖王）
 #   6. 结算：boss 层清空 → 发奖（修为/灵石/战利品/首杀秘境残图）→ 结算弹窗打开
-#   7. 回程：弹窗关闭 → 场景切回 xiuxian_main → 原路送回萧宅、入口记录清空
+#   7. 回程：弹窗关闭 → 场景切回 xiuxian_main → 原路送回家宅、入口记录清空
 #   8. 放弃：再次进入后 abandon() → 回主场景、状态回空（无奖励发放）
 extends SceneTree
 
@@ -127,11 +127,12 @@ func _run() -> void:
 		check(hud.find_child("SkillBar", true, false) == null,
 			"主城不应再有技能栏 SkillBar（已迁移探索场景）")
 
-	# 3. 入口：start_run 记录入口并整场景切换到探索场景
-	check(str(map_mgr.get_current_alias()) == "xiuxian_xiaozhai", "起始应在萧宅")
+	# 3. 入口：start_run 记录入口（initial_map 家宅 + 玩家格——主场景注册表内
+	#    任意地图均可开局，不再限 FIXED_MAPS）并整场景切换到探索场景
+	check(str(map_mgr.get_current_alias()) == "xiuxian_home", "起始应在家宅（initial_map）")
 	check(dungeon_mgr.start_run(), "start_run 应成功开启秘境")
 	check(str(dungeon.status) == XiuDungeonState.STATUS_RUNNING, "状态应为 running")
-	check(str(dungeon.from_map) == "xiuxian_xiaozhai", "入口地图应记录为萧宅")
+	check(str(dungeon.from_map) == "xiuxian_home", "入口地图应记录为家宅")
 	check(int(dungeon.floor) == 1 and int(dungeon.total_floors) == 3, "应从第 1 层/共 3 层开始")
 	check(not dungeon_mgr.start_run(), "进行中重复 start_run 应被拒绝")
 	if not await _poll(func(): return _scene_id(scene_root) == "xiuxian_explore", 600,
@@ -230,8 +231,8 @@ func _run() -> void:
 		"结算弹窗关闭后应切回主场景"):
 		_finish()
 		return
-	if not await _poll(func(): return _main_map_alias(scene_root) == "xiuxian_xiaozhai", 600,
-		"回主场景后应原路送回萧宅"):
+	if not await _poll(func(): return _main_map_alias(scene_root) == "xiuxian_home", 600,
+		"回主场景后应原路送回家宅"):
 		_finish()
 		return
 	if not await _poll(func(): return str(dungeon.from_map) == "", 300,
@@ -260,8 +261,8 @@ func _run() -> void:
 		return
 	check(str(dungeon.status) == "", "放弃后状态应回空")
 	check(int(char_state.spirit_stones) == stones1, "放弃不应发放奖励")
-	check(str(_main_map_alias(scene_root)) == "xiuxian_xiaozhai",
-		"放弃后也应送回入口萧宅")
+	check(str(_main_map_alias(scene_root)) == "xiuxian_home",
+		"放弃后也应送回入口家宅")
 
 	dungeon.reset_demo()  # 还原，避免污染其他测试
 	scene_root.queue_free()

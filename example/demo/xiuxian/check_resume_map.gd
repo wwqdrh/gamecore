@@ -100,7 +100,7 @@ func _run() -> void:
 	root.add_child(index2)
 	await _wait_frames(30)
 	var cur2: String = str(index2.get_node("MapManager").get_current_alias())
-	_check(cur2 == "xiuxian_xiaozhai", "副本 alias 不在主场景注册表应回退默认萧宅，实际 %s" % cur2)
+	_check(cur2 == "xiuxian_home", "副本 alias 不在主场景注册表应回退默认图（initial_map 家宅），实际 %s" % cur2)
 	index2.get_node("Player").set_process(false)
 	index2.get_node("CalendarManager").set_process(false)
 

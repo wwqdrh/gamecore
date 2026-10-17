@@ -112,9 +112,17 @@ shooter.fire_toward_mouse()         # 朝鼠标
 shooter.s_fired.connect(func(muzzle, dir): print("开火"))
 ```
 
+**瞄准框（show_aim_frame，默认显示）**：宿主周边 `aim_distance`（默认 64px）
+固定距离、跟随鼠标方向的四角括线框（边长 `aim_frame_size` 默认 20px，金色
+呼吸透明度）——懒创建挂宿主下的 `GdShooterAimFrame` 节点（z=100），每帧定位，
+纯视觉辅助不影响判定/开火；组件禁用/宿主暂停/拿不到瞄准方向时自动隐藏。
+业务侧按场景开关（如 demo：主场景/家园关、秘境 dungeon 图开，见
+player.gd `_apply_map`）。
+
 验收：`test/check_input_routing.gd`（点 UI 不开火/点世界开火/按住连射/
 宿主暂停拦截/未配置按键不响）、`test/check_bullet_terrain.gd`
-（射程销毁/撞山销毁/高海拔飞越/lifetime 统一出口）。
+（射程销毁/撞山销毁/高海拔飞越/lifetime 统一出口）、
+`test/test_combat_kit.gd`（瞄准框懒创建/固定距离/配置关隐藏）。
 
 ## GdMelee — 近战攻击组件（Node2D）
 
@@ -160,24 +168,80 @@ melee.s_swing.connect(func(dir): print("挥击 ", dir))
 验收：`test/check_melee.gd`（装配/挥击定位/冷却/窗口复位/范围内命中掉血/
 范围外不误伤/stop 终止）。
 
+## GdDanmaku — 弹幕发射器（Node）
+
+挂宿主 Node2D 下，一次 `cast` 按「阵型描述」编排一组子弹（复用 GdBullet +
+GdSpawnPool，与 GdShooter 同源）。**不接输入**——由业务脚本（技能键/键盘/
+AI）驱动。子弹池建议**独立别名**（与 GdShooter 池隔离，避免懒注册互相
+重冲刷对方在飞子弹）。
+
+**阵型（shape）**：`single` 单发 / `fan` 扇形（count+spread 张角，aim 居中
+对称）/ `ring` 环形（count 发 360° 均布）/ `burst` 连发（count×interval，
+同向）/ `spiral` 螺旋（duration 内每 step 发 arms 臂，每轮偏转 rotate 度）。
+
+**opts 描述字典（全部可选）**：`count/spread/interval/duration/step/arms/
+rotate`（阵型参数）+ `cooldown`（本次施放冷却覆盖）+ `bullet`（每发子弹
+覆盖：speed/damage/lifetime/max_distance/wave_amplitude/wave_frequency/
+angular_speed/homing_group/homing_turn_rate/pierce）。**新弹幕 = 新描述
+数据，不改 rust**——业务侧建一张「技能 key → 阵型描述」表即可。
+
+```gdscript
+var dm = GdDanmaku.new()
+dm.cast_cooldown = 0.5
+dm.bullet_speed = 480.0
+dm.bullet_damage = 10.0
+dm.bullet_alias = "player_danmaku"          # 独立池别名
+dm.bullet_scene_path = "res://.../bullet.tscn"
+host.add_child(dm)
+
+dm.cast("fan", Vector2(1, 0), {"count": 7, "spread": 70.0,
+    "cooldown": 1.2, "bullet": {"speed": 520.0, "damage": 12.0,
+    "wave_amplitude": 40.0, "wave_frequency": 3.0}})
+dm.cast("ring", aim, {"count": 16})
+dm.cast("spiral", aim, {"duration": 1.2, "step": 0.08, "arms": 3,
+    "rotate": 26.0})
+dm.cast_toward_mouse("fan", opts)           # 朝鼠标施放
+dm.cast_desc({"shape": "fan", "count": 5})  # 数据驱动一步施放（aim 缺省朝鼠标）
+
+dm.s_cast.connect(func(shape, count): ...)  # 施放成功（阵型名、子弹总数）
+dm.s_volley_finished.connect(...)           # 编排队列清空（burst/spiral 发完）
+```
+
+范本：`example/demo/xiuxian/role/player/player.gd` SKILL_PATTERNS——秘境
+技能栏 6 格各对应一种弹幕（watch GdState "mainhud.skill" → deferred
+cast_toward_mouse；键盘 1-6 直达），验收 `check_danmaku.gd`。
+
 ## GdBullet — 池化子弹（Area2D）
 
 子弹场景根节点类型设为 `GdBullet`，带 CollisionShape2D，`collision_mask = 4`（指向敌方受击盒）。
-属性由 GdShooter 注入，无需手动设置；直接使用时：
+属性由 GdShooter/GdDanmaku 注入，无需手动设置；直接使用时：
 
 ```gdscript
 bullet.velocity = Vector2(240, 0)
-bullet.s_hit.connect(func(target): ...)        # 命中受击盒即毁并归池
-bullet.s_destroyed.connect(func(reason): ...)  # 非命中销毁：range/terrain/lifetime
+bullet.s_hit.connect(func(target): ...)        # 命中受击盒（穿透弹可多次）
+bullet.s_destroyed.connect(func(reason): ...)  # 非命中销毁：range/terrain/
+                                               # lifetime/pierce_exhausted
 ```
 
-- **射程**：`max_distance`（像素，飞行距离超限销毁；0 = 不限），由 GdShooter 每发写入。
+- **射程**：`max_distance`（像素，飞行距离超限销毁；0 = 不限），由发射器每发写入。
+- **可选运动行为**（默认全关 = 直线弹；`setup_motion(角速度, 摆幅, 摆频,
+  追踪组, 转向率, 穿透数)` 或发射器 opts.bullet 配置）：
+  - `angular_speed`（弧度/秒）：velocity 逐帧旋转 → 曲线弹/回旋弹
+  - `wave_amplitude` + `wave_frequency`（Hz）：垂直飞行方向正弦横摆（波纹弹）
+  - `homing_group` + `homing_turn_rate`（弧度/秒）：追踪组内最近目标转向
+    （`homing_range` 索敌半径默认 512；目标组如敌人入 "enemies" 分组）
+  - `pierce`：穿透数——命中 N 个受击盒后才回收（0 = 单发即毁）；
+    **穿透目标需无敌帧 > 0**：否则重叠帧间反复 take_damage 会瞬间耗尽穿透数
 - **地形高度检测**：`fly_height`（子弹飞行海拔，格）——沿运动线段按 8px 步长采样
   地图高度场，`地形海拔 > fly_height` 即撞毁（`check_terrain = false` 可关）。
   依赖 **terrain_provider 协议**：场景树内 `terrain_provider` 分组中实现
   `get_height_at_world(world: Vector2) -> i32` 的节点即为高度场数据源
   （GdQuickMap 内置支持；自定义地图/GDScript 地图入组即可）。子弹与地图零耦合，
   换图后旧 provider 失效自动重查。
+
+验收：`test/test_danmaku.gd`（阵型编排 fan/ring/burst/spiral/冷却/逐发延迟
++ 子弹运动行为波动/穿透/追踪/单发即毁，行为用例手动构造 GdBullet 走
+setup/setup_motion 公开 API，确定性 100%）。
 
 ## GdSpawnPool — 对象池（单例 "GDSPAWNPOOL"）
 

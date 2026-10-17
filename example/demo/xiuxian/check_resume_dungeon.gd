@@ -1,21 +1,24 @@
-# 秘境场景恢复端到端验收 —— 中途退出游戏后重进，应回到退出时的秘境层数与位置
+# 秘境存档恢复端到端验收 —— 秘境中关闭游戏重开，不自动重返秘境
 #
 # 运行：perl -e 'alarm 300; exec @ARGV' godot --headless --path . \
 #   -s res://example/demo/xiuxian/check_resume_dungeon.gd
 #
-# 背景：XiuDungeonState（run_seed/floor/status）与 XiuPlayerState（pos_alias+
-#       世界坐标）均随档持久化；explore_manager._wire 天然按 running 状态续层
-#       开图。本验收钉死全链：
-#   A. 探索场景直接恢复：status=running floor=2 实例化 explore/index.tscn
-#      → 自动按层种子开出第 2 层（不需要 main 场景参与）
-#   B. main 场景自动续玩：main 场景 DungeonManager._wire 检测 running
-#      → 自动 change_scene 到探索场景（原「作废进度」改为「续玩」）
-#   C. 玩家位置恢复：XiuPlayerState.pos_alias=xiuxian_dungeon 与当前图匹配
-#      + 落点格可行走（同 seed 地形复现）→ 原样落位（精确世界坐标）
+# 背景：秘境战斗中不记录玩家位置（player._save_position 跳过秘境图；入场时
+#       DungeonManager.start_run 强制落盘「进秘境前」的位置）。重开应用时
+#       DungeonManager._wire 检测 running → 作废本次挑战，留在主场景，
+#       map_restore 按存档位置恢复进秘境前的地图与落点。
+#
+# 覆盖：
+#   A. 正常入场路径：status=running 时实例化 explore/index.tscn → 自动按层
+#      种子开图（start_run → change_scene 后的 explore_manager._wire 链路）
+#   B. 秘境中重开：running + 存档位置=进秘境前（青石镇）→ 全场景流
+#      title → main 后停留主场景（不自动切探索场景）、挑战作废（status 空）、
+#      开图=进秘境前的青石镇、玩家精确落位到存档位置
 extends SceneTree
 
 const APP_SCENE := "res://example/demo/xiuxian/index.tscn"
 const EXPLORE_SCENE := "res://example/demo/xiuxian/scenes/explore/index.tscn"
+const TOWN_SCENE := "res://example/demo/xiuxian/map/xiaozhen.tscn"
 
 var ok := true
 
@@ -63,13 +66,11 @@ func _run() -> void:
 	dungeon.reset_demo()
 	XiuPlayerState.ins().clear_pos()
 
-	# ---- 预置：一次进行中的秘境挑战，已推进到第 2 层 ----
+	# ---- A. 正常入场路径：running → explore 场景自动按层开图 ----
 	dungeon.start_run("xiuxian_xiaozhai", Vector2i(10, 8))
 	dungeon.advance_floor()  # floor=2
 	check(str(dungeon.status) == XiuDungeonState.STATUS_RUNNING and int(dungeon.floor) == 2,
 		"预置秘境 running 第 2 层")
-
-	# ---- A. 探索场景直接恢复：running → 自动按层开图（无需 main 参与）----
 	var explore: Node = load(EXPLORE_SCENE).instantiate()
 	root.add_child(explore)
 	if not await _poll(func():
@@ -79,40 +80,51 @@ func _run() -> void:
 		_finish()
 		return
 	var mm: Node = explore.get_node("MapManager")
-	var map: Node = mm.get_current_map()
 	check(str(mm.get_current_alias()) == XiuDungeonState.DUNGEON_ALIAS,
 		"当前图应为随机秘境场景")
-	# 找一个可行走格，记下其中心+格内偏移的世界坐标（第 2 层同 seed 复现，
-	# 地形确定 → B 段该格仍可行走）
-	var spawn_cell: Vector2i = mm.get_spawn_cell()
-	var target := Vector2i(-1, -1)
-	for dy in range(0, 6):
-		for dx in range(-6, 7):
-			var c: Vector2i = spawn_cell + Vector2i(dx, dy)
-			if c.x >= 0 and c.y >= 0 and c.x < int(map.get_map_width()) \
-					and c.y < int(map.get_map_height()) and map.is_walkable(c):
-				target = c
-				break
-		if target.x >= 0:
-			break
-	check(target.x >= 0 and map.is_walkable(target),
-		"应找到可行走格（spawn=%s 附近）" % spawn_cell)
-	var world: Vector2 = map.cell_to_center(target) + Vector2(3, 5)
-	print("[Resume] 目标格=%s 世界坐标=%s" % [target, world])
 	root.remove_child(explore)
 	explore.free()
 	await _wait(4)  # call_deferred 注销组件表
 
-	# ---- 位置入档 + 冷读（模拟退出）----
-	XiuPlayerState.ins().save_pos(XiuDungeonState.DUNGEON_ALIAS, world)
+	# ---- B. 秘境中重开：存档位置=进秘境前（青石镇）→ 停留主场景、作废进度 ----
+	# 找青石镇一个可行走格，作为「进秘境前的退出位置」
+	var town: Node = load(TOWN_SCENE).instantiate()
+	root.add_child(town)
+	await _wait(4)
+	var town_cell := Vector2i(-1, -1)
+	var w: int = town.get_map_width()
+	var h: int = town.get_map_height()
+	for y in h:
+		for x in w:
+			if town.is_walkable(Vector2i(x, y)):
+				town_cell = Vector2i(x, y)
+				break
+		if town_cell.x >= 0:
+			break
+	check(town_cell.x >= 0, "青石镇应存在可行走格")
+	var town_world: Vector2 = town.cell_to_center(town_cell) + Vector2(3, 5)
+	town.free()
+	await _wait(2)
+	if town_cell.x < 0:
+		_finish()
+		return
+	# 模拟上局：在青石镇走到这里 → 点「秘境」入场（start_run 强制落盘当前
+	# 位置）→ 秘境中推到第 2 层 → 直接关闭游戏（秘境内不记录位置）
+	dungeon.finish_run()  # A 段遗留的 running 复位（start_run 运行中守卫会拒绝）
+	dungeon.clear_entry()
+	XiuPlayerState.ins().save_pos("xiuxian_xiaozhen", town_world)
+	dungeon.start_run("xiuxian_xiaozhen", town_cell)
+	dungeon.advance_floor()
 	var core: Object = Engine.get_singleton("GDCORE")
-	core.set_save_id("_probe")
-	core.set_save_id("_test")
+	core.set_save_id("_probe")  # 切走（写盘）
+	core.set_save_id("_test")   # 切回（磁盘重读，模拟重开游戏）
 	var pos: Dictionary = XiuPlayerState.ins().load_pos()
-	check(not pos.is_empty() and pos["pos"].is_equal_approx(world),
-		"秘境内位置应随档冷读")
+	check(not pos.is_empty() and str(pos["alias"]) == "xiuxian_xiaozhen"
+		and (pos["pos"] as Vector2).is_equal_approx(town_world),
+		"存档位置应为进秘境前的青石镇落点（秘境内不覆写）")
+	check(str(dungeon.status) == XiuDungeonState.STATUS_RUNNING,
+		"冷读后秘境状态仍为 running（待主场景 wire 作废）")
 
-	# ---- B. 真实场景流：title → main → DungeonManager 检测 running 自动续玩 ----
 	var app: Node = load(APP_SCENE).instantiate()
 	root.add_child(app)
 	await _wait(8)
@@ -125,35 +137,29 @@ func _run() -> void:
 		"应切到 main 场景"):
 		_finish()
 		return
-	# main 场景 DungeonManager._wire 检测 running → 自动 change_scene 到探索场景
-	if not await _poll(func(): return _scene_id(app) == "xiuxian_explore", 900,
-		"main 装配后应自动续玩切到探索场景"):
-		_finish()
-		return
-	await _wait(10)
+	# 停留观察：DungeonManager._wire 已处理 running（作废），不得自动切探索场景
+	await _wait(300)
+	check(_scene_id(app) == "xiuxian_main",
+		"重开后应停留主场景，不自动重返秘境（实际 %s）" % _scene_id(app))
+	check(str(dungeon.status) != XiuDungeonState.STATUS_RUNNING,
+		"未完成秘境应被作废（status 空）")
+	check(str(dungeon.from_map) == "" and dungeon.from_cell == Vector2i(-1, -1),
+		"入口记录应已清空")
 
-	# ---- C. 续玩后：第 2 层已开 + 玩家恢复到退出时精确位置 ----
-	var mm2: Node = app.get_node("SceneLayer").get_child(0).get_node_or_null("MapManager") \
-		if app.get_node_or_null("SceneLayer") != null else null
-	# 场景节点可能不是唯一子节点，稳妥起见按 current_scene 直取
+	# ---- C. 恢复进秘境前的地图与落点 ----
 	var cur: Node = app.call("get_current_scene")
-	if mm2 == null and cur != null:
-		mm2 = cur.get_node_or_null("MapManager")
-	check(mm2 != null and mm2.get_current_map() != null, "续玩后秘境地图应已打开")
+	var mm2: Node = cur.get_node_or_null("MapManager") if cur != null else null
+	check(mm2 != null and mm2.get_current_map() != null, "主场景地图应已打开")
 	if mm2 != null and mm2.get_current_map() != null:
-		check(str(mm2.get_current_alias()) == XiuDungeonState.DUNGEON_ALIAS,
-			"续玩后应仍在秘境场景")
-		var map2: Node = mm2.get_current_map()
-		check(int(dungeon.floor) == 2 and str(dungeon.status) == XiuDungeonState.STATUS_RUNNING,
-			"进度应保持第 2 层 running")
+		check(str(mm2.get_current_alias()) == "xiuxian_xiaozhen",
+			"应恢复进秘境前的青石镇，实际 %s" % mm2.get_current_alias())
 		var player: Node2D = cur.get_node_or_null("Player")
-		check(player != null, "探索场景应有 Player")
+		check(player != null, "主场景应有 Player")
 		if player != null:
-			var cell: Vector2i = map2.world_to_cell(player.global_position)
-			print("[Resume] 玩家落位=%s（目标世界坐标 %s）" % [player.global_position, world])
-			check(player.global_position.is_equal_approx(world),
-				"玩家应恢复到退出时精确世界坐标 %s，实际 %s" % [world, player.global_position])
-			check(cell == target, "落点格应为 %s，实际 %s" % [target, cell])
+			print("[Resume] 玩家落位=%s（存档位置 %s）" % [player.global_position, town_world])
+			check(player.global_position.is_equal_approx(town_world),
+				"玩家应恢复到进秘境前位置 %s，实际 %s"
+					% [town_world, player.global_position])
 
 	_finish()
 

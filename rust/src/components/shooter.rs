@@ -17,17 +17,88 @@
 // 子弹经 GdSpawnPool 生成/回收（bullet_scene_path 首次射击时自动注册进池），
 // 每发子弹的 速度/伤害/寿命/池别名 由本组件写入 GdBullet。
 //
+// 瞄准框（show_aim_frame，默认显示）：宿主周边 aim_distance 固定距离、
+// 跟随鼠标方向的四角括线框（aim_frame_size 边长），懒创建挂宿主下的
+// GdShooterAimFrame 节点，每帧定位——辅助瞄准纯视觉，不影响判定/开火。
+//
 // 信号：
 //   s_fired(muzzle, direction)  每次成功发射
 
 use godot::prelude::*;
 use godot::builtin::{GString, StringName, Variant, Vector2};
 use godot::classes::{
-    Engine, INode, Input, InputEvent, InputEventMouseButton, Node, Node2D, Window,
+    Engine, INode, INode2D, Input, InputEvent, InputEventMouseButton, Node, Node2D, Window,
 };
 use godot::global::MouseButton;
 
 use super::bullet::GdBullet;
+
+// ==================== 瞄准框节点 ====================
+
+/// GdShooterAimFrame - 瞄准框（四角括线 + 呼吸透明度）
+/// 由 GdShooter 懒创建挂到宿主下（跟随宿主移动），每帧定位到
+/// 宿主 -> 鼠标方向固定距离处。仅视觉指示，不参与任何判定。
+#[derive(GodotClass)]
+#[class(base = Node2D)]
+pub struct GdShooterAimFrame {
+    /// 框边长（像素，由 GdShooter.aim_frame_size 每帧同步）
+    frame_size: f32,
+    /// 呼吸相位
+    phase: f64,
+    base: Base<Node2D>,
+}
+
+#[godot_api]
+impl INode2D for GdShooterAimFrame {
+    fn init(base: Base<Node2D>) -> Self {
+        Self {
+            frame_size: 20.0,
+            phase: 0.0,
+            base,
+        }
+    }
+
+    fn ready(&mut self) {
+        // 盖在地图/角色之上（Node2D 无 mouse_filter，天然不挡输入）
+        self.base_mut().set_z_index(100);
+        self.base_mut().set_visible(false);
+    }
+
+    fn process(&mut self, delta: f64) {
+        // 仅可见时呼吸（隐藏态零重绘开销）
+        if !self.base().is_visible() {
+            return;
+        }
+        self.phase += delta;
+        self.base_mut().queue_redraw();
+    }
+
+    fn draw(&mut self) {
+        let h = self.frame_size * 0.5;
+        if h <= 0.0 {
+            return;
+        }
+        let l = (self.frame_size * 0.36).max(2.0); // 括线臂长
+        // 呼吸：透明度 0.65..0.95 缓动
+        let a = 0.65 + 0.3 * (self.phase * 4.0).sin() as f32;
+        let color = Color::from_rgba(1.0, 0.85, 0.35, a);
+        // 正方形四角，各角两条臂沿两边收拢
+        let corners = [
+            Vector2::new(-h, -h),
+            Vector2::new(h, -h),
+            Vector2::new(h, h),
+            Vector2::new(-h, h),
+        ];
+        let mut b = self.base_mut();
+        for i in 0..4 {
+            let c = corners[i];
+            let prev = corners[(i + 3) % 4];
+            let next = corners[(i + 1) % 4];
+            b.draw_line(c, c + (prev - c).normalized() * l, color);
+            b.draw_line(c, c + (next - c).normalized() * l, color);
+        }
+    }
+}
 
 #[derive(GodotClass)]
 #[class(base = Node)]
@@ -80,11 +151,26 @@ pub struct GdShooter {
     #[export]
     bullet_scene_path: GString,
 
+    /// 是否显示瞄准框（宿主周边固定距离、跟随鼠标方向的辅助瞄准指示；
+    /// 编辑器可配，默认显示）
+    #[export]
+    show_aim_frame: bool,
+
+    /// 瞄准框中心距宿主中心的固定距离（像素）
+    #[export]
+    aim_distance: f64,
+
+    /// 瞄准框边长（像素）
+    #[export]
+    aim_frame_size: f64,
+
     // ---- 运行时状态 ----
     cooldown_timer: f64,
     pool_ready: bool,
     /// unhandled 阶段收到开火键按下 → 按住连射；抬起/校准复位
     fire_held: bool,
+    /// 懒创建的瞄准框节点（挂宿主下，随宿主移动）
+    aim_frame: Option<Gd<GdShooterAimFrame>>,
 
     base: Base<Node>,
 }
@@ -105,9 +191,13 @@ impl INode for GdShooter {
             max_distance: 0.0,
             bullet_alias: GString::from("bullet"),
             bullet_scene_path: GString::new(),
+            show_aim_frame: true,
+            aim_distance: 64.0,
+            aim_frame_size: 20.0,
             cooldown_timer: 0.0,
             pool_ready: false,
             fire_held: false,
+            aim_frame: None,
             base,
         }
     }
@@ -116,6 +206,8 @@ impl INode for GdShooter {
         if self.cooldown_timer > 0.0 {
             self.cooldown_timer = (self.cooldown_timer - delta).max(0.0);
         }
+        // 瞄准框每帧跟随（enabled/暂停/配置关 → 隐藏），与开火逻辑解耦
+        self.update_aim_frame();
         if !self.enabled || !self.auto_fire_mouse || !self.fire_held {
             return;
         }
@@ -239,6 +331,51 @@ impl GdShooter {
     }
 
     // ---- 内部实现 ----
+
+    /// 瞄准框跟随：宿主 -> 鼠标方向固定距离处显示四角括线框（每帧刷新）。
+    /// 关闭配置/组件禁用/宿主暂停/拿不到瞄准方向（headless 无鼠标且宿主在
+    /// 原点等）时隐藏。仅视觉指示，不影响判定与开火。
+    fn update_aim_frame(&mut self) {
+        if !self.show_aim_frame || !self.enabled || self.host_paused() {
+            self.hide_aim_frame();
+            return;
+        }
+        let Some(host) = self.base().get_parent() else {
+            return;
+        };
+        let Ok(mut host2d) = host.try_cast::<Node2D>() else {
+            return; // 非 Node2D 宿主：无瞄准语义，静默跳过
+        };
+        let Some(dir) = self.aim_direction() else {
+            self.hide_aim_frame();
+            return;
+        };
+        // 懒创建：挂宿主下（跟随宿主移动），随宿主释放自动回收
+        let need_create = match &self.aim_frame {
+            Some(f) => !f.is_instance_valid(),
+            None => true,
+        };
+        if need_create {
+            let mut node = Gd::<GdShooterAimFrame>::from_init_fn(|base| GdShooterAimFrame::init(base));
+            node.set_name(&StringName::from("AimFrame"));
+            host2d.add_child(&node);
+            self.aim_frame = Some(node);
+        }
+        if let Some(mut f) = self.aim_frame.clone() {
+            f.set_visible(true);
+            f.set_position(dir * self.aim_distance as f32);
+            f.bind_mut().frame_size = self.aim_frame_size as f32;
+        }
+    }
+
+    /// 隐藏瞄准框（懒创建前调用为空操作；宿主已释放时静默跳过）
+    fn hide_aim_frame(&mut self) {
+        if let Some(mut f) = self.aim_frame.clone() {
+            if f.is_instance_valid() {
+                f.set_visible(false);
+            }
+        }
+    }
 
     /// 宿主（父节点）全局位置
     fn host_position(&self) -> Option<Vector2> {
